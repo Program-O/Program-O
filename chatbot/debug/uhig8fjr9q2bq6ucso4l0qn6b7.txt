@@ -1,0 +1,12 @@
+Array
+(
+    [29-11-2011 16:10:13.53978400] => Array
+        (
+            [fileName] => see above
+            [functionName] => see above
+            [line] => see above
+            [info] => MYSQL ERROR 1062 - Duplicate entry 'Dave' for key 'uname' when excuting insert into `myprogramo` (`id`, `uname`, `pword`, `lastip`) values(null, 'Dave', '986fb4494b455629e27ba1d1ad8cfdc8', '192.168.1.100');
+            [srai_iteration] => 0
+        )
+
+)
