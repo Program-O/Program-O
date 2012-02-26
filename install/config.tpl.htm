@@ -474,7 +474,7 @@
                 <span class="label">Conversation Lines:</span>
               </label>
               <span class="formw">
-                <input name="conversation_lines_[bot_ID]" id="conversation_lines_[bot_ID]" value="1" />
+                <input name="conversation_lines_[bot_ID]" id="conversation_lines_[bot_ID]" value="[cl_value]" />
               </span>
             </div>
             <div class="row">
@@ -490,6 +490,10 @@
            <div class="row bold fullSize center shadowBorderOutset">Installation Complete!</div>
            [notes]
 <!-- Section InstallComplete End -->
+<!-- Section InstallError Start -->
+           <div class="row bold fullSize center shadowBorderOutset">Installation Failed!</div>
+           [errorMessage]
+<!-- Section InstallError End -->
 <!-- Section DBCreationError Start -->
             <div class="row">
               <span class="red bold">WARNING! </span>
@@ -502,15 +506,3 @@
               </span>
             </div>
 <!-- Section DBCreationError End -->
-
-
-
-
-
-
-
-
-
-
-
-

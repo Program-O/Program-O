@@ -165,6 +165,14 @@ function getSelectedBot() {
       }
       $action = "update";
     }
+    $debugemail_0 = $debugemail_1 = '';
+    switch ($bot_debugemail) {
+      case 0:
+      $debugemail_0 = 'checked="checked"';
+      break;
+      case 1:
+      $debugemail_1 = 'checked="checked"';
+    }
     mysql_close($dbconn);
   }
   else {
@@ -187,7 +195,8 @@ function getSelectedBot() {
     '[bot_id]','[bot_name]','[bot_desc]','[parent_options]','[sel_yes]','[sel_no]',
     '[sel_html]','[sel_xml]','[sel_json]','[sel_session]','[sel_db]','[sel_fyes]',
     '[sel_fno]','[bot_conversation_lines]','[bot_remember_up_to]','[bot_debugemail]',
-    '[dm_]','[dm_i]','[dm_ii]','[dm_iii]','[ds_]','[ds_i]','[ds_ii]','[ds_iii]','[action]'
+    '[dm_]','[dm_i]','[dm_ii]','[dm_iii]','[ds_]','[ds_i]','[ds_ii]','[ds_iii]','[action]',
+    '[debugemail_0]','[debugemail_1]'
   );
   foreach ($searches as $search) {
     $replace = str_replace('[', '', $search);

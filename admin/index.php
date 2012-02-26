@@ -14,6 +14,7 @@
   ini_set('error_log', _ADMIN_PATH_ . 'error.log');
   ini_set('html_errors', false);
   ini_set('display_errors', false);
+  $msg = '';
 
   # Show errors on the dev server. Comment out or remove to disable.
   if($server==$dev_host or ((!empty($alternate_local_server_name) and  $server == $alternate_local_server_name))) {
@@ -26,19 +27,20 @@
   session_start();
   $myPage = (isset($_GET['myPage'])) ? $_GET['myPage'] : '';
   $hide_logo = (isset($_SESSION['display'])) ? $_SESSION['display'] : '';
-  if((!isset($_SESSION['poadmin']['uid'])) || ($_SESSION['poadmin']['uid']=="")) {
-    $msg = 'Session timed out';
-    $_GET['page'] = 'logout';
-  }
-  else {
-    $name = $_SESSION['poadmin']['name'];
-    $ip = $_SESSION['poadmin']['ip'];
-    $last = $_SESSION['poadmin']['lastlogin'];
-    $lip = $_SESSION['poadmin']['lip'];
-    $llast = $_SESSION['poadmin']['llastlogin'];
-    $bot_name = $_SESSION['poadmin']['bot_name'];
-    $bot_id = $_SESSION['poadmin']['bot_id'];
-    #$hide_logo = (isset($_SESSION['poadmin']['display'])) ? $_SESSION['poadmin']['display'] : $hide_logo;
+  if (!empty($_SESSION)) {
+    if((!isset($_SESSION['poadmin']['uid'])) || ($_SESSION['poadmin']['uid']=="")) {
+      $msg .= "Session timed out<br>\n";
+      $_GET['page'] = 'logout';
+    }
+    else {
+      $name = $_SESSION['poadmin']['name'];
+      $ip = $_SESSION['poadmin']['ip'];
+      $last = $_SESSION['poadmin']['lastlogin'];
+      $lip = $_SESSION['poadmin']['lip'];
+      $llast = $_SESSION['poadmin']['llastlogin'];
+      $bot_name = $_SESSION['poadmin']['bot_name'];
+      $bot_id = $_SESSION['poadmin']['bot_id'];
+    }
   }
   //load shared files
   require_once(_LIB_PATH_ . 'db_functions.php');
@@ -47,7 +49,6 @@
   # Load the template file
   $thisPath = dirname(__FILE__);
   $template = new Template("$thisPath/default.page.htm");
-  $msg = '';
   $leftLinks = makeLeftLinks();
   $topLinks = makeTopLinks();
 # set template section defaults
@@ -74,7 +75,7 @@
   $leftNavLinks  = '';
   $mediaType     = ' media="screen"';
   $mainTitle     = 'Program O Login';
-  $FooterInfo    = '<p>&copy; 2011 My Program-O<br /><a href="http://www.program-o.com">www.program-o.com</a></p>';
+  $FooterInfo    = '<p>&copy; 2011-2012 My Program-O<br /><a href="http://www.program-o.com">www.program-o.com</a></p>';
   $headerTitle   = '';
   $pageTitle     = 'My-Program O - Login';
   $upperScripts  = '';
@@ -85,46 +86,45 @@
     $pw = mysql_escape_string(strip_tags(trim($_POST['pw'])));
     $dbconn = db_open();
     $sql = "SELECT * FROM `myprogramo` WHERE uname = '".$uname."' AND pword = '".MD5($pw)."'";
-    $result = mysql_query($sql,$dbconn) or die ("mySQL error:" . mysql_error($dbconn));
-    $count = mysql_num_rows($result);
-    $msg ="";
-    if($count>0) {
-      $row=mysql_fetch_array($result);
-      $_SESSION['poadmin']['uid']=$row['id'];
-      $_SESSION['poadmin']['name']=$row['uname'];
-      $_SESSION['poadmin']['lip']=$row['lastip'];
-      $_SESSION['poadmin']['llastlogin']=date('l jS \of F Y h:i:s A', strtotime($row['lastlogin']));
-      if(!empty($_SERVER['HTTP_CLIENT_IP'])) {  //check ip from share internet
-        $ip=$_SERVER['HTTP_CLIENT_IP'];
-      }
-      elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {  //to check ip is pass from proxy
-        $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
-      }
-      else {
-        $ip=$_SERVER['REMOTE_ADDR'];
-      }
-      $sqlupdate = "UPDATE `myprogramo` SET `lastip` = '$ip', `lastlogin` = CURRENT_TIMESTAMP WHERE uname = '$uname' limit 1";
-      //echo $sql;
-      $result = mysql_query($sqlupdate,$dbconn);
-      $transact = mysql_affected_rows($dbconn);
-      $_SESSION['poadmin']['ip']=$ip;
-      $_SESSION['poadmin']['lastlogin']=date('l jS \of F Y h:i:s A');
-      $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
-      $result = mysql_query($sql,$dbconn);
+    $result = mysql_query($sql,$dbconn) or $msg .= SQL_Error(mysql_errno());
+    if ($result) {
       $count = mysql_num_rows($result);
-      $msg ="";
-      if($count>0) {
+      if($count > 0) {
         $row=mysql_fetch_array($result);
-        $_SESSION['poadmin']['bot_id']=$row['bot_id'];
-        $_SESSION['poadmin']['bot_name']=$row['bot_name'];
+        $_SESSION['poadmin']['uid']=$row['id'];
+        $_SESSION['poadmin']['name']=$row['uname'];
+        $_SESSION['poadmin']['lip']=$row['lastip'];
+        $_SESSION['poadmin']['llastlogin']=date('l jS \of F Y h:i:s A', strtotime($row['lastlogin']));
+        if(!empty($_SERVER['HTTP_CLIENT_IP'])) {  //check ip from share internet
+          $ip=$_SERVER['HTTP_CLIENT_IP'];
+        }
+        elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {  //to check ip is pass from proxy
+          $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+        else {
+          $ip=$_SERVER['REMOTE_ADDR'];
+        }
+        $sqlupdate = "UPDATE `myprogramo` SET `lastip` = '$ip', `lastlogin` = CURRENT_TIMESTAMP WHERE uname = '$uname' limit 1";
+        $result = mysql_query($sqlupdate,$dbconn);
+        $transact = mysql_affected_rows($dbconn);
+        $_SESSION['poadmin']['ip']=$ip;
+        $_SESSION['poadmin']['lastlogin']=date('l jS \of F Y h:i:s A');
+        $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
+        $result = mysql_query($sql,$dbconn);
+        $count = mysql_num_rows($result);
+        if($count > 0) {
+          $row=mysql_fetch_array($result);
+          $_SESSION['poadmin']['bot_id']=$row['bot_id'];
+          $_SESSION['poadmin']['bot_name']=$row['bot_name'];
+        }
+        else {
+          $_SESSION['poadmin']['bot_id']=-1;
+          $_SESSION['poadmin']['bot_name']="unknown";
+        }
       }
       else {
-        $_SESSION['poadmin']['bot_id']=-1;
-        $_SESSION['poadmin']['bot_name']="unknown";
+        $msg .= "incorrect username/password<br>\n";
       }
-    }
-    else {
-      $msg = "incorrect username/password";
     }
     mysql_close($dbconn);
     if($msg == "") {
@@ -132,7 +132,7 @@
     }
   }
   elseif(isset($_GET['msg'])) {
-    $msg = htmlentities($_GET['msg']);
+    $msg .= htmlentities($_GET['msg']);
   }
   elseif(isset($_GET['page'])) {
     $curPage = $_GET['page'];
@@ -274,7 +274,7 @@ endFooter;
                                ),
                          array(
                                '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="http://www.program-o.com/ns/faq/"',
+                               '[linkHref]' => ' href="'.FAQ_URL.'"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="The Program O User\'s Guide"',
                                '[linkTitle]' => ' title="The Program O User\'s Guide"',
@@ -298,7 +298,7 @@ endFooter;
                                ),
                          array(
                                '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="http://www.program-o.com/support/"',
+                               '[linkHref]' => ' href="'.SUP_URL.'"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="Get support for Program O"',
                                '[linkTitle]' => ' title="Get support for Program O"',
@@ -327,7 +327,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=bots"',
+                       '[linkHref]' => ' href="./?page=botpersonality"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Edit your bot\'s personality"',
                        '[linkTitle]' => ' title="Edit your bot\'s personality"',
@@ -432,5 +432,6 @@ endFooter;
     );
     return $out;
   }
+
 
 ?>

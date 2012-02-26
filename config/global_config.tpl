@@ -238,6 +238,15 @@
   $botmaster_name = "[botmaster_name]";
 
 //------------------------------------------------------------------------
+// Set Program O Website URLs
+//------------------------------------------------------------------------
+
+  define('RSS_URL', 'http://www.program-o.com/ns/feed/rss/');
+  define('FAQ_URL', 'http://www.program-o.com/ns/faq/');
+  define('SUP_URL', 'http://www.program-o.com/ns/feed/Support/');
+  define('BUGS_EMAIL', 'bugs@program-o.com');
+
+//------------------------------------------------------------------------
 //
 // THERE SHOULD BE NO NEED TO EDIT ANYTHING BELOW THIS LINE
 //

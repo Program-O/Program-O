@@ -12,6 +12,7 @@ $myPHP_Version = (float)phpversion();
 If ($myPHP_Version < 5) die ("I'm sorry, but Program O requires PHP version 5.0 or greater to function. Please ask your hosting provider to upgrade.");
 session_name('PGO_install');
 session_start();
+$_SESSION['errorMessage'] = (!empty($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';
 require_once('../library/buildSelect.php');
 require_once('../config/global_config.php');
 define ('SECTION_START', '<!-- Section [section] Start -->'); # search params for start and end of sections
@@ -19,7 +20,8 @@ define ('SECTION_END', '<!-- Section [section] End -->'); # search params for st
 define ('PHP_SELF', $_SERVER['PHP_SELF']); # search params for start and end of sections
 ini_set("display_errors", 1);
 ini_set("log_errors",true);
-ini_set("error_log","../logs/error.log");
+#ini_set("error_log","../logs/error.log");
+ini_set("error_log","error.log");
 
 $currentDir = getcwd();
 $defaultBaseDir = rtrim(str_ireplace('admin', '', $currentDir), '\\/');
@@ -88,6 +90,7 @@ $content = str_replace('[rsTZ]', $rsTzVal, $content);
 $content = str_replace('[local_dbPort]', $dbPort, $content);
 $content = str_replace('[remote_dbPort]', $dbPort, $content);
 $content = str_replace('[PHP_SELF]', PHP_SELF, $content);
+$content = str_replace('[errorMessage]', $_SESSION['errorMessage'], $content);
 foreach ($replVarsArray as $search => $replace) {
   $replace = trim($replace);
   if (!isset($$replace)) $$replace = 'crap';
@@ -136,6 +139,8 @@ function getSection($sectionName, $page_template, $notFoundReturn = true) {
 function save($page) {
   global $replVarsArray, $quickdebug, $writetotemp;
   $curSession = print_r($_SESSION, true);
+  #if (!checkDBContents($dbn)) fillDB();
+  checkDBContents($_SESSION['local_dbn']);
   switch ($page) {
     case 1:
       $out = 2;
@@ -197,41 +202,82 @@ endSQL;
   $conn = db_open();
   for ($loop = 1; $loop <= $_SESSION['bot_count']; $loop++) {
     $sql = str_replace('[cur_bot_ID]', $loop, $sql_template);
-    $sql = str_replace('[cur_bot_name]',$_SESSION["bot_name_$loop"], $sql);
-    $sql = str_replace('[cur_bot_desc]',$_SESSION["bot_desc_$loop"], $sql);
-    $sql = str_replace('[cur_bot_active]',$_SESSION["bot_active_$loop"], $sql);
-    $sql = str_replace('[cur_bot_parent_id]',$_SESSION['default_bot_id'], $sql);
-    $sql = str_replace('[cur_format]',$_SESSION["format_$loop"], $sql);
-    $sql = str_replace('[cur_save_state]',$_SESSION["save_state_$loop"], $sql);
-    $sql = str_replace('[cur_conversation_lines]',$_SESSION["conversation_lines_$loop"], $sql);
-    $sql = str_replace('[cur_remember_up_to]',$_SESSION["remember_up_to_$loop"], $sql);
+    $sql = @str_replace('[cur_bot_name]',$_SESSION["bot_name_$loop"], $sql);
+    $sql = @str_replace('[cur_bot_desc]',$_SESSION["bot_desc_$loop"], $sql);
+    $sql = @str_replace('[cur_bot_active]',$_SESSION["bot_active_$loop"], $sql);
+    $sql = @str_replace('[cur_bot_parent_id]',$_SESSION['default_bot_id'], $sql);
+    $sql = @str_replace('[cur_format]',$_SESSION["format_$loop"], $sql);
+    $sql = @str_replace('[cur_save_state]',$_SESSION["save_state_$loop"], $sql);
+    $sql = @str_replace('[cur_conversation_lines]',$_SESSION["conversation_lines_$loop"], $sql);
+    $sql = @str_replace('[cur_remember_up_to]',$_SESSION["remember_up_to_$loop"], $sql);
     $sql = str_replace('[cur_debugemail]',$_SESSION["default_debugemail"], $sql);
     $sql = str_replace('[cur_debugshow]',$_SESSION["default_debugshow"], $sql);
     $sql = str_replace('[cur_debugmode]',$_SESSION["default_debugmode"], $sql);
     $sql = str_replace('[cur_default_aiml_pattern]',$_SESSION["default_pattern"], $sql);
     if (!isset($_SESSION["update_aiml_code_$loop"])) $_SESSION["update_aiml_code_$loop"] = 0;
     $sql = str_replace('[cur_update_aiml_code]',$_SESSION["update_aiml_code_$loop"], $sql);
-    $x = db_query($sql, $conn);
+    $x = db_query($sql, $conn) or $_SESSION['errorMessage'] = 'Could not add admin account! Error = ' . mysql_error();
   }
   global $adm_dbu, $adm_dbp;
   $encrypted_adm_dbp = md5($adm_dbp);
   $cur_ip = $_SERVER['REMOTE_ADDR'];
   $adminSQL = "insert into `myprogramo` (`id`, `uname`, `pword`, `lastip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
-  $x = db_query($adminSQL, $conn);
-  return getSection('InstallComplete', $page_template);
+  $result = db_query($adminSQL, $conn) or $_SESSION['errorMessage'] = 'Could not add admin account! Error = ' . mysql_error();
+  return ($result) ? getSection('InstallComplete', $page_template) : getSection('InstallError', $page_template);
 }
 
 function page2form() {
   global $page_template;
- $out = '';
-   $namesArray = explode("\n", $_SESSION['botNames']);
-    for ($loop = 1; $loop <= $_SESSION['bot_count']; $loop++) {
+  $out = '';
+  $namesArray = explode("\n", $_SESSION['botNames']);
+  for ($loop = 1; $loop <= $_SESSION['bot_count']; $loop++) {
+    $curConvoLines = (!empty($_SESSION["conversation_lines_$loop"])) ? $_SESSION["conversation_lines_$loop"] : $_SESSION['default_conversation_lines'];
     $tmpSection = getSection('BotsTableForm', $page_template);
     $tmpSection = str_replace('[bot_ID]', $loop, $tmpSection);
     $tmpSection = str_replace('[current_bot_name]', rtrim($namesArray[$loop-1]), $tmpSection);
+    $tmpSection = str_replace('[cl_value]', $curConvoLines, $tmpSection);
     $out .= $tmpSection;
-   }
+  }
   return $out;
+}
+
+function checkDBContents($dbn) {
+  $local_dbh    = $_SESSION['local_dbh'];
+  $local_dbn    = $_SESSION['local_dbn'];
+  $local_dbu    = $_SESSION['local_dbu'];
+  $local_dbp    = $_SESSION['local_dbp'];
+  $local_dbPort = $_SESSION['local_dbPort'];
+  $death = <<<endDeath
+
+<pre>
+Variables:
+local_dbh: $local_dbh
+local_dbu: $local_dbu
+local_dbp: $local_dbp
+local_dbn: $local_dbn
+local_dbPort: $local_dbPort
+
+
+endDeath;
+  $host = ($local_dbh == 'Required') ? 'localhost' : $local_dbh;
+  $conn = mysql_connect($host, $local_dbu, $local_dbp) or die( "mysql_connect error:". mysql_errno() . ', ' . mysql_error() . $death);
+  mysql_select_db($local_dbn,$conn);
+  $sql = "show tables;";
+  $result = mysql_query($sql,$conn) or die ("Houston, we have a problem! " . mysql_error() . ", sql = $sql");
+  $out = mysql_fetch_assoc($result);
+  if (empty($out)) {
+    $sql = file_get_contents('new.sql');
+    $queries = preg_split("/;/", $sql);
+    foreach ($queries as $query){
+      $death .= "sql:\n$query\n\n";
+#die("This is where I died: " . __FILE__ . ', line ' . __LINE__ . "\nDeath = $death");
+      if (strlen(trim($query)) > 0) {
+        $result = mysql_query($query,$conn) or die ("Houston, we have a problem! " . mysql_error() . ", sql:\n<pre>$wuery\n</pre>\n");
+        $success = mysql_affected_rows($result);
+      }
+    }
+  }
+  mysql_close($conn);
 }
 
 ?>

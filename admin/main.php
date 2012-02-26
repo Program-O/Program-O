@@ -50,21 +50,23 @@ endMain;
     global $template;
     $out = '';
     $itemTemplate = $template->getSection('RSSItemTemplate');
-    $url = 'http://www.program-o.com/ns/feed/rss/';
-    $xml = simplexml_load_file($url); //loading the document
-    $title = $xml->channel->title; //gets the title of the document.
-    $rss = simplexml_load_file($url);
-    if($rss) {
-      $items = $rss->channel->item;
-      foreach($items as $item) {
-        $title = $item->title;
-        $link = $item->link;
-        $published_on = $item->pubDate;
-        $description = $item->description;
-        $out .= "<h3><a href=\"$link\">$title</a></h3>\n";
-        $out .= "<p>$description</p>";
+    $xml = @simplexml_load_file(RSS_URL); //loading the document
+    if ($xml) {
+      $title = $xml->channel->title; //gets the title of the document.
+      $rss = simplexml_load_file(RSS_URL);
+      if($rss) {
+        $items = $rss->channel->item;
+        foreach($items as $item) {
+          $title = $item->title;
+          $link = $item->link;
+          $published_on = $item->pubDate;
+          $description = $item->description;
+          $out .= "<h3><a href=\"$link\">$title</a></h3>\n";
+          $out .= "<p>$description</p>";
+        }
       }
     }
+    else $out = 'RSS Feed not available';
     return $out;
   }
 

@@ -222,10 +222,11 @@ between the start and end section tags are the only parts of the template that a
               </td>
             </tr>
             <tr class="row">
-              <td><label for="debugemail"><span class="label">Debug Email</span></label></td>
+              <td><label for="debugemail"><span class="label">Email Debugging Info</span></label></td>
               <td>
                 <span class="formw">
-                  <input type="text"  class="fm-req" id="debugemail" name="debugemail" value="[bot_debugemail]">
+                  <input type="radio" name="debugemail" id="debugemail_1" [debugemail_1] value="1" />Yes
+                  <input type="radio" name="debugemail" id="debugemail_0" [debugemail_0] value="0" />No
                 </span>
               </td>
             </tr>

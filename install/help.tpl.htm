@@ -100,7 +100,7 @@
           <span class="label">Number of bots</span>
             <div class="description">
               The default is one (1) bot, and in most cases the script will automatically set this to the correct value.
-              If, for some reason, it doesn't, then you can set it manually, <b>after</b> you set the names of your bot(s).
+              If, for some reason, it doesn't, then you can set it manually.
             </div>
         </div>
         <div class="row" id="botNames">
@@ -110,7 +110,8 @@
         <div class="row" id="default_bot_id">
           <span class="label">Name of the default bot</span>
             <div class="description">
-              This is the name of your primary (default) bot. Simply select the name you want to use from the drop-down list.
+              This is the name of your primary (default) bot. Simply select the name you want to use from the drop-down list,
+              <b>after</b> you set the names of your bot(s).
             </div>
         </div>
         <div class="row">
@@ -137,7 +138,10 @@
         </div>
         <div class="row" id="default_debugemail">
           <span class="label">Email Address</span>
-          <div class="description">Required: Used internally to set up contact details,and to send debugging data.</div>
+          <div class="description">
+            Required: Used internally to set up contact details, and to (optionally) send debugging data.
+            See below for debugging options.
+          </div>
         </div>
         <div class="row">
           <strong>Debugging Options</strong>
@@ -156,8 +160,8 @@
                 Stored in the /chatbot/debug/ folder.
               </li>
               <li>
-                <b>Display</b> Prints debugging data directly to the screen. <i>Note - only works when <u>Response
-                Format</u> is set to HTML</i>(See below)
+                <b>Display</b> Prints debugging data directly to the screen. <i>Note - only works when Response
+                Format is set to HTML</i>(See below)
               </li>
               <li>
                 <b>email</b> Sends debugging data via email - <b>WARNING!</b> can create a <u>LOT</u> of email
@@ -181,7 +185,8 @@
                 <b>Everything</b> The results from a vast number of operations, calculations or function calls
                 (sometimes several times within certain functions) is generated. <b>WARNING!</b> <u>HUGE</u> amounts
                 of data is generated with this setting, to the point where script performance will be affected,
-                especially if the debug output method is set to "Show in Source".
+                especially if the debug output method is set to "Show in Source". And for God's sake, <b>DON'T</b>
+                use this if you're going to have debugging data sent to your email!
               </li>
             </ul>
             For the most part, this should be set to "Nothing", unless you're trying to trace a problem with your AIML
@@ -248,7 +253,7 @@
           <div class="description">
             This is usually best kept as the default pattern, unless you're upgrading from Program O version 1.0,
             which used "RANDOM PICKUP LINE" as the pattern. Even if you <i>are</i> upgrading, you can also leave
-            this value as * and modify your AIML piclup line category to use * for it's pattern.
+            this value as * and modify your AIML pickup line category to use * for it's pattern.
           </div>
         </div>
         <div class="row" id="default_conversation_lines">
