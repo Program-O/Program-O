@@ -23,9 +23,13 @@ Configuration of Program O itself is done in /config/global_config.php
 Using the bot
 ---------------------------------------------------------
 After installation you can chat to Program O in one of 3 ways
--HTML form (example in /gui/plain/index.php or /gui/pretty/index.php or /gui/jquery/index.php)
+-HTML form (example in /gui/plain/index.php or /gui/jquery/index.php)
 -HTML form using CURL (return response in XML or JSON) (example in /gui/htmltoxml/index.php)
 -send XML using CURL (return response in XML or JSON) (example in /gui/xml/index.php)
+
+There is also a (very experimental) demo page for using Program O with Twitter. This
+page will require a bit of configuration and 'tweaking' to suit it to any sort of use.
+Consider it to be nothing more than a "proof of concept".
 
 Upgrade
 ---------------------------------------------------------
