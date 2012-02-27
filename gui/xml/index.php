@@ -1,15 +1,16 @@
 <?php
+/***************************************
+* www.program-o.com
+* PROGRAM O
+* Version: 2.0.1
+* FILE: gui/xml/index.php
+* AUTHOR: ELIZABETH PERREAU and DAVE MORTON
+* DATE: Feb. 26th, 2012
+* DETAILS: this file contains the chatbot's
+    XML interface
+***************************************/
 
-  error_reporting(E_ALL);
-  ini_set('log_errors', true);
-  ini_set('error_log', './error.log');
-  ini_set('html_errors', false);
-  ini_set('display_errors', false);
   include_once('../../config/global_config.php');
-  # Show errors on the dev server. Comment out or remove to disable.
-  if($server==$dev_host or ((!empty($alternate_local_server_name) and  $server == $alternate_local_server_name))) {
-    ini_set('display_errors', true);
-  }
 $response = '';
 session_start();
 function get_response($path){
@@ -37,7 +38,14 @@ if(isset($_REQUEST['say'])) {
 [user_name]: [usersay]<br />
 [bot_name]: [botsay]<br />
 endResponse;
-  $send = "http://".$_SERVER['HTTP_HOST']."/programov2/chatbot/conversation_start.php?say=$say&convo_id=$convo_id&bot_id=$bot_id&format=$format";
+
+  $thisFileURL = $_SERVER['PHP_SELF'];
+  $chatbotURLpath = str_replace('/gui/xml/index.php', '/chatbot',$thisFileURL);
+  define("CHATBOT_URL_PATH",$chatbotURLpath);
+
+  $send = "http://".$_SERVER['HTTP_HOST']. CHATBOT_URL_PATH . "/conversation_start.php?say=$say&convo_id=$convo_id&bot_id=$bot_id&format=$format";
+  $X = file_put_contents('URL.txt', "$send\r\n",FILE_APPEND);
+#die();
   $sXML = trim(get_response($send));
   /*
   $response = htmlentities($sXML);

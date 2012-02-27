@@ -35,7 +35,6 @@
 
   define("_INC_PATH_",_BASE_DIR_.$path_separator);
   define("_ADMIN_PATH_",_BASE_DIR_."admin".$path_separator);
-  define("_GLOBAL_PATH_",_BASE_DIR_."global".$path_separator);
   define("_BOTCORE_PATH_",_BASE_DIR_."chatbot".$path_separator."core".$path_separator);
   define("_AIMLPHP_PATH_",_BASE_DIR_."chatbot".$path_separator."aiml_to_php".$path_separator);
   define("_LIB_PATH_",_BASE_DIR_."library".$path_separator);
@@ -43,6 +42,8 @@
   define("_CONF_PATH_",_BASE_DIR_."config".$path_separator);
   define("_DEBUG_PATH_",_BASE_DIR_."chatbot".$path_separator."debug".$path_separator);
   define("_INSTALL_PATH_",_BASE_DIR_.$path_separator."install".$path_separator);
+
+  define("UNKNOWN_USER",'Stranger'); // This is what the script uses if the user's name is unknown.
 
 //------------------------------------------------------------------------
 // server name

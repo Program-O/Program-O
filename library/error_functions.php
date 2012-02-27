@@ -176,6 +176,9 @@ function writefile_debug($array)
 	
 	
 	$file = print_r($array,true);
+    if (DIRECTORY_SEPARATOR == '\\') {
+      $file = str_replace("\n", "\r\n", $file);
+    }
 	
 	if(isset($array['conversation']))
 	{
@@ -265,5 +268,16 @@ function outputDebug($fileName, $functionName, $line, $info) {
 	print "<br/>----------------------------------------------------";
 }
 
+  function SQL_Error($errNum, $file = 'unknown', $function = 'unknown', $line = 'unknown') {
+    $msg = "There's a problem with your Program O installation. Please run the <a href=\"../install/\">install script</a> to correct the problem.<br>\n";
+    switch ($errNum) {
+      case '1146':
+      $msg .= "The database and/or table used in the config file doesn't exist.<br>\n";
+      break;
+      default:
+      $msg = "Error number $errNum!<br>\n";
+    }
+    return $msg;
+  }
 
 ?>

@@ -10,16 +10,17 @@
   ini_set('memory_limit','128M');
   ini_set('max_execution_time','0');
   $myPost = print_r($_POST, true);
-  #$msg = "<pre>$myPost</pre>";
+  #$msg = "<pre>$myPost</pre><br>\n";
   #if (!empty($_POST)) die ("<pre>\n Post Vars:\n$myPost\n</pre>\n");
 
   $uname = '';
   $action = (isset($_POST['action'])) ? ucfirst(strtolower($_POST['action'])) : 'Add';
   if (!empty($_POST)) {
     $msg = save($action);
-    $action = 'Add';
+    #$action = ($action == 'editfromlist') ? 'Edit' : $action;
   }
-  $id = (isset($_POST['id'])) ? $_POST['id'] : getNextID();
+
+  $id = (isset($_POST['id']) and $action != 'Add') ? $_POST['id'] : getNextID();
   $id = ($id <= 0) ? getNextID() : $id;
   if (isset($_POST['memberSelect'])) {
     $id = $_POST['memberSelect'];
@@ -108,27 +109,42 @@ endScript;
   }
 
   function save($action) {
-    if (!isset($_POST['uname']) or !isset($_POST['pword']) or !isset($_POST['pwordConfirm'])) return 'You left something out!';
-    $id = $_POST['id'];
-    $uname = $_POST['uname'];
-    $pword1 = $_POST['pword'];
-    $pword2 = $_POST['pwordConfirm'];
-    if ($action != 'Delete' and ($pword1 != $pword2)) return 'The passwords don\'t match!';
-    $pword = md5($pword1);
+    global $dbn, $action;
+    #return 'action = ' . $action;
+    if (isset($_POST['memberSelect'])) {
+      $id = $_POST['memberSelect'];
+    }
+    else {
+      if (!isset($_POST['uname']) or !isset($_POST['pword']) or !isset($_POST['pwordConfirm'])) return 'You left something out!';
+      $id = $_POST['id'];
+      $uname = $_POST['uname'];
+      $pword1 = $_POST['pword'];
+      $pword2 = $_POST['pwordConfirm'];
+      $pword = md5($pword1);
+      if ($action != 'Delete' and ($pword1 != $pword2)) return 'The passwords don\'t match!';
+    }
     switch ($action) {
       case 'Add':
-      $sql = "insert into myprogramo (id, uname, pword, lastip, lastlogin) values (null, '$uname', '$pword','', CURRENT_TIMESTAMP);";
+      $ip = $_SERVER['REMOTE_HOST'];
+      $sql = "insert into myprogramo (id, uname, pword, lastip, lastlogin) values (null, '$uname', '$pword','$ip', CURRENT_TIMESTAMP);";
       $out = "Account for $uname successfully added!";
       break;
       case 'Delete':
-      $sql = "DELETE FROM `pgov2_db1`.`myprogramo` WHERE `myprogramo`.`id` = $id LIMIT 1";
+      $action = 'Add';
+      $sql = "DELETE FROM `$dbn`.`myprogramo` WHERE `myprogramo`.`id` = $id LIMIT 1";
       $out = "Account for $uname successfully deleted!";
       break;
-      default:
+      case 'Edit':
+      $action = 'Add';
       $sql = "update myprogramo set uname = '$uname', pword = '$pword' where id = $id;";
       $out = "Account for $uname successfully updated!";
+      break;
+      default:
+      $action = 'Edit';
+      $sql = '';
+      $out = '';
     }
-    $x = updateDB($sql);
+    $x = (!empty($sql)) ? updateDB($sql) : '';
     #return "action = $action<br />\n SQL = $sql";
     return $out;
   }

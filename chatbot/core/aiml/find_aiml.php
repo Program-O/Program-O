@@ -572,8 +572,7 @@ function find_aiml_matches($convoArr){
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql",2);
 
-    $x = file_put_contents('sql.txt', $sql);
-	$result = db_query($sql,$con);		
+	$result = db_query($sql,$con);
 		
 	if(($result)&&(mysql_num_rows($result)>0)){
 		runDebug( __FILE__, __FUNCTION__, __LINE__, "FOUND: '".mysql_num_rows($result)."' potential AIML matches",1);	

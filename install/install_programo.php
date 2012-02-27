@@ -48,7 +48,6 @@ switch ($myHost) {
 }
 $PHP_SELF = $_SERVER['PHP_SELF']; # search params for start and end of sections
 
-$config_template = file_get_contents('../config/global_config.tpl');
 $replTagsArray = file('../install/config_template_tags.dat', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 $replVarsArray = array();
 foreach ($replTagsArray as $value) {

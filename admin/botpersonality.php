@@ -190,11 +190,8 @@ function updateBot() {
       $updateSQL .= sprintf("WHEN '%s' THEN '%s' \n", $name, $value);
     }
     $updateSQL .= "END WHERE `id` IN ($changesText);";
-    #die ("<pre>\nupdate SQL = \n$updateSQL\n</pre><br />\n");
     $saveSQL = str_replace("\n", "\r\n", $updateSQL);
-    $x = file_put_contents('sql.txt', "$saveSQL\r\n\r\n", FILE_APPEND);
     $result = mysql_query($updateSQL, $dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />SQL:<br /><pre>\n$updateSQL\n<br />\n</pre>\n");
-    #die("result = $result<br />\n error = |" . mysql_error($link) . "|\nSQL = $updateSQL<br />\n");
     if (!$result) $msg = 'Error updating bot.';
     $msg = (empty($msg)) ? 'Bot personality updated.' : $msg;
   }
