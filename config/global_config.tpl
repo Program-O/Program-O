@@ -71,8 +71,6 @@
     // Development server settings
     //------------------------------------------------------------------------  
       $time_zone_locale = "[lsTZ]"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-      $host = "[localhost]";  //the localhost name
-    
         $dbh    = "[local_dbh]";  # dev remote server location
         $dbPort = "[local_dbPort]";    # dev database name/prefix
         $dbn    = "[local_dbn]";    # dev database name/prefix
@@ -155,7 +153,6 @@
     // LIVE server settings
     //------------------------------------------------------------------------  
       $time_zone_locale = "[rsTZ]"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-      $host = "[remotehost]";  //the localhost name
       $dbh = "[remote_dbh]";
       $dbPort = "[remote_dbPort]";
       $dbn = "[remote_dbn]";

@@ -72,8 +72,6 @@
     // Development server settings
     //------------------------------------------------------------------------  
       $time_zone_locale = "America/Los_Angeles"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-      $host = "";  //the localhost name
-    
         $dbh    = "localhost";  # dev remote server location
         $dbPort = "3306";    # dev database name/prefix
         $dbn    = "morgaine";    # dev database name/prefix
@@ -156,7 +154,6 @@
     // LIVE server settings
     //------------------------------------------------------------------------  
       $time_zone_locale = "America/Los_Angeles"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-      $host = "";  //the localhost name
       $dbh = "h50mysql91.secureserver.net";
       $dbPort = "3306";
       $dbn = "gccpchat";
