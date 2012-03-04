@@ -266,7 +266,7 @@ endFooter;
                                ),
                          array(
                                '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="http://www.program-o.com/"',
+                               '[linkHref]' => ' href="'.NEWS_URL.'"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="Get the latest news from the Program O website"',
                                '[linkTitle]' => ' title="Get the latest news from the Program O website"',
@@ -298,7 +298,7 @@ endFooter;
                                ),
                          array(
                                '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="'.SUP_URL.'"',
+                               '[linkHref]' => ' href="./?page=support"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="Get support for Program O"',
                                '[linkTitle]' => ' title="Get support for Program O"',
@@ -403,7 +403,7 @@ endFooter;
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Run a demo version of your bot"',
                        '[linkTitle]' => ' title="Run a demo version of your bot"',
-                       '[linkLabel]' => 'Demo Chat'
+                       '[linkLabel]' => 'Test Your Bot'
                  ),
                  array(
                        '[linkClass]' => '',
@@ -433,5 +433,37 @@ endFooter;
     return $out;
   }
 
+  function getRSS($feed = 'RSS') {
+    global $template;
+    switch ($feed) {
+      case 'support':
+      $feedURL = SUP_URL;
+      break;
+      default:
+      $feedURL = RSS_URL;
+    }
+    $out = '';
+    if (function_exists('curl_init')) {
+      $ch = curl_init($feedURL);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_HEADER, 0);
+      $data = curl_exec($ch);
+      curl_close($ch);
+      $rss = new SimpleXmlElement($data, LIBXML_NOCDATA);
+      if($rss) {
+        $items = $rss->channel->item;
+          foreach ($items as $item) {
+            $title = $item->title;
+            $link = $item->link;
+            $published_on = $item->pubDate;
+            $description = $item->description;
+            $out .= "<h3><a href=\"$link\">$title</a></h3>\n";
+            $out .= "<p>$description</p>";
+          }
+        }
+    }
+    else $out = 'RSS Feed not available';
+    return $out;
+  }
 
 ?>

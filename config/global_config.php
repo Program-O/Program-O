@@ -239,9 +239,11 @@
 // Set Program O Website URLs
 //------------------------------------------------------------------------
 
-  define('RSS_URL', 'http://www.program-o.com/ns/feed/rss/');
-  define('FAQ_URL', 'http://www.program-o.com/ns/faq/');
-  define('SUP_URL', 'http://www.program-o.com/ns/feed/Support/');
+  define('RSS_URL', 'http://blog.program-o.com/feed/');
+  define('FAQ_URL', 'http://www.program-o.com/faqpage/');
+  define('NEWS_URL', 'http://blog.program-o.com/category/program-o-2/program-o-news/');
+  define('SUP_URL', 'http://forum.program-o.com/syndication.php/');
+  define('FORUM_URL', 'http://forum.program-o.com/');
   define('BUGS_EMAIL', 'bugs@program-o.com');
 
 //------------------------------------------------------------------------
