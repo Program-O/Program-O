@@ -73,34 +73,32 @@ function runDebug($fileName, $functionName, $line, $info, $level=3) {
 	global $debugArr,$srai_iterations,$debuglevel,$quickdebug,$writetotemp;
 	if(empty($functionName)) $functionName = "Called outside of function";
 	//only log the debug info if the info level is equal to or less than the chosen level
-	if($level<=$debuglevel){
-		
+	if($level<=$debuglevel)
+    {
 		if($quickdebug==1)
 		{
 			outputDebug($fileName, $functionName, $line, $info);
 		}
-		
+
 		list($usec, $sec) = explode(" ",microtime());
-		
-	
-		
-		
+
 		//build timestamp index for the debug array
-		$index = date("d-m-Y H:i:s").ltrim($usec, '0');	
+		$index = date("d-m-Y H:i:s").ltrim($usec, '0');
 		//add to array
 		$debugArr[$index]['fileName']=basename($fileName);
 		$debugArr[$index]['functionName']=$functionName;
 		$debugArr[$index]['line']=$line;
 		$debugArr[$index]['info']=$info;
 		
-		if($srai_iterations<1){
+		if($srai_iterations<1)
+        {
 			$sr_it = 0;}
 		else {
 			$sr_it = $srai_iterations;}
 		
 		$debugArr[$index]['srai_iteration']=$sr_it;
 		
-		//if we are logging to file then build a log file this will be overwriten if the program completes
+		//if we are logging to file then build a log file. This will be overwriten if the program completes
 		if($writetotemp==1)
 		{	
 			writefile_debug($debugArr);
@@ -176,6 +174,9 @@ function writefile_debug($array)
 	
 	
 	$file = print_r($array,true);
+    if (DIRECTORY_SEPARATOR == '\\') {
+      $file = str_replace("\n", "\r\n", $file);
+    }
 	
 	if(isset($array['conversation']))
 	{
@@ -265,5 +266,30 @@ function outputDebug($fileName, $functionName, $line, $info) {
 	print "<br/>----------------------------------------------------";
 }
 
+  function SQL_Error($errNum, $file = 'unknown', $function = 'unknown', $line = 'unknown') {
+    $msg = "There's a problem with your Program O installation. Please run the <a href=\"../install/\">install script</a> to correct the problem.<br>\n";
+    switch ($errNum) {
+      case '1146':
+      $msg .= "The database and/or table used in the config file doesn't exist.<br>\n";
+      break;
+      default:
+      $msg = "Error number $errNum!<br>\n";
+    }
+    return $msg;
+  }
+
+  function save_file($file, $content, $append = false) {
+    if (function_exists('file_put_contents')) {
+      $x = file_put_contents($file, $content, $append);
+    }
+    else {
+      $fileMode = ($append === true) ? "a" : "w";
+      $fh = fopen($file, $fileMode)or die("Can't open the file!");
+      $cLen = strlen($content);
+      fwrite($fh, $content, $cLen);
+      fclose($fh);
+    }
+    return 1;
+  }
 
 ?>

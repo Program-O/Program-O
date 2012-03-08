@@ -144,7 +144,7 @@ endForm;
     $cba = checkBadAddress($email);
     $cbip = checkBadIP();
 	if ($email != "" and $name != "" and $subject != "" and $cba == 0 and $cbip == 0 and $message != "" and ($captcha == $capKey)) {
-      $toAddr = "dmorton@geekcavecreations.com, bugs@program-o.com";
+      $toAddr = "dmorton@geekcavecreations.com, " . BUGS_EMAIL;
       $fromAddr = "$email";
       $header = "From: $name <$email>";
       $result = mail ($toAddr, $subject, $message, $header);
@@ -154,7 +154,7 @@ endForm;
       With your help, we can make Program O even better than ever!<br />
       </p>
       <p style="text-align:center">
-        <a href="$homePage">Home</a>
+        <a href="./">Home</a>
       </p>
 endThanx;
     }

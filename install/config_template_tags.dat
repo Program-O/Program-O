@@ -7,6 +7,7 @@
 [default_bot_id]
 [default_format]
 [default_pattern]
+[default_use_aiml_code]
 [default_update_aiml_code]
 [default_conversation_lines]
 [default_remember_up_to]

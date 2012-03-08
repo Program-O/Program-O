@@ -39,13 +39,13 @@ function get_conversation_to_display($convoArr)
 	}else{
 		$limit = "";}
 	
-	$sql = "SELECT * FROM `$dbn`.`conversation_log` 
+	$sql = "SELECT * FROM `$dbn`.`conversation_log`
 		WHERE 
 		`userid` = '".$convoArr['conversation']['user_id']."'
 		AND `bot_id` = '".$convoArr['conversation']['bot_id']."'
 		ORDER BY id DESC $limit ";
-		
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql",2);	
+		$x = save_file('conversationLogSQL.txt', "SQL = \r\n$sql");
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql",2);
 		
 		$result = db_query($sql,$con);
 

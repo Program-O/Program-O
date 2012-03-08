@@ -90,7 +90,7 @@ function eval_aiml_to_php_code(&$convoArr,$evalthis){
 **/	
 function run_aiml_to_php(&$convoArr,$evalthis){
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Evaluating Stored PHP Code from the Database",1);
 	global $botsay;
 	global $error_response;
 

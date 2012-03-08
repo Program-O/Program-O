@@ -8,7 +8,7 @@
     $emotesPath = "./chatbot/addons/parseBBCode/images/";                                           // Define the location of the emote image
     foreach ($smilieArray as $line) {                                   // Iterate through the list
       $line = rtrim($line);                                             // Trim off excess line feeds and whitespace
-      list($symbol, $fname, $width, $height, $alt) = split(", ",$line); // Seperate the various values from the list
+      list($symbol, $fname, $width, $height, $alt) = explode(", ",$line); // Seperate the various values from the list
       $alt = rtrim($alt);                                               // Just to make sure the line is clean
       //$alt = str_replace('<', '&lt;', $alt);                            // There has to be an oddball, doesn't there?
       $tmpAlt = substr($alt,0,1) . '&#' . ord(substr($alt,1,1)) . substr($alt,2);

@@ -88,6 +88,8 @@ function getSelectedBot() {
   $sel_no = "";
   $sel_fyes = "";
   $sel_fno = "";
+  $sel_fuyes = "";
+  $sel_funo = "";
   $ds_ = "";
   $ds_i = "";
   $ds_ii = "";
@@ -133,6 +135,12 @@ function getSelectedBot() {
       elseif($bot_format=="json") {
         $sel_json = " SELECTED=SELECTED";
       }
+      if($bot_use_aiml_code=="1") {
+        $sel_fuyes = " SELECTED=SELECTED";
+      }
+      elseif($bot_use_aiml_code=="0") {
+        $sel_funo = " SELECTED=SELECTED";
+      }
       if($bot_update_aiml_code=="1") {
         $sel_fyes = " SELECTED=SELECTED";
       }
@@ -165,6 +173,14 @@ function getSelectedBot() {
       }
       $action = "update";
     }
+    $debugemail_0 = $debugemail_1 = '';
+    switch ($bot_debugemail) {
+      case 0:
+      $debugemail_0 = 'checked="checked"';
+      break;
+      case 1:
+      $debugemail_1 = 'checked="checked"';
+    }
     mysql_close($dbconn);
   }
   else {
@@ -175,6 +191,7 @@ function getSelectedBot() {
     $bot_active = "";
     $action = "add";
     $bot_format = "";
+    $bot_use_aiml_code = "";
     $bot_update_aiml_code = "";
     $bot_conversation_lines = "";
     $bot_remember_up_to = "";
@@ -186,8 +203,9 @@ function getSelectedBot() {
   $searches = array(
     '[bot_id]','[bot_name]','[bot_desc]','[parent_options]','[sel_yes]','[sel_no]',
     '[sel_html]','[sel_xml]','[sel_json]','[sel_session]','[sel_db]','[sel_fyes]',
-    '[sel_fno]','[bot_conversation_lines]','[bot_remember_up_to]','[bot_debugemail]',
-    '[dm_]','[dm_i]','[dm_ii]','[dm_iii]','[ds_]','[ds_i]','[ds_ii]','[ds_iii]','[action]'
+    '[sel_fno]','[sel_fuyes]','[sel_funo]','[bot_conversation_lines]','[bot_remember_up_to]',
+    '[bot_debugemail]','[dm_]','[dm_i]','[dm_ii]','[dm_iii]','[ds_]','[ds_i]','[ds_ii]',
+    '[ds_iii]','[action]','[debugemail_0]','[debugemail_1]'
   );
   foreach ($searches as $search) {
     $replace = str_replace('[', '', $search);
@@ -234,8 +252,8 @@ function addBot() {
   }
   $dbconn = db_open();
   $sql = <<<endSQL
-INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `update_aiml_code`)
-VALUES (NULL,'$bot_name','$bot_desc','$bot_active','$bot_parent_id','$format','$save_state','$conversation_lines','$remember_up_to','$debugemail','$debugshow','$debugmode','$default_aiml_pattern','$update_aiml_code');
+INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `use_aiml_code`, `update_aiml_code`)
+VALUES (NULL,'$bot_name','$bot_desc','$bot_active','$bot_parent_id','$format','$save_state','$conversation_lines','$remember_up_to','$debugemail','$debugshow','$debugmode','$default_aiml_pattern','$use_aiml_code','$update_aiml_code');
 endSQL;
   $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
 

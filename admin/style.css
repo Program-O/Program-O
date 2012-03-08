@@ -63,11 +63,12 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
 .narrow { padding-left: 0; float: left;width: 25%;text-align: left; border: 1px dashed blue;}
 .errMsg {
   position: absolute;
-  top: 25px;
-  left: 25px;
-  width: 250px;
+  top: 10px;
+  left: 10px;
+  min-width: 250px;
+  width: 30%;
   background-color: #FFF45A;
-  background-color: transparent;
+  background-color: #FCC; /*transparent;*/
   color: black;
   vertical-align: middle;
   text-align: center;

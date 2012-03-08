@@ -49,7 +49,7 @@
 //------------------------------------------------------------------------
   $server = strtolower($_SERVER['HTTP_HOST']); //leave this to auto detect
   $dev_host = "localhost"; //the name of your dev server
-  $alternate_local_server_name = ""; // Use if you test on a local network - the network name of the server computer.
+  $alternate_local_server_name = "programo.local"; // Use if you test on a local network - the network name of the server computer.
 //------------------------------------------------------------------------
 // parent bot
 // the parent bot is used to find aiml matches if no match is found for the current bot
@@ -71,19 +71,17 @@
     // Development server settings
     //------------------------------------------------------------------------  
       $time_zone_locale = "America/Los_Angeles"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-      $host = "";  //the localhost name
-    
-        $dbh    = "";  # dev remote server location
+        $dbh    = "localhost";  # dev remote server location
         $dbPort = "3306";    # dev database name/prefix
-        $dbn    = "";    # dev database name/prefix
-        $dbu    = "";       # dev database username
-        $dbp    = "";  # dev database password
+        $dbn    = "morgaine";    # dev database name/prefix
+        $dbu    = "Dave";       # dev database username
+        $dbp    = "411693055";  # dev database password
     
         //these are the admin DB settings in case you want make the admin a different db user with more privs
-        $adm_dbh = "";
-        $adm_dbn = "";
-        $adm_dbu = "";
-        $adm_dbp = "";
+        $adm_dbh = "localhost";
+        $adm_dbn = "morgaine";
+        $adm_dbu = "Dave";
+        $adm_dbp = "411693055";
         
     //------------------------------------------------------------------------
     // Default bot settings
@@ -98,10 +96,11 @@
         $default_bot_id = 1;
         $default_format = "html";
         $default_pattern = "*";
-        $default_update_aiml_code = 1;
-        $default_conversation_lines = 10;
+        $default_use_aiml_code = '';
+        $default_update_aiml_code = '';
+        $default_conversation_lines = 5;
         $default_remember_up_to = 10;
-        $default_debugemail = "";
+        $default_debugemail = "dmorton@geekcavecreations.com";
         /* 
          * $default_debugshow - The level of messages to show the user
          * 0=none, 
@@ -155,19 +154,18 @@
     // LIVE server settings
     //------------------------------------------------------------------------  
       $time_zone_locale = "America/Los_Angeles"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-      $host = "";  //the localhost name
-      $dbh = "";
+      $dbh = "Required";
       $dbPort = "3306";
-      $dbn = "";
-      $dbu = "";
-      $dbp = "";
+      $dbn = "Required";
+      $dbu = "Required";
+      $dbp = "Required";
 
 
         //these are the admin DB settings in case you want make the admin a different db user with more privs
-        $adm_dbh = "";
-        $adm_dbn = "";
-        $adm_dbu = "";
-        $adm_dbp = "";
+        $adm_dbh = "Required";
+        $adm_dbn = "Required";
+        $adm_dbu = "Dave";
+        $adm_dbp = "411693055";
         
     //------------------------------------------------------------------------
     // Default bot settings
@@ -182,10 +180,11 @@
         $default_bot_id = 1;
         $default_format = "html";
         $default_pattern = "*";
-        $default_update_aiml_code = 1;
-        $default_conversation_lines = 10;
+        $default_use_aiml_code = '';
+        $default_update_aiml_code = '';
+        $default_conversation_lines = 5;
         $default_remember_up_to = 10;
-        $default_debugemail = "";
+        $default_debugemail = "[debugemail]";
         /* 
          * $default_debugshow - The level of messages to show the user 
          * 0=none, 
@@ -203,7 +202,7 @@
          * 3 = email each conversation line (not recommended)
          */
         $default_debugmode = 1;
-        $default_save_state = "session";
+        $default_save_state = "[save_state]";
         $error_response = "Internal error detected. Please inform my botmaster.";
                 
     //------------------------------------------------------------------------
@@ -235,7 +234,16 @@
 //------------------------------------------------------------------------
 // Set Misc Data
 //------------------------------------------------------------------------
-  $botmaster_name = "";
+  $botmaster_name = "Dave Morton";
+
+//------------------------------------------------------------------------
+// Set Program O Website URLs
+//------------------------------------------------------------------------
+
+  define('RSS_URL', 'http://www.program-o.com/ns/feed/rss/');
+  define('FAQ_URL', 'http://www.program-o.com/ns/faq/');
+  define('SUP_URL', 'http://www.program-o.com/ns/feed/Support/');
+  define('BUGS_EMAIL', 'bugs@program-o.com');
 
 //------------------------------------------------------------------------
 //
@@ -291,4 +299,5 @@
 // Set Script Installation as completed
 //------------------------------------------------------------------------
 
+  define('SCRIPT_INSTALLED', true);
 ?>

@@ -32,7 +32,7 @@ one line, to the end of the file colors.dat. For example:
 Taupe, #483C32
 HunterGreen, #355E3B
 
-Note that any color names that normally have spaces should use Camelized Text, as seen in example #2,
+Note that any color names that normally have spaces MUST use Camelized Text, as seen in example #2,
 above. There are 147 color entries in the default version of colors.dat - these colors are the only
 ones that are supported in every current web browser, so use care when adding a named color, as it
 may not turn out exactly the way you intend. It won't hurt anything, but some browsers may display a
@@ -50,3 +50,9 @@ Links:
 [url=http://example.com/]my page[/url] - Displays a link with the text as "my page".
 [link]http://example.com/[/link] - Displays a link with the link text being the same as the web address.
 [link=http://example.com/]my page[/link] - Displays a link with the text as "my page".
+
+
+Lastly:
+The BBCode input parser is currently experimental in nature, and is quite likely to "break" the user's input
+before it goes to the interpreter, so it's use is NOT recommended at this time. Plans to add a function to
+strip the BBCode tags from the user's input are in the works, but have not been designed yet.

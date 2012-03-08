@@ -71,8 +71,6 @@
     // Development server settings
     //------------------------------------------------------------------------  
       $time_zone_locale = "[lsTZ]"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-      $host = "[localhost]";  //the localhost name
-    
         $dbh    = "[local_dbh]";  # dev remote server location
         $dbPort = "[local_dbPort]";    # dev database name/prefix
         $dbn    = "[local_dbn]";    # dev database name/prefix
@@ -98,7 +96,8 @@
         $default_bot_id = [default_bot_id];
         $default_format = "[default_format]";
         $default_pattern = "[default_pattern]";
-        $default_update_aiml_code = 1;
+        $default_use_aiml_code = '[default_use_aiml_code]';
+        $default_update_aiml_code = '[default_update_aiml_code]';
         $default_conversation_lines = [default_conversation_lines];
         $default_remember_up_to = [default_remember_up_to];
         $default_debugemail = "[default_debugemail]";
@@ -155,7 +154,6 @@
     // LIVE server settings
     //------------------------------------------------------------------------  
       $time_zone_locale = "[rsTZ]"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-      $host = "[remotehost]";  //the localhost name
       $dbh = "[remote_dbh]";
       $dbPort = "[remote_dbPort]";
       $dbn = "[remote_dbn]";
@@ -182,7 +180,8 @@
         $default_bot_id = [default_bot_id];
         $default_format = "[default_format]";
         $default_pattern = "[default_pattern]";
-        $default_update_aiml_code = 1;
+        $default_use_aiml_code = '[default_use_aiml_code]';
+        $default_update_aiml_code = '[default_update_aiml_code]';
         $default_conversation_lines = [default_conversation_lines];
         $default_remember_up_to = [default_remember_up_to];
         $default_debugemail = "[debugemail]";
@@ -236,6 +235,15 @@
 // Set Misc Data
 //------------------------------------------------------------------------
   $botmaster_name = "[botmaster_name]";
+
+//------------------------------------------------------------------------
+// Set Program O Website URLs
+//------------------------------------------------------------------------
+
+  define('RSS_URL', 'http://www.program-o.com/ns/feed/rss/');
+  define('FAQ_URL', 'http://www.program-o.com/ns/faq/');
+  define('SUP_URL', 'http://www.program-o.com/ns/feed/Support/');
+  define('BUGS_EMAIL', 'bugs@program-o.com');
 
 //------------------------------------------------------------------------
 //

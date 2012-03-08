@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `bots` (
   bot_active int(11) NOT NULL DEFAULT '1',
   bot_parent_id int(11) NOT NULL DEFAULT '0',
   format varchar(10) NOT NULL DEFAULT 'html',
+  use_aiml_code INT( 11 ) NULL DEFAULT '1',
   update_aiml_code int(11) NOT NULL DEFAULT '1',
   save_state enum('session','database') NOT NULL DEFAULT 'session',
   conversation_lines int(11) NOT NULL DEFAULT '7',
