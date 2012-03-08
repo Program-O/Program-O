@@ -326,37 +326,10 @@ function get_convo_var($convoArr,$index_1,$index_2="",$index_3="",$index_4=""){
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4]",1);
 	
-	if($index_2=="") {
-		$index_2 = "NULLLLLLLLL"; }	
-	if($index_3=="") {
-		$index_3 = $offset; }
-	if($index_4=="") {
-		$index_4 = $offset; }	
+	if($index_2=="")  $index_2 = "~NULL~";
+	if($index_3=="") $index_3 = $offset;
+	if($index_4=="") $index_4 = $offset;
 		
-	/*if(isset($convoArr[$index_1][$index_2][$index_3][$index_4])){
-		$value = $convoArr[$index_1][$index_2][$index_3][$index_4];
-	}
-	elseif(isset($convoArr[$index_1][$index_2][$index_3])){
-		$value = $convoArr[$index_1][$index_2][$index_3];
-	}		
-	elseif(isset($convoArr[$index_1][$index_2])){
-		$value = $convoArr[$index_1][$index_2];
-	}
-	elseif(isset($convoArr[$index_1][$index_3][$index_4])){
-		$value = $convoArr[$index_1][$index_3][$index_4];
-	}
-	elseif(isset($convoArr[$index_1][$index_3])){
-		$value = $convoArr[$index_1][$index_3];
-	}	
-	elseif(isset($convoArr[$index_1])){
-		$value = $convoArr[$index_1];
-	}	
-	else
-	{
-		$value = "";
-	}*/
-	
-	
 	if((isset($convoArr[$index_1]))&&(!is_array($convoArr[$index_1]))){
 		$value = $convoArr[$index_1];
 	}	
@@ -597,7 +570,7 @@ function find_aiml_matches($convoArr){
 		$allrows[$i]['thatpattern'] = "";
 		$allrows[$i]['template'] = "<say>$error_response</say>";
 		$allrows[$i]['topic'] = "";
-		$allrows[$i]['aiml_to_php'] = "\$botsay=\"$error_response\"";	
+		$allrows[$i]['aiml_to_php'] = "\$botsay=\"$error_response\"";
 	}
 	return $allrows;			
 }

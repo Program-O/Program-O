@@ -25,6 +25,7 @@ function aiml_to_phpfunctions($convoArr)
 	
 	//extra debug info
 	$msg = "";
+    $useStoredPHP = $convoArr['conversation']['use_aiml_code'];
     $uac = $convoArr['conversation']['update_aiml_code'];
     #$uac = 0;
 	if($convoArr['aiml']['aiml_to_php']==""){
@@ -32,15 +33,20 @@ function aiml_to_phpfunctions($convoArr)
 	} else {
 		$msg .= " php code exists,";
 	}
+	if($useStoredPHP==1) {
+		$msg .= " Use stored php code is set to YES($useStoredPHP)";
+	} else {
+		$msg .= " Use stored php code is set to NO($useStoredPHP)";
+	}
 	if($uac==1) {
 		$msg .= " update aiml to php is set to YES($uac)";
 	} else {
 		$msg .= " update aiml to php is set to NO($uac)";
-	}	
+	}
 
 	//THIS MAY already have the code contained in the db in which case we can skip all of this
 	//UNLESS - update_aiml_code is set to 1 this means we want to re-write it each time
-	if(($convoArr['aiml']['aiml_to_php']!="")&&($uac==0)){
+	if(($convoArr['aiml']['aiml_to_php']!="") and ($uac==0) and ($useStoredPHP == 1)){
 
 		runDebug( __FILE__, __FUNCTION__, __LINE__, "Using existing AIML to PHP code - $msg",1);
 		$parsed_template = get_convo_var($convoArr,'aiml','aiml_to_php');
@@ -50,6 +56,7 @@ function aiml_to_phpfunctions($convoArr)
 			
 		//load the existing aiml template
 		$template = get_convo_var($convoArr,'aiml','template');
+
 		//make stars, apostrophes and encode foriegn chars just to make everything safe before the big replace
 		$template = str_replace("*","\*",$template);
 		$template = str_replace("'",'~apos~',$template);

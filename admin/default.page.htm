@@ -203,6 +203,17 @@ between the start and end section tags are the only parts of the template that a
               </td>
             </tr>
             <tr class="row">
+              <td><label for="use_aiml_code"><span class="label">Use Stored PHP Code from DB</span></label></td>
+              <td>
+                <span class="formw">
+                  <select name="use_aiml_code" id="use_aiml_code">
+                    <option value="1" [sel_fuyes]>yes</option>
+                    <option value="0" [sel_funo]>no</option>
+                  </select>
+                </span>
+              </td>
+            </tr>
+            <tr class="row">
               <td><label for="update_aiml_code"><span class="label">Update PHP Code in DB each turn</span></label></td>
               <td>
                 <span class="formw">
@@ -227,19 +238,6 @@ between the start and end section tags are the only parts of the template that a
                 <span class="formw">
                   <input type="radio" name="debugemail" id="debugemail_1" [debugemail_1] value="1" />Yes
                   <input type="radio" name="debugemail" id="debugemail_0" [debugemail_0] value="0" />No
-                </span>
-              </td>
-            </tr>
-            <tr class="row">
-              <td><label for="debugshow"><span class="label">Debugshow</span></label></td>
-              <td>
-                <span class="formw">
-                  <select name="debugshow" id="debugshow">
-                    <option value="0" [ds_]>source code view - show debugging in source code</option>
-                    <option value="1" [ds_i]>file log - log debugging to a file</option>
-                    <option value="2" [ds_ii]>page view - display debugging on the webpage</option>
-                    <option value="3" [ds_iii]>email each conversation line (not recommended)</option>
-                  </select>
                 </span>
               </td>
             </tr>
@@ -276,8 +274,21 @@ between the start and end section tags are the only parts of the template that a
               <input type="text"  class="fm-req" id="conversation_lines" name="conversation_lines" value="[bot_conversation_lines]">
             </span></td>
           </tr>
+            <tr class="row">
+              <td><label for="debugshow"><span class="label">Debug Output</span></label></td>
+              <td>
+                <span class="formw">
+                  <select name="debugshow" id="debugshow">
+                    <option value="0" [ds_]>source code view - show debugging in source code</option>
+                    <option value="1" [ds_i]>file log - log debugging to a file</option>
+                    <option value="2" [ds_ii]>page view - display debugging on the webpage</option>
+                    <option value="3" [ds_iii]>email each conversation line (not recommended)</option>
+                  </select>
+                </span>
+              </td>
+            </tr>
           <tr class="row">
-            <td><label for="debugmode"><span class="label">Debugmode</span></label></td>
+            <td><label for="debugmode"><span class="label">Debug Mode</span></label></td>
             <td><span class="formw">
               <select name="debugmode" id="debugmode">
                   <option value="0" [dm_]>Show no debugging</option>

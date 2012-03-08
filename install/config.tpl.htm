@@ -277,7 +277,7 @@
             </tr>
             <tr>
               <td><label for="botmaster_name"><span class="label">Your Name <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_botmaster_name"> </span></span></label></td>
-              <td><span class="formw"><input name="botmaster_name" id="botmaster_name" /></span></td>
+              <td><span class="formw"><input name="botmaster_name" id="botmaster_name" value="[botmaster_name]" /></span></td>
               <td><label for="remote_dbn"><span class="label">Remote Database Name <span style="float:right" class="helpButton" id="hb_remote_dbn"> </span></span></label></td>
               <td><span class="formw"><input name="remote_dbn" id="remote_dbn" value="[remote_dbn]" /></span></td>
             </tr>
@@ -409,7 +409,7 @@
               <div class="red bold">NOTE: </div>If you wish to use a different account
               for your Program O Admin user, then you will need to edit the configuration
               file manually. If you have any questions about this, or anything else about
-              Program O, please visit the forums at <a href="http://www.program-o.com"></a>.
+              Program O, please visit the forums at <a href="http://forum.program-o.com" target="blank">http://forum.program-o.com</a>.
             </div>
 <!-- Section Page 3 Notes End -->
 <!-- Section BotsTableForm Start -->
@@ -451,11 +451,19 @@
               </span>
             </div>
             <div class="row">
+              <label for="use_aiml_code_[bot_ID]">
+                <span class="label">Use Stored PHP Code from DB?</span>
+              </label>
+              <span class="formxw">
+                <input type="checkbox" name="use_aiml_code_[bot_ID]" id="use_aiml_code_[bot_ID]" value="1"[cur_use_aiml_code_checked] />
+              </span>
+            </div>
+            <div class="row">
               <label for="update_aiml_code_[bot_ID]">
                 <span class="label">Store PHP code in DB?</span>
               </label>
               <span class="formxw">
-                <input type="checkbox" name="update_aiml_code_[bot_ID]" id="update_aiml_code_[bot_ID]" value="1" />
+                <input type="checkbox" name="update_aiml_code_[bot_ID]" id="update_aiml_code_[bot_ID]" value="1"[cur_update_aiml_code_checked] />
               </span>
             </div>
             <div class="row">

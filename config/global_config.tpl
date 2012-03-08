@@ -96,7 +96,8 @@
         $default_bot_id = [default_bot_id];
         $default_format = "[default_format]";
         $default_pattern = "[default_pattern]";
-        $default_update_aiml_code = 1;
+        $default_use_aiml_code = '[default_use_aiml_code]';
+        $default_update_aiml_code = '[default_update_aiml_code]';
         $default_conversation_lines = [default_conversation_lines];
         $default_remember_up_to = [default_remember_up_to];
         $default_debugemail = "[default_debugemail]";
@@ -179,7 +180,8 @@
         $default_bot_id = [default_bot_id];
         $default_format = "[default_format]";
         $default_pattern = "[default_pattern]";
-        $default_update_aiml_code = 1;
+        $default_use_aiml_code = '[default_use_aiml_code]';
+        $default_update_aiml_code = '[default_update_aiml_code]';
         $default_conversation_lines = [default_conversation_lines];
         $default_remember_up_to = [default_remember_up_to];
         $default_debugemail = "[debugemail]";

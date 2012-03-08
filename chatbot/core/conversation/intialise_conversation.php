@@ -303,6 +303,7 @@ function load_bot_config($convoArr){
 	if(($result)&&(db_res_count($result)>0)){
 		while($row=mysql_fetch_array($result)){
 			//$convoArr['conversation']['format']=$row['format']; //set in the form
+			$convoArr['conversation']['use_aiml_code']=$row['use_aiml_code'];
 			$convoArr['conversation']['update_aiml_code']=$row['update_aiml_code'];
 			$convoArr['conversation']['conversation_lines']=$row['conversation_lines'];
 			$convoArr['conversation']['remember_up_to']=$row['remember_up_to'];
@@ -315,6 +316,7 @@ function load_bot_config($convoArr){
 		}
 	}else{
 		//$convoArr['conversation']['format']=$default_format; //set in the form
+		$convoArr['conversation']['use_aiml_code']=$default_use_aiml_code;
 		$convoArr['conversation']['update_aiml_code']=$default_update_aiml_code;
 		$convoArr['conversation']['conversation_lines']=$default_conversation_lines;
 		$convoArr['conversation']['remember_up_to']=$default_remember_up_to;

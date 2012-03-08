@@ -152,14 +152,14 @@ function save($page) {
       $addScriptInfo = 0;
       if (isset($_SESSION['botNames'])) {
         $botNameList = $_SESSION['botNames'];
-        $nameArray = split("\n", $botNameList);
+        $nameArray = explode("\n", $botNameList);
         $flippedNameArray = array_flip($nameArray);
         $defaultBotID = $_SESSION['default_bot_id'];
       }
       $botArrayTemplate = '$botNames = array(';
       foreach ($replVarsArray as $key => $value) {
         if ($key == 'botNames') {
-          $nameList = split("\n", $value);
+          $nameList = explode("\n", $value);
           $listCount = 1;
           foreach ($nameList as $botName) {
             $botName = trim($botName);
@@ -194,7 +194,7 @@ function getMain($page, $page_template) {
   }
   $numBots = $_SESSION['bot_count'];
   $sql_template = <<<endSQL
-INSERT IGNORE INTO `bots` (`bot_id`, `bot_name` , `bot_desc` , `bot_active` , `bot_parent_id` , `format` , `save_state` , `conversation_lines` , `remember_up_to` , `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern` , `update_aiml_code`) VALUES ([cur_bot_ID], '[cur_bot_name]', '[cur_bot_desc]', [cur_bot_active], [cur_bot_parent_id], '[cur_format]', '[cur_save_state]', [cur_conversation_lines], [cur_remember_up_to], '[cur_debugemail]',  [cur_debugshow] , [cur_debugmode] , '[cur_default_aiml_pattern]', [cur_update_aiml_code]);
+INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state` , `conversation_lines` , `remember_up_to` , `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`) VALUES ([cur_bot_ID], '[cur_bot_name]', '[cur_bot_desc]', [cur_bot_active], [cur_bot_parent_id], '[cur_format]', '[cur_save_state]', [cur_conversation_lines], [cur_remember_up_to], '[cur_debugemail]',  [cur_debugshow], [cur_debugmode], '[cur_default_aiml_pattern]', [cur_use_aiml_code], [cur_update_aiml_code]);
 endSQL;
   require_once ('../library/error_functions.php');
   require_once ('../library/db_functions.php');
@@ -206,6 +206,14 @@ endSQL;
     $sql = @str_replace('[cur_bot_active]',$_SESSION["bot_active_$loop"], $sql);
     $sql = @str_replace('[cur_bot_parent_id]',$_SESSION['default_bot_id'], $sql);
     $sql = @str_replace('[cur_format]',$_SESSION["format_$loop"], $sql);
+    if (!isset($_SESSION["use_aiml_code_$loop"])) $_SESSION["use_aiml_code_$loop"] = 0;
+    $cur_use_aiml_code_checked = ($_SESSION["use_aiml_code_$loop"] == 1) ? ' checked="checked"' : '';
+    $sql = str_replace('[cur_use_aiml_code]',$_SESSION["use_aiml_code_$loop"], $sql);
+    $sql = str_replace('[cur_use_aiml_code_checked]',$cur_use_aiml_code_checked, $sql);
+    if (!isset($_SESSION["update_aiml_code_$loop"])) $_SESSION["update_aiml_code_$loop"] = 0;
+    $cur_update_aiml_code_checked = ($_SESSION["update_aiml_code_$loop"] == 1) ? ' checked="checked"' : '';
+    $sql = str_replace('[cur_update_aiml_code]',$_SESSION["update_aiml_code_$loop"], $sql);
+    $sql = str_replace('[cur_update_aiml_code_checked]',$cur_update_aiml_code_checked, $sql);
     $sql = @str_replace('[cur_save_state]',$_SESSION["save_state_$loop"], $sql);
     $sql = @str_replace('[cur_conversation_lines]',$_SESSION["conversation_lines_$loop"], $sql);
     $sql = @str_replace('[cur_remember_up_to]',$_SESSION["remember_up_to_$loop"], $sql);
@@ -213,14 +221,12 @@ endSQL;
     $sql = str_replace('[cur_debugshow]',$_SESSION["default_debugshow"], $sql);
     $sql = str_replace('[cur_debugmode]',$_SESSION["default_debugmode"], $sql);
     $sql = str_replace('[cur_default_aiml_pattern]',$_SESSION["default_pattern"], $sql);
-    if (!isset($_SESSION["update_aiml_code_$loop"])) $_SESSION["update_aiml_code_$loop"] = 0;
-    $sql = str_replace('[cur_update_aiml_code]',$_SESSION["update_aiml_code_$loop"], $sql);
-    $x = db_query($sql, $conn) or $_SESSION['errorMessage'] = 'Could not add admin account! Error = ' . mysql_error();
+    $x = db_query($sql, $conn) or $_SESSION['errorMessage'] = 'Could not enter bot info for bot #' . $loop . '! Error = ' . mysql_error();
   }
   global $adm_dbu, $adm_dbp;
   $encrypted_adm_dbp = md5($adm_dbp);
   $cur_ip = $_SERVER['REMOTE_ADDR'];
-  $adminSQL = "insert into `myprogramo` (`id`, `uname`, `pword`, `lastip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
+  $adminSQL = "insert ignore into `myprogramo` (`id`, `uname`, `pword`, `lastip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
   $result = db_query($adminSQL, $conn) or $_SESSION['errorMessage'] = 'Could not add admin account! Error = ' . mysql_error();
   return ($result) ? getSection('InstallComplete', $page_template) : getSection('InstallError', $page_template);
 }

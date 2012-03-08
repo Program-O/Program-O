@@ -35,6 +35,7 @@
 
   define("_INC_PATH_",_BASE_DIR_.$path_separator);
   define("_ADMIN_PATH_",_BASE_DIR_."admin".$path_separator);
+  define("_GLOBAL_PATH_",_BASE_DIR_."global".$path_separator);
   define("_BOTCORE_PATH_",_BASE_DIR_."chatbot".$path_separator."core".$path_separator);
   define("_AIMLPHP_PATH_",_BASE_DIR_."chatbot".$path_separator."aiml_to_php".$path_separator);
   define("_LIB_PATH_",_BASE_DIR_."library".$path_separator);
@@ -42,8 +43,6 @@
   define("_CONF_PATH_",_BASE_DIR_."config".$path_separator);
   define("_DEBUG_PATH_",_BASE_DIR_."chatbot".$path_separator."debug".$path_separator);
   define("_INSTALL_PATH_",_BASE_DIR_.$path_separator."install".$path_separator);
-
-  define("UNKNOWN_USER",'Stranger'); // This is what the script uses if the user's name is unknown.
 
 //------------------------------------------------------------------------
 // server name
@@ -97,8 +96,9 @@
         $default_bot_id = 1;
         $default_format = "html";
         $default_pattern = "*";
-        $default_update_aiml_code = 1;
-        $default_conversation_lines = 30;
+        $default_use_aiml_code = '';
+        $default_update_aiml_code = '';
+        $default_conversation_lines = 5;
         $default_remember_up_to = 10;
         $default_debugemail = "dmorton@geekcavecreations.com";
         /* 
@@ -108,7 +108,7 @@
          * 2=error+general+sql,
          * 3=everything
          */
-        $default_debugshow = 3;
+        $default_debugshow = 0;
     
         /* 
          * $default_debugmode - How to show the debug data
@@ -154,16 +154,16 @@
     // LIVE server settings
     //------------------------------------------------------------------------  
       $time_zone_locale = "America/Los_Angeles"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-      $dbh = "h50mysql91.secureserver.net";
+      $dbh = "Required";
       $dbPort = "3306";
-      $dbn = "gccpchat";
-      $dbu = "gccpchat";
-      $dbp = "GCC6114djm";
+      $dbn = "Required";
+      $dbu = "Required";
+      $dbp = "Required";
 
 
         //these are the admin DB settings in case you want make the admin a different db user with more privs
-        $adm_dbh = "h50mysql91.secureserver.net";
-        $adm_dbn = "gccpchat";
+        $adm_dbh = "Required";
+        $adm_dbn = "Required";
         $adm_dbu = "Dave";
         $adm_dbp = "411693055";
         
@@ -180,8 +180,9 @@
         $default_bot_id = 1;
         $default_format = "html";
         $default_pattern = "*";
-        $default_update_aiml_code = 1;
-        $default_conversation_lines = 30;
+        $default_use_aiml_code = '';
+        $default_update_aiml_code = '';
+        $default_conversation_lines = 5;
         $default_remember_up_to = 10;
         $default_debugemail = "[debugemail]";
         /* 
@@ -191,7 +192,7 @@
          * 2=error+general+sql, 
          * 3=everything
          */
-        $default_debugshow = 3;
+        $default_debugshow = 0;
     
         /* 
          * $default_debugmode - How to show the debug data
@@ -239,11 +240,9 @@
 // Set Program O Website URLs
 //------------------------------------------------------------------------
 
-  define('RSS_URL', 'http://blog.program-o.com/feed/');
-  define('FAQ_URL', 'http://www.program-o.com/faqpage/');
-  define('NEWS_URL', 'http://blog.program-o.com/category/program-o-2/program-o-news/');
-  define('SUP_URL', 'http://forum.program-o.com/syndication.php/');
-  define('FORUM_URL', 'http://forum.program-o.com/');
+  define('RSS_URL', 'http://www.program-o.com/ns/feed/rss/');
+  define('FAQ_URL', 'http://www.program-o.com/ns/faq/');
+  define('SUP_URL', 'http://www.program-o.com/ns/feed/Support/');
   define('BUGS_EMAIL', 'bugs@program-o.com');
 
 //------------------------------------------------------------------------
