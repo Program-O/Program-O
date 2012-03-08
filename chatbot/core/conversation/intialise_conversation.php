@@ -13,7 +13,7 @@
 /**
  * function intialise_convoArray()
  * A function to intialise the conversation array 
- * This is the array that is built throught the conversation 
+ * This is the array that is built throught the conversation
  * @param  string $convo_id - unique session id
  * @param  int $bot_id - the id of the bot
  * @param  string $format - the return format of the response (html,json,xml)
@@ -303,6 +303,7 @@ function load_bot_config($convoArr){
 	if(($result)&&(db_res_count($result)>0)){
 		while($row=mysql_fetch_array($result)){
 			//$convoArr['conversation']['format']=$row['format']; //set in the form
+			$convoArr['conversation']['use_aiml_code']=$row['use_aiml_code'];
 			$convoArr['conversation']['update_aiml_code']=$row['update_aiml_code'];
 			$convoArr['conversation']['conversation_lines']=$row['conversation_lines'];
 			$convoArr['conversation']['remember_up_to']=$row['remember_up_to'];
@@ -315,6 +316,7 @@ function load_bot_config($convoArr){
 		}
 	}else{
 		//$convoArr['conversation']['format']=$default_format; //set in the form
+		$convoArr['conversation']['use_aiml_code']=$default_use_aiml_code;
 		$convoArr['conversation']['update_aiml_code']=$default_update_aiml_code;
 		$convoArr['conversation']['conversation_lines']=$default_conversation_lines;
 		$convoArr['conversation']['remember_up_to']=$default_remember_up_to;
@@ -506,19 +508,17 @@ function check_set_user($convoArr)
   $bot_id = $convoArr['conversation']['bot_id'];
   $ip = $_SERVER['REMOTE_ADDR'];
   $sql = "select `name`, `id` from `users` where `session_id` = '$convo_id' limit 1;";
-  $result = mysql_query($sql, $con);
-  if ($numRows = mysql_num_rows($result) == 0) {
-    $sqlAdd = "insert into `users` (`id`, `name`, `session_id`, `chatlines`, `ip`) ";
-    $sqlAdd .= "values (NULL, 'User', '$convo_id', 0, '$ip');";
-    $addResult = mysql_query($sqlAdd,$con) or die("You have a SQL error in file " . __FILE__ . " at line " . __LINE__ . ". Error: " . mysql_error() . " SQL = <br />$sqlAdd<br />\n");
-    $x = mysql_affected_rows($con);
+  $result = mysql_query($sql, $con) or $msg = SQL_error(mysql_errno(), __FILE__, __FUNCTION__, __LINE__);
+  $numRows = mysql_num_rows($result);
+  if ($numRows == 0) {
+    $user_id = intisaliseUser($convo_id);
   }
   else {
     $row = mysql_fetch_assoc($result);
     $user_id = (!empty($row['id'])) ? $row['id'] : 0;
     $user_name = (!empty($row['name'])) ? $row['name'] : 'User';
   }
-	$convoArr['conversation']['user_name'] = (!empty($user_name)) ? $user_name : 'User';
+	$convoArr['conversation']['user_name'] = (!empty($user_name)) ? $user_name : UNKNOWN_USER;
   #die("User name = $user_name<br />\n");
 	return $convoArr;
 }

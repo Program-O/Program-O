@@ -38,8 +38,10 @@ endScript;
 
   $group = (isset($_GET['group'])) ? $_GET['group'] : 1;
   $content  = $template->getSection('SearchSpellForm');
-  if (isset($_REQUEST['action'])) {
-    switch($_REQUEST['action']) {
+  $sc_action = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : '';
+  $sc_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : -1;
+  if (!empty($sc_action)) {
+    switch($sc_action) {
       case 'search':
         $content .= runSpellSearch();
         $content .= spellCheckForm();
@@ -48,11 +50,11 @@ endScript;
         $x = updateSpell();
         $content .= spellCheckForm();
         break;
-      case 'del':
-        $content .= (isset($_GET['id']))&&($_GET['id']!="") ? delSpell($_GET['id']) . spellCheckForm() : spellCheckForm();
+      case 'delete':
+        $content .= ($sc_id >= 0) ? delSpell($sc_id) . spellCheckForm() : spellCheckForm();
         break;
       case 'edit':
-        $content .= (isset($_GET['id']))&&($_GET['id']!="") ? editSpellForm($_GET['id']) : spellCheckForm();
+        $content .= ($sc_id >= 0) ? editSpellForm($sc_id) : spellCheckForm();
         break;
       case 'add':
         $x = insertSpell();

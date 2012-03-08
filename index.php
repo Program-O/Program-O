@@ -1,12 +1,7 @@
 <?php
   ob_start();
-  ini_set('log_errors', 1);
-  ini_set('display_errors', 1);
-  ini_set('error_log', './error.log');
+
   include ("./chatbot/conversation_start.php");
-  ini_set('display_errors', 'On');
-  ini_set('log_errors', 'On');
-  ini_set('error_log', './error.log');
 
   #if (isset($_REQUEST['submit'])) die ("<pre>" . print_r($_REQUEST, true) . "</pre><br />\n");
   if (isset ($_REQUEST['bot_id'])) {
@@ -27,7 +22,7 @@
   else {
     $format = $default_format;
   }
-  $output = (isset ($convoArr['send_to_user'])) ? $convoArr['send_to_user'] . ' <br /> <a name="new" />' : "";
+  $output = (isset ($convoArr['send_to_user'])) ? $convoArr['send_to_user'] . ' <br /> <a name="new" />' : "Hi there! Please tell me your name.";
   $thisScript = $_SERVER['PHP_SELF'] . '#new';
   $content = <<<endPage
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -36,13 +31,13 @@
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-    <!--link rel="stylesheet" type="text/css" href="styles.css" /-->
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <title>Program O Test Bot</title>
     <meta name="Description" content="A Free Open Source AIML PHP MySQL Chatbot called Program-O. Version2" />
     <meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2" />
   </head>
   <body onload="document.forms[0].say.focus();">
-    <form method="get" action="$thisScript">
+    <form method="post" action="$thisScript">
       <p>
         <label for="say">Say:</label>
         <input type="text" name="say" id="say" />
@@ -52,7 +47,7 @@
         <input type="hidden" name="format" id="format" value="$format" />
       </p>
     </form>
-    <div id="output">$output</div>
+    <div id="output">$output&nbsp;</div>
   </body>
 </html>
 endPage;

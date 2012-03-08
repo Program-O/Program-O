@@ -35,6 +35,7 @@
 		  `bot_desc` varchar(255) NOT NULL,
 		  `bot_active` int(11) NOT NULL DEFAULT '1',
 		  `format` varchar(10) NOT NULL DEFAULT 'html',
+		  `use_aiml_code` int(11) NOT NULL DEFAULT '1',
 		  `update_aiml_code` int(11) NOT NULL DEFAULT '1',
 		  `save_state` enum('session','database') NOT NULL DEFAULT 'session',
 		  `conversation_lines` int(11) NOT NULL DEFAULT '7',
@@ -55,8 +56,8 @@
 		}
 		
 		
-		$sql = "INSERT INTO `$dbn`.`bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `format`, `update_aiml_code`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`)
-				VALUES (1, 'Program O', 'The default Program O chatbot...', 1, 'html', 0, 'session', 7, 10, 0, 1, 1, 'RANDOM PICKUP LINE')";
+		$sql = "INSERT INTO `$dbn`.`bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`)
+				VALUES (1, 'Program O', 'The default Program O chatbot...', 1, 'html', 0, 0, 'session', 7, 10, 0, 1, 1, 'RANDOM PICKUP LINE')";
 
 		$result = mysql_query($sql,$con);
 		if($result)	{

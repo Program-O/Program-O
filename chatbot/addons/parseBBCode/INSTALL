@@ -3,8 +3,8 @@
 * PROGRAM O 
 * Version: 2.0.1
 * FILE: parse_BBCode/INSTALL
-* AUTHOR: ELIZABETH PERREAU
-* DATE: MAY 4TH 2011
+* AUTHOR: DAVE MORTON
+* DATE: FEB 26th, 2012
 * DETAILS: BBCode parser INSTALL instructions
 ***************************************/
 
@@ -40,6 +40,8 @@ parseInput($convoArr);
 
 
 
-
+Please note that this addon comes "standard" with the original Program O version 2.0 package, and
+is already installed and set up by default. the only time you will need to install this addon is
+if you have previously uninstalled or removed it.
 
 

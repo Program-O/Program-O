@@ -3,7 +3,7 @@
 * www.program-o.com
 * PROGRAM O 
 * Version: 2.0.1
-* FILE: custom_tags/spell_checker.php
+* FILE: custom_tags.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
 * DETAILS: this file contains the addon library to spell check into before its matched in the database
@@ -24,5 +24,5 @@ function custom_aiml_to_phpfunctions($find,$replace,$j)
 	$mergeArr['replace']=$replace;	
 	
 	return $mergeArr;
-	
+
 }

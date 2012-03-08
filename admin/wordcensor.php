@@ -35,11 +35,14 @@
 //-->
     </script>
 endScript;
-
-  $group = (isset($_GET['group'])) ? $_GET['group'] : 1;
+  $form = print_r($_REQUEST, true);
+  #die("<pre>\nRequest vars:\n\n$form\n</pre>\n");
+  $group = (isset($_REQUEST['group'])) ? $_REQUEST['group'] : 1;
   $content  = $template->getSection('SearchWordCensorForm');
-  if (isset($_REQUEST['action'])) {
-    switch($_REQUEST['action']) {
+  $wc_action = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : '';
+  $wc_id = isset($_REQUEST['censor_id']) ? $_REQUEST['censor_id'] : -1;
+  if (!empty($wc_action)) {
+    switch($wc_action) {
       case 'search':
         $content .= runWordCensorSearch();
         $content .= wordCensorForm();
@@ -48,11 +51,12 @@ endScript;
         $x = updateWordCensor();
         $content .= wordCensorForm();
         break;
-      case 'del':
-        $content .= (isset($_GET['id']))&&($_GET['id']!="") ? delWordCensor($_GET['id']) . wordCensorForm() : wordCensorForm();
+      case 'delete':
+        #die("Delete called! id = $wc_id");
+        $content .= ($wc_id >= 0) ? delWordCensor($wc_id) . wordCensorForm() : wordCensorForm();
         break;
       case 'edit':
-        $content .= (isset($_GET['id']))&&($_GET['id']!="") ? editWordCensorForm($_GET['id']) : wordCensorForm();
+        $content .= ($wc_id >= 0) ? editWordCensorForm($wc_id) : wordCensorForm();
         break;
       case 'add':
         $x = insertWordCensor();
@@ -144,7 +148,7 @@ endScript;
       $linkClass = ($linkId == $curID) ? 'selected' : 'noClass';
       $word_to_censor = $row['word_to_censor'];
       $tmpLink = str_replace('[linkClass]', " class=\"$linkClass\"", $baseLink);
-      $linkHref = " href=\"./?page=wordcensor&amp;action=edit&amp;id=$linkId&amp;group=$group#$linkId\" name=\"$linkId\"";
+      $linkHref = " href=\"./?page=wordcensor&amp;action=edit&amp;censor_id=$linkId&amp;group=$group#$linkId\" name=\"$linkId\"";
       $tmpLink = str_replace('[linkHref]', $linkHref, $tmpLink);
       $tmpLink = str_replace('[linkOnclick]', '', $tmpLink);
       $tmpLink = str_replace('[linkTitle]', " title=\"Edit spelling replace_with for the word '$word_to_censor'\"", $tmpLink);
@@ -178,7 +182,10 @@ function insertWordCensor() {
         $msg = '        <div id="errMsg">You must enter a spelling mistake and the replace_with.</div>' . "\n";
     }
     else {
-        $sql = "INSERT INTO `wordcensor` VALUES (NULL,'$word_to_censor','$replace_with')";
+/*
+INSERT INTO `morgaine`.`wordcensor` (`censor_id`, `word_to_censor`, `replace_with`, `bot_exclude`) VALUES (NULL, 'bitch', 'B***H', '');
+*/
+        $sql = "INSERT INTO `wordcensor` (`censor_id`, `word_to_censor`, `replace_with`, `bot_exclude`) VALUES (NULL,'$word_to_censor','$replace_with', '')";
         $result = mysql_query($sql,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
 
         if($result) {
@@ -236,8 +243,8 @@ function runWordCensorSearch() {
         $replace_with = strtoupper($row['replace_with']);
         $id = $row['censor_id'];
         $group = round(($id / 50));
-        $action = "<a href=\"./?page=wordcensor&amp;action=edit&amp;id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" /></a>
-                    <a href=\"./?page=wordcensor&amp;action=del&amp;id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this word_to_censor? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\"/></a>";
+        $action = "<a href=\"./?page=wordcensor&amp;action=edit&amp;censor_id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" /></a>
+                    <a href=\"./?page=wordcensor&amp;action=delete&amp;censor_id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this entry? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\"/></a>";
         $htmltbl .= "<tr valign=top>
                             <td>$word_to_censor</td>
                             <td>$replace_with</td>

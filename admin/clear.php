@@ -101,7 +101,7 @@ else {
     $content = <<<endForm
           Deleting AIML categories from the database is <strong>permanent</strong>!<br />
           This action <strong>CANNOT</strong> be undone!<br />
-          <form name="clearForm" action="./?page=clear" method="POST">
+          <form name="clearForm" action="./?page=clear" method="POST" onsubmit="return verify()">
           <table style="border: none;margin:10px;padding: 5px;">
             <tr>
               <td style="border:  none;padding: 12px;">
@@ -126,6 +126,15 @@ $selectOptions
             </tr>
           </table>
           </form>
+          <script type="text/javascript">
+            function verify() {
+              var fn = document.getElementById('clearFile').value;
+              var clearAll = document.getElementById('actionClearAll').checked;
+              if (fn == 'null' && clearAll === false) return false;
+              if (clearAll) fn = 'repository for all files';
+              return confirm('This will delete all categories from the AIML file ' + fn + '! This cannot be undone! Are you sure you want to do this?');
+            }
+          </script>
 endForm;
 
     return $content;
