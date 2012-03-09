@@ -182,9 +182,6 @@ function insertWordCensor() {
         $msg = '        <div id="errMsg">You must enter a spelling mistake and the replace_with.</div>' . "\n";
     }
     else {
-/*
-INSERT INTO `morgaine`.`wordcensor` (`censor_id`, `word_to_censor`, `replace_with`, `bot_exclude`) VALUES (NULL, 'bitch', 'B***H', '');
-*/
         $sql = "INSERT INTO `wordcensor` (`censor_id`, `word_to_censor`, `replace_with`, `bot_exclude`) VALUES (NULL,'$word_to_censor','$replace_with', '')";
         $result = mysql_query($sql,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
 
