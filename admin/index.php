@@ -449,9 +449,10 @@ endFooter;
       curl_setopt($ch, CURLOPT_HEADER, 0);
       $data = curl_exec($ch);
       curl_close($ch);
-      $rss = new SimpleXmlElement($data, LIBXML_NOCDATA);
-      if($rss) {
-        $items = $rss->channel->item;
+      try {
+        $rss = new SimpleXmlElement($data, LIBXML_NOCDATA);
+        if($rss) {
+          $items = $rss->channel->item;
           foreach ($items as $item) {
             $title = $item->title;
             $link = $item->link;
@@ -461,8 +462,11 @@ endFooter;
             $out .= "<p>$description</p>";
           }
         }
+      }
+      catch (Exception $error) {
+        $out = 'RSS Feed not available';
+      }
     }
-    else $out = 'RSS Feed not available';
     return $out;
   }
 
