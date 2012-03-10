@@ -299,5 +299,5 @@
 // Set Script Installation as completed
 //------------------------------------------------------------------------
 
-  define('SCRIPT_INSTALLED', true);
+  #define('SCRIPT_INSTALLED', true);
 ?>
