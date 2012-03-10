@@ -49,7 +49,7 @@
 //------------------------------------------------------------------------
   $server = strtolower($_SERVER['HTTP_HOST']); //leave this to auto detect
   $dev_host = "localhost"; //the name of your dev server
-  $alternate_local_server_name = "programo.local"; // Use if you test on a local network - the network name of the server computer.
+  $alternate_local_server_name = ""; // Use if you test on a local network - the network name of the server computer.
 //------------------------------------------------------------------------
 // parent bot
 // the parent bot is used to find aiml matches if no match is found for the current bot
@@ -184,7 +184,7 @@
         $default_update_aiml_code = '';
         $default_conversation_lines = 5;
         $default_remember_up_to = 10;
-        $default_debugemail = "[debugemail]";
+        $default_debugemail = "";
         /*
 * $default_debugshow - The level of messages to show the user
 * 0=none,
