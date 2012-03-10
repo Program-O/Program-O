@@ -13,6 +13,11 @@ If ($myPHP_Version < 5) die ("I'm sorry, but Program O requires PHP version 5.0 
 session_name('PGO_install');
 session_start();
 $_SESSION['errorMessage'] = (!empty($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';
+if (!is_writable('../config/global_config.php')) {
+  // Read and write for owner, read for everybody else
+  chmod('../config/global_config.php', 0777);
+  if (!is_writable('../config/global_config.php')) $_SESSION['errorMessage'] .= "Please make the /config/global_config.php writeable.";
+}
 require_once('../library/buildSelect.php');
 require_once('../config/global_config.php');
 define ('SECTION_START', '<!-- Section [section] Start -->'); # search params for start and end of sections
@@ -46,7 +51,7 @@ switch ($myHost) {
   $remote_dbu = $dbu;
   $remote_dbp = $dbp;
 }
-$PHP_SELF = $_SERVER['PHP_SELF']; # search params for start and end of sections
+$PHP_SELF = $_SERVER['SCRIPT_NAME']; # search params for start and end of sections
 
 $replTagsArray = file('../install/config_template_tags.dat', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 $replVarsArray = array();

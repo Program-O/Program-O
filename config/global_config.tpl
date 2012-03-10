@@ -184,7 +184,7 @@
         $default_update_aiml_code = '[default_update_aiml_code]';
         $default_conversation_lines = [default_conversation_lines];
         $default_remember_up_to = [default_remember_up_to];
-        $default_debugemail = "[debugemail]";
+        $default_debugemail = "[default_debugemail]";
         /* 
          * $default_debugshow - The level of messages to show the user 
          * 0=none, 
@@ -202,7 +202,7 @@
          * 3 = email each conversation line (not recommended)
          */
         $default_debugmode = [default_debugmode];
-        $default_save_state = "[save_state]";
+        $default_save_state = "[default_save_state]";
         $error_response = "[error_response]";
                 
     //------------------------------------------------------------------------
@@ -240,9 +240,10 @@
 // Set Program O Website URLs
 //------------------------------------------------------------------------
 
-  define('RSS_URL', 'http://www.program-o.com/ns/feed/rss/');
   define('FAQ_URL', 'http://www.program-o.com/ns/faq/');
-  define('SUP_URL', 'http://www.program-o.com/ns/feed/Support/');
+  define('NEWS_URL', 'http://www.program-o.com/ns/feed/news/'); #This needs to be altered to reflect the correct URL
+  define('RSS_URL', 'http://blog.program-o.com/feed/');
+  define('SUP_URL', 'http://forum.program-o.com/syndication.php');
   define('BUGS_EMAIL', 'bugs@program-o.com');
 
 //------------------------------------------------------------------------
