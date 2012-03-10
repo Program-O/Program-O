@@ -76,22 +76,22 @@
         $dbn = ""; # dev database name/prefix
         $dbu = ""; # dev database username
         $dbp = ""; # dev database password
-    
+
         //these are the admin DB settings in case you want make the admin a different db user with more privs
         $adm_dbh = "localhost";
         $adm_dbn = "";
         $adm_dbu = "";
         $adm_dbp = "";
-        
+
     //------------------------------------------------------------------------
     // Default bot settings
     //------------------------------------------------------------------------
-    
+
       //Used to populate the stack when first initialized
       $default_stack_value = "om";
       //Default conversation id will be set to current session
       $default_convo_id = session_id();
-      
+
       //default bot config - this is the default bot most of this will be overwriten by the bot configuration in the db
         $default_bot_id = 1;
         $default_format = "html";
@@ -109,7 +109,7 @@
 * 3=everything
 */
         $default_debugshow = 0;
-    
+
         /*
 * $default_debugmode - How to show the debug data
 * 0 = source code view - show debugging in source code
@@ -131,12 +131,12 @@
 
         //initially set here but overwriten by bot configuration in the admin panel
         $debuglevel = $default_debugshow;
-         
+
          //for quick debug to override the bot config debug options
          //0 - Do not show anything
          //1 - will print out to screen immediately
         $quickdebug = 0;
-        
+
         //for quick debug
         //1 = will write debug data to file regardless of the bot config choice
         //it will write it as soon as it becomes available but this this will be finally
@@ -166,16 +166,16 @@
         $adm_dbn = "Required";
         $adm_dbu = "Required";
         $adm_dbp = "Required";
-        
+
     //------------------------------------------------------------------------
     // Default bot settings
     //------------------------------------------------------------------------
-    
+
       //Used to populate the stack when first initialized
       $default_stack_value = "om";
       //Default conversation id will be set to current session
       $default_convo_id = session_id();
-      
+
       //default bot config - this is the default bot most of this will be overwriten by the bot configuration in the db
         $default_bot_id = 1;
         $default_format = "html";
@@ -193,7 +193,7 @@
 * 3=everything
 */
         $default_debugshow = 0;
-    
+
         /*
 * $default_debugmode - How to show the debug data
 * 0 = source code view - show debugging in source code
@@ -202,30 +202,30 @@
 * 3 = email each conversation line (not recommended)
 */
         $default_debugmode = 1;
-        $default_save_state = "[save_state]";
+        $default_save_state = "session";
         $error_response = "Internal error detected. Please inform my botmaster.";
-                
+
     //------------------------------------------------------------------------
     // Default debug data
     //------------------------------------------------------------------------
-      
+
         // Turn off all error reporting
       error_reporting(0);
-        
-        
+
+
         //initially set here but overwriten by bot configuration in the admin panel
         $debuglevel = $default_debugshow;
-         
+
          //for quick debug to override the bot config debug options
          //0 - Do not show anything
          //1 - will print out to screen immediately
         $quickdebug = 0;
-        
+
         //for quick debug
         //1 = will write debug data to file regardless of the bot config choice
         //it will write it as soon as it becomes available but this this will be finally overwriten once if and when the conversation turn is complete
         $writetotemp = 1;
-      
+
       //debug folders where txt files are stored
         $debugfolder = _DEBUG_PATH_;
         $debugfile = $debugfolder.$default_convo_id.".txt";
