@@ -73,15 +73,15 @@
       $time_zone_locale = "America/Los_Angeles"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
         $dbh    = "localhost";  # dev remote server location
         $dbPort = "3306";    # dev database name/prefix
-        $dbn    = "morgaine";    # dev database name/prefix
-        $dbu    = "Dave";       # dev database username
-        $dbp    = "411693055";  # dev database password
+        $dbn    = "";    # dev database name/prefix
+        $dbu    = "";       # dev database username
+        $dbp    = "";  # dev database password
     
         //these are the admin DB settings in case you want make the admin a different db user with more privs
         $adm_dbh = "localhost";
-        $adm_dbn = "morgaine";
-        $adm_dbu = "Dave";
-        $adm_dbp = "411693055";
+        $adm_dbn = "";
+        $adm_dbu = "";
+        $adm_dbp = "";
         
     //------------------------------------------------------------------------
     // Default bot settings
@@ -100,7 +100,7 @@
         $default_update_aiml_code = '';
         $default_conversation_lines = 5;
         $default_remember_up_to = 10;
-        $default_debugemail = "dmorton@geekcavecreations.com";
+        $default_debugemail = "";
         /* 
          * $default_debugshow - The level of messages to show the user
          * 0=none, 
@@ -164,8 +164,8 @@
         //these are the admin DB settings in case you want make the admin a different db user with more privs
         $adm_dbh = "Required";
         $adm_dbn = "Required";
-        $adm_dbu = "Dave";
-        $adm_dbp = "411693055";
+        $adm_dbu = "Required";
+        $adm_dbp = "Required";
         
     //------------------------------------------------------------------------
     // Default bot settings
@@ -234,7 +234,7 @@
 //------------------------------------------------------------------------
 // Set Misc Data
 //------------------------------------------------------------------------
-  $botmaster_name = "Dave Morton";
+  $botmaster_name = "Your Name";
 
 //------------------------------------------------------------------------
 // Set Program O Website URLs
