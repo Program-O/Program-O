@@ -222,6 +222,7 @@ function addBotPersonality() {
       }
     }
   }
+
   $skipKeys = array('bot_id', 'action', 'func', 'newEntryName', 'newEntryValue');
   foreach($_POST as $key => $value) {
     if(!in_array($key, $skipKeys)) {

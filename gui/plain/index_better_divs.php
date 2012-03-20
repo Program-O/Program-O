@@ -29,7 +29,7 @@ else
 }
 
 $output = (isset($convoArr['send_to_user'])) ? $convoArr['send_to_user'] . ' <br /> <a name="new" />' : "";
-$thisScript = $_SERVER['PHP_SELF'] . '#new';
+$thisScript = $_SERVER['SCRIPT_NAME'] . '#new';
 
 
 $content = <<<endHTML

@@ -22,7 +22,7 @@ require_once('../library/buildSelect.php');
 require_once('../config/global_config.php');
 define ('SECTION_START', '<!-- Section [section] Start -->'); # search params for start and end of sections
 define ('SECTION_END', '<!-- Section [section] End -->'); # search params for start and end of sections
-define ('PHP_SELF', $_SERVER['PHP_SELF']); # search params for start and end of sections
+define ('PHP_SELF', $_SERVER['SCRIPT_NAME']); # search params for start and end of sections
 ini_set("display_errors", 1);
 ini_set("log_errors",true);
 #ini_set("error_log","../logs/error.log");
@@ -51,7 +51,6 @@ switch ($myHost) {
   $remote_dbu = $dbu;
   $remote_dbp = $dbp;
 }
-$PHP_SELF = $_SERVER['SCRIPT_NAME']; # search params for start and end of sections
 
 $replTagsArray = file('../install/config_template_tags.dat', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 $replVarsArray = array();
@@ -97,9 +96,9 @@ $content = str_replace('[PHP_SELF]', PHP_SELF, $content);
 $content = str_replace('[errorMessage]', $_SESSION['errorMessage'], $content);
 foreach ($replVarsArray as $search => $replace) {
   $replace = trim($replace);
-  if (!isset($$replace)) $$replace = 'crap';
+  if (!isset($$replace)) $$replace = '';
   $repl1 = $$replace;
-  if (isset($$replace) and $$replace != 'crap') {
+  if (isset($$replace) and $$replace != '') {
     $content = str_replace($search, $$replace, $content);
   }
 }

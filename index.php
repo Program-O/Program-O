@@ -23,7 +23,7 @@
     $format = $default_format;
   }
   $output = (isset ($convoArr['send_to_user'])) ? $convoArr['send_to_user'] . ' <br /> <a name="new" />' : "Hi there! Please tell me your name.";
-  $thisScript = $_SERVER['PHP_SELF'] . '#new';
+  $thisScript = $_SERVER['SCRIPT_NAME'] . '#new';
   $content = <<<endPage
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">

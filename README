@@ -44,11 +44,17 @@ Simply point your web browser to your freshly uploaded
 Program O directory to run the install script. Then
 follow the instructions on the page. The installer is
 designed to only run once.
-Please note that the installer script will NOT install your
-bot's AIML files. Once you complete the installation
-process, simply go to your new Program O admin page
-(e.g. http://www.example.com/ProgramO/admin) and log
-in using the admin credentials you provided during the
-install process. Then select "Upload AIML" from the
+
+Please note that the installer script will NOT  create your
+database for you, nor will it install your bot's AIML files.
+The database, along with the username/password used to
+access it, needs to be created in advance. See the file
+fresh_install_README.txt for more information.
+
+After you create the database, and once you complete the
+installation process, simply go to your new Program O
+admin page (e.g. http://www.example.com/ProgramO/admin)
+and log in using the admin credentials you provided during
+the install process. Then select "Upload AIML" from the
 navigation link on the left and upload your AIML files.
 Then sit back and enjoy your new bot!

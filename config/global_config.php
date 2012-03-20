@@ -154,18 +154,18 @@
     // LIVE server settings
     //------------------------------------------------------------------------
       $time_zone_locale = "America/Los_Angeles"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-      $dbh = "Required";
+      $dbh = "";
       $dbPort = "3306";
-      $dbn = "Required";
-      $dbu = "Required";
-      $dbp = "Required";
+      $dbn = "";
+      $dbu = "";
+      $dbp = "";
 
 
         //these are the admin DB settings in case you want make the admin a different db user with more privs
-        $adm_dbh = "Required";
-        $adm_dbn = "Required";
-        $adm_dbu = "Required";
-        $adm_dbp = "Required";
+        $adm_dbh = "";
+        $adm_dbn = "";
+        $adm_dbu = "";
+        $adm_dbp = "";
 
     //------------------------------------------------------------------------
     // Default bot settings

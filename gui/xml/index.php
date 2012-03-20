@@ -39,7 +39,7 @@ if(isset($_REQUEST['say'])) {
 [bot_name]: [botsay]<br />
 endResponse;
 
-  $thisFileURL = $_SERVER['PHP_SELF'];
+  $thisFileURL = $_SERVER['SCRIPT_NAME'];
   $chatbotURLpath = str_replace('/gui/xml/index.php', '/chatbot',$thisFileURL);
   define("CHATBOT_URL_PATH",$chatbotURLpath);
 
