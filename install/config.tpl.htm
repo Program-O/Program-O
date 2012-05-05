@@ -226,30 +226,25 @@
               <td><span class="formw"><input name="local_dbPort" id="local_dbPort" value="[local_dbPort]" /></span></td>
             </tr>
             <tr>
-              <td><label for="bot_count"><span class="label">Number of bots<span style="float:right" class="helpButton" id="hb_bot_count"> </span></span></label></td>
-              <td><span class="formw"><input name="bot_count" id="bot_count" /></span></td>
+              <td colspan="2" class="bold center" >Botmaster Info:</td>
               <td><label for="local_dbn"><span class="label">Local Database Name <span style="float:right" class="helpButton" id="hb_local_dbn"> </span></span></label></td>
               <td><span class="formw"><input name="local_dbn" id="local_dbn" value="[local_dbn]" /></span></td>
             </tr>
             <tr>
-              <td><label for="botNames"><span class="label">Bot Names <span class="red">*</span><span style="float:right" class="helpButton" id="hb_botNames"> </span></span></label></td>
-              <td><span class="formw"><textarea name="botNames" id="botNames" rows="1">myBot</textarea></span></td>
+              <td><label for="adm_dbu"><span class="label">Admin User Name <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_adm_dbu"> </span></span></label></td>
+              <td><span class="formw"><input name="adm_dbu" id="adm_dbu" value="[adm_dbu]" /></span></td>
               <td><label for="local_dbu"><span class="label">Local Database Username <span style="float:right" class="helpButton" id="hb_local_dbu"> </span></span></label></td>
               <td><span class="formw"><input name="local_dbu" id="local_dbu" value="[local_dbu]" /></span></td>
             </tr>
             <tr>
-              <td><label for="default_bot_id"><span class="label">Name of the default bot<span style="float:right" class="helpButton" id="hb_default_bot_id"> </span></span></label></td>
-              <td>
-                <span class="formw">
-                  <select name="default_bot_id" id="default_bot_id">
-                  </select>
-                </span>
-              </td>
+              <td><label for="adm_dbp"><span class="label">Admin Password <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_adm_dbp"> </span></span></label></td>
+              <td><span class="formw"><input name="adm_dbp" id="adm_dbp" type="password" /></span></td>
               <td><label for="local_dbp"><span class="label">Local Database Password <span style="float:right" class="helpButton" id="hb_local_dbp"> </span></span></label></td>
               <td><span class="formw"><input name="local_dbp" id="local_dbp" value="[local_dbp]" /></span></td>
             </tr>
             <tr>
-              <td colspan="2" class="bold center" >Botmaster Info:</td>
+              <td><label for="adm_dbp_confirm"><span class="label">Confirm Password <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_adm_dbp_confirm"> </span></span></label></td>
+              <td><span class="formw"><input name="adm_dbp_confirm" id="adm_dbp_confirm" type="password" /></span></td>
               <td><label for="lsTZ"><span class="label">Local Database Timezone<span style="float:right" class="helpButton" id="hb_lsTZ"> </span></span></label></td>
               <td>
                 <span class="formw">
@@ -259,58 +254,35 @@
               </td>
             </tr>
             <tr>
-              <td><label for="adm_dbu"><span class="label">Admin User Name <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_adm_dbu"> </span></span></label></td>
-              <td><span class="formw"><input name="adm_dbu" id="adm_dbu" value="[adm_dbu]" /></span></td>
-              <td class="bold center" colspan="2"><b>Remote Database Data</b></td>
-            </tr>
-            <tr>
-              <td><label for="adm_dbp"><span class="label">Admin Password <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_adm_dbp"> </span></span></label></td>
-              <td><span class="formw"><input name="adm_dbp" id="adm_dbp" type="password" /></span></td>
-              <td><label for="remote_dbh"><span class="label">Remote Database Host Name <span style="float:right" class="helpButton" id="hb_remote_dbh"> </span></span></label></td>
-              <td><span class="formw"><input name="remote_dbh" id="remote_dbh" value="[remotehost]" /></span></td>
-            </tr>
-            <tr>
-              <td><label for="adm_dbp_confirm"><span class="label">Confirm Password <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_adm_dbp_confirm"> </span></span></label></td>
-              <td><span class="formw"><input name="adm_dbp_confirm" id="adm_dbp_confirm" type="password" /></span></td>
-              <td><label for="remote_dbPort"><span class="label">Remote Database Port <span style="float:right" class="helpButton" id="hb_remote_dbPort"> </span></span></label></td>
-              <td><span class="formw"><input name="remote_dbPort" id="remote_dbPort" value="[remote_dbPort]" /></span></td>
-            </tr>
-            <tr>
               <td><label for="botmaster_name"><span class="label">Your Name <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_botmaster_name"> </span></span></label></td>
               <td><span class="formw"><input name="botmaster_name" id="botmaster_name" value="[botmaster_name]" /></span></td>
-              <td><label for="remote_dbn"><span class="label">Remote Database Name <span style="float:right" class="helpButton" id="hb_remote_dbn"> </span></span></label></td>
-              <td><span class="formw"><input name="remote_dbn" id="remote_dbn" value="[remote_dbn]" /></span></td>
+              <td class="bold center" colspan="2"><b>Remote Database Data</b></td>
             </tr>
             <tr>
               <td><label for="default_debugemail"><span class="label">Email Address <span class="red small">(required)</span><span style="float:right" class="helpButton" id="hb_default_debugemail"> </span></span></label></td>
               <td><span class="formw"><input name="default_debugemail" id="default_debugemail" value="[default_debugemail]" /></span></td>
-              <td><label for="remote_dbu"><span class="label">Remote Database Username <span style="float:right" class="helpButton" id="hb_remote_dbu"> </span></span></label></td>
-              <td><span class="formw"><input name="remote_dbu" id="remote_dbu" value="[remote_dbu]" /></span></td>
+              <td><label for="remote_dbh"><span class="label">Remote Database Host Name <span style="float:right" class="helpButton" id="hb_remote_dbh"> </span></span></label></td>
+              <td><span class="formw"><input name="remote_dbh" id="remote_dbh" value="[remotehost]" /></span></td>
             </tr>
             <tr>
               <td colspan="2" class="bold center">Debugging Options:</td>
-              <td><label for="remote_dbp"><span class="label">Remote Database Password <span style="float:right" class="helpButton" id="hb_remote_dbp"> </span></span></label></td>
-              <td><span class="formw"><input name="remote_dbp" id="remote_dbp" value="[remote_dbp]" /></span></td>
+              <td><label for="remote_dbPort"><span class="label">Remote Database Port <span style="float:right" class="helpButton" id="hb_remote_dbPort"> </span></span></label></td>
+              <td><span class="formw"><input name="remote_dbPort" id="remote_dbPort" value="[remote_dbPort]" /></span></td>
             </tr>
             <tr>
               <td><label for="default_debugshow"><span class="label">Debug Level:<span style="float:right" class="helpButton" id="hb_default_debugshow"> </span></span></label></td>
               <td>
                 <span class="formw">
                   <select name="default_debugshow" id="default_debugshow" size="1">
-                    <option value="0" selected="selected">Nothing</option>
-                    <option value="1">General</option>
+                    <option value="0">Nothing</option>
+                    <option value="1" selected="selected">General</option>
                     <option value="2">General/SQL</option>
                     <option value="3">Everything</option>
                   </select>
                 </span>
               </td>
-              <td><label for="rsTZ"><span class="label">Remote Database Timezone <span style="float:right" class="helpButton" id="hb_rsTZ"> </span></span></label></td>
-              <td>
-                <span class="formw">
-                <select name="rsTZ" id="rsTZ">
-                </select>
-              </span>
-              </td>
+              <td><label for="remote_dbn"><span class="label">Remote Database Name <span style="float:right" class="helpButton" id="hb_remote_dbn"> </span></span></label></td>
+              <td><span class="formw"><input name="remote_dbn" id="remote_dbn" value="[remote_dbn]" /></span></td>
             </tr>
             <tr>
               <td><span class="label">Debugging output method<span style="float:right" class="helpButton" id="hb_default_debugmode"> </span></span></td>
@@ -322,7 +294,8 @@
                   <label for="default_debugmodeEmail"><input type="radio" class="radio" name="default_debugmode" value="3" id="default_debugmodeEmail" />Email</label>
                 </span>
               </td>
-              <td colspan="2" rowspan="7" id="notes">[notes]</td>
+              <td><label for="remote_dbu"><span class="label">Remote Database Username <span style="float:right" class="helpButton" id="hb_remote_dbu"> </span></span></label></td>
+              <td><span class="formw"><input name="remote_dbu" id="remote_dbu" value="[remote_dbu]" /></span></td>
             </tr>
             <tr>
               <td><label for="default_save_state"><span class="label">Save-State<span style="float:right" class="helpButton" id="hb_default_save_state"> </span></span></label></td>
@@ -332,6 +305,8 @@
                   <label for="default_save_stateDB"><input type="radio" class="radio" name="default_save_state" id="default_save_stateDB" value="database" />Database</label>
                 </span>
               </td>
+              <td><label for="remote_dbp"><span class="label">Remote Database Password <span style="float:right" class="helpButton" id="hb_remote_dbp"> </span></span></label></td>
+              <td><span class="formw"><input name="remote_dbp" id="remote_dbp" value="[remote_dbp]" /></span></td>
             </tr>
             <tr>
               <td><label for="default_format"><span class="label">Response Format<span style="float:right" class="helpButton" id="hb_default_format"> </span></span></label></td>
@@ -344,10 +319,18 @@
                   </select>
                 </span>
               </td>
+              <td><label for="rsTZ"><span class="label">Remote Database Timezone <span style="float:right" class="helpButton" id="hb_rsTZ"> </span></span></label></td>
+              <td>
+                <span class="formw">
+                <select name="rsTZ" id="rsTZ">
+                </select>
+              </span>
+              </td>
             </tr>
             <tr>
               <td><label for="error_response"><span class="label">Error response string<span style="float:right" class="helpButton" id="hb_error_response"> </span></span></label></td>
               <td><span class="formw"><input class="wide" name="error_response" id="error_response" value="[error_response]" /></span></td>
+              <td colspan="2" rowspan="4" id="notes">[notes]</td>
             </tr>
             <tr>
               <td><label for="default_pattern"><span class="label">Default pickup line pattern<span style="float:right" class="helpButton" id="hb_default_pattern"> </span></span></label></td>
@@ -395,6 +378,10 @@
 <!-- Section Page 1 Notes Start -->
             <div class="row"><span class="red"># </span>Note: This is generally the server computer's local network name.</div>
             <div class="row"><span class="red">* </span>Note: Place each bot name on a separate line. At least one name is required.</div>
+            <div class="row">
+              For more detailed information with this page, please see the <a href="help.php" target="_blank">Help Page</a>, or
+              click the help icon <img src="../../admin/images/help_small.png" width="16" height="16" alt="" /> for an individual field.
+            </div>
 <!-- Section Page 1 Notes End -->
 <!-- Section Page 2 Notes Start -->
 <!-- Section Page 2 Notes End -->

@@ -96,7 +96,7 @@
             rather than using the local DB settings. Set this to the local "network name" of your computer.
           </div>
         </div>
-        <div class="row" id="bot_count">
+        <!--div class="row" id="bot_count">
           <span class="label">Number of bots</span>
             <div class="description">
               The default is one (1) bot, and in most cases the script will automatically set this to the correct value.
@@ -113,7 +113,7 @@
               This is the name of your primary (default) bot. Simply select the name you want to use from the drop-down list,
               <b>after</b> you set the names of your bot(s).
             </div>
-        </div>
+        </div-->
         <div class="row">
           <strong>Botmaster Info</strong>
         </div>
@@ -235,7 +235,7 @@
                 configure.
               </li>
             </ul>
-            There are sample pages in the <a href="../gui/index.php">gui directory</a> that you can
+            There are sample pages in the <a href="../gui/index.php">GUI directory</a> that you can
             examine and use, but bear in mind that these are simply example pages, and will likely require some
             modification prior to use.
           </div>
@@ -283,44 +283,44 @@
         <div class="row bold"><b>Local Database Data</b></div>
         <div class="row" id="local_dbh">
           <span class="label">Local Database Host Name</span>
-          <div id="description">
+          <div class="description">
             Default: localhost<br />
             Required: This setting is part of the local database login credentials that allow Program O to connect to your
             bot's local database. Under the vast majority of circumstances, this is simply 'localhost', but there is
-            the occaisional rare exception.
+            the occasional rare exception.
           </div>
         </div>
         <div class="row" id="local_dbPort">
           <span class="label">Local Database Port</span>
-          <div id="description">
+          <div class="description">
             Default: 3306<br />
             Required only in the very rare case that the database server has been configured to use a different port.
           </div>
         </div>
         <div class="row" id="local_dbn">
           <span class="label">Local Database Name</span>
-          <div id="description">
+          <div class="description">
             Required: When you performed the task of creating your local database, you should have already named the DB,
             along with configuring username and password. The DB name from that information goes here.
           </div>
         </div>
         <div class="row" id="local_dbu">
           <span class="label">Local Database Username</span>
-          <div id="description">
-            Required: Just as with the name of the database, above, this is part of the connection infrmation that you
+          <div class="description">
+            Required: Just as with the name of the database, above, this is part of the connection information that you
             should have gathered when you set up your bot's DB.
           </div>
         </div>
         <div class="row" id="local_dbp">
           <span class="label">Local Database Password</span>
-          <div id="description">
+          <div class="description">
             Required: This is the password for your script to access your bot's database. There's no confirmation for
             this field, like there was with the admin password, earlier, so be careful to ensure it's entered correctly.
           </div>
         </div>
         <div class="row" id="lsTZ">
           <span class="label">Local Database Timezone</span>
-          <div id="description">
+          <div class="description">
             This is the timezone info for your local server (the one you're currently using).
             This setting should be automatically set by the installation script, but you should verify it's accuracy.
           </div>
@@ -328,14 +328,14 @@
         <div class="row bold"><b>Remote Database Data</b></div>
         <div class="row" id="remote_dbh">
           <span class="label">Remote Database Host Name</span>
-          <div id="description">
+          <div class="description">
             Required: This is the host name of the remote database server, and again is part of the information that you
             should have already gathered when you created your remote database.
           </div>
         </div>
         <div class="row" id="remote_dbPort">
           <span class="label">Remote Database Port</span>
-          <div id="description">
+          <div class="description">
             Default: 3306<br />
             Just like the local database port, this setting is only required if the database server uses a non-standard
             port.
@@ -343,26 +343,57 @@
         </div>
         <div class="row" id="remote_dbn">
           <span class="label">Remote Database Name</span>
-          <div id="description">
+          <div class="description">
             Required: See <a href="help.php?page=1#local_dbn">Local DB name</a> for details.
           </div>
         </div>
         <div class="row" id="remote_dbu">
           <span class="label">Remote Database Username</span>
-          <div id="description">
+          <div class="description">
             Required: See <a href="help.php?page=1#local_dbu">Local Database Username</a> for details.
           </div>
         </div>
         <div class="row" id="remote_dbp">
           <span class="label">Remote Database Password</span>
-          <div id="description">
+          <div class="description">
             Required: See <a href="help.php?page=1#local_dbu">Local Database Password</a> for details.
           </div>
         </div>
         <div class="row" id="rsTZ">
           <span class="label">Remote Database Timezone</span>
-          <div id="description">
+          <div class="description">
             Required, but automatically generated: See <a href="help.php?page=1#lsTZ">Local Database Timezone</a> for details.
+          </div>
+        </div>
+        <div class="row">&nbsp;</div>
+        <div class="center">
+          <strong>Troubleshooting</strong>
+        </div>
+        <div class="row" id="permissions">
+          <span class="label">File Permissions</span>
+          <div class="description">
+            <p>
+              If you've been directed here, then your web server doesn't allow the install script to modify file permissions automatically.
+              If this is the case, then modification of the permissions for the config file will have to be done manually, <strong>BEFORE</strong>
+              the install script can continue. Otherwise, you'll end up with a corrupted installation, and will have to start over.
+              This problem seems to be limited to Linux systems, since Windows handles file permissions differently.
+            </p>
+            <p>
+              To manually change file permissions on a remote server, you usually have a couple of options. If your hosting provider provides
+              a user control panel, you can use the File Management section to change permissions. You can also use the FTP client software
+              that you used to upload the file to change permissions. The methods for changing file permissions with an FTP client application
+              vary from program to program, so if you're unsure about how to go about the task, try reading your FTP program's Help file.
+              Search for either "file permissions", or "CHMOD". If you still need help, feel free to visit the
+              <a href="http://forum.program-o.com/">Program O Support Forum</a> to ask for assistance.
+            </p>
+            <p>
+              The correct setting for the file permissions for the config file is 755. If you're unsure what this means, then have a look at
+              <a href="http://www.perlfect.com/articles/chmod.shtml">http://www.perlfect.com/articles/chmod.shtml</a> for a good tutorial
+              about the CHMOD command, and what the various settings mean. For our purposes, that setting means that the config file can
+              only be written to by the file's "owner", while everyone can read and execute the file. If the file can't be properly written
+              to, then the script can't save the settings that you've set or changed, and your bot won't work correctly, so it's important
+              that the config file has it's permissions set correctly.
+            </p>
           </div>
         </div>
 <!-- Section Page1 End -->

@@ -9,6 +9,7 @@
 // upload.php
   ini_set('memory_limit','128M');
   ini_set('max_execution_time','0');
+  libxml_use_internal_errors(true);
 
   $file = (array_key_exists('aimlfile', $_FILES)) ? processUpload() : '';
   $msg = parseAIML($file);
@@ -106,7 +107,33 @@ endScript;
     $sql_start = "insert into `aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`, `php_code`) values\n";
     $sql = $sql_start;
     $sql_template = "(NULL, $bot_id, '[aiml_add]', '[pattern]', '[that]', '[template]', '[topic]', '$fileName', ''),\n";
+    # Validate the incoming document
+/*
+$xml = new DOMDocument();
+$xml->load('./lures.xml');
+*/
     $aimlFile = file_get_contents($file);
+    $validRootTag = '<aiml version="1.0.1" xmlns="http://alicebot.org/2001/AIML-1.0.1">';
+    $curRootTagStart = stripos($aimlFile,'<aiml',0);
+    $curRootTagEnd   = strpos($aimlFile,'>', $curRootTagStart) + 1;
+    $curRootTagLen   = $curRootTagEnd - $curRootTagStart;
+    $curRootTag      = substr($aimlFile, $curRootTagStart, $curRootTagLen);
+    if ($curRootTag !== $validRootTag) $aimlFile = str_ireplace($curRootTag, $validRootTag, $aimlFile);
+    #die("<pre>$aimlFile</pre>\n");
+    $validate = new DOMDocument();
+    $validate->loadXML($aimlFile);
+    $validate->preserveWhiteSpace = false;
+    $validate->formatOutput = true;
+    if (!$validate->schemaValidate('./aiml.xsd')) {
+      $msg = "Cannot parse file $file! Please note errors that follow:\n";
+
+      $errors = libxml_get_errors();
+    foreach ($errors as $error) {
+      $msg .= libxml_display_error($error);
+    }
+    libxml_clear_errors();
+    return $msg;
+    }
     $aiml = new SimpleXMLElement($aimlFile);
     $rowCount = 0;
     if (!empty($aiml->topic)) {
@@ -226,6 +253,26 @@ endScript;
     return $out;
   }
 
+  function libxml_display_error($error) {
+    $out = "<br/>\n";
+    switch ($error->level) {
+      case LIBXML_ERR_WARNING:
+        $out .= "<b>Warning $error->code</b>: ";
+        break;
+      case LIBXML_ERR_ERROR:
+        $out .= "<b>Error $error->code</b>: ";
+        break;
+      case LIBXML_ERR_FATAL:
+        $out .= "<b>Fatal Error $error->code</b>: ";
+        break;
+    }
+    $out .= trim($error->message);
+    if ($error->file) {
+      $out .= " in <b>$error->file</b>";
+    }
+    $out .= " on line <b>$error->line</b>\n";
+    return $out;
+  }
 
 
 ?>
