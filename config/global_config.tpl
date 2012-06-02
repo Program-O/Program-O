@@ -93,7 +93,7 @@
       $default_convo_id = session_id();
       
       //default bot config - this is the default bot most of this will be overwriten by the bot configuration in the db
-        $default_bot_id = [default_bot_id];
+        $default_bot_id = 1;
         $default_format = "[default_format]";
         $default_pattern = "[default_pattern]";
         $default_use_aiml_code = '[default_use_aiml_code]';
@@ -120,6 +120,9 @@
         $default_debugmode = [default_debugmode];
         $default_save_state = "[default_save_state]";
         $error_response = "[error_response]";
+        $unknown_user = "[unknown_user]";
+
+
 
     //------------------------------------------------------------------------
     // Default debug data
@@ -177,7 +180,7 @@
       $default_convo_id = session_id();
       
       //default bot config - this is the default bot most of this will be overwriten by the bot configuration in the db
-        $default_bot_id = [default_bot_id];
+        $default_bot_id = 1;
         $default_format = "[default_format]";
         $default_pattern = "[default_pattern]";
         $default_use_aiml_code = '[default_use_aiml_code]';
@@ -204,6 +207,7 @@
         $default_debugmode = [default_debugmode];
         $default_save_state = "[default_save_state]";
         $error_response = "[error_response]";
+        $unknown_user = "[unknown_user]";
                 
     //------------------------------------------------------------------------
     // Default debug data
@@ -276,14 +280,14 @@
 //------------------------------------------------------------------------
   if (empty($_SESSION['commonWords']))
   {
-    $_SESSION['commonWords'] = file(_CONF_PATH_.'commonWords.dat', FILE_IGNORE_NEW_LINES);
+    #$_SESSION['commonWords'] = file(_CONF_PATH_.'commonWords.dat', FILE_IGNORE_NEW_LINES);
   }
 
   $commonwordsArr = $_SESSION['commonWords'];
 
   if (empty($_SESSION['allowedHtmlTags']))
   {
-    $_SESSION['allowedHtmlTags'] = file(_CONF_PATH_.'allowedHtmlTags.dat', FILE_IGNORE_NEW_LINES);
+    #$_SESSION['allowedHtmlTags'] = file(_CONF_PATH_.'allowedHtmlTags.dat', FILE_IGNORE_NEW_LINES);
   }
   $allowed_html_tags = $_SESSION['allowedHtmlTags'];
 

@@ -63,8 +63,7 @@ $replTagsArray = file(_INSTALL_PATH_ . 'config_template_tags.dat', FILE_IGNORE_N
 $replVarsArray = array();
 foreach ($replTagsArray as $value) {
   $value = trim($value);
-  $tmpVal = str_replace('[', '', $value);
-  $tmpVal = str_replace(']', '', $tmpVal);
+  $tmpVal = str_replace(array('[',']'), '', $value);
   $replVarsArray[$value] = $tmpVal;
 }
 chdir(dirname( realpath( __FILE__ )));
@@ -147,9 +146,11 @@ function save($page) {
   $postVars = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
   ksort($postVars);
   foreach ($postVars as $key => $value) {
+    if ($key == 'use_aiml_code') $_SESSION['default_use_aiml_code'] = rtrim($value);
+    if ($key == 'update_aiml_code') $_SESSION['default_update_aiml_code'] = rtrim($value);
     $_SESSION[$key] = rtrim($value);
   }
-  $x = file_put_contents(_INSTALL_PATH_ . 'sessionVars.txt', print_r($_SESSION, true) . "\r\n");
+  #$x = file_put_contents(_INSTALL_PATH_ . 'sessionVars.txt', print_r($_SESSION, true) . "\r\n");
   checkDBContents($postVars);
   switch ($page) {
     case 1:
@@ -203,40 +204,39 @@ function getMain($page, $page_template) {
       return getSection('AIMLConfig', $page_template);
       break;
   }
-  $numBots = $_SESSION['bot_count'];
   $sql_template = <<<endSQL
-INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state` , `conversation_lines` , `remember_up_to` , `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`) VALUES ([cur_bot_ID], '[cur_bot_name]', '[cur_bot_desc]', [cur_bot_active], [cur_bot_parent_id], '[cur_format]', '[cur_save_state]', [cur_conversation_lines], [cur_remember_up_to], '[cur_debugemail]', [cur_debugshow], [cur_debugmode], '[cur_default_aiml_pattern]', [cur_use_aiml_code], [cur_update_aiml_code]);
+INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state` , `conversation_lines` , `remember_up_to` , `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`) VALUES ([bot_id], '[bot_name]', '[bot_desc]', [bot_active], [bot_parent_id], '[format]', '[save_state]', [conversation_lines], [remember_up_to], '[debugemail]', [debugshow], [debugmode], '[default_aiml_pattern]', [use_aiml_code], [update_aiml_code]);
 endSQL;
   require_once ('../library/error_functions.php');
   require_once ('../library/db_functions.php');
   $conn = db_open();
-  for ($loop = 1; $loop <= $_SESSION['bot_count']; $loop++) {
-    $sql = str_replace('[cur_bot_ID]', $loop, $sql_template);
-    $sql = @str_replace('[cur_bot_name]',$_SESSION["bot_name_$loop"], $sql);
-    $sql = @str_replace('[cur_bot_desc]',$_SESSION["bot_desc_$loop"], $sql);
-    $sql = @str_replace('[cur_bot_active]',$_SESSION["bot_active_$loop"], $sql);
-    $sql = @str_replace('[cur_bot_parent_id]',$_SESSION['default_bot_id'], $sql);
-    $sql = @str_replace('[cur_format]',$_SESSION["format_$loop"], $sql);
+  $bot_id = $_SESSION["bot_id"];
+    $sql = str_replace('[bot_id]', $bot_id, $sql_template);
+    $sql = @str_replace('[bot_name]',$_SESSION["bot_name"], $sql);
+    $sql = @str_replace('[bot_desc]',$_SESSION["bot_desc"], $sql);
+    $sql = @str_replace('[bot_active]',$_SESSION["bot_active"], $sql);
+    $sql = @str_replace('[bot_parent_id]',1, $sql);
+    $sql = @str_replace('[format]',$_SESSION["format"], $sql);
     // "Use PHP from DB setting
-    if (!isset($_SESSION["use_aiml_code_$loop"])) $_SESSION["use_aiml_code_$loop"] = 0;
-    $sql = str_replace('[cur_use_aiml_code]',$_SESSION["use_aiml_code_$loop"], $sql);
-    $cur_use_aiml_code_checked = ($_SESSION["use_aiml_code_$loop"] == 1) ? ' checked="checked"' : '';
-    $sql = str_replace('[cur_use_aiml_code_checked]', $cur_use_aiml_code_checked, $sql);
+    if (!isset($_SESSION["use_aiml_code"])) $_SESSION["use_aiml_code"] = 0;
+    $sql = str_replace('[use_aiml_code]',$_SESSION["use_aiml_code"], $sql);
+    $use_aiml_code_checked = ($_SESSION["use_aiml_code"] == 1) ? ' checked="checked"' : '';
+    $sql = str_replace('[use_aiml_code_checked]', $use_aiml_code_checked, $sql);
     // "Update PHP in DB setting
-    if (!isset($_SESSION["update_aiml_code_$loop"])) $_SESSION["update_aiml_code_$loop"] = 0;
-    $cur_update_aiml_code_checked = ($_SESSION["update_aiml_code_$loop"] == 1) ? ' checked="checked"' : '';
-    $sql = str_replace('[cur_update_aiml_code]',$_SESSION["update_aiml_code_$loop"], $sql);
-    $sql = str_replace('[cur_update_aiml_code_checked]',$cur_update_aiml_code_checked, $sql);
-    $sql = @str_replace('[cur_save_state]',$_SESSION["save_state_$loop"], $sql);
-    $sql = @str_replace('[cur_conversation_lines]',$_SESSION["conversation_lines_$loop"], $sql);
-    $sql = @str_replace('[cur_remember_up_to]',$_SESSION["remember_up_to_$loop"], $sql);
-    $sql = str_replace('[cur_debugemail]',$_SESSION["default_debugemail"], $sql);
+    if (!isset($_SESSION["update_aiml_code"])) $_SESSION["update_aiml_code"] = 0;
+    $update_aiml_code_checked = ($_SESSION["update_aiml_code"] == 1) ? ' checked="checked"' : '';
+    $sql = str_replace('[update_aiml_code]',$_SESSION["update_aiml_code"], $sql);
+    $sql = str_replace('[update_aiml_code_checked]',$update_aiml_code_checked, $sql);
+    $sql = @str_replace('[save_state]',$_SESSION["save_state"], $sql);
+    $sql = @str_replace('[conversation_lines]',$_SESSION["conversation_lines"], $sql);
+    $sql = @str_replace('[remember_up_to]',$_SESSION["remember_up_to"], $sql);
+    $sql = str_replace('[debugemail]',$_SESSION["default_debugemail"], $sql);
     $sql = str_replace('[default_debugemail]',$_SESSION["default_debugemail"], $sql);
-    $sql = str_replace('[cur_debugshow]',$_SESSION["default_debugshow"], $sql);
-    $sql = str_replace('[cur_debugmode]',$_SESSION["default_debugmode"], $sql);
-    $sql = str_replace('[cur_default_aiml_pattern]',$_SESSION["default_pattern"], $sql);
-    $x = db_query($sql, $conn) or $_SESSION['errorMessage'] = 'Could not enter bot info for bot #' . $loop . '! Error = ' . mysql_error();
-  }
+    $sql = str_replace('[debugshow]',$_SESSION["default_debugshow"], $sql);
+    $sql = str_replace('[debugmode]',$_SESSION["default_debugmode"], $sql);
+    $sql = str_replace('[default_aiml_pattern]',$_SESSION["default_pattern"], $sql);
+    #$s = file_put_contents('botAddSQL.txt', $sql);
+    $x = db_query($sql, $conn) or $_SESSION['errorMessage'] = 'Could not enter bot info for bot #' . $bot_id . '! Error = ' . mysql_error();
   $encrypted_adm_dbp = md5($adm_dbp);
   $cur_ip = $_SERVER['REMOTE_ADDR'];
   $adminSQL = "insert ignore into `myprogramo` (`id`, `uname`, `pword`, `lastip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
@@ -247,19 +247,17 @@ endSQL;
 function page2form() {
   global $page_template;
   $out = '';
-  $namesArray = explode("\n", $_SESSION['botNames']);
-  for ($loop = 1; $loop <= $_SESSION['bot_count']; $loop++) {
-    $cur_use_aiml_code_checked = ($_SESSION["use_aiml_code_$loop"] == 1) ? ' checked="checked"' : '';
-    $cur_update_aiml_code_checked = ($_SESSION["update_aiml_code_$loop"] == 1) ? ' checked="checked"' : '';
-    $curConvoLines = (!empty($_SESSION["conversation_lines_$loop"])) ? $_SESSION["conversation_lines_$loop"] : $_SESSION['default_conversation_lines'];
+  $bot_id = 1;
+    #$use_aiml_code_checked = ($_SESSION["use_aiml_code"] == 1) ? ' checked="checked"' : '';
+    #$update_aiml_code_checked = ($_SESSION["update_aiml_code"] == 1) ? ' checked="checked"' : '';
+    $convoLines = (!empty($_SESSION["conversation_lines"])) ? $_SESSION["conversation_lines"] : $_SESSION['default_conversation_lines'];
     $tmpSection = getSection('BotsTableForm', $page_template);
-    $tmpSection = str_replace('[bot_ID]', $loop, $tmpSection);
-    $tmpSection = str_replace('[current_bot_name]', rtrim($namesArray[$loop-1]), $tmpSection);
-    $tmpSection = str_replace('[cur_use_aiml_code_checked]', $cur_use_aiml_code_checked, $tmpSection);
-    $tmpSection = str_replace('[cur_update_aiml_code_checked]', $cur_update_aiml_code_checked, $tmpSection);
-    $tmpSection = str_replace('[cl_value]', $curConvoLines, $tmpSection);
+    $tmpSection = str_replace('[bot_id]', $bot_id, $tmpSection);
+    #$tmpSection = str_replace('[bot_name]', $_SESSION["bot_name"], $tmpSection);
+    #$tmpSection = str_replace('[use_aiml_code_checked]', $use_aiml_code_checked, $tmpSection);
+    #$tmpSection = str_replace('[update_aiml_code_checked]', $update_aiml_code_checked, $tmpSection);
+    $tmpSection = str_replace('[cl_value]', $convoLines, $tmpSection);
     $out .= $tmpSection;
-  }
   return $out;
 }
 
@@ -268,15 +266,17 @@ function checkDBContents($postVars) {
   $x = file_put_contents(_INSTALL_PATH_ . $hostLocation . '_postVars.txt', print_r($postVars, true) . "\r\n");
   switch ($hostLocation) {
     case 'local':
-      $tmpDbh = $_SESSION['local_dbh'];
-      $tmpDbn = $_SESSION['local_dbn'];
-      $tmpDbu = $_SESSION['local_dbu'];
-      $tmpDbp = $_SESSION['local_dbp'];
+      $tmpDbh    = $_SESSION['local_dbh'];
+      $tmpDbn    = $_SESSION['local_dbn'];
+      $tmpDbu    = $_SESSION['local_dbu'];
+      $tmpDbp    = $_SESSION['local_dbp'];
+      $tmpDbPort = $_SESSION['local_dbPort'];
     default:
-      $tmpDbh = $_SESSION['remote_dbh'];
-      $tmpDbn = $_SESSION['remote_dbn'];
-      $tmpDbu = $_SESSION['remote_dbu'];
-      $tmpDbp = $_SESSION['remote_dbp'];
+      $tmpDbh    = $_SESSION['remote_dbh'];
+      $tmpDbn    = $_SESSION['remote_dbn'];
+      $tmpDbu    = $_SESSION['remote_dbu'];
+      $tmpDbp    = $_SESSION['remote_dbp'];
+      $tmpDbPort = $_SESSION['remote_dbPort'];
   }
 
   $death = <<<endDeath
@@ -296,7 +296,7 @@ endDeath;
   $conn = mysql_connect($tmpDbh, $tmpDbu, $tmpDbp) or die( "mysql_connect error:". mysql_errno() . ', ' . mysql_error() . " at line " . __LINE__ . ' of file ' . __FILE__ . ' in function ' . __FUNCTION__ . '.' . $death);
   mysql_select_db($tmpDbn,$conn);
   $sql = "show tables;";
-  $result = mysql_query($sql,$conn) or die ("Houston, we have a problem! " . mysql_error() . ", sql = $sql");
+  $result = mysql_query($sql,$conn) or die ("Houston, we have a problem! " . mysql_error() . ", sql = $sql<br />\nVars:<br />\n$death");
   $out = mysql_fetch_assoc($result);
   if (empty($out)) {
     $sql = file_get_contents('new.sql');

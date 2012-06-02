@@ -334,9 +334,9 @@ function load_bot_config($convoArr){
 	{
 		$convoArr['conversation']['debugmode']=1;
 	}
-	
-	
-	
+
+
+
 	return $convoArr;
 }
 	
@@ -397,7 +397,7 @@ function log_conversation_state($convoArr){
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
 		
-	$sql = "UPDATE `$dbn`.`users` 
+	$sql = "UPDATE `$dbn`.`users`
 				SET 
 				`state` = '$serialise_convo', 
 				`last_update` = NOW(), 
@@ -502,7 +502,7 @@ function check_set_convo_id($convoArr)
 **/
 function check_set_user($convoArr)
 {
-	global $default_convo_id,$con,$dbn;
+	global $default_convo_id,$con,$dbn, $unknown_user;
 	//check to see if user_name has been set if not set as default
   $convo_id = (isset($convoArr['conversation']['convo_id'])) ? $convoArr['conversation']['convo_id'] : session_id();
   $bot_id = $convoArr['conversation']['bot_id'];
@@ -518,7 +518,7 @@ function check_set_user($convoArr)
     $user_id = (!empty($row['id'])) ? $row['id'] : 0;
     $user_name = (!empty($row['name'])) ? $row['name'] : 'User';
   }
-	$convoArr['conversation']['user_name'] = (!empty($user_name)) ? $user_name : UNKNOWN_USER;
+	$convoArr['conversation']['user_name'] = (!empty($user_name)) ? $user_name : $unknown_user;
   #die("User name = $user_name<br />\n");
 	return $convoArr;
 }

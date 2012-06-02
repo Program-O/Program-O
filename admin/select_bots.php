@@ -58,17 +58,19 @@ function getBotParentList($current_parent,$dbconn) {
   $sql = "SELECT * FROM `bots` where bot_active = '1'";
   $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');;
 
-  $options = '                  <option value="0" SELECTED=SELECTED>No Parent Bot</option>';
+  $options = '                  <option value="0"[noBot]>No Parent Bot</option>';
 
   while($row = mysql_fetch_array($result)) {
+    if ($row['bot_id'] == 0) $options = str_replace('[noBot]', 'selected="selected"', $options);
     if($current_parent==$row['bot_id']) {
-      $sel = "SELECTED=SELECTED";
+      $sel = "selected=\"selected\"";
     }
     else {
       $sel = "";
     }
-    $options .= '                  <option value="'.$row['bot_id'].'" $sel>'.$row['bot_name'].'</option>';
+    $options .= '                  <option value="'.$row['bot_id'].'" '.$sel.'>'.$row['bot_name'].'</option>';
   }
+  $options = str_replace('[noBot]', 'selected="selected"', $options);
 
   return $options;
 }
@@ -98,6 +100,7 @@ function getSelectedBot() {
   $dm_i = "";
   $dm_ii = "";
   $dm_iii = "";
+  $dm_iv = "";
   if($_SESSION['poadmin']['bot_id']!="new") {
     $bot_id = $_SESSION['poadmin']['bot_id'];
     //get data for all of the bots from the db
@@ -115,61 +118,64 @@ function getSelectedBot() {
         }
       }
       if($bot_active=="1") {
-        $sel_yes = " SELECTED=SELECTED";
+        $sel_yes = ' selected="selected"';
       }
       else {
-        $sel_no = " SELECTED=SELECTED";
+        $sel_no = ' selected="selected"';
       }
       if($bot_save_state=="database") {
-        $sel_db = " SELECTED=SELECTED";
+        $sel_db = ' selected="selected"';
       }
       else {
-        $sel_session = " SELECTED=SELECTED";
+        $sel_session = ' selected="selected"';
       }
       if($bot_format=="html") {
-        $sel_html = " SELECTED=SELECTED";
+        $sel_html = ' selected="selected"';
       }
       elseif($bot_format=="xml") {
-        $sel_xml = " SELECTED=SELECTED";
+        $sel_xml = ' selected="selected"';
       }
       elseif($bot_format=="json") {
-        $sel_json = " SELECTED=SELECTED";
+        $sel_json = ' selected="selected"';
       }
       if($bot_use_aiml_code=="1") {
-        $sel_fuyes = " SELECTED=SELECTED";
+        $sel_fuyes = ' selected="selected"';
       }
       elseif($bot_use_aiml_code=="0") {
-        $sel_funo = " SELECTED=SELECTED";
+        $sel_funo = ' selected="selected"';
       }
       if($bot_update_aiml_code=="1") {
-        $sel_fyes = " SELECTED=SELECTED";
+        $sel_fyes = ' selected="selected"';
       }
       elseif($bot_update_aiml_code=="0") {
-        $sel_fno = " SELECTED=SELECTED";
+        $sel_fno = ' selected="selected"';
       }
       if($bot_debugshow=="0") {
-        $ds_ = " SELECTED=SELECTED";
+        $ds_ = ' selected="selected"';
       }
       elseif($bot_debugshow=="1") {
-        $ds_i = " SELECTED=SELECTED";
+        $ds_i = ' selected="selected"';
       }
       elseif($bot_debugshow=="2") {
-        $ds_ii = " SELECTED=SELECTED";
+        $ds_ii = ' selected="selected"';
       }
       elseif($bot_debugshow=="3") {
-        $ds_iii = " SELECTED=SELECTED";
+        $ds_iii = ' selected="selected"';
       }
       if($bot_debugmode=="0") {
-        $dm_ = " SELECTED=SELECTED";
+        $dm_ = ' selected="selected"';
       }
-      elseif($bot_debugshow=="1") {
-        $dm_i = " SELECTED=SELECTED";
+      elseif($bot_debugmode=="1") {
+        $dm_i = ' selected="selected"';
       }
-      elseif($bot_debugshow=="2") {
-        $dm_ii = " SELECTED=SELECTED";
+      elseif($bot_debugmode=="2") {
+        $dm_ii = ' selected="selected"';
       }
-      elseif($bot_debugshow=="3") {
-        $dm_iii = " SELECTED=SELECTED";
+      elseif($bot_debugmode=="3") {
+        $dm_iii = ' selected="selected"';
+      }
+      elseif($bot_debugmode=="4") {
+        $dm_iv = ' selected="selected"';
       }
       $action = "update";
     }
@@ -196,8 +202,12 @@ function getSelectedBot() {
     $bot_conversation_lines = "";
     $bot_remember_up_to = "";
     $bot_debugemail = "";
+    $debugemail_0 = "";
+    $debugemail_1 = "";
     $bot_debugshow = "";
     $bot_debugmode = "";
+    $bot_default_aiml_pattern = '';
+
   }
   $parent_options = getBotParentList($bot_parent_id,$dbconn);
   $searches = array(
@@ -205,7 +215,7 @@ function getSelectedBot() {
     '[sel_html]','[sel_xml]','[sel_json]','[sel_session]','[sel_db]','[sel_fyes]',
     '[sel_fno]','[sel_fuyes]','[sel_funo]','[bot_conversation_lines]','[bot_remember_up_to]',
     '[bot_debugemail]','[dm_]','[dm_i]','[dm_ii]','[dm_iii]','[ds_]','[ds_i]','[ds_ii]',
-    '[ds_iii]','[action]','[debugemail_0]','[debugemail_1]'
+    '[ds_iii]','[action]','[debugemail_0]','[debugemail_1]', '[bot_default_aiml_pattern]',
   );
   foreach ($searches as $search) {
     $replace = str_replace('[', '', $search);
@@ -226,6 +236,7 @@ function updateBotSelection() {
       $value = mysql_escape_string(trim(stripslashes($value)));
       if(($key != "bot_id")&&($key != "action")&&($value!="")) {
         $sql = "UPDATE `bots` SET `$key` ='$value' where `bot_id` = '".$_POST['bot_id']."' limit 1; ";
+        $x = file_put_contents(_ADMIN_PATH_ . 'updateBotSQL.txt', $sql);
         $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
         if(!$result) {
           $msg = 'Error updating bot details.';
@@ -381,10 +392,10 @@ function getChangeList() {
   //get bot names from the db
   $sql = "SELECT * FROM `bots` ORDER BY bot_name";
   $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
-  $options = '<option value="new" SELECTED=SELECTED>Add New Bot</option>' . "\n";
+  $options = '<option value="new" selected="selected">Add New Bot</option>' . "\n";
   while($row = mysql_fetch_array($result)) {
     if($_SESSION['poadmin']['bot_id']==$row['bot_id']) {
-      $sel = " SELECTED=SELECTED";
+      $sel = ' selected="selected"';
     }
     else {
       $sel= "";

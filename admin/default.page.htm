@@ -158,13 +158,13 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section LoginForm End -->
 <!-- Section ChangeBot Start -->
         <fieldset>
-          <form name="changebot" action="?page=select_bots" method="post">
+          <form id="changebot" action="?page=select_bots" method="post">
             <div>
               <label>Change Active Bot</label>
-              <select name="bot_id" id="bot_id" onChange="submit()">
+              <select name="bot_id" id="bot_id" onchange="submit()">
 [options]
               </select>
-              <input type="hidden" id="action" name="action" value="change">
+              <input type="hidden" id="action" name="action" value="change"/>
             </div>
           </form>
         </fieldset>
@@ -172,12 +172,12 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section SelectBotForm Start -->
 
 [blank]    <fieldset>
-      <form name="botAttributes" action="?page=select_bots" method="post">
+      <form id="botAttributes" action="?page=select_bots" method="post">
         <div class="leftHalf noBorder">
           <table width="100%">
             <tr class="row">
               <td><label for="bot_name"><span class="label">Bot Name</span></label></td>
-              <td><span class="formw"><input type="text"  class="fm-req" id="bot_name" name="bot_name" value="[bot_name]"></span></td>
+              <td><span class="formw"><input type="text"  class="fm-req" id="bot_name" name="bot_name" value="[bot_name]"/></span></td>
             </tr>
             <tr class="row">
               <td><label for="bot_active"><span class="label">Bot Active</span></label></td>
@@ -228,7 +228,7 @@ between the start and end section tags are the only parts of the template that a
               <td><label for="remember_up_to"><span class="label">Bot memory lines</span></label></td>
               <td>
                 <span class="formw">
-                  <input type="text"  class="fm-req" id="remember_up_to" name="remember_up_to" value="[bot_remember_up_to]">
+                  <input type="text"  class="fm-req" id="remember_up_to" name="remember_up_to" value="[bot_remember_up_to]"/>
                 </span>
               </td>
             </tr>
@@ -241,6 +241,14 @@ between the start and end section tags are the only parts of the template that a
                 </span>
               </td>
             </tr>
+            <tr class="row">
+              <td><label for="default_aiml_pattern"><span class="label">Default pickup line pattern</span></label></td>
+              <td>
+                <span class="formw">
+                  <input type="text" name="default_aiml_pattern" id="default_aiml_pattern" value="[bot_default_aiml_pattern]" />
+                </span>
+              </td>
+            </tr>
           </table>
         </div>
         <div class="rightHalf noBorder">
@@ -248,7 +256,7 @@ between the start and end section tags are the only parts of the template that a
           <tr class="row">
             <td><label for="bot_desc"><span class="label">Bot Desc</span></label></td>
             <td><span class="formw">
-              <textarea id="bot_desc" name="bot_desc">[bot_desc]</textarea>
+              <textarea rows="4" cols="40" id="bot_desc" name="bot_desc">[bot_desc]</textarea>
             </span></td>
           </tr>
           <tr class="row">
@@ -271,7 +279,7 @@ between the start and end section tags are the only parts of the template that a
           <tr class="row">
             <td><label for="conversation_lines"><span class="label">Chat Lines To Display</span></label></td>
             <td><span class="formw">
-              <input type="text"  class="fm-req" id="conversation_lines" name="conversation_lines" value="[bot_conversation_lines]">
+              <input type="text"  class="fm-req" id="conversation_lines" name="conversation_lines" value="[bot_conversation_lines]"/>
             </span></td>
           </tr>
             <tr class="row">
@@ -295,14 +303,15 @@ between the start and end section tags are the only parts of the template that a
                   <option value="1" [dm_i]>general + errors</option>
                   <option value="2" [dm_ii]>general + errors + sql</option>
                   <option value="3" [dm_iii]>show everything</option>
+                  <option value="4" [dm_iv]>Test</option>
               </select>
             </span></td>
           </tr>
           </table>
         </div>
-        <input type="hidden" id="bot_id" name="bot_id" value="[bot_id]">
+        <input type="hidden" id="bot_id" name="bot_id" value="[bot_id]"/>
         <div id="fm-submit" class="row fm-req center">
-          <input type="submit" name="action" id="action" value="[action]">
+          <input type="submit" name="action" id="action" value="[action]"/>
         </div>
       </form>
     </fieldset>
@@ -320,7 +329,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section ConversationLogs1 End -->
 <!-- Section SpellcheckForm Start -->
         <fieldset style="margin-bottom: 3px;">
-          <form name="spellCheck" action="./?page=spellcheck&amp;group=[group]" method="post">
+          <form id="spellCheck" action="./?page=spellcheck&amp;group=[group]" method="post">
             <div class="row bold">Add a Misspelled word and it's correction:</div>
             <div class="row fm-opt">
               <label for="missspell">Misspell: </label>
@@ -331,25 +340,25 @@ between the start and end section tags are the only parts of the template that a
               <input type="text" id="correction" name="correction" />
             </div>
             <div id="row fm-submit" class="fm-req">
-              <input type="submit" name="action" id="action" value="add">
+              <input type="submit" name="action" id="action" value="add"/>
             </div>
             </form>
           </fieldset>
 <!-- Section SpellcheckForm End -->
 <!-- Section SearchSpellForm Start -->
           <fieldset style="margin-bottom: 3px;">
-            <form name="search" action="./?page=spellcheck&amp;group=[group]" method="post">
+            <form id="search" action="./?page=spellcheck&amp;group=[group]" method="post">
             <div class="row bold">Search for a Misspelled word:</div>
               <div class="row fm-req">
                 <input type="text" id="search" name="search" />
-                <input type="submit" name="action" id="action" value="search">
+                <input type="submit" name="action" id="action" value="search"/>
               </div>
             </form>
           </fieldset>
 <!-- Section SearchSpellForm End -->
 <!-- Section EditSpellForm Start -->
         <fieldset style="margin-bottom: 3px;">
-          <form name="spell" action="./?page=spellcheck&amp;group=[group]" method="post">
+          <form id="spell" action="./?page=spellcheck&amp;group=[group]" method="post">
              <div class="row bold">Edit the entry for the Misspelled word [missspelling]:</div>
            <div class="row fm-opt">
               <label for="topic">Misspelling: </label>
@@ -360,8 +369,8 @@ between the start and end section tags are the only parts of the template that a
               <input type="text" id="correction" name="correction"  value="[correction]" />
             </div>
             <div id="fm-submit" class="row fm-req">
-              <input type="hidden" name="id" id="id" value="[id]">
-              <input type="submit" name="action" id="action" value="update">
+              <input type="hidden" name="id" id="id" value="[id]"/>
+              <input type="submit" name="action" id="action" value="update"/>
               <input type="submit" name="action" id="action" value="Delete" onclick="return confirm('Are you sure you want to delete this entry?');"/>
             </div>
           </form>
@@ -369,7 +378,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section EditSpellForm End -->
 <!-- Section WordCensorForm Start -->
         <fieldset style="margin-bottom: 3px;">
-          <form name="wordCensor" action="./?page=wordcensor&amp;group=[group]" method="post">
+          <form id="wordCensor" action="./?page=wordcensor&amp;group=[group]" method="post">
             <div class="row bold">Add an improper word and it's replacement:</div>
             <div class="row fm-opt">
               <label for="word_to_censor">Bad word: </label>
@@ -388,18 +397,18 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section WordCensorForm End -->
 <!-- Section SearchWordCensorForm Start -->
           <fieldset style="margin-bottom: 3px;">
-            <form name="search" action="./?page=wordcensor&amp;group=[group]" method="post">
+            <form id="search" action="./?page=wordcensor&amp;group=[group]" method="post">
             <div class="row bold">Search for an improper word:</div>
               <div class="row fm-req">
                 <input type="text" id="search" name="search" />
-                <input type="submit" name="action" id="action" value="search">
+                <input type="submit" name="action" id="action" value="search"/>
               </div>
             </form>
           </fieldset>
 <!-- Section SearchWordCensorForm End -->
 <!-- Section EditWordCensorForm Start -->
         <fieldset style="margin-bottom: 3px;">
-          <form name="wordCensor" action="./?page=wordcensor&amp;group=[group]" method="post">
+          <form id="wordCensor" action="./?page=wordcensor&amp;group=[group]" method="post">
              <div class="row bold">Edit the entry for the improper word [word_to_censor]:</div>
            <div class="row fm-opt">
               <label for="topic">Bad Word: </label>
@@ -410,7 +419,7 @@ between the start and end section tags are the only parts of the template that a
               <input type="text" id="replace_with" name="replace_with"  value="[replace_with]" />
             </div>
             <div id="fm-submit" class="row fm-req">
-              <input type="hidden" name="censor_id" id="censor_id" value="[censor_id]">
+              <input type="hidden" name="censor_id" id="censor_id" value="[censor_id]"/>
               <input type="submit" name="action" id="action" value="update" />&nbsp;
               <input type="submit" name="action" id="action" value="Delete" onclick="return confirm('Are you sure you want to delete this entry?');"/>
             </div>
@@ -426,7 +435,7 @@ between the start and end section tags are the only parts of the template that a
           </div>
 <!-- Section TeachMain End -->
 <!-- Section TeachBotForm Start -->
-[blank]            <form name="teach" action="./?page=teach" method="post">
+[blank]            <form id="teach" action="./?page=teach" method="post">
               <fieldset>
                 <div class="row">
                   <label for="topic"><span class="twentyPercent">Topic: </span></label>
@@ -446,7 +455,7 @@ between the start and end section tags are the only parts of the template that a
                 </div>
                 <div class="row">For help, click the icon in the title, above.</div>
               <div id="row" class="fm-req">
-                <input type="submit" name="action" id="action" value="teach">
+                <input type="submit" name="action" id="action" value="teach"/>
               </div>
             </fieldset>
           </form>
@@ -622,10 +631,10 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section MembersMain End -->
 <!-- Section MembersForm Start -->
 [blank]          <p><strong>[action] Admin Account:</strong></p>
-            <form name="members" action="./?page=members" method="post">
+            <form id="members" action="./?page=members" method="post">
               <fieldset class="noBorder">
                 <div class="row">
-                  <input name="id" id="id" value="[id]" AUTOCOMPLETE="off" disabled="disabled" />
+                  <input name="id" id="id" value="[id]" autocomplete="off" disabled="disabled" />
                   <label for="id">Account ID: (<u>not editable</u>) </label>
                 </div>
                 <div class="row">
@@ -633,11 +642,11 @@ between the start and end section tags are the only parts of the template that a
                   <label for="uname">Login Name: </label>
                 </div>
                 <div class="row">
-                  <input name="pword" id="pword" type="password" AUTOCOMPLETE="off">
+                  <input name="pword" id="pword" type="password" autocomplete="off">
                   <label for="pword">Password: </label>
                 </div>
                 <div class="row">
-                  <input name="pwordConfirm" id="pwordConfirm" type="password" AUTOCOMPLETE="off">
+                  <input name="pwordConfirm" id="pwordConfirm" type="password" autocomplete="off">
                   <label for="pwordConfirm"> Confirm Password: </label>
                 </div>
                 <div class="row">
@@ -650,7 +659,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section MembersForm End -->
 <!-- Section MembersListForm Start -->
 [blank]            <div class="row">
-              <form name="memberList" action="./?page=members" method="post">
+              <form id="memberList" action="./?page=members" method="post">
                 <fieldset class="noBorder">
                   <label for="memberSelect">Current Admins: </label>
                   <select name="memberSelect" id="memberSelect" size="1">
@@ -683,20 +692,20 @@ between the start and end section tags are the only parts of the template that a
           </div>
 <!-- Section UploadMain End -->
 <!-- Section UploadAIMLForm Start -->
-[blank]            <form name="upload" enctype="multipart/form-data"  action="" method="post">
+[blank]            <form id="upload" enctype="multipart/form-data"  action="" method="post">
               <fieldset class="noBorder">
                 <div class="row">
                   <label for="aimlfile">File:</label>
                   <input type="file" id="aimlfile" name="aimlfile" />&nbsp; &nbsp;
                   <input type="checkbox" id="clearDB" name="clearDB" />&nbsp; &nbsp;
                   <label for="clearDB">Clear the database of entries from this file</label>
-                  <input type="submit" name="action" id="action" value="upload">
+                  <input type="submit" name="action" id="action" value="upload"/>
                 </div>
               </fieldset>
             </form>
 <!-- Section UploadAIMLForm End -->
 <!-- Section SearchAIMLForm Start -->
-[blank]            <form name="search" action="./?page=search" method="post">
+[blank]            <form id="search" action="./?page=search" method="post">
               <fieldset>
                 <div class="row">
                   <label for="search_topic"><span class="twentyPercent">Search Topic: </span></label>
@@ -723,13 +732,13 @@ between the start and end section tags are the only parts of the template that a
                   finding what you're looking for (e.g. "I % you", "%hot" or "%live%")
                 </div>
                 <div class="row">
-                  <input type="submit" name="action" id="action" value="search">
+                  <input type="submit" name="action" id="action" value="search"/>
                 </div>
               </fieldset>
             </form>
 <!-- Section SearchAIMLForm End -->
 <!-- Section EditAIMLForm Start -->
-          <form name="edit" action="./?page=search" method="post">
+          <form id="edit" action="./?page=search" method="post">
             <fieldset>
               <div class="row fm-opt">
                 <label for="topic"><span class="twentyPercent">Topic: </span></label>
@@ -752,8 +761,8 @@ between the start and end section tags are the only parts of the template that a
                 <span class="eightyPercent"><input type="text" id="filename" name="filename"  value="[filename]" class="wide" /></span>
               </div>
               <div id="row fm-submit" class="fm-req">
-                <input type="hidden" name="id" id="id" value="[id]">
-                <input type="submit" name="action" id="action" value="update">
+                <input type="hidden" name="id" id="id" value="[id]"/>
+                <input type="submit" name="action" id="action" value="update"/>
               </div>
             </fieldset>
           </form>

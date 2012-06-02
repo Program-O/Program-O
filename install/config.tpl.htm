@@ -139,7 +139,7 @@
           var url = 'help.php?page=1';
           helpPopups(url);
         });
-        $('span.helpButton').attr('title','Click here to get help or the current item.');
+        $('span.helpButton').attr('title','Click here to get help for the current item.');
         $('span.helpButton').click(function() {
           //alert($(this).attr('id'));
           var tmpHash = $(this).attr('id');
@@ -380,7 +380,7 @@
             <div class="row"><span class="red">* </span>Note: Place each bot name on a separate line. At least one name is required.</div>
             <div class="row">
               For more detailed information with this page, please see the <a href="help.php" target="_blank">Help Page</a>, or
-              click the help icon <img src="../../admin/images/help_small.png" width="16" height="16" alt="" /> for an individual field.
+              click the help icon <img src="../admin/images/help_small.png" width="16" height="16" alt="" /> for an individual field.
             </div>
 <!-- Section Page 1 Notes End -->
 <!-- Section Page 2 Notes Start -->
@@ -400,37 +400,38 @@
             </div>
 <!-- Section Page 3 Notes End -->
 <!-- Section BotsTableForm Start -->
-            <div class="row bold center"><b>Bot Info for [current_bot_name]</b></div>
+            <div class="row bold center"><b>Bot Info for the Primary Chatbot</b></div>
             <div class="row">
-              <label for="bot_name_[bot_ID]">
+              <label for="bot_name">
                 <span class="label">Bot Name:</span>
               </label>
               <span class="formw">
-                <input name="bot_name_[bot_ID]" id="bot_name_[bot_ID]" value="[current_bot_name]" />
+                <input name="bot_name" id="bot_name" value="myBot" />
+                <input type="hidden" name="bot_id" value="1" />
               </span>
             </div>
             <div class="row">
-              <label for="bot_desc_[bot_ID]">
+              <label for="bot_desc">
                 <span class="label">Bot Description:</span>
               </label>
               <span class="formxw">
-                <input name="bot_desc_[bot_ID]" id="bot_desc_[bot_ID]">
+                <input name="bot_desc" id="bot_desc">
               </span>
             </div>
             <div class="row">
-              <label for="bot_active_[bot_ID]">
+              <label for="bot_active">
                 <span class="label">Active?</span>
               </label>
               <span class="formxw">
-                <input type="checkbox" name="bot_active_[bot_ID]" id="bot_active_[bot_ID]" value="1" checked="checked" />
+                <input type="checkbox" name="bot_active" id="bot_active" value="1" checked="checked" />
               </span>
             </div>
             <div class="row">
-              <label for="format_[bot_ID]">
+              <label for="format">
                 <span class="label">Response Format:</span>
               </label>
               <span class="formw">
-                <select name="format_[bot_ID]" id="format_[bot_ID]" size="1">
+                <select name="format" id="format" size="1">
                   <option value="html" selected="selected">HTML</option>
                   <option value="json">JSON</option>
                   <option value="xml">XML</option>
@@ -438,46 +439,48 @@
               </span>
             </div>
             <div class="row">
-              <label for="use_aiml_code_[bot_ID]">
+              <label for="use_aiml_code">
                 <span class="label">Use Stored PHP Code from DB?</span>
               </label>
               <span class="formxw">
-                <input type="checkbox" name="use_aiml_code_[bot_ID]" id="use_aiml_code_[bot_ID]" value="1"[cur_use_aiml_code_checked] />
+                <input type="checkbox" name="use_aiml_code" id="use_aiml_code" value="1"[use_aiml_code_checked] />
+                <input type="hidden" name="default_use_aiml_code" value="0" />
               </span>
             </div>
             <div class="row">
-              <label for="update_aiml_code_[bot_ID]">
+              <label for="update_aiml_code">
                 <span class="label">Store PHP code in DB?</span>
               </label>
               <span class="formxw">
-                <input type="checkbox" name="update_aiml_code_[bot_ID]" id="update_aiml_code_[bot_ID]" value="1"[cur_update_aiml_code_checked] />
+                <input type="checkbox" name="update_aiml_code" id="update_aiml_code" value="1"[update_aiml_code_checked] />
+                <input type="hidden" name="default_update_aiml_code" value="0" />
               </span>
             </div>
             <div class="row">
-              <label for="save_state_[bot_ID]">
+              <label for="save_state">
                 <span class="label">User Variable Storage:</span>
               </label>
               <span class="formw">
-                <select name="save_state_[bot_ID]" id="save_state_[bot_ID]" size="1">
+                <select name="save_state" id="save_state" size="1">
                   <option value="session" selected="selected">Session</option>
                   <option value="database">Database</option>
                 </select>
               </span>
             </div>
             <div class="row">
-              <label for="conversation_lines_[bot_ID]">
+              <label for="conversation_lines">
                 <span class="label">Conversation Lines:</span>
               </label>
               <span class="formw">
-                <input name="conversation_lines_[bot_ID]" id="conversation_lines_[bot_ID]" value="[cl_value]" />
+                <input name="conversation_lines" id="conversation_lines" value="[cl_value]" />
               </span>
             </div>
             <div class="row">
-              <label for="remember_up_to_[bot_ID]">
+              <label for="remember_up_to">
                 <span class="label">Lines Remembered (history):</span>
               </label>
               <span class="formw">
-                <input name="remember_up_to_[bot_ID]" id="remember_up_to_[bot_ID]" value="10" />
+                <input name="remember_up_to" id="remember_up_to" value="10" />
               </span>
             </div>
 <!-- Section BotsTableForm End -->

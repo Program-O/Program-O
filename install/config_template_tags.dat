@@ -52,4 +52,6 @@
 [remote_writetotemp]
 [remotehost]
 [rsTZ]
+[use_aiml_code]
+[update_aiml_code]
 [writetotemp]

@@ -54,9 +54,9 @@ function myErrorHandler($errno, $errstr, $errfile, $errline) {
  * @param  string $error - the mysql_error
  * @param  string $erno - the mysql_error
 **/
-function sqlErrorHandler( $sql, $error, $erno){
-    $info = "MYSQL ERROR $erno - $error when excuting $sql";
-	runDebug('see above', 'see above', 'see above', $info, 1);
+function sqlErrorHandler( $sql, $error, $erno, $file, $function, $line){
+    $info = "MYSQL ERROR $erno - $error when excuting\n $sql";
+	runDebug($file, $function, $line, $info, 1);
 }
 
 

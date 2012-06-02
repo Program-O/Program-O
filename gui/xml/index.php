@@ -44,7 +44,7 @@ endResponse;
   define("CHATBOT_URL_PATH",$chatbotURLpath);
 
   $send = "http://".$_SERVER['HTTP_HOST']. CHATBOT_URL_PATH . "/conversation_start.php?say=$say&convo_id=$convo_id&bot_id=$bot_id&format=$format";
-  $X = file_put_contents('URL.txt', "$send\r\n",FILE_APPEND);
+  #$X = file_put_contents('URL.txt', "$send\r\n",FILE_APPEND);
 #die();
   $sXML = trim(get_response($send));
   /*
@@ -52,7 +52,7 @@ endResponse;
   $response = str_replace("\t\t", "\n", $response);
   $response = str_replace("\t", "\n", $response);
   */
-  file_put_contents('conversationXML.txt', $sXML);
+  #file_put_contents('conversationXML.txt', $sXML);
   $xml = new SimpleXMLElement($sXML);
   #$xmlConversation = $xml->conversation;
   #$user_name = $xmlConversation->user_name;

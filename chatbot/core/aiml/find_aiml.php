@@ -491,14 +491,15 @@ function find_aiml_matches($convoArr){
 	$bot_id = get_convo_var($convoArr,"conversation","bot_id");
 	$bot_parent_id = get_convo_var($convoArr,"conversation","bot_parent_id");
 	$default_aiml_pattern = get_convo_var($convoArr,"conversation","default_aiml_pattern");
-	$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
-	
+	#$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
+	$lookingfor = mysql_escape_string(get_convo_var($convoArr,"aiml","lookingfor"));
+
 	//get the first and last words of the cleaned user input
 	$lastInputWord = get_last_word($lookingfor);
 	$firstInputWord = get_first_word($lookingfor);
-	
+
 	//get the stored topic
-	$storedtopic = get_convo_var($convoArr,"topic");
+	$storedtopic = mysql_escape_string(get_convo_var($convoArr,"topic"));
 		
 	//get the cleaned user input
 	$lastthat = get_convo_var($convoArr,'that','',1,1);

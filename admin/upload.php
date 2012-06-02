@@ -112,19 +112,29 @@ endScript;
 $xml = new DOMDocument();
 $xml->load('./lures.xml');
 */
-    $aimlFile = file_get_contents($file);
-    $validRootTag = '<aiml version="1.0.1" xmlns="http://alicebot.org/2001/AIML-1.0.1">';
-    $curRootTagStart = stripos($aimlFile,'<aiml',0);
-    $curRootTagEnd   = strpos($aimlFile,'>', $curRootTagStart) + 1;
-    $curRootTagLen   = $curRootTagEnd - $curRootTagStart;
-    $curRootTag      = substr($aimlFile, $curRootTagStart, $curRootTagLen);
-    if ($curRootTag !== $validRootTag) $aimlFile = str_ireplace($curRootTag, $validRootTag, $aimlFile);
-    #die("<pre>$aimlFile</pre>\n");
+
+     /*******************************************************/
+    /*       Set up for validation from a common DTD       */
+   /*       This will involve removing the XML and        */
+  /*       AIML tags from the beginning of the file      */
+ /*       and replacing them with our own tags          */
+/*******************************************************/
+    $aimlContent = file_get_contents($file);
+    $validAIMLHeader = '<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE aiml PUBLIC "-//W3C//DTD Specification Version 1.0//EN" "http://www.geekcavecreations.com/xml/aiml.dtd">
+<!--DOCTYPE aiml SYSTEM "../config/aiml.dtd"-->
+<aiml version="1.0.1" xmlns="http://alicebot.org/2001/AIML-1.0.1">';
+    $aimlTagStart = stripos($aimlContent,'<aiml',0);
+    $aimlTagEnd   = strpos($aimlContent,'>', $aimlTagStart) + 1;
+    $aimlFile     = $validAIMLHeader . substr($aimlContent,$aimlTagEnd);
+    #die('<pre>'.htmlentities($aimlFile)."</pre>\n");
+    $saveFile = str_replace('./uploads',_ADMIN_PATH_.'aiml',$file);
+    #if (!file_exists($saveFile)) file_put_contents("$saveFile", $aimlFile);
     $validate = new DOMDocument();
     $validate->loadXML($aimlFile);
     $validate->preserveWhiteSpace = false;
     $validate->formatOutput = true;
-    if (!$validate->schemaValidate('./aiml.xsd')) {
+    if ($validate->validate() === false) {
       $msg = "Cannot parse file $file! Please note errors that follow:\n";
 
       $errors = libxml_get_errors();
