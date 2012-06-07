@@ -138,16 +138,16 @@ function getSelectedBot() {
       elseif($bot_format=="json") {
         $sel_json = ' selected="selected"';
       }
-      if($bot_use_aiml_code=="1") {
+      if($use_aiml_code=="1") {
         $sel_fuyes = ' selected="selected"';
       }
-      elseif($bot_use_aiml_code=="0") {
+      elseif($use_aiml_code=="0") {
         $sel_funo = ' selected="selected"';
       }
-      if($bot_update_aiml_code=="1") {
+      if($update_aiml_code=="1") {
         $sel_fyes = ' selected="selected"';
       }
-      elseif($bot_update_aiml_code=="0") {
+      elseif($update_aiml_code=="0") {
         $sel_fno = ' selected="selected"';
       }
       if($bot_debugshow=="0") {

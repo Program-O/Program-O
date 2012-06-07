@@ -31,11 +31,16 @@ label { cursor: pointer; margin-right: 20px; }
 .leftHalf table tr td, .rightHalf table tr td {vertical-align: top;}
 div.row span.label {float: left; width: 49.5%; text-align: left; padding-left: 3px; background-color: #DDFFFF; border: 1px outset #999; padding-top: 3px; padding-bottom: 3px;}
 div.row span.label:hover, div.row span.formw:hover {background-color: #EEE;}
-td span.label {float:left;width: 99%; text-align: left; padding-left: 3px; background-color: #DDFFFF; border: 1px outset #999; padding-top: 3px; padding-bottom: 3px; vertical-align: top;}
-td span.label:hover, div.row span.formw:hover {background-color: #EEE;}
-td span.formw {float:right;width: 99%; text-align: left; background-color: #DDFFFF; border: 1px outset #999; padding-top: 2px; padding-bottom: 2px;}
-td span.formw input, div.row span.formw textarea { width: 150px; margin: 0; }
-td span.formw input[type="radio"] { width: auto; margin-right: 5px; }
+td.label {text-align: left; padding-left: 3px; background-color: #DDFFFF; border: 1px outset #999; padding-top: 3px; padding-bottom: 3px; vertical-align: top;}
+td.label:hover, div.row span.formw:hover {background-color: #EEE;}
+td.label label {float: left; width: 100%; margin: 0; background-color: transparent;}
+td.label span {float: right;}
+td.label span.required {float: right;}
+td.formw {text-align: left; background-color: #DDFFFF; border: 1px outset #999; padding-top: 2px; padding-bottom: 2px;}
+td.formw input, div.row span.formw textarea { width: 98%; margin: 0 1%; }
+td.formw input[type="radio"] { width: auto; margin-right: 5px; }
+td.formw input[type="checkbox"], td.formw select { width: 100%; margin: 0; float: left; text-align: left; }
+td.underline {border: 2px outset #666;border-top: 1px outset #666; border-left: 1px outset #666;}
 div.row span.formw {float: right; clear: none; width: 49.5%; text-align: left; background-color: #DDFFFF; border: 1px outset #999; padding-top: 2px; padding-bottom: 2px;}
 div.row span.formw input, div.row span.formw textarea { width: 150px; margin: 0; }
 div.row span.formxw input, div.row span.formxw textarea { width: 80%; margin: 0; margin-left: 6px; margin-right: 2px; }
@@ -60,6 +65,7 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
 .testBorder { border: 1px solid red; }
 .center { text-align: center; }
 .bold { font-weight: bold; }
+.big { font-size: larger; }
 .narrow { padding-left: 0; float: left;width: 25%;text-align: left; border: 1px dashed blue;}
 .errMsg {
   position: absolute;
@@ -98,10 +104,13 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
 .red {
   background-color: transparent;
   color: red;
-  font-size: large;
-  font-weight: bold;
+  /*font-size: large;
+  font-weight: bold;*/
 }
 .orange { background-color: transparent; color: orange }
+.small {
+  font-size: smaller;
+}
 .validCSS { float: right; margin-top: 10px; }
 .validXHTML { float: left; margin-top: 10px; margin-left: 5px; }
 .userlist {
@@ -608,6 +617,8 @@ border:none;
   background:url(images/help_small.png) no-repeat 0 0;
   width: 18px;
   height: 18px;
+  padding: 0;
+  margin: 0;
 }
 
 div#AIML_List {
@@ -658,13 +669,15 @@ table td#notes {
   vertical-align: top;
 }
 
+#notes {
+  text-align: left; background-color: pink; border: none; height: 80px;
+}
+
+#notes div {background-color: transparent; border: none; height: 20px; margin: 3px; padding: 2px;}
 
 .floatRight {
   float: right;
   clear: none;
   }
 
-span.formw label {
-  white-space: nowrap;
-}
-
+#helpLink1 {float: left; margin-bottom: 10px;}

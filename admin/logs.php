@@ -79,7 +79,7 @@ function getUserNames() {
 
 function getuserList($showing) {
   //db globals
-  global $template, $adm_dbn;
+  global $template;
   $nameList = getUserNames();
   $curUserid = (isset($_GET['id'])) ? $_GET['id'] : -1;
   #die ("user names:<br />\n" . print_r($nameList, true) . "\n<br />\n");

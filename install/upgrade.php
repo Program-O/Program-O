@@ -4,12 +4,14 @@
 * PROGRAM O 
 * Version: 2.0.1
 * FILE: install/upgrade.php
-* AUTHOR: ELIZABETH PERREAU
-* DATE: MAY 4TH 2011
+* AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
+* DATE: JUNE 4TH 2012
 * DETAILS: PLEASE RUN THIS FILE TO UPGRADE THE DATABASE FROM VERSION 1 TO VERSION 2
 ***************************************/
 
-	include("../config/global_config.php");
+  if (!file_exists('../config/global_config.php')) header('location: ../install/install_programo.php');
+  require_once('../config/global_config.php');
+
 
 	//load shared files
 	include_once(_LIB_PATH_."db_functions.php");
@@ -51,7 +53,7 @@
 		if($result)	{
 			outputDebug( __FILE__, __FUNCTION__, __LINE__, "Created bot table");
 		} else {
-			outputDebug( __FILE__, __FUNCTION__, __LINE__, "Error: Creating bot table - Exiting");
+			outputDebug( __FILE__, __FUNCTION__, __LINE__, "Errorwhile creating bot table - Exiting");
 			exit;
 		}
 		
@@ -63,7 +65,7 @@
 		if($result)	{
 			outputDebug( __FILE__, __FUNCTION__, __LINE__, "Added default bot");
 		} else {
-			outputDebug( __FILE__, __FUNCTION__, __LINE__, "Error: Adding default bot - Exiting");
+			outputDebug( __FILE__, __FUNCTION__, __LINE__, "Error while adding default bot - Exiting");
 			exit;
 		}		
 		
@@ -80,7 +82,7 @@
 		if($result)	{
 			outputDebug( __FILE__, __FUNCTION__, __LINE__, "Altered AIML tbl");
 		} else {
-			outputDebug( __FILE__, __FUNCTION__, __LINE__, "Error: Altering AIML tabl - Exiting");
+			outputDebug( __FILE__, __FUNCTION__, __LINE__, "Error while altering AIML tabl - Exiting");
 			exit;
 		}
 	}

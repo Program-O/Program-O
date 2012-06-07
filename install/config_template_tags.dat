@@ -28,7 +28,7 @@
 [local_admin_dbu]
 [local_admin_dbp]
 [localhost]
-[lsTZ]
+[tzLocale]
 [quickdebug]
 [remote_admin_dbh]
 [remote_admin_dbn]

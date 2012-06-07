@@ -10,7 +10,9 @@
     XML interface
 ***************************************/
 
-  include_once('../../config/global_config.php');
+  if (!file_exists('../config/global_config.php')) header('location: ../install/install_programo.php');
+  require_once('../config/global_config.php');
+
 $response = '';
 session_start();
 function get_response($path){

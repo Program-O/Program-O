@@ -8,7 +8,9 @@
 //-----------------------------------------------------------------------------------------------
 // index.php
 
-  require_once("../config/global_config.php");
+  if (!file_exists('../config/global_config.php')) header('location: ../install/install_programo.php');
+  require_once('../config/global_config.php');
+
   error_reporting(E_ALL);
   ini_set('log_errors', true);
   ini_set('error_log', _ADMIN_PATH_ . 'error.log');
@@ -16,14 +18,9 @@
   ini_set('display_errors', false);
   $msg = '';
 
-  # Show errors on the dev server. Comment out or remove to disable.
-  if($server==$dev_host or ((!empty($alternate_local_server_name) and  $server == $alternate_local_server_name))) {
-    ini_set('display_errors', true);
-  }
-
 
   $bot_name = 'unknown';
-  $bot_id = 0;
+  $bot_id = 1;
   session_start();
   $myPage = (isset($_GET['myPage'])) ? $_GET['myPage'] : '';
   $hide_logo = (isset($_SESSION['display'])) ? $_SESSION['display'] : '';
