@@ -94,19 +94,18 @@ function Save() {
 
   // Now, update the data to the database, starting with making sure the tables are installed
   $sql = "show tables;";
-  $conn = mysql_connect($myPostVars['dbh'], $myPostVars['dbu'], $myPostVars['dbp']) or $_SESSION['errorMessage'] =  "mysql_connect error:". mysql_errno() . ', ' . mysql_error() . " at line " . __LINE__ . ' of file ' . __FILE__ . ' in function ' . __FUNCTION__;
-  mysql_select_db($myPostVars['dbn'],$conn);
-  $result = mysql_query($sql,$conn) or $_SESSION['errorMessage'] = "Houston, we have a problem! " . mysql_error() . ", sql = $sql<br />\nVars:<br />\n$death";
+  $conn = mysql_connect($myPostVars['dbh'], $myPostVars['dbu'], $myPostVars['dbp']) or install_error('Could not connect to the database!',mysql_error(), $sql);
+  $dbn = $myPostVars['dbn'];
+  $db = mysql_select_db($dbn,$conn) or install_error("Can't select the database $dbn!", mysql_error(), "use $dbn");
+  $result = mysql_query($sql,$conn) or install_error('Unknown database error!',mysql_error(), $sql);
   $out = mysql_fetch_assoc($result);
   if (empty($out)) {
     $sql = file_get_contents('new.sql');
     $queries = preg_split("/;/", $sql);
     foreach ($queries as $query){
-      $death .= "sql:\n$query\n\n";
-#die("This is where I died: " . __FILE__ . ', line ' . __LINE__ . "\nDeath = $death");
       if (strlen(trim($query)) > 0) {
-        $result = mysql_query($query,$conn) or $_SESSION['errorMessage'] = "Houston, we have a problem! " . mysql_error() . ", sql:\n<pre>$wuery\n</pre>\n";
-        $success = mysql_affected_rows($result);
+        $result = mysql_query($query,$conn) or install_error('Error creating new tables for DB!',mysql_error(), $sql);
+        $success = mysql_affected_rows();
       }
     }
   }
@@ -115,7 +114,6 @@ INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_
 endSQL;
   require_once (_LIB_PATH_ . 'error_functions.php');
   require_once (_LIB_PATH_ . 'db_functions.php');
-  $conn = db_open();
   $bot_id = 1;
   $sql = str_replace('[bot_id]', $bot_id, $sql_template);
   $sql = str_replace('[bot_name]',$myPostVars["bot_name"], $sql);
@@ -138,17 +136,29 @@ endSQL;
   $sql = str_replace('[debugmode]',$myPostVars["default_debugmode"], $sql);
   $sql = str_replace('[default_aiml_pattern]',$myPostVars["default_pattern"], $sql);
   $s = file_put_contents('botAddSQL.txt', $sql);
-  $x = db_query($sql, $conn) or $_SESSION['errorMessage'] = 'Could not enter bot info for bot #' . $bot_id . '! Error = ' . mysql_error();
+  $x = db_query($sql, $conn) or install_error('Could not enter bot info for bot #' . $bot_id . '!', mysql_error(), $sql);
   $encrypted_adm_dbp = md5($myPostVars["adm_dbp"]);
   $adm_dbu = $myPostVars["adm_dbu"];
   $cur_ip = $_SERVER['REMOTE_ADDR'];
-  $adminSQL = "insert ignore into `myprogramo` (`id`, `uname`, `pword`, `lastip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
-  $result = db_query($adminSQL, $conn) or $_SESSION['errorMessage'] = 'Could not add admin account! Error = ' . mysql_error() . "user = $adm_dbu, pass = $adm_dbp<br>\n";
+  $adminSQL = "insert into `myprogramo` (`id`, `uname`, `pword`, `lastip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
+  $result = db_query($adminSQL, $conn) or install_error('Could not add admin credentials!',mysql_error(), $sql);
 
   mysql_close($conn);
 
   return ($result and empty($_SESSION['errorMessage'])) ? getSection('InstallComplete', $page_template) : getSection('InstallError', $page_template);
 
+}
+
+function install_error($msg, $err, $sql) {
+  $errorTemplate = <<<endError
+<pre>There was a problem while working with the database.
+Error message: $msg
+MySQL error: $err
+SQL query:
+$sql
+</pre>
+endError;
+  $_SESSION['errorMessage'] .= $errorTemplate;
 }
 
 ?>
