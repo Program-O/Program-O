@@ -454,7 +454,7 @@ endFooter;
             $link = $item->link;
             $published_on = $item->pubDate;
             $description = $item->description;
-            $out .= "<h3><a href=\"$link\">$title</a></h3>\n";
+            $out .= "<h3><a target=\"_blank\" href=\"$link\">$title</a></h3>\n";
             $out .= "<p>$description</p>";
           }
         }

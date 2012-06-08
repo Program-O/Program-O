@@ -109,6 +109,8 @@ function Save() {
       }
     }
   }
+  $sql = 'select `php_code` from `aiml` where 1 limit 1';
+  $result = mysql_query($sql,$conn) or upgrade($conn);
   $sql_template = <<<endSQL
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state` , `conversation_lines` , `remember_up_to` , `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`) VALUES ([bot_id], '[bot_name]', '[bot_desc]', [bot_active], [bot_parent_id], '[format]', '[save_state]', [conversation_lines], [remember_up_to], '[debugemail]', [debugshow], [debugmode], '[default_aiml_pattern]', [use_aiml_code], [update_aiml_code]);
 endSQL;
@@ -135,13 +137,12 @@ endSQL;
   $sql = str_replace('[debugshow]',$myPostVars["default_debugshow"], $sql);
   $sql = str_replace('[debugmode]',$myPostVars["default_debugmode"], $sql);
   $sql = str_replace('[default_aiml_pattern]',$myPostVars["default_pattern"], $sql);
-  $s = file_put_contents('botAddSQL.txt', $sql);
   $x = db_query($sql, $conn) or install_error('Could not enter bot info for bot #' . $bot_id . '!', mysql_error(), $sql);
   $encrypted_adm_dbp = md5($myPostVars["adm_dbp"]);
   $adm_dbu = $myPostVars["adm_dbu"];
   $cur_ip = $_SERVER['REMOTE_ADDR'];
   $adminSQL = "insert into `myprogramo` (`id`, `uname`, `pword`, `lastip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
-  $result = db_query($adminSQL, $conn) or install_error('Could not add admin credentials!',mysql_error(), $sql);
+  $result = db_query($adminSQL, $conn) or install_error('Could not add admin credentials! Check line #' . __LINE__, mysql_error(), $sql);
 
   mysql_close($conn);
 
@@ -160,5 +161,20 @@ $sql
 endError;
   $_SESSION['errorMessage'] .= $errorTemplate;
 }
+
+function upgrade($conn) {
+  $upgradeSQL = file_get_contents('upgrade_bots_table.sql');
+  $queries = explode(';',$upgradeSQL);
+  foreach ($queries as $sql) {
+    $sql = trim($sql);
+    if (!empty($sql)) {
+      $result = mysql_query($sql, $conn) or install_error('Error upgrading the database! check line #' . __LINE_, mysql_error(), $sql);
+      $success = mysql_affected_rows();
+    }
+  }
+}
+
+
+
 
 ?>

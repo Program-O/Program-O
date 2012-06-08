@@ -1,6 +1,15 @@
 <?php
   ob_start();
 
+  error_reporting(E_ALL);
+  ini_set('log_errors', true);
+  ini_set('error_log','./error.log');
+  ini_set('html_errors', false);
+  ini_set('display_errors', false);
+
+  if (!file_exists('./config/global_config.php')) header('location: install/install_programo.php');
+  require_once('./config/global_config.php');
+
   include ("./chatbot/conversation_start.php");
 
   #if (isset($_REQUEST['submit'])) die ("<pre>" . print_r($_REQUEST, true) . "</pre><br />\n");

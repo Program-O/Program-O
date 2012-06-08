@@ -15,8 +15,6 @@
   $thisFolder = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR;
   $thisParentFolder = preg_replace('~[/\\\\][^/\\\\]*[/\\\\]$~', DIRECTORY_SEPARATOR, $thisFolder);
 
-  if (!file_exists('../config/global_config.php')) header('location: install/install_programo.php');
-    require_once('../config/global_config.php');
 
   //load shared files
   include_once (_LIB_PATH_ . "db_functions.php");
