@@ -38,20 +38,20 @@ function clean_for_eval($parsed_template,$count=0)
 	$parsed_template= str_replace(";';","';",$parsed_template);
 	$parsed_template= str_replace(";",";\r\n",$parsed_template);
 	$parsed_template= str_replace("]';","];",$parsed_template);
-	$parsed_template= str_replace("). '.",').',$parsed_template);
+	$parsed_template= str_replace("close_bracket. '.",'close_bracket.',$parsed_template);
 	$parsed_template= str_replace("','  '.","',",$parsed_template);
 	$parsed_template= str_replace("',' '.","',",$parsed_template);
-	$parsed_template= str_replace(".'')",")",$parsed_template);
-	$parsed_template= str_replace(").''",")",$parsed_template);
-	$parsed_template= str_replace("). ')","))",$parsed_template);
-	$parsed_template= str_replace(".' ')",")",$parsed_template);
+	$parsed_template= str_replace(".''close_bracket","close_bracket",$parsed_template);
+	$parsed_template= str_replace("close_bracket.''","close_bracket",$parsed_template);
+	$parsed_template= str_replace("close_bracket. 'close_bracket","close_bracketclose_bracket",$parsed_template);
+	$parsed_template= str_replace(".' 'close_bracket","close_bracket",$parsed_template);
 	$parsed_template= str_replace(".' .",".",$parsed_template);
 	$parsed_template= str_replace("\r\n.","\$tmp_botsay .= ",$parsed_template);
 	$parsed_template= str_replace("\r\n';","\r\n",$parsed_template);
 	$parsed_template= str_replace("\r\n ';","\r\n",$parsed_template);
 	$parsed_template= str_replace(">. call", ">'. call", $parsed_template);
 	$parsed_template= str_replace("> . call", ">' . call", $parsed_template);
-	$parsed_template= str_replace(").';", ");", $parsed_template);
+	$parsed_template= str_replace("close_bracket.';", "close_bracket;", $parsed_template);
 	$parsed_template= str_replace("''.", "", $parsed_template);
 	$parsed_template= str_replace("\r\n'.call","\$tmp_botsay .= call",$parsed_template);	
 	$parsed_template= str_replace("\r\n  '.call","\$tmp_botsay .= call",$parsed_template);
@@ -59,12 +59,12 @@ function clean_for_eval($parsed_template,$count=0)
 	$parsed_template= str_replace("\$condition = \"\"","\r\n\$condition=\"\"",$parsed_template);
 	$parsed_template= str_replace("\"\";\$tmp_botsay","\"\";\r\n\$tmp_botsay",$parsed_template);
 	$parsed_template= str_replace("\$tmp_botsay","\r\n\$tmp_botsay",$parsed_template);
-	$parsed_template= str_replace(").' ;",");",$parsed_template);
+	$parsed_template= str_replace("close_bracket.' ;","close_bracket;",$parsed_template);
 	$parsed_template= str_replace('$tmp_botsay .= \' if','if',$parsed_template);
 	$parsed_template= str_replace(".'. \r\n",".'. ';\r\n",$parsed_template);	
-	$parsed_template= str_replace(").' \r\n", "); ", $parsed_template);
-	$parsed_template= str_replace(")';", ");", $parsed_template);
-	$parsed_template= str_replace(").\\\"';",").'\\\"';", $parsed_template);
+	$parsed_template= str_replace("close_bracket.' \r\n", "close_bracket; ", $parsed_template);
+	$parsed_template= str_replace("close_bracket';", "close_bracket;", $parsed_template);
+	$parsed_template= str_replace("close_bracket.\\\"';","close_bracket.'\\\"';", $parsed_template);
 	$linebyline = explode("\r\n",$parsed_template);
 	
 	foreach($linebyline as $index => $value)
