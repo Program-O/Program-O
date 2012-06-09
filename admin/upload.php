@@ -127,24 +127,29 @@ $xml->load('./lures.xml');
     $aimlTagStart = stripos($aimlContent,'<aiml',0);
     $aimlTagEnd   = strpos($aimlContent,'>', $aimlTagStart) + 1;
     $aimlFile     = $validAIMLHeader . substr($aimlContent,$aimlTagEnd);
+/*
     #die('<pre>'.htmlentities($aimlFile)."</pre>\n");
     $saveFile = str_replace('./uploads',_ADMIN_PATH_.'aiml',$file);
     #if (!file_exists($saveFile)) file_put_contents("$saveFile", $aimlFile);
     $validate = new DOMDocument();
     $validate->loadXML($aimlFile);
+    #$validate->loadXML($aimlContent);
     $validate->preserveWhiteSpace = false;
     $validate->formatOutput = true;
     if ($validate->validate() === false) {
       $msg = "Cannot parse file $file! Please note errors that follow:\n";
 
       $errors = libxml_get_errors();
-    foreach ($errors as $error) {
-      $msg .= libxml_display_error($error);
+      foreach ($errors as $error) {
+        $msg .= libxml_display_error($error);
+      }
+      libxml_clear_errors();
+      return $msg;
     }
-    libxml_clear_errors();
-    return $msg;
-    }
+*/
+    try {
     $aiml = new SimpleXMLElement($aimlFile);
+    #$aiml = new SimpleXMLElement($aimlContent);
     $rowCount = 0;
     if (!empty($aiml->topic)) {
       foreach ($aiml->topic as $topicXML) { # handle any topic tag(s) in the file
@@ -205,7 +210,11 @@ $xml->load('./lures.xml');
       $sql = rtrim($sql, ",\n") . ';';
       $success = (updateDB($sql) >=0) ? true : false;
     }
-    $msg = "There was a problem adding file $fileName to the database.";
+    }
+    catch(Exception $e) {
+      $success = false;
+    }
+    $msg = "There was a problem adding file $fileName to the database. Please validate the file and try again.";
     if ($success) $msg = "Successfully added $fileName to the database.";
     return $msg;
   }
