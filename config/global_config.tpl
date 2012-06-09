@@ -67,11 +67,11 @@
     $dbn    = "[dbn]";    # dev database name/prefix
     $dbu    = "[dbu]";       # dev database username
     $dbp    = "[dbp]";  # dev database password
-    
+
     //these are the admin DB settings in case you want make the admin a different db user with more privs
     $adm_dbu = "[adm_dbu]";
     $adm_dbp = "[adm_dbp]";
-        
+
     //------------------------------------------------------------------------
     // Default bot settings
     //------------------------------------------------------------------------
@@ -98,7 +98,7 @@
      * 3=everything
      */
     $default_debugshow = [default_debugshow];
-    
+
     /*
      * $default_debugmode - How to show the debug data
      * 0 = source code view - show debugging in source code
@@ -126,7 +126,7 @@
     //0 - Do not show anything
     //1 - will print out to screen immediately
     $quickdebug = 0;
-        
+
     //for quick debug
     //1 = will write debug data to file regardless of the bot config choice
     //it will write it as soon as it becomes available but this this will be finally

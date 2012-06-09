@@ -14,7 +14,7 @@
   //chdir( dirname ( __FILE__ ) );
   $thisFolder = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR;
   $thisParentFolder = preg_replace('~[/\\\\][^/\\\\]*[/\\\\]$~', DIRECTORY_SEPARATOR, $thisFolder);
-
+  require_once ($thisParentFolder.'config'.DIRECTORY_SEPARATOR.'global_config.php');
 
   //load shared files
   include_once (_LIB_PATH_ . "db_functions.php");

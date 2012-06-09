@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS `bots`;
 CREATE TABLE IF NOT EXISTS `bots` (
   `bot_id` int(11) NOT NULL AUTO_INCREMENT,
   `bot_name` varchar(255) NOT NULL,
@@ -14,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `bots` (
   `debugshow` int(11) NOT NULL DEFAULT '1',
   `debugmode` int(11) NOT NULL DEFAULT '1',
   `default_aiml_pattern` varchar(255) NOT NULL DEFAULT 'RANDOM PICKUP LINE',
+  `error_response` text not null,
   PRIMARY KEY (`bot_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 CREATE TABLE IF NOT EXISTS `wordcensor` (

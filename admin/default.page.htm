@@ -176,8 +176,8 @@ between the start and end section tags are the only parts of the template that a
         <div class="leftHalf noBorder">
           <table width="100%">
             <tr class="row">
-              <td><label for="bot_name"><span class="label">Bot Name</span></label></td>
-              <td><span class="formw"><input type="text"  class="fm-req" id="bot_name" name="bot_name" value="[bot_name]"/></span></td>
+              <td width="50%"><label for="bot_name"><span class="label">Bot Name</span></label></td>
+              <td width="50%"><span class="formw"><input type="text"  class="fm-req" id="bot_name" name="bot_name" value="[bot_name]"/></span></td>
             </tr>
             <tr class="row">
               <td><label for="bot_active"><span class="label">Bot Active</span></label></td>
@@ -225,27 +225,26 @@ between the start and end section tags are the only parts of the template that a
               </td>
             </tr>
             <tr class="row">
-              <td><label for="remember_up_to"><span class="label">Bot memory lines</span></label></td>
+              <td><label for="debugemail"><span class="label">Debug Email Address</span></label></td>
               <td>
                 <span class="formw">
-                  <input type="text"  class="fm-req" id="remember_up_to" name="remember_up_to" value="[bot_remember_up_to]"/>
+                  <input type="text" name="debugemail" id="debugemail" value="[bot_debugemail]" />
                 </span>
               </td>
             </tr>
             <tr class="row">
-              <td><label for="debugemail"><span class="label">Email Debugging Info</span></label></td>
-              <td>
-                <span class="formw">
-                  <input type="radio" name="debugemail" id="debugemail_1" [debugemail_1] value="1" />Yes
-                  <input type="radio" name="debugemail" id="debugemail_0" [debugemail_0] value="0" />No
-                </span>
-              </td>
-            </tr>
-            <tr class="row">
-              <td><label for="default_aiml_pattern"><span class="label">Default pickup line pattern</span></label></td>
+              <td><label for="default_aiml_pattern"><span class="label">Default Pickup Line Pattern</span></label></td>
               <td>
                 <span class="formw">
                   <input type="text" name="default_aiml_pattern" id="default_aiml_pattern" value="[bot_default_aiml_pattern]" />
+                </span>
+              </td>
+            </tr>
+            <tr class="row">
+              <td><label for="error_response"><span class="label">Error Response Message</span></label></td>
+              <td>
+                <span class="formw">
+                  <input type="text" name="error_response" id="error_response" value="[bot_error_response]" />
                 </span>
               </td>
             </tr>
@@ -254,13 +253,13 @@ between the start and end section tags are the only parts of the template that a
         <div class="rightHalf noBorder">
           <table width="100%">
           <tr class="row">
-            <td><label for="bot_desc"><span class="label">Bot Desc</span></label></td>
-            <td><span class="formw">
-              <textarea rows="4" cols="40" id="bot_desc" name="bot_desc">[bot_desc]</textarea>
+            <td width="50%"><label for="bot_desc"><span class="label">Bot Description</span></label></td>
+            <td width="50%"><span class="formw">
+              <textarea rows="2" cols="40" id="bot_desc" name="bot_desc">[bot_desc]</textarea>
             </span></td>
           </tr>
           <tr class="row">
-            <td><label for="bot_parent_id"><span class="label">Bot Parent ID</span></label></td>
+            <td><label for="bot_parent_id"><span class="label">Bot Parent Name</span></label></td>
             <td><span class="formw">
               <select name="bot_parent_id" id="bot_parent_id">
 [parent_options]
@@ -276,6 +275,14 @@ between the start and end section tags are the only parts of the template that a
               </select>
             </span></td>
           </tr>
+            <tr class="row">
+              <td><label for="remember_up_to"><span class="label">Bot History Lines</span></label></td>
+              <td>
+                <span class="formw">
+                  <input type="text"  class="fm-req" id="remember_up_to" name="remember_up_to" value="[bot_remember_up_to]"/>
+                </span>
+              </td>
+            </tr>
           <tr class="row">
             <td><label for="conversation_lines"><span class="label">Chat Lines To Display</span></label></td>
             <td><span class="formw">
@@ -283,27 +290,26 @@ between the start and end section tags are the only parts of the template that a
             </span></td>
           </tr>
             <tr class="row">
-              <td><label for="debugshow"><span class="label">Debug Output</span></label></td>
+              <td><label for="debugmode"><span class="label">Debug Output</span></label></td>
               <td>
                 <span class="formw">
-                  <select name="debugshow" id="debugshow">
-                    <option value="0" [ds_]>source code view - show debugging in source code</option>
-                    <option value="1" [ds_i]>file log - log debugging to a file</option>
-                    <option value="2" [ds_ii]>page view - display debugging on the webpage</option>
-                    <option value="3" [ds_iii]>email each conversation line (not recommended)</option>
+                  <select name="debugmode" id="debugmode">
+                    <option value="0" [dm_]>source code view - show debugging in source code</option>
+                    <option value="1" [dm_i]>file log - log debugging to a file</option>
+                    <option value="2" [dm_ii]>page view - display debugging on the webpage</option>
+                    <option value="3" [dm_iii]>email each conversation line (not recommended)</option>
                   </select>
                 </span>
               </td>
             </tr>
           <tr class="row">
-            <td><label for="debugmode"><span class="label">Debug Mode</span></label></td>
+            <td><label for="debugshow"><span class="label">Debug Mode</span></label></td>
             <td><span class="formw">
-              <select name="debugmode" id="debugmode">
-                  <option value="0" [dm_]>Show no debugging</option>
-                  <option value="1" [dm_i]>general + errors</option>
-                  <option value="2" [dm_ii]>general + errors + sql</option>
-                  <option value="3" [dm_iii]>show everything</option>
-                  <option value="4" [dm_iv]>Test</option>
+              <select name="debugshow" id="debugshow">
+                  <option value="0" [ds_]>Show no debugging</option>
+                  <option value="1" [ds_i]>general + errors</option>
+                  <option value="2" [ds_ii]>general + errors + sql</option>
+                  <option value="3" [ds_iii]>show everything</option>
               </select>
             </span></td>
           </tr>
