@@ -135,7 +135,7 @@ function handleDebug($convoArr){
 	
 	//echo ">>>>".$convoArr['conversation']['debugmode'];
 	
-	switch($convoArr['conversation']['debugshow']){
+	switch($convoArr['conversation']['debugmode']){
 		case 0: //show in source code
 			$log = str_replace("[NEWLINE]","\r\n",$log);
 			display_on_page(0,$log);
