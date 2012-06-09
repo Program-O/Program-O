@@ -130,7 +130,7 @@ function unset_all_bad_pattern_matches($allrows,$lookingfor,$current_thatpattern
 		$aiml_thatpattern = $subrow['thatpattern']; //get the that
 		
 		
-		if($default_aiml_pattern==$aiml_pattern){ //if it is a direct match with our default pattern then add to tmp_rows
+		if(strtolower($default_aiml_pattern)==strtolower($aiml_pattern)){ //if it is a direct match with our default pattern then add to tmp_rows
 			$tmp_rows[$i]=$subrow;
 			$tmp_rows[$i]['score']=0;
 			$i++;
