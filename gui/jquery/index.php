@@ -3,6 +3,27 @@ session_start();
 $bot_id = 1;
 $format = "json";
 $convo_id = session_id();
+
+  $docRoot = $_SERVER['DOCUMENT_ROOT'];
+  $docRoot = str_replace('/', DIRECTORY_SEPARATOR, $docRoot);
+  $thisFolder = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR;
+  $baseFolder = str_ireplace('gui'.DIRECTORY_SEPARATOR.'jquery'.DIRECTORY_SEPARATOR, '', $thisFolder);
+  $relPath = str_ireplace(array($docRoot, DIRECTORY_SEPARATOR), array('', '/'), $baseFolder);
+  $configFile = $baseFolder . 'config' . DIRECTORY_SEPARATOR . 'global_config.php';
+  $headerURL = 'http://' . $_SERVER["HTTP_HOST"] . $relPath . 'install/install_programo.php';
+
+  $debugString = "
+Document Root = $docRoot<br />
+This folder = $thisFolder<br />
+Relative path = $relPath<br />
+Base folder = $baseFolder<br />
+Config file = $configFile<br />
+Header URL = $headerURL";
+  #die($debugString);
+
+  if (!file_exists($configFile)) header("location: $headerURL"); // Gives the full URL to the install script
+  require_once($configFile);
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
