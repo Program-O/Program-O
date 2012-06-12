@@ -4,14 +4,15 @@ ini_set('display_errors', false);
 ini_set('log_errors', true);
 ini_set('error_log', './error.log');
 
-if($_REQUEST)
-{
-	include("./chatbot/conversation_start.php");
-}
-else
-{
-	session_start();
-	$display = "";
+require_once("./chatbot/conversation_start.php");
+
+session_start();
+$display = "";
+
+if(isset($_REQUEST['bot_id'])){
+	$bot_id = $_REQUEST['bot_id'];
+}else{
+	$bot_id = 1;
 }
 
 if(isset($_REQUEST['bot_id'])){
