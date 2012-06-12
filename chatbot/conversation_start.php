@@ -11,10 +11,25 @@
   ***************************************/
   session_start();
   $time_start = microtime(true);
-  //chdir( dirname ( __FILE__ ) );
+  $docRoot = $_SERVER['DOCUMENT_ROOT'];
+  $docRoot = str_replace('/', DIRECTORY_SEPARATOR, $docRoot);
   $thisFolder = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR;
-  $thisParentFolder = preg_replace('~[/\\\\][^/\\\\]*[/\\\\]$~', DIRECTORY_SEPARATOR, $thisFolder);
-  require_once ($thisParentFolder.'config'.DIRECTORY_SEPARATOR.'global_config.php');
+  $baseFolder = str_ireplace('chatbot'.DIRECTORY_SEPARATOR, '', $thisFolder);
+  $relPath = str_ireplace(array($docRoot, DIRECTORY_SEPARATOR), array('', '/'), $baseFolder);
+  $configFile = $baseFolder . 'config' . DIRECTORY_SEPARATOR . 'global_config.php';
+  $headerURL = 'http://' . $_SERVER["HTTP_HOST"] . $relPath . 'install/install_programo.php';
+
+  $debugString = "
+Document Root = $docRoot<br />
+This folder = $thisFolder<br />
+Relative path = $relPath<br />
+Base folder = $baseFolder<br />
+Config file = $configFile<br />
+Header URL = $headerURL";
+  #die($debugString);
+
+  if (!file_exists($configFile)) header("location: $headerURL"); // Gives the full URL to the install script
+  require_once($configFile);
 
   //load shared files
   include_once (_LIB_PATH_ . "db_functions.php");
