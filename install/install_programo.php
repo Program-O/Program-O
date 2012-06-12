@@ -112,8 +112,8 @@ function Save() {
   $sql = 'select `php_code` from `aiml` where 1 limit 1';
   $result = mysql_query($sql,$conn) or upgrade($conn);
   $sql_template = "
-INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state` , `conversation_lines` , `remember_up_to` , `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `use_aiml_code`, `update_aiml_code`, `error_response`)
-VALUES ([bot_id], '[bot_name]', '[bot_desc]', [bot_active], [bot_parent_id], '[format]', '[save_state]', [conversation_lines], [remember_up_to], '[debugemail]', [debugshow], [debugmode], '[default_aiml_pattern]', [use_aiml_code], [update_aiml_code], '[error_response]');";
+INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
+VALUES ([bot_id], '[bot_name]', '[bot_desc]', [bot_active], [bot_parent_id], '[format]', [use_aiml_code], [update_aiml_code], '[save_state]', [conversation_lines], [remember_up_to], '[debugemail]', [debugshow], [debugmode], '[error_response]', '[default_aiml_pattern]');";
   
   require_once (_LIB_PATH_ . 'error_functions.php');
   require_once (_LIB_PATH_ . 'db_functions.php');
