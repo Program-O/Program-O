@@ -111,9 +111,10 @@ function Save() {
   }
   $sql = 'select `php_code` from `aiml` where 1 limit 1';
   $result = mysql_query($sql,$conn) or upgrade($conn);
-  $sql_template = <<<endSQL
-INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state` , `conversation_lines` , `remember_up_to` , `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `error_response`) VALUES ([bot_id], '[bot_name]', '[bot_desc]', [bot_active], [bot_parent_id], '[format]', '[save_state]', [conversation_lines], [remember_up_to], '[debugemail]', [debugshow], [debugmode], '[default_aiml_pattern]', [use_aiml_code], [update_aiml_code], [error_response]);
-endSQL;
+  $sql_template = "
+INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state` , `conversation_lines` , `remember_up_to` , `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `error_response`)
+VALUES ([bot_id], '[bot_name]', '[bot_desc]', [bot_active], [bot_parent_id], '[format]', '[save_state]', [conversation_lines], [remember_up_to], '[debugemail]', [debugshow], [debugmode], '[default_aiml_pattern]', [use_aiml_code], [update_aiml_code], '[error_response]');";
+  
   require_once (_LIB_PATH_ . 'error_functions.php');
   require_once (_LIB_PATH_ . 'db_functions.php');
   $bot_id = 1;
@@ -135,6 +136,7 @@ endSQL;
   $sql = str_replace('[debugemail]',$myPostVars["default_debugemail"], $sql);
   $sql = str_replace('[debugshow]',$myPostVars["default_debugshow"], $sql);
   $sql = str_replace('[debugmode]',$myPostVars["default_debugmode"], $sql);
+  $sql = str_replace('[error_response]',$myPostVars["error_response"], $sql);
   $sql = str_replace('[default_aiml_pattern]',$myPostVars["default_pattern"], $sql);
   $x = db_query($sql, $conn) or install_error('Could not enter bot info for bot #' . $bot_id . '!', mysql_error(), $sql);
   $encrypted_adm_dbp = md5($myPostVars["adm_dbp"]);
@@ -172,8 +174,5 @@ function upgrade($conn) {
     }
   }
 }
-
-
-
 
 ?>
