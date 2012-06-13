@@ -2,8 +2,8 @@
 
   $display = "";
   
-  require_once('../../config/global_config.php');  
-  require_once('../../chatbot/conversation_start.php');  
+    require_once('../../config/global_config.php');  
+  require_once('../chatbot/conversation_start.php');	
 	
 
 if(isset($_REQUEST['bot_id'])){
