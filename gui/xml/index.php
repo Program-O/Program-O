@@ -11,29 +11,10 @@
 ***************************************/
 
 
-  $docRoot = $_SERVER['DOCUMENT_ROOT'];
-  $docRoot = str_replace('/', DIRECTORY_SEPARATOR, $docRoot);
-  $thisFolder = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR;
-  $baseFolder = str_ireplace('gui'.DIRECTORY_SEPARATOR.'xml'.DIRECTORY_SEPARATOR, '', $thisFolder);
-  $relPath = str_ireplace(array($docRoot, DIRECTORY_SEPARATOR), array('', '/'), $baseFolder);
-  $configFile = $baseFolder . 'config' . DIRECTORY_SEPARATOR . 'global_config.php';
-  $headerURL = 'http://' . $_SERVER["HTTP_HOST"] . $relPath . 'install/install_programo.php';
-
-  $debugString = "
-Document Root = $docRoot<br />
-This folder = $thisFolder<br />
-Relative path = $relPath<br />
-Base folder = $baseFolder<br />
-Config file = $configFile<br />
-Header URL = $headerURL";
-  #die($debugString);
-
-  if (!file_exists($configFile)) header("location: $headerURL"); // Gives the full URL to the install script
-  require_once($configFile);
+  require_once('../../config/global_config.php');
 
 $response = '';
 session_start();
-
 function get_response($path){
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,$path);
@@ -68,16 +49,13 @@ endResponse;
   #$X = file_put_contents('URL.txt', "$send\r\n",FILE_APPEND);
 #die();
   $sXML = trim(get_response($send));
-  /*
-  $response = htmlentities($sXML);
-  $response = str_replace("\t\t", "\n", $response);
-  $response = str_replace("\t", "\n", $response);
-  */
-  #file_put_contents('conversationXML.txt', $sXML);
+  
+  //just output as an example
+  $responseXML = htmlentities($sXML);
+  $responseXML = str_replace("\n\t", "<br/>        ", $responseXML);
+  $responseXML = str_replace("\n", "<br/>   ", $responseXML);
+  
   $xml = new SimpleXMLElement($sXML);
-  #$xmlConversation = $xml->conversation;
-  #$user_name = $xmlConversation->user_name;
-  #$bot_name  = $xmlConversation->bot_name;
   $count = 0;
   foreach ($xml->children() as $child) {
     $childName = $child->getName();
@@ -95,11 +73,7 @@ endResponse;
       $response .= "$bot_name: " . $child . "<br />\n";
       default:
     }
-/*
-*/
   }
-/*
-*/
 }
 
 ?>
@@ -126,7 +100,8 @@ endResponse;
         <input type="hidden" name="format" id="format" value="<?php echo $format;?>" />
       </p>
     </form>
+    
+    <?php echo $responseXML;?>
+    
   </body>
 </html>
-
-
