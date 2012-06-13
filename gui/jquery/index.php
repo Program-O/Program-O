@@ -12,16 +12,7 @@ $convo_id = session_id();
   $configFile = $baseFolder . 'config' . DIRECTORY_SEPARATOR . 'global_config.php';
   $headerURL = 'http://' . $_SERVER["HTTP_HOST"] . $relPath . 'install/install_programo.php';
 
-  $debugString = "
-Document Root = $docRoot<br />
-This folder = $thisFolder<br />
-Relative path = $relPath<br />
-Base folder = $baseFolder<br />
-Config file = $configFile<br />
-Header URL = $headerURL";
-  #die($debugString);
 
-  if (!file_exists($configFile)) header("location: $headerURL"); // Gives the full URL to the install script
   require_once($configFile);
 
 ?>
@@ -85,3 +76,5 @@ Header URL = $headerURL";
 </div>
 	</body>
 </html>
+
+?>
