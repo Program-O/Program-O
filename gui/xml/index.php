@@ -13,8 +13,11 @@
 
   require_once('../../config/global_config.php');
 
-$response = '';
 session_start();
+
+$response = '';
+$responseXML = '';
+
 function get_response($path){
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,$path);
