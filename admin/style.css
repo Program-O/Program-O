@@ -67,21 +67,21 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
 .bold { font-weight: bold; }
 .big { font-size: larger; }
 .narrow { padding-left: 0; float: left;width: 25%;text-align: left; border: 1px dashed blue;}
+
 .errMsg {
-  position: absolute;
-  top: 10px;
-  left: 10px;
   min-width: 250px;
-  width: 30%;
+  max-width: 98%;
+  width: auto;
   background-color: #FFF45A;
   background-color: #FCC; /*transparent;*/
   color: black;
   vertical-align: middle;
   text-align: center;
-  padding: 0;
-  margin: 0;
+  padding: 2px;
+  margin: 0 auto;
   display: none;
   overflow: auto;
+  border: 2px inset #933;
 }
 .ul, .ll, .ur, .lr {
   width: 6px;
@@ -381,13 +381,18 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
 }
 #main_content {
   position: absolute;
-  top: 50px;
-  bottom: 25px;
-  left: 5px;
-  right: 5px;
+  top: 75px;
+  bottom: 5px;
+  left: 0;
+  right: 0;
   text-indent: 1em;
   overflow: auto;
+  padding-top: 5px;
+  background-color: #FFFFCC;
+  z-index: 3;
+/*
   width: 99%;
+*/
 }
 
 #rssContainer {
@@ -491,26 +496,31 @@ border:none;
 }
 
 #help {
+  top: 5px;
   overflow: hidden;
   position: absolute;
   top: 5px;
   left: 5px;
   bottom: 5px;
   right: 5px;
+/*
+*/
   z-index: 5;
+  background-color: transparent;
   background-color: #FFFFCC;
 }
 #showHelp {
   position: absolute;
-  top: 0;
+  top: 5px;
   left: 0;
-  bottom: 0;
+  bottom: 5px;
   right: 0;
   background-color: #FFFFCC;
   padding: 5px;
   display: none;
   overflow: auto;
   border: 1px solid black;
+  border: none;
 }
 
 #teachForm, #uploadForm, #downloadForm, #membersForm {
@@ -521,7 +531,10 @@ border:none;
   right: 20%;
   z-index: 10;
   display: block;
+  /*background-color: red;*/
+  overflow: auto;
 }
+
 
 #teachForm fieldset { border: none; }
 
@@ -627,8 +640,11 @@ div#AIML_List {
   padding: 12px;
   text-align: left;
   text-indent: 0;
-  width: 250px;
-  height: 300px;
+  width: 300px;
+/*
+  min-height: 120px;
+*/
+  max-height: 300px;
   overflow: auto;
 }
 
@@ -685,3 +701,18 @@ td input, td select {
   width: 100%;
   margin: 0 auto;
 }
+.formTable {
+  border: 1px solid orange;
+  margin: 10px;
+  padding: 5px;
+}
+.formTable td {
+  text-align: center;
+  padding: 3px;
+  border: 1px solid green;
+  border: none;
+  margin: 2px;
+  padding: 2px;
+}
+.formTable td select { width: auto; }
+.formTable td input[type=submit] { width: auto; }

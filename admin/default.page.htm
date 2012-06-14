@@ -11,9 +11,6 @@
 [blank]
   <body>
     <div id="wrapper">
-      <div class="errMsg">
-[errMsg]
-      </div>
 [logo]
 [topNav]
 [leftNav]
@@ -53,6 +50,9 @@ between the start and end section tags are the only parts of the template that a
 [divDecoration]
         <div id="main_title">
           [mainTitle]
+        </div>
+        <div id="errMsg" class="errMsg">
+[errMsg]
         </div>
         <div id="main_content">
 [mainContent]
@@ -495,6 +495,12 @@ between the start and end section tags are the only parts of the template that a
               <br />--You can find alot of information on the net about writing well formed aiml.<br />--If you want to learn more about writing AIML <a href="http://www.alicebot.org/documentation/aiml-primer.html" target="_new" class="hbox">start here</a>
             </div>
 <!-- Section TeachShowHelp End -->
+<!-- Section ClearShowHelp Start -->
+[blank]            <div id="showHelp">
+              <h3>Help...</h3>
+              <dd>This help panel is under construction.</dd>
+            </div>
+<!-- Section ClearShowHelp End -->
 <!-- Section MembersShowHelp Start -->
 [blank]            <div id="showHelp">
               <h3>Help...</h3>
@@ -516,6 +522,12 @@ between the start and end section tags are the only parts of the template that a
               <br />--If you want to learn more about writing AIML <a href="http://www.alicebot.org/documentation/aiml-primer.html" target="_new" class="hbox">start here</a>
             </div>
 <!-- Section UploadShowHelp End -->
+<!-- Section DownloadShowHelp Start -->
+[blank]            <div id="showHelp">
+              <h3>Help...</h3>
+              <dd> This help panel is under construction.</dd>
+            </div>
+<!-- Section DownloadShowHelp End -->
 <!-- Section HelpLink Start -->
             <img src="images/help.png" onclick="showHide();" title="Click to toggle help" alt="Click to toggle help" border=0 />
 <!-- Section HelpLink End -->
@@ -530,7 +542,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section LogoLinkScript Start -->
     <script type="text/javascript">
       function ShowLogo() {
-        setDisplay('1');
+        //setDisplay('1');
         var body = document.body;
         var bgi = 'url(images/repeated_header2.jpg)';
         body.style.backgroundImage = bgi;
@@ -548,14 +560,12 @@ between the start and end section tags are the only parts of the template that a
         if (rightNav) rightNav.style.top = '160px';
       }
       function HideLogo() {
-        setDisplay('HideLogoCSS');
+        //setDisplay('HideLogoCSS');
         var body = document.body;
         var bgi = 'none';
         body.style.backgroundImage = bgi;
         var logo = document.getElementById('logo');
         logo.style.display = "none";
-        //var ts = document.getElementById('title');
-        //ts.style.top = '10px';
         var topNav = document.getElementById('top_nav');
         topNav.style.top = '15px';
         var leftNav = document.getElementById('left_nav');
@@ -566,38 +576,17 @@ between the start and end section tags are the only parts of the template that a
         if (rightNav) rightNav.style.top = '50px';
       }
       function toggleLogo() {
-        //var ls = getCookie('display');
-        //logoStatus = (ls) ? (ls == 'HideLogoCSS') ? 'hide' : 'show' : logoStatus;
-        setCookie('display', logoStatus);
-        if (logoStatus == 'hide') {
-          logoStatus = 'show';
-          HideLogo();
-        }
-        else {
-          logoStatus = 'hide';
+        if (logoStatus == 'Hide') {
+          logoStatus = 'Show';
           ShowLogo();
         }
+        else {
+          logoStatus = 'Hide';
+          HideLogo();
+        }
+        setCookie('display', logoStatus);
       }
-      function setDisplay(display) {
-        var xmlHttpReq = false;
-        var self = this;
-        // Mozilla/Safari
-        if (window.XMLHttpRequest) {
-          self.xmlHttpReq = new XMLHttpRequest();
-        }
-        // IE
-        else if (window.ActiveXObject) {
-          self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        self.xmlHttpReq.open('POST', 'setDisplay.php?display=' + display, true);
-        self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        self.xmlHttpReq.onreadystatechange = function() {
-          if (self.xmlHttpReq.readyState == 4) {
-           //alert(self.xmlHttpReq.responseText);
-          }
-        }
-        self.xmlHttpReq.send('display='+display);
-      }
+
       function setCookie(name, value) {
         document.cookie = name + '=' + escape(value) + ';path=/';
       }
@@ -608,7 +597,14 @@ between the start and end section tags are the only parts of the template that a
         var end = (dc.indexOf(";", begin) == -1) ? dc.length : dc.indexOf(";", begin);
         return unescape(dc.substring((begin + (name.length + 1)), end));
       }
-      var logoStatus = (getCookie('display') !== false) ? 'show' : 'hide';
+      //var logoStatus = (getCookie('display') !== false) ? 'Hide' : 'Show';
+      var logoStatus = getCookie('display');
+      var func = logoStatus + 'Logo()';
+      setTimeout(function(){
+        eval(func);
+        //alert('logoStatus = ' + logoStatus);
+      },10);
+      //var x = eval(func);
     </script>
 <!-- Section LogoLinkScript End -->
 <!-- Section HideLogoCSS Start -->
@@ -689,7 +685,7 @@ between the start and end section tags are the only parts of the template that a
             </p>
 [upload_content]
             <div id="AIML_List">
-              List of Currently Stored AIML files:<br />
+              List of Currently Stored AIML files for [bot_name]:<br />
 [AIML_List]
             </div>
           </div>
@@ -699,15 +695,31 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section UploadMain End -->
 <!-- Section UploadAIMLForm Start -->
 [blank]            <form id="upload" enctype="multipart/form-data"  action="" method="post">
-              <fieldset class="noBorder">
-                <div class="row">
+          <table class="formTable">
+            <tr>
+              <td>
                   <label for="aimlfile">File:</label>
                   <input type="file" id="aimlfile" name="aimlfile" />&nbsp; &nbsp;
+              </td>
+              <td>
                   <input type="checkbox" id="clearDB" name="clearDB" />&nbsp; &nbsp;
                   <label for="clearDB">Clear the database of entries from this file</label>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                  <label for="bot_id">Apply this file to this bot: </label>
+                  <select name="bot_id" id="bot_id" size="1">
+[all_bots]
+                  </select>&nbsp; &nbsp;
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
                   <input type="submit" name="action" id="action" value="upload"/>
-                </div>
-              </fieldset>
+              </td>
+            </tr>
+          </table>
             </form>
 <!-- Section UploadAIMLForm End -->
 <!-- Section SearchAIMLForm Start -->
