@@ -23,7 +23,7 @@ body {
   overflow: hidden;
 }
 table td {vertical-align: top;}
-fieldset { border: 1px solid black; padding: 12px; padding-left: 5px; padding-right: 5px; line-height: 125%;}
+fieldset { border: 1px solid orange; padding: 12px; padding-left: 5px; padding-right: 5px; line-height: 125%;}
 legend { font-weight: bold; font-size: xx-large; margin-left: -5px; margin-top: -15px; }
 label { cursor: pointer; margin-right: 20px; }
 div.row { clear: both; padding-top: 8px; border: none; width: 95%; margin-left: auto; margin-right: auto; min-height: 2em;}
@@ -375,7 +375,7 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
   width: 99%;
   height: 50px;
   margin: 0;
-  font-size: xx-large;
+  font-size: large;
   font-weight: bold;
   font-variant: small-caps;
 }
@@ -519,7 +519,6 @@ border:none;
   padding: 5px;
   display: none;
   overflow: auto;
-  border: 1px solid black;
   border: none;
 }
 
@@ -636,12 +635,14 @@ border:none;
 
 div#AIML_List {
   border: 2px inset #9FC03A;
-  margin-left: 22px;
+  margin: 10px auto;
   padding: 12px;
   text-align: left;
   text-indent: 0;
-  width: 300px;
+  width: 80%;
 /*
+  min-width: 300px;
+  max-width: 600px;
   min-height: 120px;
 */
   max-height: 300px;
@@ -703,16 +704,23 @@ td input, td select {
 }
 .formTable {
   border: 1px solid orange;
-  margin: 10px;
+  width: 100%;
+  margin: 10px auto;
   padding: 5px;
 }
 .formTable td {
-  text-align: center;
   padding: 3px;
   border: 1px solid green;
   border: none;
   margin: 2px;
   padding: 2px;
 }
-.formTable td select { width: auto; }
+.formTable td select { width: 96.2%; margin: 0 auto; }
+.formTable td textarea, .formTable td input[type=text] { width: 95%; margin: 0 auto; }
+.formTable td textarea { height: 45px; }
 .formTable td input[type=submit] { width: auto; }
+.formTable td span { width: 100%; text-align: left; margin: 0 auto; padding: 0; }
+
+
+
+

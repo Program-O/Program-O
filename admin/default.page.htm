@@ -157,7 +157,7 @@ between the start and end section tags are the only parts of the template that a
         </div>
 <!-- Section LoginForm End -->
 <!-- Section ChangeBot Start -->
-        <fieldset>
+        <!--fieldset-->
           <form id="changebot" action="?page=select_bots" method="post">
             <div>
               <label>Change Active Bot</label>
@@ -167,19 +167,19 @@ between the start and end section tags are the only parts of the template that a
               <input type="hidden" id="action" name="action" value="change"/>
             </div>
           </form>
-        </fieldset>
+        <!--/fieldset-->
 <!-- Section ChangeBot End -->
 <!-- Section SelectBotForm Start -->
 
-[blank]    <fieldset>
+[blank]    <!--fieldset-->
       <form id="botAttributes" action="?page=select_bots" method="post">
         <div class="leftHalf noBorder">
-          <table width="100%">
-            <tr class="row">
-              <td width="50%"><label for="bot_name"><span class="label">Bot Name</span></label></td>
-              <td width="50%"><span class="formw"><input type="text"  class="fm-req" id="bot_name" name="bot_name" value="[bot_name]"/></span></td>
+          <table class="formTable">
+            <tr>
+              <td width="40%"><label for="bot_name"><span class="label">Bot Name</span></label></td>
+              <td width="60%"><span class="formw"><input type="text"  class="fm-req" id="bot_name" name="bot_name" value="[bot_name]"/></span></td>
             </tr>
-            <tr class="row">
+            <tr>
               <td><label for="bot_active"><span class="label">Bot Active</span></label></td>
               <td>
                 <span class="formw">
@@ -190,7 +190,7 @@ between the start and end section tags are the only parts of the template that a
                 </span>
               </td>
             </tr>
-            <tr class="row">
+            <tr>
               <td><label for="format"><span class="label">Response Format</span></label></td>
               <td>
                 <span class="formw">
@@ -202,7 +202,7 @@ between the start and end section tags are the only parts of the template that a
                 </span>
               </td>
             </tr>
-            <tr class="row">
+            <tr>
               <td><label for="use_aiml_code"><span class="label">Use Stored PHP Code from DB</span></label></td>
               <td>
                 <span class="formw">
@@ -213,7 +213,7 @@ between the start and end section tags are the only parts of the template that a
                 </span>
               </td>
             </tr>
-            <tr class="row">
+            <tr>
               <td><label for="update_aiml_code"><span class="label">Update PHP Code in DB each turn</span></label></td>
               <td>
                 <span class="formw">
@@ -224,7 +224,7 @@ between the start and end section tags are the only parts of the template that a
                 </span>
               </td>
             </tr>
-            <tr class="row">
+            <tr>
               <td><label for="debugemail"><span class="label">Debug Email Address</span></label></td>
               <td>
                 <span class="formw">
@@ -232,7 +232,7 @@ between the start and end section tags are the only parts of the template that a
                 </span>
               </td>
             </tr>
-            <tr class="row">
+            <tr>
               <td><label for="default_aiml_pattern"><span class="label">Default Pickup Line Pattern</span></label></td>
               <td>
                 <span class="formw">
@@ -240,7 +240,7 @@ between the start and end section tags are the only parts of the template that a
                 </span>
               </td>
             </tr>
-            <tr class="row">
+            <tr>
               <td><label for="error_response"><span class="label">Error Response Message</span></label></td>
               <td>
                 <span class="formw">
@@ -251,14 +251,14 @@ between the start and end section tags are the only parts of the template that a
           </table>
         </div>
         <div class="rightHalf noBorder">
-          <table width="100%">
-          <tr class="row">
-            <td width="50%"><label for="bot_desc"><span class="label">Bot Description</span></label></td>
-            <td width="50%"><span class="formw">
-              <textarea rows="2" cols="40" id="bot_desc" name="bot_desc">[bot_desc]</textarea>
+          <table class="formTable">
+          <tr>
+            <td width="40%"><label for="bot_desc"><span class="label">Bot Description</span></label></td>
+            <td width="60%"><span class="formw">
+              <textarea id="bot_desc" name="bot_desc">[bot_desc]</textarea>
             </span></td>
           </tr>
-          <tr class="row">
+          <tr>
             <td><label for="bot_parent_id"><span class="label">Bot Parent Name</span></label></td>
             <td><span class="formw">
               <select name="bot_parent_id" id="bot_parent_id">
@@ -266,7 +266,7 @@ between the start and end section tags are the only parts of the template that a
               </select>
             </span></td>
           </tr>
-          <tr class="row">
+          <tr>
             <td><label for="save_state"><span class="label">Save State</span></label></td>
             <td><span class="formw">
               <select name="save_state" id="save_state">
@@ -275,7 +275,7 @@ between the start and end section tags are the only parts of the template that a
               </select>
             </span></td>
           </tr>
-            <tr class="row">
+            <tr>
               <td><label for="remember_up_to"><span class="label">Bot History Lines</span></label></td>
               <td>
                 <span class="formw">
@@ -283,13 +283,13 @@ between the start and end section tags are the only parts of the template that a
                 </span>
               </td>
             </tr>
-          <tr class="row">
+          <tr>
             <td><label for="conversation_lines"><span class="label">Chat Lines To Display</span></label></td>
             <td><span class="formw">
               <input type="text"  class="fm-req" id="conversation_lines" name="conversation_lines" value="[bot_conversation_lines]"/>
             </span></td>
           </tr>
-            <tr class="row">
+            <tr>
               <td><label for="debugmode"><span class="label">Debug Output</span></label></td>
               <td>
                 <span class="formw">
@@ -302,7 +302,7 @@ between the start and end section tags are the only parts of the template that a
                 </span>
               </td>
             </tr>
-          <tr class="row">
+          <tr>
             <td><label for="debugshow"><span class="label">Debug Mode</span></label></td>
             <td><span class="formw">
               <select name="debugshow" id="debugshow">
@@ -320,7 +320,7 @@ between the start and end section tags are the only parts of the template that a
           <input type="submit" name="action" id="action" value="[action]"/>
         </div>
       </form>
-    </fieldset>
+    <!--/fieldset-->
 <!-- Section SelectBotForm End -->
 <!-- Section FormRow Start -->
       <div class="[leftRight]">
