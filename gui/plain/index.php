@@ -1,8 +1,8 @@
 <?php 
 
   $display = "";
-  
-    require_once('../../config/global_config.php');  
+  session_start();
+  require_once('../../config/global_config.php');  
   require_once('../chatbot/conversation_start.php');			
 
 if(isset($_REQUEST['bot_id'])){
@@ -35,12 +35,12 @@ if(isset($_REQUEST['format'])){
 		<meta name="Description" content="A Free Open Source AIML PHP MySQL Chatbot called Program-O. Version2" />
 		<meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2" />
 	</head>
-	<body>
+	<body onload="document.getElementById('input').focus()">
 	<?php echo $display;?>
 		<form method="get" action="index.php">
 			<p>
 				<label>Say:</label>	
-				<input type="text" name="say" id="say" />
+				<input type="text" id="input" name="say" id="say" />
 				<input type="submit" name="submit" id="say" value="say" />
 				<input type="hidden" name="convo_id" id="convo_id" value="<?php echo $convo_id;?>" />
 				<input type="hidden" name="bot_id" id="bot_id" value="<?php echo $bot_id;?>" />
