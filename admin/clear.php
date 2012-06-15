@@ -84,7 +84,7 @@ else {
     global $dbn, $bot_id, $bot_name;
     $dbconn = db_open();
 
-    $sql = 'DELETE FROM `aiml` WHERE `bot_id` = $bot_id;';
+    $sql = "DELETE FROM `aiml` WHERE `bot_id` = $bot_id;";
     #return "SQL = $sql";
     $result = mysql_query($sql,$dbconn) or die(mysql_error());
     mysql_close($dbconn);
