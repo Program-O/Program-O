@@ -243,7 +243,7 @@ function score_matches($bot_parent_id,$allrows,$lookingfor,$current_thatpattern,
 		} 			
 
 		//if stored result == default pattern increase score
-		if($aiml_pattern==$default_aiml_pattern){
+		if(strtolower($aiml_pattern)==strtolower($default_aiml_pattern)){
 			$allrows[$all]['score']+=$default_pattern_points;
 		} elseif($aiml_pattern=="*"){ //if stored result == * increase score
 			$allrows[$all]['score']+=$starscore_points;
