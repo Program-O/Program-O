@@ -86,7 +86,7 @@ endScript;
   $pageTitle     = 'My-Program O - Upload AIML';
   $mainContent   = $template->getSection('UploadMain');
   $mainTitle     = "Upload AIML to use for the bot named $bot_name [helpLink]";
-  $msg = (empty($msg)) ? 'Test' : $msg;
+  #$msg = (empty($msg)) ? 'Test' : $msg;
   $mainContent   = str_replace('[bot_name]', $bot_name, $mainContent);
   $mainContent   = str_replace('[mainTitle]', $mainTitle, $mainContent);
   $mainContent   = str_replace('[upload_content]', $uploadContent, $mainContent);
