@@ -109,6 +109,8 @@ function Save() {
       }
     }
   }
+  $sql = 'select `error_response` from `bots` where 1 limit 1';
+  $result = mysql_query($sql,$conn) or upgrade($conn);
   $sql = 'select `php_code` from `aiml` where 1 limit 1';
   $result = mysql_query($sql,$conn) or upgrade($conn);
   $sql_template = "
