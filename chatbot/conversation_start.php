@@ -74,7 +74,7 @@
       $convoArr = get_user_id($convoArr);
       $convoArr = write_to_session($convoArr);
       //$convoArr = write_to_session($convoArr);
-      $convoArr['send_to_user'] = get_conversation_to_display($convoArr);
+      $convoArr = get_conversation($convoArr);
       $convoArr['time_start'] = $time_start;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation cleared", 1);
     }
