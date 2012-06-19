@@ -1,10 +1,18 @@
 <?php 
-
+  /***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.0.1
+  * FILE: gui/plain/index_better_divs.php
+  * AUTHOR: ELIZABETH PERREAU
+  * DATE: 19 JUNE 2012
+  * DETAILS: simple example gui
+  ***************************************/
+  
   $display = "";
   
-    require_once('../../config/global_config.php');  
-  require_once('../chatbot/conversation_start.php');	
-	
+  require_once('../../config/global_config.php');  
+  require_once('../chatbot/conversation_start.php');			
 
 if(isset($_REQUEST['bot_id'])){
 	$bot_id = $_REQUEST['bot_id'];
@@ -15,6 +23,7 @@ if(isset($_REQUEST['bot_id'])){
 if(isset($_REQUEST['convo_id'])){
 	$convo_id = $_REQUEST['convo_id'];
 }else{
+	//session started in the conversation_start.php
 	$convo_id = session_id();
 }
 
