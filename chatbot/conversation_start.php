@@ -6,12 +6,50 @@
   * Version: 2.0.1
   * FILE: chatbot/conversation_start.php
   * AUTHOR: ELIZABETH PERREAU
-  * DATE: MAY 4TH 2011
+  * DATE: 19 JUNE 2012
   * DETAILS: this file is the landing page for all calls to access the bots
   ***************************************/
   
   
+    if ((isset ($_REQUEST['say'])) && (trim($_REQUEST['say']) == "clear properties" ))
+    {
+    
+   
+      session_start();
+
+	// Unset all of the session variables.
+	$_SESSION = array();
+	
+	// If it's desired to kill the session, also delete the session cookie.
+	// Note: This will destroy the session, and not just the session data!
+	if (ini_get("session.use_cookies")) {
+	    $params = session_get_cookie_params();
+	    setcookie(session_name(), '', time() - 42000,
+	        $params["path"], $params["domain"],
+	        $params["secure"], $params["httponly"]
+	    );
+	}
+	
+	// Finally, destroy the session.
+	session_destroy();
+	session_start();
+	session_regenerate_id();
+	$new_id = session_id();
+	
+	//TODO WHICH ONE IS IT?
+    	$_GET['convo_id']=$new_id;
+    	$_POST['convo_id']=$new_id;
+    	$_REQUEST['convo_id']=$new_id;
+    	
+    	
+    }
+    else
+    {
+    	session_start();
+    }
   
+
+ 
   
   require_once("../config/global_config.php");  
 
@@ -46,39 +84,7 @@
     #$say = run_pre_input_addons($say);
     #die('say = ' . $say);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $_REQUEST['say'] . "\nConvo id: " . $_REQUEST['convo_id'] . "\nBot id: " . $_REQUEST['bot_id'] . "\nFormat: " . $_REQUEST['format'], 1);
-    if ($say == "clear properties") {
-      //read the current convo from the session
-      $convoArr = read_from_session();
-      //put it into a temp array
-      $convoArrTmp = $convoArr['conversation'];
-      //wipe the existing array
-      $convoArr = array();
-      //regen the convo id
-      session_regenerate_id();
-      $convo_id = session_id();
-      $convoArr['conversation']['convo_id'] = $convo_id;
-      //TODO SORT THIS
-      $convoArr = get_user_id($convoArr);
-      $convoArr = check_set_bot($convoArr);
-      $convoArr = check_set_convo_id($convoArr);
-      $convoArr = check_set_format($convoArr);
-      //load the chatbot configuration
-      $convoArr = load_bot_config($convoArr);
-      //reset the debug level here
-      $debuglevel = get_convo_var($convoArr, 'conversation', 'debugshow', '', '');
-      $convoArr = intialise_convoArray($convoArr);
-      //add the bot_id dependant vars
-      $convoArr = add_firstturn_conversation_vars($convoArr);
-      $convoArr['conversation']['totallines'] = 0;
-      //reset the user id
-      $convoArr = get_user_id($convoArr);
-      $convoArr = write_to_session($convoArr);
-      //$convoArr = write_to_session($convoArr);
-      $convoArr = get_conversation($convoArr);
-      $convoArr['time_start'] = $time_start;
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation cleared", 1);
-    }
-    else {
+     
       //get the stored vars
       $convoArr = read_from_session();
       //now overwrite with the recieved data
@@ -116,7 +122,7 @@
       $convoArr = run_post_response_useraddons($convoArr);
       //return the values to display
       $display = $convoArr['send_to_user'];
-    }
+    
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending", 1);
     $convoArr = handleDebug($convoArr);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning " . $convoArr['conversation']['format'], 1);
