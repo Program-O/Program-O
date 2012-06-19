@@ -5,44 +5,55 @@
 * Version: 2.0.1
 * FILE: gui/xml/index.php
 * AUTHOR: ELIZABETH PERREAU and DAVE MORTON
-* DATE: Feb. 26th, 2012
+* DATE: JUNE. 19th, 2012
 * DETAILS: this file contains the chatbot's
     XML interface
 ***************************************/
 
-
+  session_start();
   require_once('../../config/global_config.php');
 
-session_start();
+ 
+     //handle the convo id here otherwise i cant clear it
+ 	//TODO SORT THAT OUT!
+   	if(isset($_REQUEST['say']) &&  ($_REQUEST['say']=='clear properties'))
+	{
+	   	if (ini_get("session.use_cookies")) {
+		    $params = session_get_cookie_params();
+		    setcookie(session_name(), '', time() - 42000,
+		        $params["path"], $params["domain"],
+		        $params["secure"], $params["httponly"]
+		    );
+		}
+		
+		// Finally, destroy the session.
+		session_destroy();
+		session_start();
+		session_regenerate_id();
+		$convo_id = session_id();
+		$say = urlencode($_REQUEST['say']);
+	   
+	   
+	    
+	  }
+	  elseif(isset($_REQUEST['say']))
+	  {
+		$convo_id = session_id();
+		$say = urlencode($_REQUEST['say']);
+	  } 
+	  else{
+	    $say = "hi";
+	    $convo_id =  session_id();
+	  }
 
-$response = '';
-$responseXML = '';
 
-function get_response($path){
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,$path);
-        curl_setopt($ch, CURLOPT_FAILONERROR,1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-        $retValue = curl_exec($ch);
-        curl_close($ch);
-        return $retValue;
-}
-$bot_id = 1;
-$convo_id = session_id();
-$format = "xml";
-if(isset($_REQUEST['say'])) {
-  if(isset($_REQUEST['say'])){
-    $say = urlencode($_REQUEST['say']);
-  }
-  else{
-    $say = "hi";
-  }
-  $responseTemplate = <<<endResponse
-[user_name]: [usersay]<br />
-[bot_name]: [botsay]<br />
-endResponse;
+
+	$response = '';
+	$responseXML = '';	
+	$bot_id = 1;
+	$format = "xml";
+
+
 
   $thisFileURL = $_SERVER['SCRIPT_NAME'];
   $chatbotURLpath = str_replace('/gui/xml/index.php', '/chatbot',$thisFileURL);
@@ -77,7 +88,22 @@ endResponse;
       default:
     }
   }
+
+
+
+function get_response($path){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$path);
+        curl_setopt($ch, CURLOPT_FAILONERROR,1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        $retValue = curl_exec($ch);
+        curl_close($ch);
+        return $retValue;
 }
+
+
 
 ?>
 
