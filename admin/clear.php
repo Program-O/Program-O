@@ -96,7 +96,7 @@ else {
     global $dbn, $bot_id;
     $dbconn = db_open();
     $cleanedFilename = mysql_real_escape_string($filename, $dbconn);
-    $sql = "delete from `aiml` where `filename` like '$cleanedFilename' and `bot_id = $bot_id;";
+    $sql = "delete from `aiml` where `filename` like '$cleanedFilename' and `bot_id` = $bot_id;";
     #return "SQL = $sql";
     $result = mysql_query($sql,$dbconn) or die(mysql_error());
     mysql_close($dbconn);
