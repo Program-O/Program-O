@@ -1,6 +1,0 @@
-CallMom tags - Extensions to the AIML Specification
-
-new tags:
-oob, dial, sms, search, url, urlget, botecho, map, directions, launch, email, contact, battery, version, setbot, host, botid, schedule
-
-An explanation of these new tags can be found at http://code.google.com/p/aiml-en-us-pandorabots-callmom/wiki/CallMomOOBTags
