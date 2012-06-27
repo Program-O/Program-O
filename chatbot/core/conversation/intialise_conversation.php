@@ -26,7 +26,7 @@ function intialise_convoArray($convoArr){
     $convoArr['conversation']['bot_id']=$bot_id;
     $convoArr['conversation']['format']=$format;*/
     
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Intialising conversation",3);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Intialising conversation",4);
     
     //load blank topics
     $convoArr = load_blank_convoArray('topic',"",$convoArr);
@@ -55,7 +55,7 @@ function intialise_convoArray($convoArr){
 **/
 function load_blank_convoArray($arrayIndex,$defaultValue,$convoArr)
 {
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading blank $arrayIndex array",3);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading blank $arrayIndex array",4);
     global $offset;  //set in global config file
     $remember_up_to = $convoArr['conversation']['remember_up_to'];
     
@@ -75,7 +75,7 @@ function load_blank_convoArray($arrayIndex,$defaultValue,$convoArr)
 **/
 function load_blank_stack($convoArr){
     
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading blank stack",3);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading blank stack",4);
     global $default_stack_value; //set in global config file
     
     $convoArr['stack']['top'] = $default_stack_value;
@@ -98,11 +98,11 @@ function load_blank_stack($convoArr){
 **/
 function load_default_bot_values($convoArr){
     
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading db bot personality properties",3);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading db bot personality properties",4);
     global $con,$dbn; //set in global config file
     
     $sql = "SELECT * FROM `$dbn`.`botpersonality` WHERE `bot` = '".$convoArr['conversation']['bot_id']."'";
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "load db bot personality values SQL: $sql",2);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "load db bot personality values SQL: $sql",3);
     $result = db_query($sql,$con);
     
     while($row=mysql_fetch_array($result)){
@@ -120,7 +120,7 @@ function load_default_bot_values($convoArr){
 **/
 function write_to_session($convoArr){
     
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Saving to session",3);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Saving to session",4);
     $_SESSION['programo'] = $convoArr;
     return $convoArr;
 }
@@ -132,7 +132,7 @@ function write_to_session($convoArr){
 **/
 function read_from_session(){
     
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Reading from session",3);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Reading from session",4);
     $convoArr = array(); //initialise 
     if(isset($_SESSION['programo'])){
         $convoArr = $_SESSION['programo'];
@@ -149,7 +149,7 @@ function read_from_session(){
 **/
 function add_new_conversation_vars($say,$convoArr){
     
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "New conversation vars",3);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "New conversation vars",4);
     
     //$convoArr['conversation']['convo_id']=$convo_id;
     //$convoArr['conversation']['bot_id']=$bot_id;
@@ -170,7 +170,7 @@ function add_new_conversation_vars($say,$convoArr){
 **/
 function add_firstturn_conversation_vars($convoArr){
     
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "First turn",3);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "First turn",4);
     if(!isset($convoArr['bot_properties']))    {
         $convoArr = load_default_bot_values($convoArr);
     }    
@@ -190,7 +190,7 @@ function add_firstturn_conversation_vars($convoArr){
 function push_on_front_convoArr($arrayIndex,$value,$convoArr)
 {
     global $offset;
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Push on to front of $arrayIndex array",1);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Push on to front of $arrayIndex array",4);
     $remember_up_to = $convoArr['conversation']['remember_up_to'];
     
     //these subarray indexes are 2d
@@ -295,7 +295,7 @@ function load_bot_config($convoArr){
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '".$convoArr['conversation']['bot_id']."'";
 
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "load bot config SQL: $sql",2);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "load bot config SQL: $sql",3);
 
     $result = db_query($sql,$con) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
 
@@ -353,7 +353,7 @@ function log_conversation($convoArr){
     //db globals
     global $con,$dbn;
         
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "logging the conversation turn in the db",3);        
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "logging the conversation turn in the db",4);        
         
     //clean and set
     $usersay = mysql_escape_string($convoArr['aiml']['user_raw']);
@@ -374,7 +374,7 @@ function log_conversation($convoArr){
                 CURRENT_TIMESTAMP
                 )";
         
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Saving conservation SQL: $sql",2);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Saving conservation SQL: $sql",4);
     db_query($sql,$con);
         
     return $convoArr;
@@ -392,20 +392,34 @@ function log_conversation_state($convoArr){
     global $con,$dbn;
     //get undefined defaults from the db
 
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "logging state",3);        
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "logging state",4);        
         
     $serialise_convo = mysql_escape_String(serialize($convoArr));
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
         
+    $client_name = get_convo_var($convoArr,'client_properties','name');
+   if(isset($client_name) && ($client_name!=""))
+   {
+   	$sql_addon = "`name` = '". mysql_escape_string($client_name)."', ";
+   }
+   else
+   {
+   	$sql_addon = "";
+   }
+    
+    
     $sql = "UPDATE `$dbn`.`users`
                 SET 
                 `state` = '$serialise_convo', 
                 `last_update` = NOW(), 
+                $sql_addon
                 `chatlines` = `chatlines`+1
                 WHERE `id` = '$user_id' LIMIT 1"; 
                 
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "updating conversation state SQL: $sql",2);    
+    
+    
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "updating conversation state SQL: $sql",3);    
     db_query($sql,$con);
         
     return $convoArr;
@@ -420,13 +434,13 @@ function log_conversation_state($convoArr){
 function get_conversation_state($convoArr){
 
     global $con,$dbn;
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "getting state",3);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "getting state",4);
     //get converstation state from the db
     $serialise_convo = mysql_escape_string(serialize($convoArr));
     $user_id = $convoArr['conversation']['user_id'];
         
     $sql = "SELECT * FROM `$dbn`.`users` WHERE `id` = '$user_id' LIMIT 1"; 
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Getting conversation state SQL: $sql",2);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Getting conversation state SQL: $sql",3);
     $result = db_query($sql,$con);        
         
     if(($result)&&(mysql_num_rows($result)>0)){
@@ -458,7 +472,7 @@ function check_set_bot($convoArr)
         
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '$bot_id' and `bot_active`='1'";
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Checking bot exists SQL: $sql",2);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Checking bot exists SQL: $sql",3);
     $result = db_query($sql,$con);
     if(($result)&&(db_res_count($result)>0)){
       $row = mysql_fetch_assoc($result);
@@ -466,7 +480,7 @@ function check_set_bot($convoArr)
       $error_response = $row['error_response'];
       $convoArr['conversation']['bot_name']=$bot_name;
       $convoArr['conversation']['bot_id']=$bot_id;
-      runDebug( __FILE__, __FUNCTION__, __LINE__, "BOT ID: $bot_id",1);
+      runDebug( __FILE__, __FUNCTION__, __LINE__, "BOT ID: $bot_id",2);
     }
     else{
         $convoArr['debug']['intialisation_error']="Bot ID: $bot_id does not exist";
@@ -488,7 +502,7 @@ function check_set_convo_id($convoArr)
     //check to see if convo_id has been passed if not load default
     if((isset($_REQUEST['convo_id'])) && (trim($_REQUEST['convo_id'])!="")) {
         $convo_id=trim($_REQUEST['convo_id']);
-        runDebug( __FILE__, __FUNCTION__, __LINE__, "CONVO ID: $convo_id",1);
+        runDebug( __FILE__, __FUNCTION__, __LINE__, "CONVO ID: $convo_id",2);
     }else {
         $convo_id = $default_convo_id;
         runDebug( __FILE__, __FUNCTION__, __LINE__, "ERROR - Cannot find CONVO ID using default: $convo_id",1);
@@ -558,7 +572,7 @@ function check_set_format($convoArr){
     }
     else
     {
-        runDebug( __FILE__, __FUNCTION__, __LINE__, "Using format: $format",1);
+        runDebug( __FILE__, __FUNCTION__, __LINE__, "Using format: $format",2);
     }
     
     

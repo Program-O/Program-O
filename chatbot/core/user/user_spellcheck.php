@@ -45,7 +45,7 @@ function spellcheck($user_say)
 				$replacement = $row['correction'];
 				if($user_say = preg_replace($pattern, $replacement, $user_say))
 				{
-					runDebug( __FILE__, __FUNCTION__, __LINE__, "Replacing ".$row['missspelling']." with ".$row['correction'],3);	
+					runDebug( __FILE__, __FUNCTION__, __LINE__, "Replacing ".$row['missspelling']." with ".$row['correction'],4);	
 	
 				}
 			}

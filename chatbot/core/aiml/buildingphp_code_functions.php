@@ -18,7 +18,7 @@
 **/
 function clean_for_eval($parsed_template,$count=0)
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Cleaning the generated code for evaluating (running ".($count+1)." time)",3);	
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Cleaning the generated code for evaluating (running ".($count+1)." time)",4);	
 	$new_parsed_template = "";
 	$end = "\r\n\r\n\$botsay = \$tmp_botsay;\r\n";
 	
@@ -65,6 +65,12 @@ function clean_for_eval($parsed_template,$count=0)
 	$parsed_template= str_replace("close_bracket.' \r\n", "close_bracket; ", $parsed_template);
 	$parsed_template= str_replace("close_bracket';", "close_bracket;", $parsed_template);
 	$parsed_template= str_replace("close_bracket.\\\"';","close_bracket.'\\\"';", $parsed_template);
+	
+	//$parsed_template= preg_replace("/elseif\(\$[a-z]=='[0-9]'\){ \$tmp_botsay.= ''; }/is","", $parsed_template);
+	
+	
+	
+	
 	$linebyline = explode("\r\n",$parsed_template);
 	
 	foreach($linebyline as $index => $value)
@@ -72,7 +78,7 @@ function clean_for_eval($parsed_template,$count=0)
 		if((trim($value)=="\$tmp_botsay .= ' ;")||(trim($value)=="\$botsay =")||(trim($value)=="\$tmp_botsay;")||(trim($value)=="\$tmp_botsay .= '")||(trim($value)=="';")||(trim($value)==";")||(trim($value)=='$tmp_botsay=\' ;')||(trim($value)=='$tmp_botsay=\'')){
 		}
 		else{
-			runDebug( __FILE__, __FUNCTION__, __LINE__, "Balancing open/close brackets",3);	
+			runDebug( __FILE__, __FUNCTION__, __LINE__, "Balancing open/close brackets",4);	
 			$bracketed_value = best_guess_bracket_clean($value);
 			$new_parsed_template .= $bracketed_value."\r\n";
 		}
@@ -86,7 +92,7 @@ function clean_for_eval($parsed_template,$count=0)
 	
 	if($count==0){
 		$count++;
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "Re-Clean just in case",3);	
+		runDebug( __FILE__, __FUNCTION__, __LINE__, "Re-Clean just in case",4);	
 		$parsed_template = clean_for_eval($parsed_template,$count);
 	}
 	else {
@@ -108,7 +114,7 @@ function clean_for_eval($parsed_template,$count=0)
 **/	
 function best_guess_bracket_clean($value)
 {
-	//runDebug( __FILE__, __FUNCTION__, __LINE__, "Trying a best guess to balance the open/closing brackets",3);	
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Trying a best guess to balance the open/closing brackets",4);	
 	
 	$open_bracket_count = substr_count($value, '(');
 	$close_bracket_count = substr_count($value, ')');	
@@ -145,7 +151,7 @@ function best_guess_bracket_clean($value)
 **/	
 function clean_smilies($parsed_template)
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Extra smilie cleaning",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Extra smilie cleaning",4);
 	
 	$parsed_template= str_replace("':\(')", "':\('",$parsed_template);
 	$parsed_template= str_replace("';\(')", "';\('",$parsed_template);
@@ -163,7 +169,7 @@ function clean_smilies($parsed_template)
 **/	
 function replace_conflicting_htmltags($parsed_template)
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "replacing conflicting html tags",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "replacing conflicting html tags",4);
 	
 	$parsed_template = str_replace("<bulletpoint>","<li>",$parsed_template);
 	$parsed_template = str_replace("</bulletpoint>","</li>",$parsed_template);
@@ -184,7 +190,7 @@ function get_random_str()
     for ($p = 0; $p < $length-1; $p++) {
         $string .= $characters[mt_rand(0, strlen($characters)-1)];
     }
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "making a random string e.g.: $string",3);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "making a random string e.g.: $string",4);
     return $string;
 }
 
@@ -196,7 +202,7 @@ function get_random_str()
 **/
 function tidy_function_calls($parsed_template)
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Tiding up the function calls",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Tiding up the function calls",4);
 	
 	$parsed_template= str_replace('."\'','',$parsed_template);
 	$parsed_template= str_replace('\'".','',$parsed_template);
@@ -215,7 +221,7 @@ function tidy_function_calls($parsed_template)
 **/
 function clean_condition($condition)
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Cleaning condition - $condition ",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Cleaning condition - $condition ",4);
 	return trim($condition);
 }
 ?>

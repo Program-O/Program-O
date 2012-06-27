@@ -19,7 +19,7 @@
 function get_last_word($sentance){
 	$wordArr = explode(' ', $sentance);
 	$last_word = trim($wordArr[count($wordArr) - 1]);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentance: $sentance. Last word:$last_word",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentance: $sentance. Last word:$last_word",4);
 	return $last_word;
 }
 
@@ -32,7 +32,7 @@ function get_last_word($sentance){
 function get_first_word($sentance){
 	$wordArr = explode(' ', $sentance);
 	$first_word = trim($wordArr[0]);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentance: $sentance. First word:$first_word",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentance: $sentance. First word:$first_word",4);
 	return $first_word;
 }
 
@@ -49,7 +49,7 @@ function make_like_pattern($sentance,$field)
 {
 	global $offset;
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Making a like pattern to use in the sql",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Making a like pattern to use in the sql",4);
 	
 	$sql_like_pattern ="";
 	$i = 0;	
@@ -87,7 +87,7 @@ function make_like_pattern($sentance,$field)
 function wordsCount_inSentance($sentance){
 	$wordArr = explode(" ",$sentance);
 	$wordCount = count($wordArr);	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentance: $sentance numWords:$wordCount",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentance: $sentance numWords:$wordCount",4);
 	return $wordCount;
 }
 
@@ -106,7 +106,7 @@ function unset_all_bad_pattern_matches($allrows,$lookingfor,$current_thatpattern
 	$tmp_rows=array();
 	$i=0;
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Searching through ".count($allrows)." rows to unset bad matches",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Searching through ".count($allrows)." rows to unset bad matches",4);
 	
 	if(($allrows[0]['pattern']=="no results")&&($allrows[0]['template'] == "<say>$error_response</say>")&&(count($allrows)==1))
 	{
@@ -157,7 +157,7 @@ function unset_all_bad_pattern_matches($allrows,$lookingfor,$current_thatpattern
 		}
 	}
 
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Found '$i' relevant rows",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Found '$i' relevant rows",2);
 	
 	return $tmp_rows;
 }
@@ -196,7 +196,7 @@ function match_wildcard_rows($item){
 function score_matches($bot_parent_id,$allrows,$lookingfor,$current_thatpattern,$current_topic,$default_aiml_pattern){
 	global $commonwordsArr;
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Scoring the matches",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Scoring the matches",4);
 	
 	//set the scores for each type of word or sentance to be used in this function
 	$default_pattern_points = 2;
@@ -294,8 +294,8 @@ function get_highest_score_rows($allrows,$lookingfor){
 	//there may be any number of results with the same score so pick any random one
 	$bestResponseArr = $tmpArr[array_rand($tmpArr)];
 	$cRes = count($tmpArr);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Best Responses: ".print_r($tmpArr,true),3);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Will use randomly picked best response chosen out of $cRes responses with same score: ".$bestResponseArr['aiml_id']." - ".$bestResponseArr['pattern'],1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Best Responses: ".print_r($tmpArr,true),4);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Will use randomly picked best response chosen out of $cRes responses with same score: ".$bestResponseArr['aiml_id']." - ".$bestResponseArr['pattern'],2);
 	//return the best response
 	return $bestResponseArr;
 }
@@ -324,7 +324,7 @@ function get_convo_var($convoArr,$index_1,$index_2="",$index_3="",$index_4=""){
 	
 	global $offset;
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4]",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4]",4);
 	
 	if($index_2=="")  $index_2 = "~NULL~";
 	if($index_3=="") $index_3 = $offset;
@@ -353,7 +353,7 @@ function get_convo_var($convoArr,$index_1,$index_2="",$index_3="",$index_4=""){
 		$value = "";
 	}	
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4] FOUND: ConvoArr Value = '$value'",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4] FOUND: ConvoArr Value = '$value'",4);
 	return $value;
 }
 
@@ -401,7 +401,7 @@ function find_userdefined_aiml($convoArr)
 		`userid` = '$user_id' AND 
 		`pattern` = '$lookingfor'";
 
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "User defined SQL: $sql",2);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "User defined SQL: $sql",3);
 	
 	$result = db_query($sql,$con);		
 		
@@ -432,7 +432,7 @@ function find_userdefined_aiml($convoArr)
 function get_aiml_to_parse($convoArr)
 {
 	global $offset;
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Running all functions to get the correct aiml from the DB",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Running all functions to get the correct aiml from the DB",4);
 	
 	$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
 	$current_thatpattern = get_convo_var($convoArr,'that','',1,1);
@@ -468,7 +468,7 @@ function get_aiml_to_parse($convoArr)
 	$convoArr['aiml']['aiml_id'] = $allrows['aiml_id'];	
 	//return
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Will be parsing id:".$allrows['aiml_id'] ." (".$allrows['pattern'].")",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Will be parsing id:".$allrows['aiml_id'] ." (".$allrows['pattern'].")",4);
 	
 	return $convoArr;
 }
@@ -483,7 +483,7 @@ function find_aiml_matches($convoArr){
 	
 	global $con,$dbn,$error_response,$use_parent_bot;
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Finding the aiml matches from the DB",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Finding the aiml matches from the DB",4);
 	
 	$i=0;
 	
@@ -544,12 +544,12 @@ function find_aiml_matches($convoArr){
 		AND ((`topic`='') OR (`topic`='".$storedtopic."')))";	 
 	}
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql",2);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql",3);
 
 	$result = db_query($sql,$con);
 		
 	if(($result)&&(mysql_num_rows($result)>0)){
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "FOUND: '".mysql_num_rows($result)."' potential AIML matches",1);	
+		runDebug( __FILE__, __FUNCTION__, __LINE__, "FOUND: '".mysql_num_rows($result)."' potential AIML matches",2);	
 		//loop through results
 		while($row=mysql_fetch_array($result)) {
 			$allrows[$i]['aiml_id'] = $row['id'];

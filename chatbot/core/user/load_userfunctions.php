@@ -13,5 +13,5 @@ include_once("user_input_clean.php");
 include_once("user_spellcheck.php");
 include_once("handle_user.php");
 
-runDebug( __FILE__, __FUNCTION__, __LINE__, "userfunctions include files loaded",1);
+runDebug( __FILE__, __FUNCTION__, __LINE__, "userfunctions include files loaded",4);
 ?>

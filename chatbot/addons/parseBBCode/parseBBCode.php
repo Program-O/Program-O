@@ -96,7 +96,7 @@ endLine;
   }
 
   function parseInput ($msg) {
-    if (RUN_DEBUG) runDebug(__FILE__, __FUNCTION__, __LINE__,"Pre-parsing input. Setting Timestamp. msg = |$msg|", 1);
+    if (RUN_DEBUG) runDebug(__FILE__, __FUNCTION__, __LINE__,"Pre-parsing input. Setting Timestamp. msg = |$msg|", 4);
     #$out = '';
     $smilieArray = file('inputEmotes.dat');
     rsort($smilieArray);
@@ -108,7 +108,7 @@ endLine;
     $out = preg_replace($qmSearch, 'qmonly', $out);                   //
     $periodSearch = '/^\.+/';                                         // Period search string
     $out = preg_replace($periodSearch, 'periodonly', $out);           //
-    if (RUN_DEBUG) runDebug(__FILE__, __FUNCTION__, __LINE__,"msg now = |$out|", 1);
+    if (RUN_DEBUG) runDebug(__FILE__, __FUNCTION__, __LINE__,"msg now = |$out|", 4);
     return $out;                                                      // Send back the processed image
   }
 

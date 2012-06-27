@@ -47,7 +47,7 @@ function get_formatted_date($date_format,$date=""){
     }
   #$timestamp = time();
   $formatted_date = strftime($date_format, $timestamp);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Date $date ($date_format) formatted to $formatted_date",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Date $date ($date_format) formatted to $formatted_date",4);
 	return $formatted_date;
 
 }
@@ -61,7 +61,7 @@ function get_formatted_date($date_format,$date=""){
 **/
 function transform_prounoun($convoArr,$person,$value){
 
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Will start the trasform pronoun process. Person: $person, Value: $value",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Will start the trasform pronoun process. Person: $person, Value: $value",4);
 	$tmp = trim($value);
   	$tmp = swapPerson($convoArr,$person,$tmp); // The actual person transforms are now handled elsewhere.
 	
@@ -77,7 +77,7 @@ function transform_prounoun($convoArr,$person,$value){
 **/
 function buildVerbList ($name,$gender) {
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Building the verb list. Name:$name. Gender:$gender",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Building the verb list. Name:$name. Gender:$gender",4);
 // person transform arrays:
     $firstPersonPatterns       = array();
     $firstPersonReplacements   = array();
@@ -181,7 +181,7 @@ function buildVerbList ($name,$gender) {
 **/
 function swapPerson($convoArr,$person =2, $in) { //2 = swap first with second poerson // otherwise swap with third person
  
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Person:$person In:$in",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Person:$person In:$in",4);
  
     $name = get_convo_var($convoArr,'client_properties','name');
     $gender = get_convo_var($convoArr,'client_properties','gender');
@@ -357,16 +357,17 @@ elseif ($person == 3) {
 **/
 function parse_matched_aiml($convoArr,$type="normal")
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Run the aiml parse in $type mode (normal or srai)",1);
+	//which debug mode?
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Run the aiml parse in $type mode (normal or srai)",3);
 	$convoArr = expand_shorthand_to_longhand($convoArr);
 	$convoArr = set_wildcards($convoArr);
 	$convoArr = aiml_to_phpfunctions($convoArr);
 
 	if($type!="srai"){
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "$type - Saving for next turn",1);
+		runDebug( __FILE__, __FUNCTION__, __LINE__, "$type - Saving for next turn",4);
 		$convoArr = save_for_nextturn($convoArr);
 	} else {
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "$type - Not saving for next turn",1);
+		runDebug( __FILE__, __FUNCTION__, __LINE__, "$type - Not saving for next turn",4);
 	}
 	return $convoArr;
 }
@@ -386,7 +387,7 @@ function clean_that($that)
 	$that= whitespace_clean($that);
 	$that= captialise($that);
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Cleaning the that - that: $in cleanthat:$that",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Cleaning the that - that: $in cleanthat:$that",4);
 	
 	return $that;
 }
@@ -399,7 +400,7 @@ function clean_that($that)
 **/
 function save_for_nextturn($convoArr)
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Saving that and that_raw for next turn",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Saving that and that_raw for next turn",4);
 	
 	$savethis = get_convo_var($convoArr,'aiml','parsed_template');
 	
@@ -416,7 +417,7 @@ function save_for_nextturn($convoArr)
 **/
 function set_wildcards($convoArr)
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Setting Wildcards",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Setting Wildcards",4);
 	
 	$aiml_pattern = get_convo_var($convoArr,'aiml','pattern');
 	
@@ -458,7 +459,7 @@ function expand_shorthand_to_longhand($convoArr)
 {
 	global $allowed_html_tags;
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Expanding shorthand to longhand",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Expanding shorthand to longhand",4);
 	
 	$template = $convoArr['aiml']['template'];
 	$convoArr['aiml']['shorthand_template']=htmlentities($template);
@@ -483,7 +484,7 @@ function expand_shorthand_to_longhand($convoArr)
 
 	
 	$template = preg_replace($find, $replace, $template);	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Completed preg_replace expansion: ".htmlentities($template),3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Completed preg_replace expansion: ".htmlentities($template),4);
 
 
 	//TODO not sure if this is correct implementation of star if lots of problems will see about making changes in future releases
@@ -532,7 +533,7 @@ function expand_shorthand_to_longhand($convoArr)
 	$template = str_replace("<![CDATA[","</say><say>",$template);
 	$template = str_replace("]]>","</say><say>",$template);	
 
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Completed str_replace expansion: ".htmlentities($template),3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Completed str_replace expansion: ".htmlentities($template),4);
 	
 	//this might actually have no aiml in it all so lets check.
 	if(substr($template, 0, 1)!="<") 
@@ -576,7 +577,7 @@ function expand_shorthand_to_longhand($convoArr)
 	//$template = preg_replace("#<say>([^<]*)<#si","<say>$1</say><",$template);	
 	$template = str_replace("</say></say>","</say>",$template);	
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Completed Program O specific: ".htmlentities($template),3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Completed Program O specific: ".htmlentities($template),4);
 	
 	$convoArr['aiml']['template']=$template;
 	$convoArr['aiml']['longhand_template']=htmlentities($template);	
@@ -594,7 +595,7 @@ function expand_shorthand_to_longhand($convoArr)
 **/
 function str_replace_once($needle , $replace , $haystack){
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Replacing $needle in $haystack with $replace",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Replacing $needle in $haystack with $replace",4);
 	
     $pos = strpos($haystack, $needle);
     if ($pos === false) {
@@ -613,7 +614,7 @@ function str_replace_once($needle , $replace , $haystack){
 **/
 function make_null($c)
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Deleting $c from string",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Deleting $c from string",4);
 	return "";
 }
 
@@ -627,7 +628,7 @@ function make_null($c)
 **/
 function set_simple(&$convoArr,$index,$value)
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Setting simple value $index to equal $value",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Setting simple value $index to equal $value",4);
 
 	if($index=="topic")
 	{
@@ -635,6 +636,7 @@ function set_simple(&$convoArr,$index,$value)
 	}
 	else {
 		$convoArr['client_properties'][$index]=$value;
+		
 	}
 	return $value." ";
 }
@@ -647,10 +649,22 @@ function set_simple(&$convoArr,$index,$value)
 **/
 function select_random($random_options)
 {
+	//echo "HERE WITH ".htmlentities($random_options);
 	//initialise php code string
 	$str = "";
-
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Building an array to select random option from",3);
+	//check if there is another random in here
+	$find="#<random>(.*)</random>#is";
+	
+	if(preg_match($find, $random_options, $matches))
+	{
+		//found a match and recall this function
+		$replace = select_random($matches[1]);
+		$find="#<random>(.*)</random>#is";
+		
+		$random_options = preg_replace($find,$replace,$random_options);
+	}
+	
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Building an array to select random option from",4);
 	
 	$arrayname = "$".get_random_str();
 
@@ -682,7 +696,7 @@ function select_random($random_options)
 	}
 	//return the php code string
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Built PHP code string so that we can select option later: $str",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Built PHP code string so that we can select option later: $str",4);
 	
 	return $str;
 }
@@ -695,7 +709,7 @@ function select_random($random_options)
 **/
 function remove_nulls_from_array($array)
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Removing nulls from array",3);	
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Removing nulls from array",4);	
 	$newArray=array();
 	foreach($array as $index => $value)
 	{
@@ -719,11 +733,11 @@ function run_srai(&$convoArr,$now_look_for_this)
 {
 	global $srai_iterations, $offset,$error_response;
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Running SRAI $srai_iterations on $now_look_for_this",1);	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, $convoArr['aiml']['html_template'],3);	
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Running SRAI $srai_iterations on $now_look_for_this",3);	
+	runDebug( __FILE__, __FUNCTION__, __LINE__, $convoArr['aiml']['html_template'],4);	
 	//number of srai iterations - will stop recursion if it is over 10
 	$srai_iterations++;
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Incrementing srai iterations to $srai_iterations",3);			
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Incrementing srai iterations to $srai_iterations",4);			
 	if($srai_iterations>10){
 		runDebug( __FILE__, __FUNCTION__, __LINE__, "ERROR - Too much recursion breaking out",1);
 		$convoArr['aiml']['parsed_template']=$error_response;
@@ -743,7 +757,7 @@ function run_srai(&$convoArr,$now_look_for_this)
 
 	$srai_parsed_template = $tmp_convoArr['aiml']['parsed_template'];
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "SRAI Found: '$srai_parsed_template'",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "SRAI Found: '$srai_parsed_template'",2);
 	
 	$convoArr['client_properties'] = $tmp_convoArr['client_properties'];
 	$convoArr['topic'] = $tmp_convoArr['topic'];
@@ -751,7 +765,7 @@ function run_srai(&$convoArr,$now_look_for_this)
 	
 
 	$srai_iterations--;
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Decrementing srai iterations to $srai_iterations",3);	
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Decrementing srai iterations to $srai_iterations",4);	
 	return $srai_parsed_template." ";
 	
 }
@@ -783,7 +797,7 @@ function format($format,$texttoformat)
 			break;	
 	}
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Formated the text to: $texttoformat",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Formated the text to: $texttoformat",4);
 	
 	return $texttoformat;
 }
@@ -798,7 +812,7 @@ function url_encode_star($convoArr)
 {
 	
 	$encoded_star = urlencode(get_convo_var($convoArr,'star'));
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Urlencoded the string to: $encoded_star",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Urlencoded the string to: $encoded_star",4);
 	return $encoded_star;
 }
 
@@ -813,7 +827,7 @@ function url_encode_star($convoArr)
 function push_stack(&$convoArr,$item)
 {
 	if((trim($item))!=(trim($convoArr['stack']['top']))){
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "Pushing $item onto to the stack",3);	
+		runDebug( __FILE__, __FUNCTION__, __LINE__, "Pushing $item onto to the stack",4);	
 		$convoArr['stack']['last'] = $convoArr['stack']['seventh'];
 		$convoArr['stack']['seventh'] = $convoArr['stack']['sixth'];
 		$convoArr['stack']['sixth'] = $convoArr['stack']['fifth'];
@@ -823,7 +837,7 @@ function push_stack(&$convoArr,$item)
 		$convoArr['stack']['second'] = $convoArr['stack']['top'];
 	    $convoArr['stack']['top'] = $item;
 	}else{
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "Could not push empty item onto to the stack",3);	
+		runDebug( __FILE__, __FUNCTION__, __LINE__, "Could not push empty item onto to the stack",1);	
 	} 
 	
     return $item;
@@ -840,7 +854,7 @@ function pop_stack(&$convoArr)
 {
 	$item = trim($convoArr['stack']['top']);
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Popped $item off the stack",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Popped $item off the stack",4);
 	
 	$convoArr['stack']['top']  = $convoArr['stack']['second'];
 	$convoArr['stack']['second'] = $convoArr['stack']['third'];
@@ -864,9 +878,9 @@ function make_learn($convoArr, $pattern, $template)
 {
 	global $con,$dbn;
 
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Making learn",1);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Pattern:  $pattern",1);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Template: $template",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Making learn",2);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Pattern:  $pattern",2);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Template: $template",2);
 	
 	$pattern = clean_for_aiml_match($pattern);
 	$aiml = "<learn> <category> <pattern> <eval>$pattern</eval> </pattern> <template> <eval>$template</eval> </template> </category> </learn>";
@@ -879,7 +893,7 @@ function make_learn($convoArr, $pattern, $template)
 	$sql = "INSERT INTO `$dbn`.`aiml_userdefined` 
 				VALUES
 				(NULL, '$aiml','$pattern','$template','$u_id','$bot_id',NOW())";
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Make learn SQL: $sql",2);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Make learn SQL: $sql",3);
 	$res = mysql_query($sql,$con);
 }
 
@@ -893,7 +907,7 @@ function make_learn($convoArr, $pattern, $template)
 **/
 function run_system($operator,$num_1,$num_2="")
 {
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Running system tag math $num_1 $operator $num_2",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Running system tag math $num_1 $operator $num_2",4);
 	
 	switch (strtolower($operator)) {
 		case "add":

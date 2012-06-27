@@ -18,8 +18,10 @@
 **/
 function load_new_client_defaults($convoArr)
 {
+	
 	//to do could put this in an array
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading client defaults","3");
+	//todo check this out
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading client defaults",1);
 	$convoArr['client_properties']['name'] = "my friend";
 	$convoArr['client_properties']['id'] = $_SERVER['REMOTE_ADDR'];
 	
@@ -56,8 +58,8 @@ function get_user_id($convoArr)
 		$msg = "new";
 	}
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Getting $msg user id:".$convoArr['conversation']['user_id'],"1");
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "get_user_id SQL: $sql","2");
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Getting $msg user id:".$convoArr['conversation']['user_id'],4);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "get_user_id SQL: $sql",3);
 	return $convoArr;
 	
 }
@@ -95,7 +97,7 @@ function intisaliseUser($convo_id)
 	mysql_query($sql,$con);
 	$user_id = mysql_insert_id($con);
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "intisaliseUser #$user_id SQL: $sql","2");
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "intisaliseUser #$user_id SQL: $sql",3);
 	
 	return $user_id;
 }

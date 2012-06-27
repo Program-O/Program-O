@@ -15,5 +15,5 @@ include_once("make_aiml_to_php_code.php");
 include_once("buildingphp_code_functions.php");
 include_once("replace_tomakesafe.php");
 
-runDebug( __FILE__, __FUNCTION__, __LINE__, "Aimlfunction include files loaded",1);
+runDebug( __FILE__, __FUNCTION__, __LINE__, "Aimlfunction include files loaded",4);
 ?>

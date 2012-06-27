@@ -19,7 +19,7 @@
  * @return the en/decoded string
 **/
 function entity_replace($whichway,$text){
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "$whichway",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "$whichway",4);
 
 	//array of the symbols to be encoded decoded
 	$html_entity_symbols =array(
@@ -207,7 +207,7 @@ function entity_replace($whichway,$text){
  * @return the en/decoded string
 **/
 function foreignchar_replace($whichway,$text){
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "$whichway",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "$whichway",4);
 	
 	$foreign_char_array = array(
 		'&Scaron;'=>'htmlentity_foreign_big_S_caron',

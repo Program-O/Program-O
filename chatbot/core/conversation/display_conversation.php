@@ -45,7 +45,7 @@ function get_conversation_to_display($convoArr)
 		AND `bot_id` = '".$convoArr['conversation']['bot_id']."'
 		ORDER BY id DESC $limit ";
 		#$x = save_file('conversationLogSQL.txt', "SQL = \r\n$sql");
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql",2);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql",3);
 		
 		$result = db_query($sql,$con);
 
@@ -62,7 +62,7 @@ function get_conversation_to_display($convoArr)
 		}
 	
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Found '".db_res_count($result)."' lines of conversation",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Found '".db_res_count($result)."' lines of conversation",2);
 	
 	return 	$orderedRows;
 }
@@ -77,7 +77,7 @@ function get_conversation($convoArr)
 {
 	$conversation = get_conversation_to_display($convoArr);
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Processing conversation as ".$convoArr['conversation']['format'],1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Processing conversation as ".$convoArr['conversation']['format'],4);
 	
 	switch($convoArr['conversation']['format'])
 	{
@@ -117,7 +117,7 @@ function get_html($convoArr,$conversation)
 	}
 	
 	$convoArr['send_to_user']=$show;
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning HTML",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning HTML",4);
 	return $convoArr;
 }
 	
@@ -150,7 +150,7 @@ function get_json($convoArr,$conversation)
 	
 	
 	$convoArr['send_to_user']= json_encode($show_json);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning JSON",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning JSON",4);
 	return $convoArr;	
 }	
 
@@ -182,7 +182,7 @@ function get_xml($convoArr,$conversation)
 		$convo_xml .= "  </conversation>\n";
 		#$convo_xml .= "    </chat>\n  </conversation>\n";
 		$convoArr['send_to_user']=$convo_xml;
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning XML",3);
+		runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning XML",4);
 	return $convoArr;
 }	
 ?>

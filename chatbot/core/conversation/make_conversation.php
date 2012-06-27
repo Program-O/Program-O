@@ -17,7 +17,7 @@
 **/	
 function make_conversation($convoArr){
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Making conversation",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Making conversation",4);
 	global $offset;
 	//get the user input and clean it
 	//$convoArr = clean_for_aiml_match('user_say','lookingfor',$convoArr);
@@ -43,11 +43,11 @@ function make_conversation($convoArr){
 **/	
 function add_aiml_to_php($convoArr){
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Adding PHP to table",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Adding PHP to table",4);
 	global $dbn,$con;
 	$evalthis = mysql_escape_string($convoArr['aiml']['aiml_to_php']);
 	$sql = "UPDATE `$dbn`.`aiml` SET `php_code` = \"$evalthis\" WHERE `id` = '".$convoArr['aiml']['aiml_id']."' LIMIT 1";
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Adding new PHP to aiml table SQL: $sql",2);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Adding new PHP to aiml table SQL: $sql",3);
 	$result = db_query($sql,$con);
 	return $convoArr;
 }
@@ -60,7 +60,7 @@ function add_aiml_to_php($convoArr){
 **/	
 function make_safe_to_eval($evalthis){
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Making it safe to eval",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Making it safe to eval",4);
 	$evalthis = str_replace('"','\"',$evalthis);
 	$evalthis = str_replace('$','\$',$evalthis);
 	return $evalthis;
@@ -74,7 +74,7 @@ function make_safe_to_eval($evalthis){
 **/	
 function eval_aiml_to_php_code(&$convoArr,$evalthis){
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "",4);
 	$botsay = @run_aiml_to_php($convoArr,$evalthis);
 	//if run correctly $botsay should be re valued
 	return $botsay;
@@ -90,14 +90,14 @@ function eval_aiml_to_php_code(&$convoArr,$evalthis){
 **/	
 function run_aiml_to_php(&$convoArr,$evalthis){
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Evaluating Stored PHP Code from the Database",1);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Evaluating Stored PHP Code from the Database",4);
 	global $botsay;
 	global $error_response;
 
 	//this must be NULL if it is FALSE then its failed but  if its NULL its a success
 	$error_flag = eval($evalthis);
 	if($error_flag===NULL){ //success
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "EVALUATED: $evalthis ",1);
+		runDebug( __FILE__, __FUNCTION__, __LINE__, "EVALUATED: $evalthis ",4);
 		$result = $botsay;
 	} else { //error
 		runDebug( __FILE__, __FUNCTION__, __LINE__, "ERROR TRYING TO EVAL: $evalthis ",1);
