@@ -206,7 +206,8 @@ function score_matches($bot_parent_id,$allrows,$lookingfor,$current_thatpattern,
 	$common_word_points = 3;		
 	$direct_match = 1;
 	$topic_match = 50;
-	$that_pattern_match = 75;
+	$that_pattern_match = 75; 
+	$that_pattern_match_general = 9;
 	$this_bot_match = 500; //even the worst match from the actual bot is better than the best match from the base bot
 	
 	//loop through all relevant results
@@ -222,49 +223,86 @@ function score_matches($bot_parent_id,$allrows,$lookingfor,$current_thatpattern,
 		}else{
 			$aiml_thatpattern_wildcards = "";
 		}
+		
+		//to debug the scoring...
+		$allrows[$all]['track_score']="";
+		
 		//if the aiml is from the actual bot and not the base bot
 		//any match in the current bot is better than the base bot
 		if(($bot_parent_id!=0)&&($allrows[$all]['bot_id']!=$bot_parent_id)){
 			$allrows[$all]['score']+=$this_bot_match;
+			$allrows[$all]['track_score'].="a";
 		} 			
 		//if the result aiml pattern matches the user input increase score
 		if($aiml_pattern==$lookingfor){
 			$allrows[$all]['score']+=$direct_match;
+			$allrows[$all]['track_score'].="b";
 		} 		
 		//if the result topic matches the user stored aiml topic increase score 
-		if($aiml_topic==$current_topic){
+		if(($aiml_topic==$current_topic) && ($aiml_topic!=""))  {
 			$allrows[$all]['score']+=$topic_match;
+			$allrows[$all]['track_score'].="c";
 		} 	
 		//if the result that pattern matches the user stored that pattern increase score
-		if($aiml_thatpattern==$current_thatpattern){
+		if(($aiml_thatpattern==$current_thatpattern) && ($aiml_thatpattern!="") && ($aiml_pattern!="*")){
 			$allrows[$all]['score']+=$that_pattern_match;
-		}elseif(($aiml_thatpattern_wildcards!="") && (preg_match($aiml_thatpattern_wildcards,$current_thatpattern,$m))){
+			$allrows[$all]['track_score'].="d";
+		}elseif(($aiml_thatpattern_wildcards!="") && ($aiml_thatpattern!="") && ($aiml_pattern!="*") && (preg_match($aiml_thatpattern_wildcards,$current_thatpattern,$m))){
 			$allrows[$all]['score']+=$that_pattern_match;
-		} 			
+			$allrows[$all]['track_score'].="e";
+		}	
+			//if the that pattern is just a star we need to score it seperately as this is very general
+			if( ($aiml_pattern=="*")&&( (substr($aiml_thatpattern, -1)=="*") || (substr($aiml_thatpattern, 0, 1)=="*")) )
+			{
+				
+				//if the result that pattern matches the user stored that pattern increase score with a lower number
+				if(($aiml_thatpattern==$current_thatpattern) && ($aiml_thatpattern!="")){
+					$allrows[$all]['score']+=$that_pattern_match_general;
+					$allrows[$all]['track_score'].="f";
+				}elseif(($aiml_thatpattern_wildcards!="") && ($aiml_thatpattern!="") && (preg_match($aiml_thatpattern_wildcards,$current_thatpattern,$m))){
+					$allrows[$all]['score']+=$that_pattern_match_general;
+					$allrows[$all]['track_score'].="g";
+					}
+			}
+		 			
 
 		//if stored result == default pattern increase score
 		if(strtolower($aiml_pattern)==strtolower($default_aiml_pattern)){
 			$allrows[$all]['score']+=$default_pattern_points;
+			$allrows[$all]['track_score'].="h";
 		} elseif($aiml_pattern=="*"){ //if stored result == * increase score
 			$allrows[$all]['score']+=$starscore_points;
+			$allrows[$all]['track_score'].="i";
 		} elseif($aiml_pattern=="_"){ //if stored result == _ increase score
 			$allrows[$all]['score']+=$underscore_points;
+			$allrows[$all]['track_score'].="j";
 		} else { //if stored result == none of the above BREAK INTO WORDS AND SCORE INDIVIDUAL WORDS
 			$wordsArr = explode(" ",$aiml_pattern);		
 			foreach($wordsArr as $index => $word){
 				$word = strtolower(trim($word));
 				if(in_Array($word,$commonwordsArr)){ // if it is a commonword increase with (lower) score
 					$allrows[$all]['score']+=$common_word_points;
+					$allrows[$all]['track_score'].="k";
 				} elseif($word=="*"){
 					$allrows[$all]['score']+=$starscore_points; //if it is a star wildcard increase score
+					$allrows[$all]['track_score'].="l";
 				} elseif($word=="_"){
 					$allrows[$all]['score']+=$underscore_points; //if it is a underscore wildcard increase score
+					$allrows[$all]['track_score'].="m";
 				} else {
 					$allrows[$all]['score']+=$uncommon_word_points; //else it must be an uncommon word so increase the score
+					$allrows[$all]['track_score'].="n";
 				}			
 			}
 		}
 	}
+	
+	/*
+	echo "<pre>";
+	print_r($allrows);
+	echo "</pre>";
+	*/
+	
 	return $allrows; //return the scored rows
 }
 
@@ -539,7 +577,11 @@ function find_aiml_matches($convoArr){
 		$sql_add = make_like_pattern($lookingfor,'pattern');
 		$sql = "SELECT * FROM `$dbn`.`aiml` WHERE 
 		$sql_bot_select AND (
-		((`pattern` = '_') OR (`pattern` = '*') OR (`pattern` like '$lookingfor') OR ($sql_add) OR (`pattern` = '$default_aiml_pattern' ) )
+		((`pattern` = '_') OR 
+		 (`pattern` = '*') OR 
+		 (`pattern` like '$lookingfor') OR 
+		 ($sql_add) OR 
+		 (`pattern` = '$default_aiml_pattern' ))
 		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
 		AND ((`topic`='') OR (`topic`='".$storedtopic."')))";	 
 	}
