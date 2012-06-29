@@ -93,6 +93,7 @@
     /*
      * $default_debugshow - The level of messages to show the user
      * 0=none,
+     * 1=errors only
      * 1=error+general,
      * 2=error+general+sql,
      * 3=everything
@@ -197,6 +198,7 @@
     //------------------------------------------------------------------------
     $srai_iterations = '';
     $offset=1;
+    $rememLimit = 20;
     $debugArr = array();
 
     //------------------------------------------------------------------------

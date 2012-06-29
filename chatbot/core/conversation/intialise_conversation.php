@@ -189,7 +189,7 @@ function add_firstturn_conversation_vars($convoArr){
 **/
 function push_on_front_convoArr($arrayIndex,$value,$convoArr)
 {
-    global $offset;
+    global $offset,$rememLimit;
     runDebug( __FILE__, __FUNCTION__, __LINE__, "Push on to front of $arrayIndex array",4);
     $remember_up_to = $convoArr['conversation']['remember_up_to'];
     
@@ -265,19 +265,18 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
         array_unshift($convoArr[$arrayIndex],$value);
         array_unshift($convoArr[$arrayIndex],NULL);
     }
-
     if((trim($arrayIndex) == 'star')||(trim($arrayIndex) == 'topic'))
     {
     	//keep 5 times as many topics and stars as lines of conversation
-    	$rememLimit = $remember_up_to*5;
+    	$rememLimit_tmp = $rememLimit;
     }
     else
     {
-    	$rememLimit = $remember_up_to;
+    	$rememLimit_tmp = $remember_up_to;
     }
     
     
-    for($i=$rememLimit+1;$i<=count($convoArr[$arrayIndex]);$i++){
+    for($i=$rememLimit_tmp+1;$i<=count($convoArr[$arrayIndex]);$i++){
         if(isset($convoArr[$arrayIndex][$i])){
             unset($convoArr[$arrayIndex][$i]);
         }
