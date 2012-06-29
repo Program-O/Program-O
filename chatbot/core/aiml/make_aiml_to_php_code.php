@@ -75,6 +75,16 @@ $template = preg_replace('#<bot name="([^"]*)"/>#ie', "\$convoArr['bot_propertie
 			$find[$i]='#</say>#i';
 			$replace[$i]='\';';
 
+			
+			$i++;
+			$find[$i]='#<template>(\s)*?</template>#i';
+			$replace[$i]='';			
+
+			$i++;
+			$find[$i]='#<template/>#i';
+			$replace[$i]='';
+				
+			
 			$i++;
 			$find[$i]='#<say>#i';
 			$replace[$i]='$tmp_botsay .= \'';	

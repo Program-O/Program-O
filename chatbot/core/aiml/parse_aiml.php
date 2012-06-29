@@ -635,12 +635,40 @@ function set_simple(&$convoArr,$index,$value)
 		$convoArr = push_on_front_convoArr('topic',$value,$convoArr);
 	}
 	else {
+		
+		$value = clean_client_properties($value);
+		
 		$convoArr['client_properties'][$index]=$value;
 		
 	}
 	return $value." ";
 }
+
+/**
+ * function clean_client_properties()
+ * When storing a client's properties we dont need extra bits and bobs they may have added
+ * e.g. name is elizabeth.... should store elizabeth not elizabeth....
+ * so lets clean them here
+ */
+function clean_client_properties($value)
+{
+	//remove lots of occurances of things
+	$value = preg_replace('/\.+/i', '.', $value);
+	$value = preg_replace('/\!+/i', '!', $value);
+	$value = preg_replace('/\?+/i', '?', $value);
+	$value = preg_replace('/\s+/i', ' ', $value);
 	
+	$value = trim($value,'!');
+	$value = trim($value,'?');
+	$value = trim($value,'.');
+	$value = trim($value);
+	
+	
+	return $value;
+}
+
+
+
 /**
  * function select_random()
  * This function is given a string of <li>'s it is then converted into PHP code so that a random option can be selected

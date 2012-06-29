@@ -66,9 +66,9 @@ function clean_for_eval($parsed_template,$count=0)
 	$parsed_template= str_replace("close_bracket';", "close_bracket;", $parsed_template);
 	$parsed_template= str_replace("close_bracket.\\\"';","close_bracket.'\\\"';", $parsed_template);
 	
-	//$parsed_template= preg_replace("/elseif\(\$[a-z]=='[0-9]'\){ \$tmp_botsay.= ''; }/is","", $parsed_template);
-	
-	
+	//TODO BE CAREFULL this might break things ... needed for learn.aiml
+	$parsed_template= str_replace("close_bracket.'close_bracket;","close_bracket close_bracket;", $parsed_template);
+
 	
 	
 	$linebyline = explode("\r\n",$parsed_template);
