@@ -109,7 +109,7 @@
      */
      $default_debugmode = [default_debugmode];
      $default_save_state = "[default_save_state]";
-     $error_response = "[default_error_response]";
+     $error_response = "[error_response]";
      $unknown_user = "Seeker";
 
     //------------------------------------------------------------------------
