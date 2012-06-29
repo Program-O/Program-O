@@ -96,6 +96,7 @@ function getSelectedBot() {
   $ds_i = "";
   $ds_ii = "";
   $ds_iii = "";
+  $ds_iv = "";
   $dm_ = "";
   $dm_i = "";
   $dm_ii = "";
@@ -162,6 +163,9 @@ function getSelectedBot() {
       elseif($bot_debugshow=="3") {
         $ds_iii = ' selected="selected"';
       }
+      elseif($bot_debugshow=="4") {
+        $ds_iv = ' selected="selected"';
+      }
       if($bot_debugmode=="0") {
         $dm_ = ' selected="selected"';
       }
@@ -206,7 +210,7 @@ function getSelectedBot() {
     '[sel_html]','[sel_xml]','[sel_json]','[sel_session]','[sel_db]','[sel_fyes]',
     '[sel_fno]','[sel_fuyes]','[sel_funo]','[bot_conversation_lines]','[bot_remember_up_to]',
     '[bot_debugemail]','[dm_]','[dm_i]','[dm_ii]','[dm_iii]','[ds_]','[ds_i]','[ds_ii]',
-    '[ds_iii]','[action]', '[bot_default_aiml_pattern]', '[bot_error_response]',
+    '[ds_iii]','[ds_iv]','[action]', '[bot_default_aiml_pattern]', '[bot_error_response]',
   );
   foreach ($searches as $search) {
     $replace = str_replace('[', '', $search);

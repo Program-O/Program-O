@@ -218,10 +218,11 @@
               <td class="label"><label for="default_debugshow"><span class="helpButton" id="hb_default_debugshow"> </span>Debug Level</label></td>
               <td class="formw">
                   <select name="default_debugshow" id="default_debugshow" size="1">
-                    <option value="0">Nothing</option>
-                    <option value="1" selected="selected">General</option>
-                    <option value="2">General/SQL</option>
-                    <option value="3">Everything</option>
+                    <option value="0">Show no debugging</option>
+                    <option value="1">errors only</option>
+                    <option value="2" selected="selected">general + errors</option>
+                    <option value="3">general + errors + sql</option>
+                    <option value="4">show everything</option>
                   </select>
               </td>
             </tr>
