@@ -439,6 +439,8 @@ function set_wildcards($convoArr)
 		
 		if (preg_match('/'.$ap.'/si', $checkagainst, $matches,PREG_OFFSET_CAPTURE)) {
 
+			
+			
 	    	$totalStars = count($matches)-1;
 			for($i = $totalStars; $i>=1; $i--){
 					$convoArr = push_on_front_convoArr('star',$matches[$i][0],$convoArr);

@@ -122,7 +122,6 @@ function unset_all_bad_pattern_matches($allrows,$lookingfor,$current_thatpattern
 	
 	
 	
-	
 	//loop through the results array
 	foreach($allrows as $all => $subrow){
 		$aiml_pattern = $subrow['pattern']; //get the pattern
@@ -133,30 +132,71 @@ function unset_all_bad_pattern_matches($allrows,$lookingfor,$current_thatpattern
 		if(strtolower($default_aiml_pattern)==strtolower($aiml_pattern)){ //if it is a direct match with our default pattern then add to tmp_rows
 			$tmp_rows[$i]=$subrow;
 			$tmp_rows[$i]['score']=0;
+			$tmp_rows[$i]['track_score']="za";
 			$i++;
 		} else {
 			$aiml_pattern_matchme = match_wildcard_rows($aiml_pattern); //build an aiml_pattern with wild cards to check for a match
 			if($aiml_thatpattern!=""){
 				$aiml_thatpattern_matchme = match_wildcard_rows($aiml_thatpattern); //build an aiml_thatpattern with wild cards to check for a match
 				$that_match = preg_match($aiml_thatpattern_matchme,$current_thatpattern,$matches); //see if that patterns match
+				$tmp_rows[$i]['track_score']="b";
 			} else {
 				$that_match = "$aiml_thatpattern == ''";
+				$tmp_rows[$i]['track_score']="c";
 			}
 
 			if($aiml_topic !=""){
 				$topic_match = "$aiml_topic == $current_topic";
+				$tmp_rows[$i]['track_score'].="d";
 			}else{
 				$topic_match = "$aiml_topic == ''";
+				$tmp_rows[$i]['track_score'].="e";
 			}
 			//try to match the returned aiml pattern with the user input (lookingfor) and with the that's and topic's
-			if((preg_match($aiml_pattern_matchme,$lookingfor,$matches))&&($that_match)&&($topic_match)){
-				$tmp_rows[$i]=$subrow;
-				$tmp_rows[$i]['score']=0;
-				$i++;
+			
+			/*echo "<br/>--------------";
+			echo "<br/>found ".$aiml_pattern_matchme;
+			echo "<br/>want  ".$lookingfor;
+			echo "<br/>res   ".$matches;
+			echo "<br/>that  ".$that_match;
+			echo "<br/>topic ".$topic_match;
+			*/
+			
+			
+			if((preg_match($aiml_pattern_matchme,$lookingfor,$matches))){
+				
+				//echo "<br/>TRUE1";
+				
+				
+				if($that_match)
+				{
+					//echo "<br/>TRUE2";
+					if($topic_match)
+					{
+						if((isset($subrow['pattern']))&&($subrow['pattern']!=''))
+						{
+					//	echo "<br/>TRUE3";
+						$tmp_rows[$i]=$subrow;
+						$tmp_rows[$i]['score']=0;
+						$tmp_rows[$i]['track_score']="f";
+						$i++;
+						}
+					}
+				}
+				
+				
+				
 			}
+			
+			
+			//echo "<br/>--------------";
 		}
 	}
 
+//	echo "<pre>";
+//	print_r($tmp_rows);
+//	echo "</pre>";
+	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Found '$i' relevant rows",2);
 	
 	return $tmp_rows;
@@ -172,6 +212,7 @@ function unset_all_bad_pattern_matches($allrows,$lookingfor,$current_thatpattern
 function match_wildcard_rows($item){
 	
 	//runDebug( __FILE__, __FUNCTION__, __LINE__, "");
+	$item = trim($item);
 	$item = str_replace("*",")(.*)(",$item);
 	$item = str_replace("_",")(.*)(",$item);
 	$item = str_replace("+","\+",$item);
@@ -213,10 +254,22 @@ function score_matches($bot_parent_id,$allrows,$lookingfor,$current_thatpattern,
 	//loop through all relevant results
 	foreach($allrows as $all => $subrow){
 		//get items
+		
+		
+		
+		
 		$aiml_pattern = trim($subrow['pattern']);
 		$aiml_thatpattern = trim($subrow['thatpattern']);
 		$aiml_topic = trim($subrow['topic']);
 
+		
+		
+		if(!isset($subrow['pattern']))
+		{
+			continue;
+		}
+		
+		
 		//convert aiml wildcards to php wildcards
 		if($aiml_thatpattern!=""){
 			$aiml_thatpattern_wildcards = match_wildcard_rows($aiml_thatpattern);
@@ -297,6 +350,9 @@ function score_matches($bot_parent_id,$allrows,$lookingfor,$current_thatpattern,
 		}
 	}
 	
+	//send off for debugging 
+	sort2DArray("show top scoring aiml matches",$allrows,"score", 1,10);
+	
 	/*
 	echo "<pre>";
 	print_r($allrows);
@@ -318,6 +374,7 @@ function get_highest_score_rows($allrows,$lookingfor){
 	
 	$bestResponse = array();
 	$last_high_score = 0;	
+
 	
 	//loop through the results
 	foreach($allrows as $all => $subrow){
@@ -329,6 +386,8 @@ function get_highest_score_rows($allrows,$lookingfor){
 			$tmpArr[]=$subrow;
 		}
 	}
+	
+	
 	//there may be any number of results with the same score so pick any random one
 	$bestResponseArr = $tmpArr[array_rand($tmpArr)];
 	$cRes = count($tmpArr);
@@ -368,22 +427,22 @@ function get_convo_var($convoArr,$index_1,$index_2="",$index_3="",$index_4=""){
 	if($index_3=="") $index_3 = $offset;
 	if($index_4=="") $index_4 = $offset;
 		
-	if((isset($convoArr[$index_1]))&&(!is_array($convoArr[$index_1]))){
+	if((isset($convoArr[$index_1]))  &&(!is_array($convoArr[$index_1]))&&($convoArr[$index_1]!='')){
 		$value = $convoArr[$index_1];
 	}	
-	elseif((isset($convoArr[$index_1][$index_3]))&&(!is_array($convoArr[$index_1][$index_3]))){
+	elseif((isset($convoArr[$index_1][$index_3]))&&(!is_array($convoArr[$index_1][$index_3]))&&($convoArr[$index_1][$index_3]!='')){
 		$value = $convoArr[$index_1][$index_3];
 	}
-	elseif((isset($convoArr[$index_1][$index_3][$index_4]))&&(!is_array($convoArr[$index_1][$index_3][$index_4]))){
+	elseif((isset($convoArr[$index_1][$index_3][$index_4]))&&(!is_array($convoArr[$index_1][$index_3][$index_4]))&&($convoArr[$index_1][$index_3][$index_4]!='')){
 		$value = $convoArr[$index_1][$index_3][$index_4];
 	}
-	elseif((isset($convoArr[$index_1][$index_2]))&&(!is_array($convoArr[$index_1][$index_2]))){
+	elseif((isset($convoArr[$index_1][$index_2]))&&(!is_array($convoArr[$index_1][$index_2]))&&($convoArr[$index_1][$index_2]!='')){
 		$value = $convoArr[$index_1][$index_2];
 	}
-	elseif((isset($convoArr[$index_1][$index_2][$index_3]))&&(!is_array($convoArr[$index_1][$index_2][$index_3]))){
+	elseif((isset($convoArr[$index_1][$index_2][$index_3]))&&(!is_array($convoArr[$index_1][$index_2][$index_3]))&&($convoArr[$index_1][$index_2][$index_3]!='')){
 		$value = $convoArr[$index_1][$index_2][$index_3];
 	}
-	elseif((isset($convoArr[$index_1][$index_2][$index_3][$index_4]))&&(!is_array($convoArr[$index_1][$index_2][$index_3][$index_4]))){
+	elseif((isset($convoArr[$index_1][$index_2][$index_3][$index_4]))&&(!is_array($convoArr[$index_1][$index_2][$index_3][$index_4]))&&($convoArr[$index_1][$index_2][$index_3][$index_4]!='')){
 		$value = $convoArr[$index_1][$index_2][$index_3][$index_4];
 	}	
 	else
@@ -585,7 +644,6 @@ function find_aiml_matches($convoArr){
 		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
 		AND ((`topic`='') OR (`topic`='".$storedtopic."')))";	 
 	}
-	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql",3);
 
 	$result = db_query($sql,$con);

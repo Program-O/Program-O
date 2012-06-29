@@ -266,7 +266,18 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
         array_unshift($convoArr[$arrayIndex],NULL);
     }
 
-    for($i=$remember_up_to+1;$i<=count($convoArr[$arrayIndex]);$i++){
+    if((trim($arrayIndex) == 'star')||(trim($arrayIndex) == 'topic'))
+    {
+    	//keep 5 times as many topics and stars as lines of conversation
+    	$rememLimit = $remember_up_to*5;
+    }
+    else
+    {
+    	$rememLimit = $remember_up_to;
+    }
+    
+    
+    for($i=$rememLimit+1;$i<=count($convoArr[$arrayIndex]);$i++){
         if(isset($convoArr[$arrayIndex][$i])){
             unset($convoArr[$arrayIndex][$i]);
         }

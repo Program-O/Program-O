@@ -112,7 +112,56 @@ function runDebug($fileName, $functionName, $line, $info, $level=0) {
 	//return $debugArr;
 }
 
+/**
+ * function sort2DArray()
+ * Small helper function to sort a 2d array
+ * @param string $opName - name of this operation i.e. show top scored aiml
+ * @param array $thisArr - the array to sort
+ * @param $sortByItem - the array field to sort by
+ * @param $sortAsc - 1 = ascending order, 0 = descending
+ * @param $limit - the number of results to return
+ * @return void;
+ **/
+function sort2DArray($opName,$thisArr,$sortByItem, $sortAsc=1,$limit=10)
+{
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "$opName - sorting ".count($thisArr)." results and getting the top $limit for debugging",4);
+	
+	$i=0;
+	
+	$tmpSortArr = array();
+	$last_high_score= 0;
+	
+	//loop through the results and put in tmp array to sort
+	foreach($thisArr as $all => $subrow){
+		
+		$tmpSortArr[$subrow[$sortByItem]]=$subrow[$sortByItem];
+	}	
 
+	//sort the results
+	if($sortAsc==1) { //ascending
+		krsort($tmpSortArr);
+	}
+	else { //descending
+		ksort($tmpSortArr);
+	}
+	//loop through scores
+	foreach($tmpSortArr as $sortedKey => $idValue){
+		//no match against orig res arr
+		foreach($thisArr as $i => $subArr){
+			if(( (string)$subArr[$sortByItem]==(string)$idValue))
+			{
+				$resArr[]=$subArr;
+			}
+		}
+	}
+	
+	//get the limited top results
+	$outArr = array_slice($resArr, 0, $limit);   
+	//send to debug
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "$opName ". print_r($outArr, true),3);
+	
+	
+}
 
 
 
@@ -157,10 +206,11 @@ function handleDebug($convoArr){
 	
 	$debuglevel = get_convo_var($convoArr, 'conversation', 'debugshow', '', '');
 
-	if($debuglevel == 3 )
+	if($debuglevel == 4 )
 	{
 		//show the full array
 		$showArr = $convoArr;
+		unset($showArr['debug']);
 	}
 	else
 	{
