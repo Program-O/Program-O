@@ -87,8 +87,8 @@
     $default_pattern = "[default_pattern]";
     $default_use_aiml_code = '[default_use_aiml_code]';
     $default_update_aiml_code = '[default_update_aiml_code]';
-    $default_conversation_lines = [default_conversation_lines];
-    $default_remember_up_to = [default_remember_up_to];
+    $default_conversation_lines = '[default_conversation_lines]';
+    $default_remember_up_to = '[default_remember_up_to]';
     $default_debugemail = "[default_debugemail]";
     /*
      * $default_debugshow - The level of messages to show the user
@@ -98,7 +98,7 @@
      * 2=error+general+sql,
      * 3=everything
      */
-    $default_debugshow = [default_debugshow];
+    $default_debugshow = '[default_debugshow]';
 
     /*
      * $default_debugmode - How to show the debug data
@@ -107,7 +107,7 @@
      * 2 = page view - display debugging on the webpage
      * 3 = email each conversation line (not recommended)
      */
-     $default_debugmode = [default_debugmode];
+     $default_debugmode = '[default_debugmode]';
      $default_save_state = "[default_save_state]";
      $error_response = "[error_response]";
      $unknown_user = "Seeker";
