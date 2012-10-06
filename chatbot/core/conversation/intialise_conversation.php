@@ -208,8 +208,6 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
         $convoArr[$arrayIndex]=array();
         $convoArr = load_blank_convoArray($arrayIndex,"",$convoArr);
     }
-    runDebug( __FILE__, __FUNCTION__, __LINE__, print_r($convoArr[$arrayIndex],true),1);
-     
 
     //if the subarray is itself an array check it here
     if (in_array($arrayIndex, $two_d_arrays)) 
@@ -225,7 +223,7 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
                 }
             }
         }
-        runDebug( __FILE__, __FUNCTION__, __LINE__, print_r($convoArr[$arrayIndex],true),1);
+        runDebug( __FILE__, __FUNCTION__, __LINE__, print_r($convoArr[$arrayIndex],true),4);
          
         //if there definately is something in the sentance array build the temp sentance array
         if(($cmatch>0)&&($matches!==FALSE)){
