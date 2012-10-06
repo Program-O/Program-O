@@ -382,12 +382,14 @@ function score_matches($bot_parent_id,$allrows,$lookingfor,$current_thatpattern,
 function get_highest_score_rows($allrows,$lookingfor){
 	
 	$bestResponse = array();
+	$bestResponseArr = array();
 	$last_high_score = 0;	
 
-	
 	//loop through the results
 	foreach($allrows as $all => $subrow){
-		if($subrow['score']>$last_high_score){ //if higher than last score then reset tmp array and store this result
+		if(!isset($subrow['score']))
+		{}
+		elseif($subrow['score']>$last_high_score){ //if higher than last score then reset tmp array and store this result
 			$tmpArr = array();
 			$tmpArr[]=$subrow;
 			$last_high_score=$subrow['score'];
