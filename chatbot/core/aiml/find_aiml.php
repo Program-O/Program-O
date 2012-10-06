@@ -256,19 +256,28 @@ function score_matches($bot_parent_id,$allrows,$lookingfor,$current_thatpattern,
 		//get items
 		
 		
-		
-		
-		$aiml_pattern = trim($subrow['pattern']);
-		$aiml_thatpattern = trim($subrow['thatpattern']);
-		$aiml_topic = trim($subrow['topic']);
+		if((!isset($subrow['pattern'])) || (trim($subrow['pattern'])=='')) {
+			$aiml_pattern='';
+		} else {
+			$aiml_pattern = trim($subrow['pattern']);
+		}
 
+		if((!isset($subrow['thatpattern'])) || (trim($subrow['thatpattern'])=='')) {
+			$aiml_thatpattern ='';
+		} else {
+			$aiml_thatpattern = trim($subrow['thatpattern']);
+		}
+
+		if((!isset($subrow['topic'])) || (trim($subrow['topic'])=='')) {
+			$aiml_topic ='';
+		} else {
+			$aiml_topic = trim($subrow['topic']);
+		}
 		
-		
-		if(!isset($subrow['pattern']))
+		if($aiml_pattern=='')
 		{
 			continue;
 		}
-		
 		
 		//convert aiml wildcards to php wildcards
 		if($aiml_thatpattern!=""){
