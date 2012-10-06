@@ -422,7 +422,8 @@ function set_wildcards($convoArr)
 	$aiml_pattern = get_convo_var($convoArr,'aiml','pattern');
 	
 	
-	$ap = $aiml_pattern;
+	
+	$ap = $aiml_pattern;	
 	$ap = str_replace("+","\+",$ap);
 	$ap = str_replace("*","(.*)",$ap);
 	$ap = str_replace("_","(.*)",$ap);
@@ -438,9 +439,7 @@ function set_wildcards($convoArr)
 		}
 		
 		if (preg_match('/'.$ap.'/si', $checkagainst, $matches,PREG_OFFSET_CAPTURE)) {
-
-			
-			
+			runDebug( __FILE__, __FUNCTION__, __LINE__, print_r($matches,true),4);
 	    	$totalStars = count($matches)-1;
 			for($i = $totalStars; $i>=1; $i--){
 					$convoArr = push_on_front_convoArr('star',$matches[$i][0],$convoArr);

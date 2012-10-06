@@ -190,9 +190,9 @@ function add_firstturn_conversation_vars($convoArr){
 function push_on_front_convoArr($arrayIndex,$value,$convoArr)
 {
     global $offset,$rememLimit;
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Push on to front of $arrayIndex array",4);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Pushing $value to front of $arrayIndex array",4);
     $remember_up_to = $convoArr['conversation']['remember_up_to'];
-    
+     
     //these subarray indexes are 2d
     $two_d_arrays = array("that","that_raw");
     
@@ -208,7 +208,8 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
         $convoArr[$arrayIndex]=array();
         $convoArr = load_blank_convoArray($arrayIndex,"",$convoArr);
     }
-
+    runDebug( __FILE__, __FUNCTION__, __LINE__, print_r($convoArr[$arrayIndex],true),1);
+     
 
     //if the subarray is itself an array check it here
     if (in_array($arrayIndex, $two_d_arrays)) 
@@ -224,7 +225,8 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
                 }
             }
         }
-        
+        runDebug( __FILE__, __FUNCTION__, __LINE__, print_r($convoArr[$arrayIndex],true),1);
+         
         //if there definately is something in the sentance array build the temp sentance array
         if(($cmatch>0)&&($matches!==FALSE)){
             foreach($sentances[1] as $index => $value){
@@ -275,7 +277,6 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
     	$rememLimit_tmp = $remember_up_to;
     }
     
-    
     for($i=$rememLimit_tmp+1;$i<=count($convoArr[$arrayIndex]);$i++){
         if(isset($convoArr[$arrayIndex][$i])){
             unset($convoArr[$arrayIndex][$i]);
@@ -286,7 +287,6 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
     if($arrayIndex=="topic"){
         push_stack($convoArr,$value);
     }
-    
     return $convoArr;
 }
 
