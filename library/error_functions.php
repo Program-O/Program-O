@@ -129,12 +129,14 @@ function sort2DArray($opName,$thisArr,$sortByItem, $sortAsc=1,$limit=10)
 	$i=0;
 	
 	$tmpSortArr = array();
+	$resArr = array();
 	$last_high_score= 0;
 	
 	//loop through the results and put in tmp array to sort
 	foreach($thisArr as $all => $subrow){
 		
-		$tmpSortArr[$subrow[$sortByItem]]=$subrow[$sortByItem];
+		if(isset($subrow[$sortByItem]))
+		{$tmpSortArr[$subrow[$sortByItem]]=$subrow[$sortByItem];}
 	}	
 
 	//sort the results
@@ -148,9 +150,11 @@ function sort2DArray($opName,$thisArr,$sortByItem, $sortAsc=1,$limit=10)
 	foreach($tmpSortArr as $sortedKey => $idValue){
 		//no match against orig res arr
 		foreach($thisArr as $i => $subArr){
-			if(( (string)$subArr[$sortByItem]==(string)$idValue))
+			if(isset($subrow[$sortByItem]))
 			{
-				$resArr[]=$subArr;
+				if(( (string)$subArr[$sortByItem]==(string)$idValue)) {
+					$resArr[]=$subArr;
+				}
 			}
 		}
 	}
