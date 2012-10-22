@@ -46,13 +46,14 @@ between the start and end section tags are the only parts of the template that a
       </div>
 <!-- Section LeftNav End -->
 <!-- Section Main Start -->
-[blank]      <div id="main">
+[blank]        <div id="errMsg" class="errMsg">
+          <div class="closeButton" id="closeButton" onclick="closeStatus('errMsg')" title="Click to hide">&nbsp;</div>
+[errMsg]
+        </div>
+      <div id="main">
 [divDecoration]
         <div id="main_title">
           [mainTitle]
-        </div>
-        <div id="errMsg" class="errMsg">
-[errMsg]
         </div>
         <div id="main_content">
 [mainContent]
@@ -598,8 +599,17 @@ between the start and end section tags are the only parts of the template that a
         var end = (dc.indexOf(";", begin) == -1) ? dc.length : dc.indexOf(";", begin);
         return unescape(dc.substring((begin + (name.length + 1)), end));
       }
+      function closeStatus(element) {
+        var parent = document.getElementById(element);
+        parent.style.display = 'none';
+      }
+      function openStatus(element) {
+        var parent = document.getElementById(element);
+        parent.style.display = 'block';
+      }
       //var logoStatus = (getCookie('display') !== false) ? 'Hide' : 'Show';
       var logoStatus = getCookie('display');
+      logoStatus = (logoStatus == 'Hide' || logoStatus == 'Show') ? logoStatus : 'Show';
       var func = logoStatus + 'Logo()';
       setTimeout(function(){
         eval(func);
@@ -679,16 +689,19 @@ between the start and end section tags are the only parts of the template that a
 [blank]          <div id="uploadForm" class="fullWidth noBorder">
             <p>
               This uploader can only handle aiml files of 1MB or less.
-              This script does not perform XML validation, but you can
-              validate your AIML files prior to uploading
+              This script now performs basic XML validation, but you should
+              still validate your AIML files prior to uploading
               (<strong>STRONGLY SUGGESTED</strong>) using W3School's
-              <a href="http://www.w3schools.com/xml/xml_validator.asp" target="_blank">XML Validator</a>.
+              <a href="http://www.w3schools.com/xml/xml_validator.asp" target="_blank">XML Validator</a>,
+              or the <a href="http://www.geekcavecreations.com/pgo/validateAIML.php">GCC AIML Validator</a>.
             </p>
 [upload_content]
+            <hr />
             <div id="AIML_List">
               List of Currently Stored AIML files for [bot_name]:<br />
 [AIML_List]
             </div>
+            <hr />
           </div>
           <div id="help">
 [showHelp]

@@ -37,9 +37,9 @@ td.label label {float: left; width: 100%; margin: 0; background-color: transpare
 td.label span {float: right;}
 td.label span.required {float: right;}
 td.formw {text-align: left; background-color: #DDFFFF; border: 1px outset #999; padding-top: 2px; padding-bottom: 2px;}
-td.formw input, div.row span.formw textarea { width: 98%; margin: 0 1%; }
+td.formw input, div.row span.formw textarea { width: 94%; margin: 0 1%; }
 td.formw input[type="radio"] { width: auto; margin-right: 5px; }
-td.formw input[type="checkbox"], td.formw select { width: 100%; margin: 0; float: left; text-align: left; }
+td.formw input[type="checkbox"], td.formw select { width: 95%; margin: 0; float: left; text-align: left; }
 td.underline {border: 2px outset #666;border-top: 1px outset #666; border-left: 1px outset #666;}
 div.row span.formw {float: right; clear: none; width: 49.5%; text-align: left; background-color: #DDFFFF; border: 1px outset #999; padding-top: 2px; padding-bottom: 2px;}
 div.row span.formw input, div.row span.formw textarea { width: 150px; margin: 0; }
@@ -67,7 +67,15 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
 .bold { font-weight: bold; }
 .big { font-size: larger; }
 .narrow { padding-left: 0; float: left;width: 25%;text-align: left; border: 1px dashed blue;}
-
+.closeButton {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 32px;
+  height: 32px;
+  background: url(images/closeButton.png) no-repeat;
+  cursor: pointer;
+}
 .errMsg {
   min-width: 250px;
   max-width: 98%;
@@ -77,11 +85,17 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
   color: black;
   vertical-align: middle;
   text-align: center;
-  padding: 2px;
+  padding: 5px;
   margin: 0 auto;
   display: none;
   overflow: auto;
-  border: 2px inset #933;
+  border: 6px outset #933;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  overflow: auto;
+  z-index: 99;
+  padding-right: 40px;
 }
 .ul, .ll, .ur, .lr {
   width: 6px;
@@ -381,13 +395,15 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
 }
 #main_content {
   position: absolute;
-  top: 75px;
+  top: 55px;
   bottom: 5px;
   left: 0;
   right: 0;
   text-indent: 1em;
   overflow: auto;
   padding-top: 5px;
+  padding-left: 5px;
+  background-color: pink;
   background-color: #FFFFCC;
   z-index: 3;
 /*
@@ -534,6 +550,9 @@ border:none;
   overflow: auto;
 }
 
+#teachForm p, #uploadForm p, #downloadForm p, #membersForm p {
+  padding: 5px;
+}
 
 #teachForm fieldset { border: none; }
 
@@ -635,16 +654,12 @@ border:none;
 
 div#AIML_List {
   border: 2px inset #9FC03A;
+  border: none;
   margin: 10px auto;
   padding: 12px;
   text-align: left;
   text-indent: 0;
-  width: 80%;
-/*
-  min-width: 300px;
-  max-width: 600px;
-  min-height: 120px;
-*/
+  width: auto%;
   max-height: 300px;
   overflow: auto;
 }
@@ -699,12 +714,13 @@ table td#notes {
 
 #helpLink1 {float: left; margin-bottom: 10px;}
 td input, td select {
-  width: 100%;
+  width: 95%;
   margin: 0 auto;
 }
 .formTable {
   border: 1px solid orange;
-  width: 100%;
+  border: none;
+  width: 98%;
   margin: 10px auto;
   padding: 5px;
 }
@@ -721,6 +737,6 @@ td input, td select {
 .formTable td input[type=submit] { width: auto; }
 .formTable td span { width: 100%; text-align: left; margin: 0 auto; padding: 0; }
 
-
+select#bot_id { width: auto; min-width: 30%; }
 
 

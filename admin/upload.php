@@ -115,10 +115,6 @@ endScript;
     $sql_template = "(NULL, $myBot_id, '[aiml_add]', '[pattern]', '[that]', '[template]', '[topic]', '$fileName', ''),\n";
     # Validate the incoming document
     #die("sql = $sql_template");
-/*
-$xml = new DOMDocument();
-$xml->load('./lures.xml');
-*/
 
      /*******************************************************/
     /*       Set up for validation from a common DTD       */
@@ -128,24 +124,30 @@ $xml->load('./lures.xml');
 /*******************************************************/
     $aimlContent = file_get_contents($file);
     $validAIMLHeader = '<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE aiml PUBLIC "-//W3C//DTD Specification Version 1.0//EN" "http://www.geekcavecreations.com/xml/aiml.dtd">
-<!--DOCTYPE aiml SYSTEM "../config/aiml.dtd"-->
+<!DOCTYPE aiml PUBLIC "-//W3C//DTD Specification Version 1.0//EN" "http://www.program-o.com/xml/aiml.dtd">
 <aiml version="1.0.1" xmlns="http://alicebot.org/2001/AIML-1.0.1">';
     $aimlTagStart = stripos($aimlContent,'<aiml',0);
     $aimlTagEnd   = strpos($aimlContent,'>', $aimlTagStart) + 1;
     $aimlFile     = $validAIMLHeader . substr($aimlContent,$aimlTagEnd);
+    $newFile = str_replace('uploads/', 'uploads/new', $file);
+    $x = file_put_contents($newFile,$aimlFile);
     try {
-    $aiml = new SimpleXMLElement($aimlFile);
-    #$aiml = new SimpleXMLElement($aimlContent);
+    #$aiml = new SimpleXMLElement($aimlFile);
+    libxml_use_internal_errors(true);
+    $xml = new DOMDocument();
+    $xml->loadXML($aimlFile);
+    $xml->validate();
+    $aiml = new SimpleXMLElement($xml->saveXML());
+
     $rowCount = 0;
     if (!empty($aiml->topic)) {
       foreach ($aiml->topic as $topicXML) { # handle any topic tag(s) in the file
         $topicAttributes = $topicXML->attributes();
         $topic = $topicAttributes['name'];
-        #$topicName = $topicXML->getName();
         foreach ($topicXML->category as $category) {
           $fullCategory = $category->asXML();
           $pattern = $category->pattern;
+          $pattern = str_replace("'", ' ', $pattern);
           $that = $category->that;
           $template = $category->template->asXML();
           $template = str_replace('<template>', '', $template);
@@ -172,6 +174,7 @@ $xml->load('./lures.xml');
       foreach ($aiml->category as $category) {
         $fullCategory = $category->asXML();
         $pattern = $category->pattern;
+        $pattern = str_replace("'", ' ', $pattern);
         $that = $category->that;
         $template = $category->template->asXML();
         $template = str_replace('<template>', '', $template);
@@ -195,20 +198,20 @@ $xml->load('./lures.xml');
     }
     if ($sql != $sql_start) {
       $sql = rtrim($sql, ",\n") . ';';
-      $success = (updateDB($sql) >=0) ? true : false;
     }
+    $msg = "Successfully added $fileName to the database.";
     }
     catch(Exception $e) {
       $success = false;
+      $msg = "There was a problem adding file $fileName to the database. Please validate the file and try again.<br >\n";
+      $msg = libxml_display_errors($msg);
     }
-    $msg = "There was a problem adding file $fileName to the database. Please validate the file and try again.";
-    if ($success) $msg = "Successfully added $fileName to the database.";
     return $msg;
   }
 
   function updateDB($sql) {
     $dbconn = db_open();
-    $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>$sql</pre><br />\n");
+    $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>".htmlentities($sql) . "</pre><br />\n");
     $commit = mysql_affected_rows($dbconn);
     return $commit;
   }
@@ -275,6 +278,17 @@ $xml->load('./lures.xml');
     mysql_close($dbconn);
     return $botOptions;
   }
+
+function libxml_display_errors($msg) {
+  $errors = libxml_get_errors();
+  //die ('Errors = ' . print_r($errors));
+  foreach ($errors as $error) {
+    $msg .= libxml_display_error($error) . "<br />\n";
+  }
+  libxml_clear_errors();
+  return $msg;
+}
+
 
   function libxml_display_error($error) {
     $out = "<br/>\n";
