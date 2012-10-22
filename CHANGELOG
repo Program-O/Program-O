@@ -1,0 +1,19 @@
+/***************************************
+* http://www.program-o.com
+* PROGRAM O
+* Version: 2.0.3
+* FILE: CHANGELOG
+* AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
+* DATE: 10-220-2012
+* DETAILS: Describes the version changes in Program O
+***************************************/
+
+Version History:
+
+2.0.3   Added simple AIML validation to the upload script, and restyled the admin pages accordingly
+
+2.0.2   Unspecified Bug fixes
+
+2.0.1   Unspecified Bug fixes
+
+2.0.0   Initial Release
