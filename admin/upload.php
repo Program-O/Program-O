@@ -9,7 +9,7 @@
 // upload.php
   ini_set('memory_limit','128M');
   ini_set('max_execution_time','0');
-  ini_set('display_errors','1');
+  #ini_set('display_errors','1');
   libxml_use_internal_errors(true);
 
   $file = (array_key_exists('aimlfile', $_FILES)) ? processUpload() : '';
@@ -133,7 +133,6 @@ endScript;
     $x = file_put_contents($newFile,$aimlFile);
     try {
     #$aiml = new SimpleXMLElement($aimlFile);
-    libxml_use_internal_errors(true);
     $xml = new DOMDocument();
     $xml->loadXML($aimlFile);
     $xml->validate();

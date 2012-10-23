@@ -10,6 +10,8 @@
 
 Version History:
 
+2.0.4   Fixed a bug in the debugging functions that caused empty debugging files to be created on non-Windows systems
+
 2.0.3   Added simple AIML validation to the upload script, and restyled the admin pages accordingly
 
 2.0.2   Unspecified Bug fixes
