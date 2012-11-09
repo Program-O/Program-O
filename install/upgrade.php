@@ -2,13 +2,14 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.0.1
+* Version: 2.0.5
 * FILE: install/upgrade.php
 * AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
 * DATE: JUNE 4TH 2012
 * DETAILS: PLEASE RUN THIS FILE TO UPGRADE THE DATABASE FROM VERSION 1 TO VERSION 2
 ***************************************/
 
+  $thisFile = __FILE__;
   if (!file_exists('../config/global_config.php')) header('location: ../install/install_programo.php');
   require_once('../config/global_config.php');
 

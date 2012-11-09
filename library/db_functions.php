@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.0.1
+* Version: 2.0.5
 * FILE: library/db_functions.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011

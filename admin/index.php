@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.1
+//My Program-O Version 2.0.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -8,6 +8,7 @@
 //-----------------------------------------------------------------------------------------------
 // index.php
 
+  $thisFile = __FILE__;
   if (!file_exists('../config/global_config.php')) header('location: ../install/install_programo.php');
   require_once('../config/global_config.php');
 

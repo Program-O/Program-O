@@ -10,6 +10,11 @@
 
 Version History:
 
+2.0.5   Fixed a bug where uploaded AIML files were not being added to the DB, even if the passed validation.
+        Also added the variable $default_charset to allow character encoding other than UTF-8 for both AIML
+        files and chatbot pages. Further, experimental support for international characters has been added.
+        This is far from it's "final" implementation, but we hope that it's a start.
+
 2.0.4   Fixed a bug in the debugging functions that caused empty debugging files to be created on non-Windows systems
 
 2.0.3   Added simple AIML validation to the upload script, and restyled the admin pages accordingly

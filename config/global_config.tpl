@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.0.1
+* Version: 2.0.5
 * FILE: config/global_config.php
 * AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
 * DATE: MAY 4TH 2011
@@ -25,9 +25,16 @@
     chdir( dirname ( __FILE__ ) );
     $thisConfigFolder = dirname( realpath( __FILE__ ) ) . DIRECTORY_SEPARATOR;
     $thisConfigParentFolder = preg_replace( '~[/\\\\][^/\\\\]*[/\\\\]$~' , DIRECTORY_SEPARATOR , $thisConfigFolder);
+    $baseURL = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
+    $docRoot = $_SERVER['DOCUMENT_ROOT'];
 
     define("_BASE_DIR_", $thisConfigParentFolder);
     $path_separator = DIRECTORY_SEPARATOR;
+
+    $thisFile = str_replace(_BASE_DIR_, '', $thisFile);
+    $thisFile = str_replace($path_separator, '/', $thisFile);
+    $baseURL = str_replace($thisFile, '', $baseURL);
+    define("_BASE_URL_", $baseURL);
 
     //------------------------------------------------------------------------
     // Define paths for include files
@@ -144,6 +151,8 @@
     //------------------------------------------------------------------------
 
     $botmaster_name = "[botmaster_name]";
+    $default_charset = 'UTF-8';
+    $default_charset = 'ISO-8859-1';
 
     //------------------------------------------------------------------------
     // Set Program O Website URLs
@@ -153,6 +162,7 @@
     define('NEWS_URL', 'http://www.program-o.com/ns/feed/news/'); #This needs to be altered to reflect the correct URL
     define('RSS_URL', 'http://blog.program-o.com/feed/');
     define('SUP_URL', 'http://forum.program-o.com/syndication.php');
+    define('FORUM_URL', 'http://forum.program-o.com/');
     define('BUGS_EMAIL', 'bugs@program-o.com');
 
 //------------------------------------------------------------------------

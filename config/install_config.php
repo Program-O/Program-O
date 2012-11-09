@@ -2,12 +2,12 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.0.1
+* Version: 2.0.5
 * FILE: config/install_config.php
 * AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
 * DATE: MAY 4TH 2011
 * DETAILS: this file is a stripped down, "install" version of the config file,
-* and as such, only has the most minimal settings within it. Theinstall script
+* and as such, only has the most minimal settings within it. The install script
 *  will create a full and complete config file during the install process
 ***************************************/
     //------------------------------------------------------------------------
@@ -30,6 +30,11 @@
 
     define("_BASE_DIR_", $thisConfigParentFolder);
     $path_separator = DIRECTORY_SEPARATOR;
+
+    $thisFile = str_replace(_BASE_DIR_, '', $thisFile);
+    $thisFile = str_replace($path_separator, '/', $thisFile);
+    $baseURL = str_replace($thisFile, '', $baseURL);
+    define("_BASE_URL_", $baseURL);
 
     //------------------------------------------------------------------------
     // Define paths for include files
