@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.1
+* Version: 2.0.5
 * FILE: chatbot/core/aiml/replace_tomakesafe.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -19,7 +19,7 @@
  * @return the en/decoded string
 **/
 function entity_replace($whichway,$text){
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "$whichway",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "$whichway",4);
 
 	//array of the symbols to be encoded decoded
 	$html_entity_symbols =array(
@@ -46,7 +46,9 @@ function entity_replace($whichway,$text){
 		':-\)'=>'smiley_wink_7',
 		':\)'=>'smiley_wink_8',
 		':-\('=>'smiley_wink_9',
-		':\)'=>'smiley_wink_10',	
+		':\)'=>'smiley_wink_10',
+		'('=>'open_bracket',
+		')'=>'close_bracket',
 		'&nbsp;'=>'htmlentity_no-break_space',
 		'&iexcl;'=>'htmlentity_inverted_exclamation_mark',
 		'&cent;'=>'htmlentity_cent_sign',
@@ -205,7 +207,7 @@ function entity_replace($whichway,$text){
  * @return the en/decoded string
 **/
 function foreignchar_replace($whichway,$text){
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "$whichway",3);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "$whichway",4);
 	
 	$foreign_char_array = array(
 		'&Scaron;'=>'htmlentity_foreign_big_S_caron',

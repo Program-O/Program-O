@@ -1,5 +1,5 @@
 /*
-My Program-O Version 2.0.1
+My Program-O Version 2.0.5
 Program-O  chatbot admin area
 Written by Elizabeth Perreau and Dave Morton
 Aug 2011
@@ -23,7 +23,7 @@ body {
   overflow: hidden;
 }
 table td {vertical-align: top;}
-fieldset { border: 1px solid black; padding: 12px; padding-left: 5px; padding-right: 5px; line-height: 125%;}
+fieldset { border: 1px solid orange; padding: 12px; padding-left: 5px; padding-right: 5px; line-height: 125%;}
 legend { font-weight: bold; font-size: xx-large; margin-left: -5px; margin-top: -15px; }
 label { cursor: pointer; margin-right: 20px; }
 div.row { clear: both; padding-top: 8px; border: none; width: 95%; margin-left: auto; margin-right: auto; min-height: 2em;}
@@ -31,11 +31,16 @@ label { cursor: pointer; margin-right: 20px; }
 .leftHalf table tr td, .rightHalf table tr td {vertical-align: top;}
 div.row span.label {float: left; width: 49.5%; text-align: left; padding-left: 3px; background-color: #DDFFFF; border: 1px outset #999; padding-top: 3px; padding-bottom: 3px;}
 div.row span.label:hover, div.row span.formw:hover {background-color: #EEE;}
-td span.label {float:left;width: 99%; text-align: left; padding-left: 3px; background-color: #DDFFFF; border: 1px outset #999; padding-top: 3px; padding-bottom: 3px; vertical-align: top;}
-td span.label:hover, div.row span.formw:hover {background-color: #EEE;}
-td span.formw {float:right;width: 99%; text-align: left; background-color: #DDFFFF; border: 1px outset #999; padding-top: 2px; padding-bottom: 2px;}
-td span.formw input, div.row span.formw textarea { width: 150px; margin: 0; }
-td span.formw input[type="radio"] { width: auto; margin-right: 5px; }
+td.label {text-align: left; padding-left: 3px; background-color: #DDFFFF; border: 1px outset #999; padding-top: 3px; padding-bottom: 3px; vertical-align: top;}
+td.label:hover, div.row span.formw:hover {background-color: #EEE;}
+td.label label {float: left; width: 100%; margin: 0; background-color: transparent;}
+td.label span {float: right;}
+td.label span.required {float: right;}
+td.formw {text-align: left; background-color: #DDFFFF; border: 1px outset #999; padding-top: 2px; padding-bottom: 2px;}
+td.formw input, div.row span.formw textarea { width: 94%; margin: 0 1%; }
+td.formw input[type="radio"] { width: auto; margin-right: 5px; }
+td.formw input[type="checkbox"], td.formw select { width: 95%; margin: 0; float: left; text-align: left; }
+td.underline {border: 2px outset #666;border-top: 1px outset #666; border-left: 1px outset #666;}
 div.row span.formw {float: right; clear: none; width: 49.5%; text-align: left; background-color: #DDFFFF; border: 1px outset #999; padding-top: 2px; padding-bottom: 2px;}
 div.row span.formw input, div.row span.formw textarea { width: 150px; margin: 0; }
 div.row span.formxw input, div.row span.formxw textarea { width: 80%; margin: 0; margin-left: 6px; margin-right: 2px; }
@@ -60,22 +65,37 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
 .testBorder { border: 1px solid red; }
 .center { text-align: center; }
 .bold { font-weight: bold; }
+.big { font-size: larger; }
 .narrow { padding-left: 0; float: left;width: 25%;text-align: left; border: 1px dashed blue;}
-.errMsg {
+.closeButton {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 3px;
+  right: 3px;
+  width: 32px;
+  height: 32px;
+  background: url(images/closeButton.png) no-repeat;
+  cursor: pointer;
+}
+.errMsg {
   min-width: 250px;
-  width: 30%;
+  max-width: 98%;
+  width: auto;
   background-color: #FFF45A;
   background-color: #FCC; /*transparent;*/
   color: black;
   vertical-align: middle;
   text-align: center;
-  padding: 0;
-  margin: 0;
+  padding: 5px;
+  margin: 0 auto;
   display: none;
   overflow: auto;
+  border: 6px outset #933;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  overflow: auto;
+  z-index: 99;
+  padding-right: 40px;
 }
 .ul, .ll, .ur, .lr {
   width: 6px;
@@ -98,10 +118,13 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
 .red {
   background-color: transparent;
   color: red;
-  font-size: large;
-  font-weight: bold;
+  /*font-size: large;
+  font-weight: bold;*/
 }
 .orange { background-color: transparent; color: orange }
+.small {
+  font-size: smaller;
+}
 .validCSS { float: right; margin-top: 10px; }
 .validXHTML { float: left; margin-top: 10px; margin-left: 5px; }
 .userlist {
@@ -366,19 +389,26 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
   width: 99%;
   height: 50px;
   margin: 0;
-  font-size: xx-large;
+  font-size: large;
   font-weight: bold;
   font-variant: small-caps;
 }
 #main_content {
   position: absolute;
-  top: 50px;
-  bottom: 25px;
-  left: 5px;
-  right: 5px;
+  top: 55px;
+  bottom: 5px;
+  left: 0;
+  right: 0;
   text-indent: 1em;
   overflow: auto;
+  padding-top: 5px;
+  padding-left: 5px;
+  background-color: pink;
+  background-color: #FFFFCC;
+  z-index: 3;
+/*
   width: 99%;
+*/
 }
 
 #rssContainer {
@@ -482,26 +512,30 @@ border:none;
 }
 
 #help {
+  top: 5px;
   overflow: hidden;
   position: absolute;
   top: 5px;
   left: 5px;
   bottom: 5px;
   right: 5px;
+/*
+*/
   z-index: 5;
+  background-color: transparent;
   background-color: #FFFFCC;
 }
 #showHelp {
   position: absolute;
-  top: 0;
+  top: 5px;
   left: 0;
-  bottom: 0;
+  bottom: 5px;
   right: 0;
   background-color: #FFFFCC;
   padding: 5px;
   display: none;
   overflow: auto;
-  border: 1px solid black;
+  border: none;
 }
 
 #teachForm, #uploadForm, #downloadForm, #membersForm {
@@ -512,6 +546,12 @@ border:none;
   right: 20%;
   z-index: 10;
   display: block;
+  /*background-color: red;*/
+  overflow: auto;
+}
+
+#teachForm p, #uploadForm p, #downloadForm p, #membersForm p {
+  padding: 5px;
 }
 
 #teachForm fieldset { border: none; }
@@ -608,16 +648,19 @@ border:none;
   background:url(images/help_small.png) no-repeat 0 0;
   width: 18px;
   height: 18px;
+  padding: 0;
+  margin: 0;
 }
 
 div#AIML_List {
   border: 2px inset #9FC03A;
-  margin-left: 22px;
+  border: none;
+  margin: 10px auto;
   padding: 12px;
   text-align: left;
   text-indent: 0;
-  width: 250px;
-  height: 300px;
+  width: auto%;
+  max-height: 300px;
   overflow: auto;
 }
 
@@ -658,13 +701,42 @@ table td#notes {
   vertical-align: top;
 }
 
+#notes {
+  text-align: left; background-color: pink; border: none; height: 80px;
+}
+
+#notes div {background-color: transparent; border: none; height: 20px; margin: 3px; padding: 2px;}
 
 .floatRight {
   float: right;
   clear: none;
   }
 
-span.formw label {
-  white-space: nowrap;
+#helpLink1 {float: left; margin-bottom: 10px;}
+td input, td select {
+  width: 95%;
+  margin: 0 auto;
 }
+.formTable {
+  border: 1px solid orange;
+  border: none;
+  width: 98%;
+  margin: 10px auto;
+  padding: 5px;
+}
+.formTable td {
+  padding: 3px;
+  border: 1px solid green;
+  border: none;
+  margin: 2px;
+  padding: 2px;
+}
+.formTable td select { width: 96.2%; margin: 0 auto; }
+.formTable td textarea, .formTable td input[type=text] { width: 95%; margin: 0 auto; }
+.formTable td textarea { height: 45px; }
+.formTable td input[type=submit] { width: auto; }
+.formTable td span { width: 100%; text-align: left; margin: 0 auto; padding: 0; }
+
+select#bot_id { width: auto; min-width: 30%; }
+
 

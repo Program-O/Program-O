@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.1
+//My Program-O Version 2.0.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -237,8 +237,8 @@ function runSpellSearch() {
         $correction = strtoupper($row['correction']);
         $id = $row['id'];
         $group = round(($id / 50));
-        $action = "<a href=\"./?page=spellcheck&amp;action=edit&amp;id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" /></a>
-                    <a href=\"./?page=spellcheck&amp;action=del&amp;id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this missspelling? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\"/></a>";
+        $action = "<a href=\"./?page=spellcheck&amp;action=edit&amp;id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>
+                    <a href=\"./?page=spellcheck&amp;action=del&amp;id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this missspelling? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>";
         $htmltbl .= "<tr valign=top>
                             <td>$misspell</td>
                             <td>$correction</td>

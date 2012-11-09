@@ -1,85 +1,96 @@
 <?php
-/***************************************
-* www.program-o.com
-* PROGRAM O
-* Version: 2.0.1
-* FILE: gui/xml/index.php
-* AUTHOR: ELIZABETH PERREAU and DAVE MORTON
-* DATE: Feb. 26th, 2012
-* DETAILS: this file contains the chatbot's
-    XML interface
-***************************************/
 
-  include_once('../../config/global_config.php');
-$response = '';
-session_start();
-function get_response($path){
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,$path);
-        curl_setopt($ch, CURLOPT_FAILONERROR,1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-        $retValue = curl_exec($ch);
-        curl_close($ch);
-        return $retValue;
-}
-$bot_id = 1;
-$convo_id = session_id();
-$format = "xml";
-if(isset($_REQUEST['say'])) {
-  if(isset($_REQUEST['say'])){
+  /***************************************
+  * www.program-o.com
+  * PROGRAM O
+  * Version: 2.0.5
+  * FILE: gui/xml/index.php
+  * AUTHOR: ELIZABETH PERREAU and DAVE MORTON
+  * DATE: JUNE. 19th, 2012
+  * DETAILS: this file contains the chatbot's
+  XML interface
+  ***************************************/
+  session_start();
+  $thisFile = __FILE__;
+  require_once ('../../config/global_config.php');
+  //handle the convo id here otherwise i cant clear it
+  //TODO SORT THAT OUT!
+  if (isset ($_REQUEST['say']) && ($_REQUEST['say'] == 'clear properties'))
+  {
+    if (ini_get("session.use_cookies"))
+    {
+      $params = session_get_cookie_params();
+      setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+    }
+    // Finally, destroy the session.
+    session_destroy();
+    session_start();
+    session_regenerate_id();
+    $convo_id = session_id();
     $say = urlencode($_REQUEST['say']);
   }
-  else{
+  elseif (isset ($_REQUEST['say']))
+  {
+    $convo_id = session_id();
+    $say = urlencode($_REQUEST['say']);
+  }
+  else
+  {
     $say = "hi";
+    $convo_id = session_id();
   }
-  $responseTemplate = <<<endResponse
-[user_name]: [usersay]<br />
-[bot_name]: [botsay]<br />
-endResponse;
-
-  $thisFileURL = $_SERVER['PHP_SELF'];
-  $chatbotURLpath = str_replace('/gui/xml/index.php', '/chatbot',$thisFileURL);
-  define("CHATBOT_URL_PATH",$chatbotURLpath);
-
-  $send = "http://".$_SERVER['HTTP_HOST']. CHATBOT_URL_PATH . "/conversation_start.php?say=$say&convo_id=$convo_id&bot_id=$bot_id&format=$format";
-  $X = file_put_contents('URL.txt', "$send\r\n",FILE_APPEND);
-#die();
+  $response = '';
+  $responseXML = '';
+  $bot_id = 1;
+  $format = "xml";
+  $thisFileURL = $_SERVER['SCRIPT_NAME'];
+  $chatbotURLpath = str_replace('/gui/xml/index.php', '/chatbot', $thisFileURL);
+  define("CHATBOT_URL_PATH", $chatbotURLpath);
+  $send = "http://" . $_SERVER['HTTP_HOST'] . CHATBOT_URL_PATH . "/conversation_start.php?say=$say&convo_id=$convo_id&bot_id=$bot_id&format=$format";
+  #$X = file_put_contents('URL.txt', "$send\r\n",FILE_APPEND);
+  #die();
   $sXML = trim(get_response($send));
-  /*
-  $response = htmlentities($sXML);
-  $response = str_replace("\t\t", "\n", $response);
-  $response = str_replace("\t", "\n", $response);
-  */
-  file_put_contents('conversationXML.txt', $sXML);
+  //just output as an example
+  $responseXML = htmlentities($sXML);
+  $responseXML = str_replace("\n\t", "<br/>        ", $responseXML);
+  $responseXML = str_replace("\n", "<br/>   ", $responseXML);
   $xml = new SimpleXMLElement($sXML);
-  #$xmlConversation = $xml->conversation;
-  #$user_name = $xmlConversation->user_name;
-  #$bot_name  = $xmlConversation->bot_name;
   $count = 0;
-  foreach ($xml->children() as $child) {
+  foreach ($xml->children() as $child)
+  {
     $childName = $child->getName();
-    switch ($childName) {
-      case 'user_name':
-      $user_name = $child;
-      break;
-      case 'bot_name':
-      $bot_name = $child;
-      break;
-      case 'usersay':
-      $response .= "$user_name: " . $child . "<br />\n";
-      break;
-      case 'botsay':
-      $response .= "$bot_name: " . $child . "<br />\n";
-      default:
+    switch ($childName)
+    {
+      case 'user_name' :
+        $user_name = $child;
+        break;
+      case 'bot_name' :
+        $bot_name = $child;
+        break;
+      case 'usersay' :
+        $response .= "$user_name: " . $child . "<br />\n";
+        break;
+      case 'botsay' :
+        $response .= "$bot_name: " . $child . "<br />\n";
+      default :
     }
-/*
-*/
   }
-/*
-*/
-}
+
+  function get_response($path)
+  {
+    $strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
+    session_write_close();
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $path);
+    curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+    curl_setopt($ch, CURLOPT_COOKIE, $strCookie);
+    $retValue = curl_exec($ch);
+    curl_close($ch);
+    return $retValue;
+  }
 
 ?>
 
@@ -105,7 +116,8 @@ endResponse;
         <input type="hidden" name="format" id="format" value="<?php echo $format;?>" />
       </p>
     </form>
+
+    <?php echo $responseXML;?>
+
   </body>
 </html>
-
-

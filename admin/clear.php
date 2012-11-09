@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.1
+//My Program-O Version 2.0.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -10,16 +10,40 @@
 
 $content ="";
 
-/*
-if((isset($_POST['action']))&&($_POST['action']=="clear"))
-{
-  $content = clearAIML();
-}
-elseif((isset($_POST['clearFile']))&&($_POST['clearFile'] != "null")){
-  $content = clearAIMLByFileName($_POST['clearFile']);
-}
-else {}
-*/
+  $upperScripts = <<<endScript
+
+    <script type="text/javascript">
+<!--
+      function showMe() {
+        var sh = document.getElementById('showHelp');
+        var tf = document.getElementById('clearForm');
+        sh.style.display = 'block';
+        tf.style.display = 'none';
+      }
+      function hideMe() {
+        var sh = document.getElementById('showHelp');
+        var tf = document.getElementById('clearForm');
+        sh.style.display = 'none';
+        tf.style.display = 'block';
+      }
+      function showHide() {
+        var display = document.getElementById('showHelp').style.display;
+        switch (display) {
+          case '':
+          case 'none':
+            return showMe();
+            break;
+          case 'block':
+            return hideMe();
+            break;
+          default:
+            alert('display = ' + display);
+        }
+      }
+//-->
+    </script>
+endScript;
+
 
 if((isset($_POST['action']))&&($_POST['action']=="clear")) {
   $content .= clearAIML();
@@ -44,31 +68,35 @@ else {
     $noTopNav      = '';
     $noRightNav    = $template->getSection('NoRightNav');
     $headerTitle   = 'Actions:';
-    $pageTitle     = 'My-Program O - Clear AIML Categories';
+    $pageTitle     = "My-Program O - Clear AIML Categories";
     $mainContent   = $content;
-    $mainTitle     = 'Clear AIML Categories';
+    $mainTitle     = "Clear AIML Categories for the bot named $bot_name [helpLink]";
+    $showHelp = $template->getSection('ClearShowHelp');
 
+    $mainTitle     = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
+    $mainContent   = str_replace('[showHelp]', $showHelp, $mainContent);
+    $mainContent     = str_replace('[upperScripts]', $upperScripts, $mainContent);
   function replaceTags(&$content) {
     return $content;
   }
 
   function clearAIML() {
-    global $dbn;
+    global $dbn, $bot_id, $bot_name;
     $dbconn = db_open();
 
-    $sql = 'truncate table aiml;';
+    $sql = "DELETE FROM `aiml` WHERE `bot_id` = $bot_id;";
     #return "SQL = $sql";
     $result = mysql_query($sql,$dbconn) or die(mysql_error());
     mysql_close($dbconn);
-    $msg = "<strong>All AIML categories cleared!</strong><br />";
+    $msg = "<strong>All AIML categories cleared for $bot_name!</strong><br />";
     return $msg;
   }
 
   function clearAIMLByFileName($filename) {
-    global $dbn;
+    global $dbn, $bot_id;
     $dbconn = db_open();
     $cleanedFilename = mysql_real_escape_string($filename, $dbconn);
-    $sql = "delete from aiml where filename like '$cleanedFilename';";
+    $sql = "delete from `aiml` where `filename` like '$cleanedFilename' and `bot_id` = $bot_id;";
     #return "SQL = $sql";
     $result = mysql_query($sql,$dbconn) or die(mysql_error());
     mysql_close($dbconn);
@@ -77,13 +105,14 @@ else {
   }
 
   function getSelOpts() {
-    global $dbn;
+    global $dbn, $bot_id, $msg;
     $out = "                  <!-- Start Selectbox Options -->\n";
     $dbconn = db_open();
     $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
-    $sql = 'SELECT DISTINCT filename FROM aiml order by filename;';
+    $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     #return "SQL = $sql";
     $result = mysql_query($sql,$dbconn) or die(mysql_error());
+    if (mysql_num_rows($result) == 0) $msg = "This bot has no AIML categories to clear.";
     while ($row = mysql_fetch_assoc($result)) {
       if (empty($row['filename'])) {
         $curOption = "                  <option value=\"\">{No Filename entry}</option>\n";
@@ -99,20 +128,23 @@ else {
   function renderMain() {
     $selectOptions = getSelOpts();
     $content = <<<endForm
-          Deleting AIML categories from the database is <strong>permanent</strong>!<br />
+          Deleting AIML categories from the database is <strong>permanent</strong>!
           This action <strong>CANNOT</strong> be undone!<br />
+          <div id="clearForm">
           <form name="clearForm" action="./?page=clear" method="POST" onsubmit="return verify()">
-          <table style="border: none;margin:10px;padding: 5px;">
+          <table class="formTable">
             <tr>
-              <td style="border:  none;padding: 12px;">
+              <td>
                 <input type="radio" name="action" id="actionClearAll" value="clear">
                 <label for="actionClearAll" style="width: 250px">Clear <strong>ALL</strong> AIML categories (Purge database)</label>
               </td>
-            </tr>
-            <tr>
-              <td style="border:  none;padding: 12px;">
+              <td>
                 <input type="radio" name="action" value="void" id="actionClearFile" checked="checked">
                 <label for="actionClearFile" style="width: 210px; text-align: left">Clear categories from this AIML file: </label><br />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
                 <select name="clearFile" id="clearFile" size="1" style="margin: 14px;" onclick="document.getElementById('actionClearFile').checked = true" onchange="document.getElementById('actionClearFile').checked = true">
                   <option value="null" selected="selected">Choose a file</option>
 $selectOptions
@@ -120,12 +152,14 @@ $selectOptions
               </td>
             </tr>
             <tr>
-              <td style="border:  none;text-align: center;padding: 12px">
+              <td colspan="2">
                 <input type="submit" name="" value="Submit">
               </td>
             </tr>
           </table>
           </form>
+          </div>
+[showHelp]
           <script type="text/javascript">
             function verify() {
               var fn = document.getElementById('clearFile').value;

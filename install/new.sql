@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `bots` (
   debugemail int(11) NOT NULL,
   debugshow int(11) NOT NULL DEFAULT '1',
   debugmode int(11) NOT NULL DEFAULT '1',
+  error_response text not null,
   default_aiml_pattern varchar(255) NOT NULL DEFAULT 'RANDOM PICKUP LINE',
   PRIMARY KEY (bot_id)
 );

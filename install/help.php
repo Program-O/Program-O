@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.1
+//My Program-O Version 2.0.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //May 2011
@@ -14,12 +14,10 @@ ini_set("error_log","../logs/error.log");
 define ('SECTION_START', '<!-- Section [section] Start -->'); # search params for start and end of sections
 define ('SECTION_END', '<!-- Section [section] End -->'); # search params for start and end of sections
 
-$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
-$section = "Page$page";
 $template = file_get_contents('help.tpl.htm');
 
 $content = getSection('HelpPage', $template, false);
-$helpContent = getSection($section,$template);
+$helpContent = getSection('HelpMain',$template);
 $content = str_replace('[helpContent]', $helpContent, $content);
 
 die($content);

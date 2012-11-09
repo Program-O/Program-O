@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.1
+//My Program-O Version 2.0.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -240,8 +240,8 @@ function runWordCensorSearch() {
         $replace_with = strtoupper($row['replace_with']);
         $id = $row['censor_id'];
         $group = round(($id / 50));
-        $action = "<a href=\"./?page=wordcensor&amp;action=edit&amp;censor_id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" /></a>
-                    <a href=\"./?page=wordcensor&amp;action=delete&amp;censor_id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this entry? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\"/></a>";
+        $action = "<a href=\"./?page=wordcensor&amp;action=edit&amp;censor_id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>
+                    <a href=\"./?page=wordcensor&amp;action=delete&amp;censor_id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this entry? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\" alt=\"Delete this entry\" title=\"Delete this entry\" /></a>";
         $htmltbl .= "<tr valign=top>
                             <td>$word_to_censor</td>
                             <td>$replace_with</td>

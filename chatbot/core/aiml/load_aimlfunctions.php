@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.0.1
+* Version: 2.0.5
 * FILE: chatbot/core/aiml/load_aimlfunctions.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -15,5 +15,5 @@ include_once("make_aiml_to_php_code.php");
 include_once("buildingphp_code_functions.php");
 include_once("replace_tomakesafe.php");
 
-runDebug( __FILE__, __FUNCTION__, __LINE__, "Aimlfunction include files loaded",1);
+runDebug( __FILE__, __FUNCTION__, __LINE__, "Aimlfunction include files loaded",4);
 ?>

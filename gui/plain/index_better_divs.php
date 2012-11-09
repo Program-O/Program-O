@@ -1,38 +1,46 @@
 <?php
-include("../../chatbot/conversation_start.php");
 
-if(isset($_REQUEST['bot_id']))
-{
-  $bot_id = $_REQUEST['bot_id'];
-}
-else
-{
-  $bot_id = $default_bot_id;
-}
-
-if(isset($_REQUEST['convo_id']))
-{
-  $convo_id = $_REQUEST['convo_id'];
-}
-else
-{
-  $convo_id = $default_convo_id;
-}
-
-if(isset($_REQUEST['format']))
-{
-  $format = $_REQUEST['format'];
-}
-else
-{
-  $format = $default_format;
-}
-
-$output = (isset($convoArr['send_to_user'])) ? $convoArr['send_to_user'] . ' <br /> <a name="new" />' : "";
-$thisScript = $_SERVER['PHP_SELF'] . '#new';
-
-
-$content = <<<endHTML
+  /***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.0.5
+  * FILE: gui/plain/index_better_divs.php
+  * AUTHOR: ELIZABETH PERREAU
+  * DATE: 19 JUNE 2012
+  * DETAILS: simple example gui
+  ***************************************/
+  $display = "";
+  $thisFile = __FILE__;
+  require_once ('../../config/global_config.php');
+  require_once ('../chatbot/conversation_start.php');
+  if (isset ($_REQUEST['bot_id']))
+  {
+    $bot_id = $_REQUEST['bot_id'];
+  }
+  else
+  {
+    $bot_id = 1;
+  }
+  if (isset ($_REQUEST['convo_id']))
+  {
+    $convo_id = $_REQUEST['convo_id'];
+  }
+  else
+  {
+  //session started in the conversation_start.php
+    $convo_id = session_id();
+  }
+  if (isset ($_REQUEST['format']))
+  {
+    $format = $_REQUEST['format'];
+  }
+  else
+  {
+    $format = "html";
+  }
+  $output = (isset ($convoArr['send_to_user'])) ? $convoArr['send_to_user'] . ' <br /> <a name="new" />' : "";
+  $thisScript = $_SERVER['SCRIPT_NAME'] . '#new';
+  $content = <<<endHTML
 
 <!DOCTYPE html PUB<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
@@ -72,4 +80,4 @@ $content = <<<endHTML
   </body>
 </html>
 endHTML;
-print $content;
+  print $content;

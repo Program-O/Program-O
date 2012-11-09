@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.1
+//My Program-O Version 2.0.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -114,10 +114,10 @@ endtHead;
         $id = $row['id'];
         $action = <<<endLink
           <a href="./?page=search&amp;action=edit&amp;id=$id">
-            <img src="images/edit.png" border=0 width="15" height="15" />
+            <img src="images/edit.png" border=0 width="15" height="15" alt="Edit this entry" title="Edit this entry" />
           </a>
           <a href="./?page=search&amp;action=del&amp;id=$id" onclick="return confirm('Do you really want to delete this AIML record? You will not be able to undo this!')";>
-            <img src="images/del.png" border=0 width="15" height="15"/>
+            <img src="images/del.png" border=0 width="15" height="15" alt="Delete this entry" title="Delete this entry" />
           </a>
 endLink;
 

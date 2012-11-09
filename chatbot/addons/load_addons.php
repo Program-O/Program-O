@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.1
+* Version: 2.0.5
 * FILE: chatbot/addons/load_addons.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -15,7 +15,7 @@ include("word_censor/word_censor.php");
 include("parseBBCode/parseBBCode.php"); // A new addon to allow parsing of output that's consistent with BBCode tags
 include("checkForBan/checkForBan.php"); // A new addon for verifying that a user has not been banned by IP address
 
-runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading addons",1);
+runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading addons",4);
 
 function run_pre_input_addons($say) {
   global $format;

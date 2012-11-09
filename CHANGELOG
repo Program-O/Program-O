@@ -1,0 +1,26 @@
+/***************************************
+* http://www.program-o.com
+* PROGRAM O
+* Version: 2.0.3
+* FILE: CHANGELOG
+* AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
+* DATE: 10-22-2012
+* DETAILS: Describes the version changes in Program O
+***************************************/
+
+Version History:
+
+2.0.5   Fixed a bug where uploaded AIML files were not being added to the DB, even if the passed validation.
+        Also added the variable $default_charset to allow character encoding other than UTF-8 for both AIML
+        files and chatbot pages. Further, experimental support for international characters has been added.
+        This is far from it's "final" implementation, but we hope that it's a start.
+
+2.0.4   Fixed a bug in the debugging functions that caused empty debugging files to be created on non-Windows systems
+
+2.0.3   Added simple AIML validation to the upload script, and restyled the admin pages accordingly
+
+2.0.2   Unspecified Bug fixes
+
+2.0.1   Unspecified Bug fixes
+
+2.0.0   Initial Release

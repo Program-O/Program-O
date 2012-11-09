@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.0.1
+* Version: 2.0.5
 * FILE: library/error_functions.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -38,8 +38,12 @@ function myErrorHandler($errno, $errstr, $errfile, $errline) {
         }
 
     $info = "PHP ERROR [$errors] -$errstr in $errfile on Line $errline";
-        
-    runDebug($errfile, '', $errline, $info, 1);    
+    
+    //a littl hack to hide the pass by reference errors of which there may be a few
+    if($errstr != "Call-time pass-by-reference has been deprecated")    
+    {
+    	runDebug($errfile, '', $errline, $info, 1);    
+    }
 
 }
 
@@ -54,9 +58,9 @@ function myErrorHandler($errno, $errstr, $errfile, $errline) {
  * @param  string $error - the mysql_error
  * @param  string $erno - the mysql_error
 **/
-function sqlErrorHandler( $sql, $error, $erno){
-    $info = "MYSQL ERROR $erno - $error when excuting $sql";
-	runDebug('see above', 'see above', 'see above', $info, 1);
+function sqlErrorHandler( $sql, $error, $erno, $file, $function, $line){
+    $info = "MYSQL ERROR $erno - $error when excuting\n $sql";
+	runDebug($file, $function, $line, $info, 1);
 }
 
 
@@ -68,12 +72,12 @@ function sqlErrorHandler( $sql, $error, $erno){
  * @param  string $line - the line of code
  * @param  string $info - the message to display
 **/
-function runDebug($fileName, $functionName, $line, $info, $level=3) {
+function runDebug($fileName, $functionName, $line, $info, $level=0) {
   
 	global $debugArr,$srai_iterations,$debuglevel,$quickdebug,$writetotemp;
 	if(empty($functionName)) $functionName = "Called outside of function";
 	//only log the debug info if the info level is equal to or less than the chosen level
-	if($level<=$debuglevel)
+	if(($level<=$debuglevel)&&($level!=0)&&($debuglevel!=0))
     {
 		if($quickdebug==1)
 		{
@@ -108,7 +112,60 @@ function runDebug($fileName, $functionName, $line, $info, $level=3) {
 	//return $debugArr;
 }
 
+/**
+ * function sort2DArray()
+ * Small helper function to sort a 2d array
+ * @param string $opName - name of this operation i.e. show top scored aiml
+ * @param array $thisArr - the array to sort
+ * @param $sortByItem - the array field to sort by
+ * @param $sortAsc - 1 = ascending order, 0 = descending
+ * @param $limit - the number of results to return
+ * @return void;
+ **/
+function sort2DArray($opName,$thisArr,$sortByItem, $sortAsc=1,$limit=10)
+{
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "$opName - sorting ".count($thisArr)." results and getting the top $limit for debugging",4);
+	
+	$i=0;
+	
+	$tmpSortArr = array();
+	$resArr = array();
+	$last_high_score= 0;
+	
+	//loop through the results and put in tmp array to sort
+	foreach($thisArr as $all => $subrow){
+		
+		if(isset($subrow[$sortByItem]))
+		{$tmpSortArr[$subrow[$sortByItem]]=$subrow[$sortByItem];}
+	}	
 
+	//sort the results
+	if($sortAsc==1) { //ascending
+		krsort($tmpSortArr);
+	}
+	else { //descending
+		ksort($tmpSortArr);
+	}
+	//loop through scores
+	foreach($tmpSortArr as $sortedKey => $idValue){
+		//no match against orig res arr
+		foreach($thisArr as $i => $subArr){
+			if(isset($subrow[$sortByItem]))
+			{
+				if(( (string)$subArr[$sortByItem]==(string)$idValue)) {
+					$resArr[]=$subArr;
+				}
+			}
+		}
+	}
+	
+	//get the limited top results
+	$outArr = array_slice($resArr, 0, $limit);   
+	//send to debug
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "$opName ". print_r($outArr, true),3);
+	
+	
+}
 
 
 
@@ -125,15 +182,51 @@ function handleDebug($convoArr){
 	$convoArr['debug']=$debugArr;
 	$log ="";
 	
-	
 	foreach($debugArr as $time => $subArray){
-		$log .= "[NEWLINE]".$time.": ";
+		$log .= $time."[NEWLINE]";
 		foreach($subArray as $index=>$value){
-			$log .= $index."=".$value.",\t";
+			
+			
+			
+			
+			if(($index == "fileName") || ($index == "functionName") || ($index == "line"))
+			{
+				$log .= "[".$value."]";
+			} 
+			elseif($index == "info")
+			{
+				$log .= "[NEWLINE]".$value."[NEWLINE]-----------------------[NEWLINE]";
+			}
+		
+			
+			
 		}
 	}
 	
-	//echo ">>>>".$convoArr['conversation']['debugmode'];
+	
+	$log .= "[NEWLINE]-----------------------[NEWLINE]";
+	$log .= "CONVERSATION ARRAY";
+	$log .= "[NEWLINE]-----------------------[NEWLINE]";
+	
+	$debuglevel = get_convo_var($convoArr, 'conversation', 'debugshow', '', '');
+
+	if($debuglevel == 4 )
+	{
+		//show the full array
+		$showArr = $convoArr;
+		unset($showArr['debug']);
+	}
+	else
+	{
+		//show a reduced array
+		$showArr = reduceConvoArr($convoArr);
+	}
+	
+	
+	$log .= print_r($showArr,true);
+	
+	
+	
 	
 	switch($convoArr['conversation']['debugmode']){
 		case 0: //show in source code
@@ -142,21 +235,56 @@ function handleDebug($convoArr){
 			break;
 		case 1: //write to log file
 			$log = str_replace("[NEWLINE]","\r\n",$log);
-			writefile_debug($convoArr);
+			writefile_debug($log);
 			break;
 		case 2: //show in webpage
 			$log = str_replace("[NEWLINE]","<br/>",$log);
 			display_on_page(1,$log);
 			break;
+
 		case 3: //email to user
 			$log = str_replace("[NEWLINE]","\r\n",$log);
 			email_debug($convoArr['conversation']['debugemail'],$log);
 			break;
+		
 	}
 	
 
 	return $convoArr;
 }
+
+/** reduceConvoArr()
+ *  A small function to create a smaller convoArr just for debuggin!
+ *  @param array $convoArr - the big array to be reduced
+ */
+function reduceConvoArr($convoArr)
+{
+	$showconvoArr = array();
+	
+	$showconvoArr['conversation'] = $convoArr['conversation'];
+	$showconvoArr['topic']['1'] = $convoArr['topic']['1'];
+	$showconvoArr['that']['1'] = $convoArr['that']['1'];
+	$showconvoArr['star']['1'] = $convoArr['star']['1'];
+	$showconvoArr['input']['1'] = $convoArr['input']['1'];
+	$showconvoArr['stack']['top'] = $convoArr['stack']['top'];
+	$showconvoArr['stack']['last'] = $convoArr['stack']['last'];
+	$showconvoArr['client_properties'] = $convoArr['client_properties'];
+	$showconvoArr['aiml']['user_raw'] = $convoArr['aiml']['user_raw'];
+	$showconvoArr['aiml']['lookingfor'] = $convoArr['aiml']['lookingfor'];
+	$showconvoArr['aiml']['pattern'] = $convoArr['aiml']['pattern'];
+	$showconvoArr['aiml']['thatpattern'] = $convoArr['aiml']['thatpattern'];
+	$showconvoArr['aiml']['topic'] = $convoArr['aiml']['topic'];
+	$showconvoArr['aiml']['score'] = $convoArr['aiml']['score'];
+	$showconvoArr['aiml']['aiml_to_php'] = $convoArr['aiml']['aiml_to_php'];
+	$showconvoArr['aiml']['aiml_id'] = $convoArr['aiml']['aiml_id'];
+	$showconvoArr['aiml']['parsed_template'] = $convoArr['aiml']['parsed_template'];
+	$showconvoArr['user_say']['1'] = $convoArr['user_say']['1'];
+	$showconvoArr['that_raw']['1'] = $convoArr['that_raw']['1'];
+	$showconvoArr['parsed_template']['1'] = $convoArr['parsed_template']['1'];
+	
+	return $showconvoArr;
+}
+
 
 /**
  * function writefile_debug()
@@ -164,7 +292,7 @@ function handleDebug($convoArr){
  * @param  string $filename - the name of the file which is also the convo id
  * @param  string $log - the data to write
 **/
-function writefile_debug($array)
+function writefile_debug($log)
 {	
 	$myFile = _DEBUG_PATH_.session_id().".txt";
 
@@ -173,20 +301,11 @@ function writefile_debug($array)
 	$tabs = "";
 	
 	
-	$file = print_r($array,true);
     if (DIRECTORY_SEPARATOR == '\\') {
-      $file = str_replace("\n", "\r\n", $file);
+      $file = str_replace("\n", "\r\n", $log);
     }
 	
-	if(isset($array['conversation']))
-	{
-	
-		$file .= "\r\n----------------------------------------\r\n";
-		
-		$tmp_array = $array;
-		unset($tmp_array['debug']);	
-		$file .= str_replace("'","\'",serialize($tmp_array));
-	}
+
 	file_put_contents($myFile, $file);
 }
 

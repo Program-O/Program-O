@@ -1,7 +1,7 @@
 
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.1
+//My Program-O Version 2.0.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -10,6 +10,41 @@
 // download.php
 
 $content ="";
+
+$upperScripts = <<<endScript
+
+    <script type="text/javascript">
+<!--
+      function showMe() {
+        var sh = document.getElementById('showHelp');
+        var tf = document.getElementById('downloadForm');
+        sh.style.display = 'block';
+        tf.style.display = 'none';
+      }
+      function hideMe() {
+        var sh = document.getElementById('showHelp');
+        var tf = document.getElementById('downloadForm');
+        sh.style.display = 'none';
+        tf.style.display = 'block';
+      }
+      function showHide() {
+        var display = document.getElementById('showHelp').style.display;
+        switch (display) {
+          case '':
+          case 'none':
+            return showMe();
+            break;
+          case 'block':
+            return hideMe();
+            break;
+          default:
+            alert('display = ' + display);
+        }
+      }
+//-->
+    </script>
+endScript;
+
 $msg = (isset($_REQUEST['msg'])) ? $_REQUEST['msg'] : '';
 if((isset($_POST['action']))&&($_POST['action']=="AIML")) {
   $content .= getAIMLByFileName($_POST['getFile']);
@@ -23,6 +58,7 @@ elseif(isset($_GET['file'])) {
 else {
 }
     $content .= renderMain();
+    $showHelp      = $template->getSection('DownloadShowHelp');
 
     $topNav        = $template->getSection('TopNav');
     $leftNav       = $template->getSection('LeftNav');
@@ -31,15 +67,19 @@ else {
     $navHeader     = $template->getSection('NavHeader');
     $leftNavLinks  = makeLinks('left', $leftLinks, 12);
     $FooterInfo    = getFooter();
+    #$msg = (empty($msg)) ? 'Test' : $msg;
     $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
     $errMsgStyle   = $template->getSection($errMsgClass);
     $noLeftNav     = '';
     $noTopNav      = '';
     $noRightNav    = $template->getSection('NoRightNav');
     $headerTitle   = 'Actions:';
-    $pageTitle     = 'My-Program O - Download AIML';
+    $pageTitle     = "My-Program O - Download AIML files";
     $mainContent   = $content;
-    $mainTitle     = 'Download AIML';
+    $mainTitle     = "Download AIML files for the bot named  $bot_name [helpLink]";
+
+  $mainContent   = str_replace('[showHelp]', $showHelp, $mainContent);
+  $mainTitle     = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
 
   function replaceTags(&$content) {
     return $content;
@@ -145,13 +185,14 @@ else {
   }
 
   function getSelOpts() {
-    global $dbn;
+    global $dbn, $bot_id, $msg;
     $out = "                  <!-- Start Selectbox Options -->\n";
     $dbconn = db_open();
     $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
-    $sql = 'SELECT DISTINCT filename FROM aiml order by filename;';
+    $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     #return "SQL = $sql";
     $result = mysql_query($sql,$dbconn) or die(mysql_error());
+    if (mysql_num_rows($result) == 0) $msg = "This bot has no AIML categories. Please select another bot.";
     while ($row = mysql_fetch_assoc($result)) {
       if (empty($row['filename'])) {
         $curOption = "                  <option value=\"\">{No Filename entry}</option>\n";
@@ -167,32 +208,35 @@ else {
   function renderMain() {
     $selectOptions = getSelOpts();
     $content = <<<endForm
+          <div id="downloadForm" class="fullWidth noBorder">
           Please select the AIML file you wish to download from the list below.<br />
           <form name="getFileForm" action="./?page=download" method="POST">
-          <table style="border: 1px solid orange;margin:10px;padding: 5px;">
+          <table class="formTable">
             <tr>
-              <td style="border:  none;padding: 12px;">
+              <td>
                 <select name="getFile" id="getFile" size="1" style="margin: 14px;">
                   <option value="null" selected="selected">Choose a file</option>
 $selectOptions
                 </select>
               </td>
-              <td style="border:  none;padding: 12px;">
+              <td>
                 <input type="submit" name="" value="Submit">
               </td>
             </tr>
             <tr>
-              <td style="border:  none;padding: 12px;">
+              <td>
                 <input type="radio" name="action" id="actionGetFileAIML" checked="checked" value="AIML">
                 <label for="actionGetFileAIML" style="width: 250px">Download file as AIML</label>
               </td>
-              <td style="border:  none;padding: 12px;">
+              <td>
                 <input type="radio" name="action" id="actionGetFileSQL" value="SQL">
                 <label for="actionGetFileSQL" style="width: 250px">Download file as SQL</label>
               </td>
             </tr>
           </table>
           </form>
+          </div>
+[showHelp]
 endForm;
 
     return $content;

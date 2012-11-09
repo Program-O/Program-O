@@ -24,7 +24,6 @@
         </p>
         <div class="row"><a href="jquery/">JSON example</a></div>
         <div class="row"><a href="plain/">HTML example</a></div>
-        <div class="row"><a href="twitter/">Twitter example</a></div>
         <div class="row"><a href="xml/">XML example</a></div>
       </div>
   </body>
