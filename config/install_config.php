@@ -27,6 +27,8 @@
     chdir( dirname ( __FILE__ ) );
     $thisConfigFolder = dirname( realpath( __FILE__ ) ) . DIRECTORY_SEPARATOR;
     $thisConfigParentFolder = preg_replace( '~[/\\\\][^/\\\\]*[/\\\\]$~' , DIRECTORY_SEPARATOR , $thisConfigFolder);
+    $baseURL = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
+    $docRoot = $_SERVER['DOCUMENT_ROOT'];
 
     define("_BASE_DIR_", $thisConfigParentFolder);
     $path_separator = DIRECTORY_SEPARATOR;
