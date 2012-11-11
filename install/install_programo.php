@@ -7,6 +7,7 @@
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 
+$thisFile = __FLE__;
 # Test for PHP version 5+
 $myPHP_Version = (float)phpversion();
 If ($myPHP_Version < 5) die ("I'm sorry, but Program O requires PHP version 5.0 or greater to function. Please ask your hosting provider to upgrade.");
