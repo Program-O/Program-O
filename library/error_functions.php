@@ -180,6 +180,7 @@ function handleDebug($convoArr){
 	
 	global $debugArr;
 	$convoArr['debug']=$debugArr;
+	$log = '';
 	
 	foreach($debugArr as $time => $subArray){
 		$log .= $time."[NEWLINE]";
