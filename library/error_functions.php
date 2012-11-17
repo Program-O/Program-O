@@ -302,11 +302,11 @@ function writefile_debug($log)
 	
 	
     if (DIRECTORY_SEPARATOR == '\\') {
-      $file = str_replace("\n", "\r\n", $log);
+      $log = str_replace("\n", "\r\n", $log);
     }
 	
 
-	file_put_contents($myFile, $file);
+	file_put_contents($myFile, $log);
 }
 
 
