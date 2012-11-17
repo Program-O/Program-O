@@ -289,26 +289,17 @@ function reduceConvoArr($convoArr)
 /**
  * function writefile_debug()
  * Handles the debug when written to a file
- * @param  string $filename - the name of the file which is also the convo id
+ * @param  string $myFile - the name of the file which is also the convo id
  * @param  string $log - the data to write
 **/
 function writefile_debug($log)
-{	
+{
 	$myFile = _DEBUG_PATH_.session_id().".txt";
-
-	$mode = "w";
-	$file = "";
-	$tabs = "";
-	
-	
     if (DIRECTORY_SEPARATOR == '\\') {
       $log = str_replace("\n", "\r\n", $log);
     }
-	
-
 	file_put_contents($myFile, $log);
 }
-
 
 
 /**
