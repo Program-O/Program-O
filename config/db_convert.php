@@ -34,14 +34,14 @@ change `[field]` `[field]` [type] CHARACTER SET utf8 COLLATE utf8_general_ci [nu
     }
 
     $fetchMode = PDO::FETCH_ASSOC;
-    $sql = "SHOW tables in `pgo_v2_test`;";
+    $sql = "SHOW tables in `$dbn`;";
     $query = $dbh->query($sql);
     $script_sql = $sql1;
     $result = $query->fetchAll($fetchMode);
     foreach ($result as $row)
     {
       $addFlag = false;
-      $table_name = $row['Tables_in_pgo_v2_test'];
+      $table_name = $row["Tables_in_$dbn"];
       $sql = "SHOW COLUMNS FROM `$dbn`.`$table_name`;";
       $query = $dbh->query($sql);
       $this_result = $query->fetchAll();
