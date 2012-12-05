@@ -1,4 +1,5 @@
-<?php 
+<?php
+$thisFile = __FILE__;
 session_start();
 $bot_id = 1;
 $format = "json";
