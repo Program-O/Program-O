@@ -447,6 +447,7 @@ endFooter;
       curl_setopt($ch, CURLOPT_HEADER, 0);
       $data = curl_exec($ch);
       curl_close($ch);
+      if (false === $data) return 'The RSS Feed is not currently available. We apologise for the inconvenience.';
       $rss = new SimpleXmlElement($data, LIBXML_NOCDATA);
       if($rss) {
         $items = $rss->channel->item;
