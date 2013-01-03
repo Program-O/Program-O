@@ -622,7 +622,7 @@ function make_null($c)
 /**
  * function set_simple()
  * This function sets simple client properties
- * @param array &$convoArr - a reference to the existing conversation array
+ * @param array $convoArr - a reference to the existing conversation array
  * @param string $index - the array index to set 
  * @param string $value - the value of the array index
  * @return string $value - the value of the array index
@@ -754,7 +754,7 @@ function remove_nulls_from_array($array)
 /**
  * function run_srai()
  * This function controls the SRAI recursion calls
- * @param array &$convoArr - a reference to the existing conversation array
+ * @param array $convoArr - a reference to the existing conversation array
  * @param string $now_look_for_this - the text to search for
  * @return string $srai_parsed_template - the result of the search
 **/

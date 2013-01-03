@@ -104,19 +104,19 @@ $template = preg_replace('#<bot name="([^"]*)"/>#ie', "\$convoArr['bot_propertie
 
 			$i++;
 			$find[$i]='#<pushstack>(.*)([^<]*)</pushstack>#';
-			$replace[$i]='\'.call_user_func(\'push_stack\',&$convoArr,\'$1\').\'';
+			$replace[$i]='\'.call_user_func(\'push_stack\',$convoArr,\'$1\').\'';
 
 			$i++;
 			$find[$i]='#PUSH\s?<([^>]*)>#';
-			$replace[$i]='\'.call_user_func(\'push_stack\',&$convoArr,\'<$1>\').\'';
+			$replace[$i]='\'.call_user_func(\'push_stack\',$convoArr,\'<$1>\').\'';
 
 			$i++;
 			$find[$i]='#POP\s?<([^>]*)>#';
-			$replace[$i]='\'.call_user_func(\'pop_stack\',&$convoArr).\'';
+			$replace[$i]='\'.call_user_func(\'pop_stack\',$convoArr).\'';
 
 			$i++;
 			$find[$i]='#<popstack></popstack>#';
-			$replace[$i]='\'.call_user_func(\'pop_stack\',&$convoArr).\'';
+			$replace[$i]='\'.call_user_func(\'pop_stack\',$convoArr).\'';
 
 			$i++;
 			$find[$i]='#<personf/>#i';
@@ -184,7 +184,7 @@ $template = preg_replace('#<bot name="([^"]*)"/>#ie', "\$convoArr['bot_propertie
 
 			$i++;
 			$find[$i]='#<srai>#i';
-			$replace[$i]='\'.call_user_func(\'run_srai\',&$convoArr,\'';	
+			$replace[$i]='\'.call_user_func(\'run_srai\',$convoArr,\'';	
 
 			$i++;
 			$find[$i]='#</srai>#i';
@@ -264,11 +264,11 @@ $template = preg_replace('#<bot name="([^"]*)"/>#ie', "\$convoArr['bot_propertie
 
 			$i++;
 			$find[$i]='#<set name="([^"]*)">#i';
-			$replace[$i]='\'.call_user_func(\'set_simple\',&$convoArr,\'$1\',\'';		
+			$replace[$i]='\'.call_user_func(\'set_simple\',$convoArr,\'$1\',\'';		
 
 			$i++;
 			$find[$i]='#<set name=\\\"([^\\\]*)\\\">#i';
-			$replace[$i]='\'.call_user_func(\'set_simple\',&$convoArr,\'$1\',\'';		
+			$replace[$i]='\'.call_user_func(\'set_simple\',$convoArr,\'$1\',\'';		
 
 			$i++;
 			$find[$i]='#</set>#i';

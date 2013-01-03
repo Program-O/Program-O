@@ -14,7 +14,7 @@
 
   error_reporting(E_ALL);
   ini_set('log_errors', true);
-  ini_set('error_log', _ADMIN_PATH_ . 'error.log');
+  ini_set('error_log', _LOG_PATH_ . 'error.log');
   ini_set('html_errors', false);
   ini_set('display_errors', false);
   $msg = '';

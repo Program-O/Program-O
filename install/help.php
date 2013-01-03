@@ -7,7 +7,7 @@
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // help.php
-ini_set("display_errors", true);
+ini_set("display_errors", false);
 ini_set("log_errors",true);
 ini_set("error_log","../logs/error.log");
 

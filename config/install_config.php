@@ -11,16 +11,6 @@
 *  will create a full and complete config file during the install process
 ***************************************/
     //------------------------------------------------------------------------
-    // Error reporting
-    //------------------------------------------------------------------------
-    if(!(ini_get('allow_call_time_pass_reference'))){
-      ini_set('allow_call_time_pass_reference', 'true');
-    }
-
-    $e_all = defined('E_DEPRECATED') ? E_ALL ^ E_DEPRECATED : E_ALL;
-    error_reporting($e_all);
-
-    //------------------------------------------------------------------------
     // Paths - only set this manually if the below doesnt work
     //------------------------------------------------------------------------
 
@@ -50,7 +40,19 @@
     define("_LIB_PATH_",_BASE_DIR_."library".$path_separator);
     define("_ADDONS_PATH_",_BASE_DIR_."chatbot".$path_separator."addons".$path_separator);
     define("_CONF_PATH_",_BASE_DIR_."config".$path_separator);
+    define("_LOG_PATH_",_BASE_DIR_."logs".$path_separator);
     define("_DEBUG_PATH_",_BASE_DIR_."chatbot".$path_separator."debug".$path_separator);
     define("_INSTALL_PATH_",_BASE_DIR_.$path_separator."install".$path_separator);
+
+    //------------------------------------------------------------------------
+    // Error reporting
+    //------------------------------------------------------------------------
+
+    $e_all = defined('E_DEPRECATED') ? E_ALL ^ E_DEPRECATED : E_ALL;
+    error_reporting($e_all);
+    ini_set('log_errors', true);
+    ini_set('error_log', _LOG_PATH_ . 'install-error.log');
+    ini_set('html_errors', false);
+    ini_set('display_errors', false);
 
 ?>

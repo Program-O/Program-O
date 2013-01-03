@@ -532,6 +532,7 @@ function check_set_user($convoArr)
   $convo_id = (isset($convoArr['conversation']['convo_id'])) ? $convoArr['conversation']['convo_id'] : session_id();
   $bot_id = $convoArr['conversation']['bot_id'];
   $ip = $_SERVER['REMOTE_ADDR'];
+  $convoArr['client_properties']['ip_address'] = $ip;
   $sql = "select `name`, `id` from `users` where `session_id` = '$convo_id' limit 1;";
   $result = mysql_query($sql, $con) or $msg = SQL_error(mysql_errno(), __FILE__, __FUNCTION__, __LINE__);
   $numRows = mysql_num_rows($result);

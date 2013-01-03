@@ -29,7 +29,7 @@
     $mainContent = $template->getSection('SearchAIMLForm');
   }
 
-  $upperScripts = '<script type="text/javascript" src="js/tablesorter.js"></script>'."\n";
+  $upperScripts = '<script type="text/javascript" src="scripts/tablesorter.js"></script>'."\n";
   $topNav        = $template->getSection('TopNav');
   $leftNav       = $template->getSection('LeftNav');
   $main          = $template->getSection('Main');
