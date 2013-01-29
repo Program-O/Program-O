@@ -184,10 +184,10 @@ endScript;
           # Strip CRLF from category (windows)
           $aiml_add = str_replace("\n", '', $aiml_add);
           # Strip LF from category (mac/*nix)
-          $sql_add = str_replace('[aiml_add]', mysql_escape_string($aiml_add), $sql_template);
+          $sql_add = str_replace('[aiml_add]', mysql_real_escape_string($aiml_add), $sql_template);
           $sql_add = str_replace('[pattern]', $pattern, $sql_add);
           $sql_add = str_replace('[that]', $that, $sql_add);
-          $sql_add = str_replace('[template]', mysql_escape_string($template), $sql_add);
+          $sql_add = str_replace('[template]', mysql_real_escape_string($template), $sql_add);
           $sql_add = str_replace('[topic]', '', $sql_add);
           $sql .= "$sql_add";
           $rowCount++;
