@@ -1,5 +1,5 @@
 /*
-My Program-O Version 2.0.5
+My Program-O Version 2.0.7
 Program-O  chatbot admin area
 Written by Elizabeth Perreau and Dave Morton
 Aug 2011
@@ -78,7 +78,9 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
 }
 .errMsg {
   min-width: 250px;
-  max-width: 98%;
+  max-width: 95%;
+  min-height: 32px;
+  max-height: 95%;
   width: auto;
   background-color: #FFF45A;
   background-color: #FCC; /*transparent;*/
@@ -93,10 +95,19 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
   position: absolute;
   top: 15px;
   right: 15px;
-  overflow: auto;
   z-index: 99;
   padding-right: 40px;
+  overflow: auto;
 }
+.errMsgContent {
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 .ul, .ll, .ur, .lr {
   width: 6px;
   height: 6px;

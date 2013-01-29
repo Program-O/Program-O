@@ -1,7 +1,7 @@
 <?php
 
   //-----------------------------------------------------------------------------------------------
-  //My Program-O Version 2.0.5
+  //My Program-O Version 2.0.7
   //Program-O  chatbot admin area
   //Written by Elizabeth Perreau and Dave Morton
   //Aug 2011
@@ -10,10 +10,11 @@
   // upload.php
   ini_set('memory_limit', '128M');
   ini_set('max_execution_time', '0');
-  ini_set('display_errors', '1');
+  ini_set('display_errors', false);
+  ini_set('log_errors', true);
+  ini_set('error_log', _ADMIN_PATH_ . 'upload.error.log');
   libxml_use_internal_errors(true);
-  $file = (array_key_exists('aimlfile', $_FILES)) ? processUpload() : '';
-  $msg = parseAIML($file);
+  $msg = (array_key_exists('aimlfile', $_FILES)) ? processUpload() : '';
   $upperScripts = <<<endScript
 
     <script type="text/javascript">
@@ -48,7 +49,7 @@
     </script>
 endScript;
 
-    $XmlEntities = array('&amp;' => '&', '&lt;' => '<', '&gt;' => '>', '&apos;' => '\'', '&quot;' => '"',);
+  $XmlEntities = array('&amp;' => '&', '&lt;' => '<', '&gt;' => '>', '&apos;' => '\'', '&quot;' => '"',);
   $g_tagName = null;
   $aiml_sql = "";
   $pattern_sql = "";
@@ -88,12 +89,12 @@ endScript;
   $mainTitle = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
   $mainTitle = str_replace('[errMsg]', $msg, $mainTitle);
 
-  function parseAIML($file)
+  function parseAIML($fn,$aimlContent)
   {
-    if (empty ($file))
-      return "";
+    if (empty ($aimlContent))
+      return "File $fn was empty!";
     global $debugmode, $bot_id, $default_charset;
-    $fileName = basename($file);
+    $fileName = basename($fn);
     $success = false;
     $dbconn = db_open();
     #Clear the database of the old entries
@@ -104,7 +105,6 @@ endScript;
     }
     $myBot_id = (isset ($_POST['bot_id'])) ? $_POST['bot_id'] : $bot_id;
     # Read new file into the XML parser
-    $fileName = basename($file);
     $sql_start = "insert into `aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`, `php_code`) values\n";
     $sql = $sql_start;
     $sql_template = "(NULL, $myBot_id, '[aiml_add]', '[pattern]', '[that]', '[template]', '[topic]', '$fileName', ''),\n";
@@ -116,7 +116,6 @@ endScript;
       /*       AIML tags from the beginning of the file      */
      /*       and replacing them with our own tags          */
     /*******************************************************/
-    $aimlContent = file_get_contents($file);
     $validAIMLHeader = '<?xml version="1.0" encoding="[charset]"?>
 <!DOCTYPE aiml PUBLIC "-//W3C//DTD Specification Version 1.0//EN" "http://www.program-o.com/xml/aiml.dtd">
 <aiml version="1.0.1" xmlns="http://alicebot.org/2001/AIML-1.0.1">';
@@ -124,14 +123,13 @@ endScript;
     $aimlTagStart = stripos($aimlContent, '<aiml', 0);
     $aimlTagEnd = strpos($aimlContent, '>', $aimlTagStart) + 1;
     $aimlFile = $validAIMLHeader . substr($aimlContent, $aimlTagEnd);
-    $newFile = str_replace('uploads/', 'uploads/new', $file);
-    $x = file_put_contents($newFile, $aimlFile);
+    //die('<pre>' . htmlentities("File contents:<br />\n$aimlFile"));
     try
     {
       libxml_use_internal_errors(true);
       $xml = new DOMDocument();
       $xml->loadXML($aimlFile);
-      $xml->validate();
+      //$xml->validate();
       $aiml = new SimpleXMLElement($xml->saveXML());
       $rowCount = 0;
       if (!empty ($aiml->topic))
@@ -207,7 +205,7 @@ endScript;
         $sql = rtrim($sql, ",\n") . ';';
         $success = (updateDB($sql) >= 0) ? true : false;
       }
-      $msg = "Successfully added $fileName to the database.";
+      $msg = "Successfully added $fileName to the database.<br />\n";
     }
     catch (Exception $e)
     {
@@ -253,7 +251,8 @@ endScript;
         $file = './uploads/' . $_FILES['aimlfile']['name'];
         if (move_uploaded_file($_FILES['aimlfile']['tmp_name'], $file))
         {
-          return $file;
+          if ($_FILES['aimlfile']['type'] == 'application/zip') return processZip($file);
+          else return parseAIML($file,$aimlContent);
         }
         else
         {
@@ -336,6 +335,55 @@ endScript;
       $out .= " in <b>$error->file</b>";
     }
     $out .= " on line <b>$error->line</b>\n";
+    return $out;
+  }
+
+  function processZip($fileName)
+  {
+    $out = '';
+    $zipName = basename($fileName);
+    $zip = new ZipArchive;
+    $res = $zip->open($fileName);
+    if ($res === TRUE) {
+      $numFiles = $zip->numFiles;
+      for ($loop = 0; $loop < $numFiles-1; $loop++)
+      {
+        $curName = $zip->getNameIndex($loop);
+        if (strstr($curName, '/') !== false)
+        {
+          $endPos = strrpos($curName, '/') + 1;
+          $curName = substr($curName, $endPos);
+        }
+        if (empty($curName)) continue;
+        $fp = $zip->getStream($zip->getNameIndex($loop));
+        if(!$fp)
+        {
+          $out .= "Processing for $curName failed.<br />\n";
+        }
+        else
+        {
+          $curText = '';
+          while (!feof($fp))
+          {
+            $curText .= fread($fp, 8192);
+          }
+          fclose($fp);
+          $out .= "Processing file $curName<br />\n";
+          if (!stristr($curName, '.aiml'))
+          {
+            $out .= "file $curName is not an AIML file - Ignoring.<br />\n";
+            continue;
+          }
+          $out .= parseAIML($curName, $curText);
+        }
+      }
+      $zip->close();
+      $out .= "Upload complete. $numFiles files were processed.<br />\n";
+    }
+    else
+    {
+      $out = "Upload failed. $fileName was either corrupted, or not a zip file." ;
+    }
     return $out;
   }
 

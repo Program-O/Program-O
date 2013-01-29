@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.0.5
+* Version: 2.0.7
 * FILE: chatbot/core/aiml/load_convofunctions.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011

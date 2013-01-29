@@ -132,22 +132,6 @@
               <td class="formw"><input type="checkbox" name="bot_active" id="bot_active" value="1" checked="checked" /></td>
             </tr>
             <tr>
-              <td class="label"><label for="error_response"><span class="helpButton" id="hb_error_response"> </span>Error Response String</label></td>
-              <td class="formw"><input class="wide" name="error_response" id="error_response" value="" /></td>
-            </tr>
-            <tr>
-              <td class="label"><label for="default_pattern"><span class="helpButton" id="hb_default_pattern"> </span>Default Pickup Line Pattern</label></td>
-              <td class="formw"><input name="default_pattern" id="default_pattern" value="" /></td>
-            </tr>
-            <tr>
-              <td class="label"><label for="default_conversation_lines"><span class="helpButton" id="hb_default_conversation_lines"> </span>Conversation Lines</label></td>
-              <td class="formw"><input name="default_conversation_lines" id="default_conversation_lines" value="" /></td>
-            </tr>
-            <tr>
-              <td class="label"><label for="default_remember_up_to"><span class="helpButton" id="hb_default_remember_up_to"> </span>History Count</label></td>
-              <td class="formw"><input name="default_remember_up_to" id="default_remember_up_to" value="" /></td>
-            </tr>
-            <tr>
               <td class="label"><label for="default_format"><span class="helpButton" id="hb_default_format"> </span>Response Format</label></td>
               <td class="formw">
                 <select name="default_format" id="default_format" size="1">
@@ -164,6 +148,9 @@
             <tr>
               <td class="label"><label for="default_use_aiml_code"><span class="helpButton" id="hb_default_use_aiml_code"> </span>Use Stored PHP Code from DB?</label></td>
               <td class="formw"><input type="checkbox" name="default_use_aiml_code" id="default_use_aiml_code" value="1" checked="checked" /></td>
+            </tr>
+            <tr>
+              <td colspan="2" rowspan="4" id="notes">[notes]</td>
             </tr>
           </table>
         </td>
@@ -250,9 +237,6 @@
         </td>
       </tr>
       <tr>
-        <td colspan="2" id="notes">[notes]</td>
-      </tr>
-      <tr>
         <td colspan="2" class="center">
           <input name="page" value="2" type="hidden">
           <input name="default_bot_id" value="1" type="hidden">
@@ -283,14 +267,15 @@
             </div>
 <!-- Section DBCreationError End -->
 <!-- Section Page 1 Notes Start -->
-            <div>
+            <p>
               Please note that all fields are required, but many are already filled out with generic, default
               values.
-            </div>
-            <div>
+            </p>
+            <p>
               For more detailed information with this page, please see the <a href="help.php" target="_blank">Help Page</a>, or
               click the help icon <img src="../admin/images/help_small.png" width="16" height="16" alt="" /> for an individual field.
-            </div>
+            </p>
+            &nbsp;
 <!-- Section Page 1 Notes End -->
 <!-- Section Page 2 Notes Start -->
             <div class="row">
