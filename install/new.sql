@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `bots` (
   save_state enum('session','database') NOT NULL DEFAULT 'session',
   conversation_lines int(11) NOT NULL DEFAULT '7',
   remember_up_to int(11) NOT NULL DEFAULT '10',
-  debugemail int(11) NOT NULL,
+  debugemail text NOT NULL,
   debugshow int(11) NOT NULL DEFAULT '1',
   debugmode int(11) NOT NULL DEFAULT '1',
   error_response text not null,

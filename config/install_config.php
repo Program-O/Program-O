@@ -55,4 +55,14 @@
     ini_set('html_errors', false);
     ini_set('display_errors', false);
 
+    //------------------------------------------------------------------------
+    // Default chatbot values
+    //------------------------------------------------------------------------
+
+    $default_pattern = "RANDOM PICKUP LINE";
+    $default_error_response = "No AIML category found. This is a Default Response.";
+    $default_conversation_lines = '1';
+    $default_remember_up_to = '10';
+
+
 ?>

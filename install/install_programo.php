@@ -23,7 +23,7 @@ define ('PHP_SELF', $_SERVER['SCRIPT_NAME']); # This is more secure than $_SERVE
 ini_set("display_errors", 0);
 ini_set("log_errors", true);
 ini_set("error_log", _BASE_DIR_ . "install-error.log");
-if (!file_exists(_LOG_PATH_ . "install-error.log")) file_put_contents(_LOG_PATH_ . "install-error.log", '');
+if (!file_exists(_BASE_DIR_ . "install-error.log")) file_put_contents(_BASE_DIR_ . "install-error.log", '');
 $myHost = $_SERVER['SERVER_NAME'];
 chdir(dirname( realpath( __FILE__ )));
 $page_template = file_get_contents('install.tpl.htm');
@@ -79,6 +79,10 @@ function getSection($sectionName, $page_template, $notFoundReturn = true) {
 
 function Save() {
   global $page_template;
+  $default_pattern = "RANDOM PICKUP LINE";
+  $default_error_response = "No AIML category found. This is a Default Response.";
+  $default_conversation_lines = '1';
+  $default_remember_up_to = '10';
   $_SESSION['errorMessage'] = '';
 
   // First off, write the config file
@@ -114,10 +118,11 @@ function Save() {
   $result = mysql_query($sql,$conn) or upgrade($conn);
   $sql = 'select `php_code` from `aiml` where 1 limit 1';
   $result = mysql_query($sql,$conn) or upgrade($conn);
+  //  $default_pattern, $default_remember_up_to, $default_conversation_lines, $default_error_response
   $sql_template = "
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
 VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[use_aiml_code]', '[update_aiml_code]', '[save_state]', 
-'[conversation_lines]', '[remember_up_to]', '[debugemail]', '[debugshow]', '[debugmode]', '[error_response]', '[default_aiml_pattern]');";
+'$default_conversation_lines', '$default_remember_up_to', '[debugemail]', '[debugshow]', '[debugmode]', '$default_error_response', '$default_pattern');";
   
   require_once (_LIB_PATH_ . 'error_functions.php');
   require_once (_LIB_PATH_ . 'db_functions.php');
@@ -135,13 +140,14 @@ VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]',
   if (!isset($myPostVars["default_update_aiml_code"])) $myPostVars["default_update_aiml_code"] = 0;
   $sql = str_replace('[update_aiml_code]',$myPostVars["default_update_aiml_code"], $sql);
   $sql = str_replace('[save_state]',$myPostVars["default_save_state"], $sql);
-  $sql = str_replace('[conversation_lines]',$myPostVars["default_conversation_lines"], $sql);
-  $sql = str_replace('[remember_up_to]',$myPostVars["default_remember_up_to"], $sql);
+  $sql = str_replace('[conversation_lines]',$default_conversation_lines, $sql);
+  $sql = str_replace('[remember_up_to]',$default_remember_up_to, $sql);
   $sql = str_replace('[debugemail]',$myPostVars["default_debugemail"], $sql);
   $sql = str_replace('[debugshow]',$myPostVars["default_debugshow"], $sql);
   $sql = str_replace('[debugmode]',$myPostVars["default_debugmode"], $sql);
-  $sql = str_replace('[error_response]',$myPostVars["error_response"], $sql);
-  $sql = str_replace('[default_aiml_pattern]',$myPostVars["default_pattern"], $sql);
+  $sql = str_replace('[error_response]',$default_error_response, $sql);
+  $sql = str_replace('[default_aiml_pattern]',$default_pattern, $sql);
+  $save = file_put_contents(_CONF_PATH_ . 'sql.txt', $sql);
   $x = db_query($sql, $conn) or install_error('Could not enter bot info for bot #' . $bot_id . '!', mysql_error(), $sql);
   $encrypted_adm_dbp = md5($myPostVars["adm_dbp"]);
   $adm_dbu = $myPostVars["adm_dbu"];

@@ -96,11 +96,12 @@
     //default bot config - this is the default bot most of this will be overwriten by the bot configuration in the db
     $default_bot_id = 1;
     $default_format = "[default_format]";
-    $default_pattern = "[default_pattern]";
     $default_use_aiml_code = '[default_use_aiml_code]';
     $default_update_aiml_code = '[default_update_aiml_code]';
-    $default_conversation_lines = '[default_conversation_lines]';
-    $default_remember_up_to = '[default_remember_up_to]';
+    $default_pattern = "RANDOM PICKUP LINE";
+    $default_error_response = "No AIML category found. This is a Default Response.";
+    $default_conversation_lines = '1';
+    $default_remember_up_to = '10';
     $default_debugemail = "[default_debugemail]";
     /*
      * $default_debugshow - The level of messages to show the user

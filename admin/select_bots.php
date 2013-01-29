@@ -77,7 +77,11 @@ function getBotParentList($current_parent,$dbconn) {
 
 
 function getSelectedBot() {
-  global $template;
+  global $template, $default_pattern, $default_remember_up_to, $default_conversation_lines, $default_error_response;
+  $bot_conversation_lines = $default_conversation_lines;
+  $bot_remember_up_to = $default_remember_up_to;
+  $bot_default_aiml_pattern = $default_pattern;
+  $bot_error_response = $default_error_response;
   $dbconn = db_open();
   $inputs="";
   $form = $template->getSection('SelectBotForm');
@@ -195,13 +199,14 @@ function getSelectedBot() {
     $bot_format = "";
     $bot_use_aiml_code = "";
     $bot_update_aiml_code = "";
-    $bot_conversation_lines = "";
-    $bot_remember_up_to = "";
+    $bot_conversation_lines = $default_conversation_lines;
+    $bot_remember_up_to = $default_remember_up_to;
+    $bot_default_aiml_pattern = $default_pattern;
+    $bot_error_response = $default_error_response;
     $bot_debugemail = "";
     $debugemail = "";
     $bot_debugshow = "";
     $bot_debugmode = "";
-    $bot_default_aiml_pattern = '';
 
   }
   $parent_options = getBotParentList($bot_parent_id,$dbconn);
