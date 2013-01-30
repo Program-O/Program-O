@@ -252,7 +252,7 @@ endScript;
         if (move_uploaded_file($_FILES['aimlfile']['tmp_name'], $file))
         {
           if ($_FILES['aimlfile']['type'] == 'application/zip') return processZip($file);
-          else return parseAIML($file,$aimlContent);
+          else return parseAIML($file,file_get_contents($file));
         }
         else
         {
