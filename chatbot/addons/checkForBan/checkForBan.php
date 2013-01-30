@@ -41,6 +41,7 @@ If you feel that this is in error, please contact
 <a href="mailto:$default_debugemail">$default_debugemail</a>.
 endMessage;
       $convoArr['abort'] = true;
+      exit($convoArr['send_to_user']);
     }
     return $convoArr;
   }
