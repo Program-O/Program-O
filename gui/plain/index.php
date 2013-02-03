@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.0.8
+  * Version: 2.0.9
   * FILE: gui/plain/index.php
   * AUTHOR: ELIZABETH PERREAU
   * DATE: 19 JUNE 2012

@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.8
+* Version: 2.0.9
 * FILE: chatbot/core/conversation/make_conversation.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011

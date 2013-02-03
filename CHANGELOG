@@ -1,7 +1,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.0.8
+* Version: 2.0.9
 * FILE: CHANGELOG
 * AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
 * DATE: 01-02-2013
@@ -9,6 +9,10 @@
 ***************************************/
 
 Version History:
+
+2.0.9   Feature Update
+            1.) Added a function to the admin page to poll GitHub for the current release version, and notify
+                the botmaster if a new version is available, providing a link to the latest version.
 
 2.0.8   Performed the following upgrades/fixes:
             1.) Added version information to the admin page. so that botmasters can see at a glance which version

@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.8
+//My Program-O Version 2.0.9
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -49,6 +49,8 @@
   $template = new Template("$thisPath/default.page.htm");
   $leftLinks = makeLeftLinks();
   $topLinks = makeTopLinks();
+  $githubVersion = getCurrentVersion();
+  $version = ($githubVersion == VERSION) ? 'Program O version ' . VERSION : 'There is a new version of Program O available. <a href="https://github.com/Program-O/Program-O/archive/master.zip">Click here</a> to download it.';
 # set template section defaults
 
 # Build page sections
@@ -195,7 +197,7 @@
                     '[errMsgStyle]'   => $errMsgStyle,
                     '[noRightNav]'    => $noRightNav,
                     '[noLeftNav]'     => $noLeftNav,
-                    '[version]'     => VERSION
+                    '[version]'       => $version,
                    );
   foreach ($searches as $search => $replace) {
     $content = str_replace($search, $replace, $content);
@@ -463,6 +465,27 @@ endFooter;
         }
     }
     else $out = 'RSS Feed not available';
+    return $out;
+  }
+
+  function getCurrentVersion()
+  {
+    $url = 'https://api.github.com/repos/Program-O/Program-O/contents/version.txt';
+    $out = false;
+    if (function_exists('curl_init'))
+    {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, $url);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      $out = curl_exec($ch);
+      if (false === $out) trigger_error('Not sure what it is, but there\'s a problem with checking the current version on GitHub. Maybe this will help: "' . curl_error($ch) . '"');
+      curl_close($ch);
+      $repoArray = json_decode($out, true);
+      $versionB64 = $repoArray['content'];
+      $version = base64_decode($versionB64);
+      $out = $version;
+    }
     return $out;
   }
 
