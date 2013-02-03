@@ -750,4 +750,5 @@ td input, td select {
 
 select#bot_id { width: auto; min-width: 30%; }
 
+#version{position: absolute;top: 5px;left: 5px;}
 
