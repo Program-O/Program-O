@@ -506,3 +506,7 @@ tr, td, .center {text-align: center;}
   background-color: #008000;
   color: #ecf9ff;
 }
+
+#version{
+  float: left;
+}

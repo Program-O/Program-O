@@ -1,7 +1,7 @@
 <?php
 
   //-----------------------------------------------------------------------------------------------
-  //My Program-O Version 2.0.7
+  //My Program-O Version 2.0.8
   //Program-O  chatbot admin area
   //Written by Elizabeth Perreau and Dave Morton
   //Aug 2011
@@ -152,10 +152,10 @@ endScript;
             # Strip CRLF from category (windows)
             $aiml_add = str_replace("\n", '', $aiml_add);
             # Strip LF from category (mac/*nix)
-            $sql_add = str_replace('[aiml_add]', mysql_escape_string($aiml_add), $sql_template);
+            $sql_add = str_replace('[aiml_add]', mysql_real_escape_string($aiml_add), $sql_template);
             $sql_add = str_replace('[pattern]', $pattern, $sql_add);
             $sql_add = str_replace('[that]', $that, $sql_add);
-            $sql_add = str_replace('[template]', mysql_escape_string($template), $sql_add);
+            $sql_add = str_replace('[template]', mysql_real_escape_string($template), $sql_add);
             $sql_add = str_replace('[topic]', $topic, $sql_add);
             $sql .= "$sql_add";
             $rowCount++;

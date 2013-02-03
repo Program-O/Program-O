@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.7
+* Version: 2.0.8
 * FILE: chatbot/core/aiml/parse_aiml.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -913,9 +913,9 @@ function make_learn($convoArr, $pattern, $template)
 	
 	$pattern = clean_for_aiml_match($pattern);
 	$aiml = "<learn> <category> <pattern> <eval>$pattern</eval> </pattern> <template> <eval>$template</eval> </template> </category> </learn>";
-	$aiml = mysql_escape_string($aiml);
-	$pattern = mysql_escape_string($pattern." "); 
-	$template = mysql_escape_string($template." "); 
+	$aiml = mysql_real_escape_string($aiml);
+	$pattern = mysql_real_escape_string($pattern." "); 
+	$template = mysql_real_escape_string($template." "); 
 	$u_id = $convoArr['conversation']['user_id'];
 	$bot_id = $convoArr['conversation']['bot_id'];
 	

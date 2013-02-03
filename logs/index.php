@@ -28,7 +28,7 @@ foreach ($fileList as $file) {
   </head>
   <body>
     <form name="fileChoice" action="./" method="POST">
-      Select a Debug File to view: <select name="file" id="file" size="1" onchange="document.forms[0].submit();">
+      Select a Log File to view: <select name="file" id="file" size="1" onchange="document.forms[0].submit();">
         <option value="about:blank">Empty Selection</option>
 <?php echo rtrim($options); ?>
       </select><br />

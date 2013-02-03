@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.7
+//My Program-O Version 2.0.8
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -227,21 +227,45 @@ function getSelectedBot() {
 
 function updateBotSelection() {
   //db globals
-  global $msg;
+  global $msg, $default_format;
+  $logFile = _LOG_URL_ . 'error.log';
   $dbconn = db_open();
   $sql = "";
   $msg = "";
   foreach($_POST as $key => $value) {
     if(($key!="bot_id")||($key!="action")) {
-      $value = mysql_escape_string(trim(stripslashes($value)));
+      $value = mysql_real_escape_string(trim(stripslashes($value)));
       if(($key != "bot_id")&&($key != "action")&&($value!="")) {
         $sql = "UPDATE `bots` SET `$key` ='$value' where `bot_id` = '".$_POST['bot_id']."' limit 1; ";
         $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
         if(!$result) {
-          $msg = 'Error updating bot details.';
+          $msg = "Error updating bot details. See the <a href=\"$logFile\">error log</a> for details.<br />";
+          trigger_error("There was a problem adding '$key' to the database. The value was '$value'.");
           break;
         }
       }
+    }
+  }
+
+  $format = filter_input(INPUT_POST,'format');
+
+  if ($format !== $default_format)
+  {
+    $cfn = _CONF_PATH_ . 'global_config.php';
+    $configFile = file(_CONF_PATH_ . 'global_config.php',FILE_IGNORE_NEW_LINES);
+    $search = '    $default_format = \'' . $default_format . '\';';
+    $replace = '    $default_format = \'' . $format . '\';';
+    $index = array_search($search, $configFile);
+    if (false === $index)
+    {
+      $msg .= "Error updating the config file. See the <a href=\"$logFile\">error log</a> for details.<br />";
+      trigger_error("There was a problem with updating the default format in the config file. Please edit the value manually and submit a bug report.");
+    }
+    else
+    {
+      $configFile[$index] = $replace;
+      $configContent = implode("\n", $configFile);
+      $x = file_put_contents(_CONF_PATH_ . 'global_config.php', $configContent);
     }
   }
   if($msg == "") {
@@ -258,7 +282,7 @@ function addBot() {
   //db globals
   global $msg;
   foreach ($_POST as $key => $value) {
-    $$key = mysql_escape_string(trim($value));
+    $$key = mysql_real_escape_string(trim($value));
   }
   $dbconn = db_open();
   $sql = <<<endSQL
@@ -278,7 +302,7 @@ endSQL;
   $_SESSION['poadmin']['bot_id'] = mysql_insert_id();
   $bot_id = $_SESSION['poadmin']['bot_id'];
   $_SESSION['poadmin']['bot_name'] = $_POST['bot_name'];
-  $bot_name = mysql_escape_string($_SESSION['poadmin']['bot_name']);
+  $bot_name = mysql_real_escape_string($_SESSION['poadmin']['bot_name']);
 
   $sql = <<<endSQL
 INSERT INTO `botpersonality` VALUES

@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.7
+* Version: 2.0.8
 * FILE: spell_checker/spell_checker.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011

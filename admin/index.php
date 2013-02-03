@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.7
+//My Program-O Version 2.0.8
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -80,8 +80,8 @@
 
   if((isset($_POST['uname']))&&(isset($_POST['pw']))) {
     $_SESSION['poadmin']['display'] = $hide_logo;
-    $uname = mysql_escape_string(strip_tags(trim($_POST['uname'])));
-    $pw = mysql_escape_string(strip_tags(trim($_POST['pw'])));
+    $uname = mysql_real_escape_string(strip_tags(trim($_POST['uname'])));
+    $pw = mysql_real_escape_string(strip_tags(trim($_POST['pw'])));
     $dbconn = db_open();
     $sql = "SELECT * FROM `myprogramo` WHERE uname = '".$uname."' AND pword = '".MD5($pw)."'";
     $result = mysql_query($sql,$dbconn) or $msg .= SQL_Error(mysql_errno());
@@ -194,7 +194,8 @@
                     '[bot_name]'      => $bot_name,
                     '[errMsgStyle]'   => $errMsgStyle,
                     '[noRightNav]'    => $noRightNav,
-                    '[noLeftNav]'     => $noLeftNav
+                    '[noLeftNav]'     => $noLeftNav,
+                    '[version]'     => VERSION
                    );
   foreach ($searches as $search => $replace) {
     $content = str_replace($search, $replace, $content);

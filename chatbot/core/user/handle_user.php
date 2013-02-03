@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.7
+* Version: 2.0.8
 * FILE: chatbot/core/user/handle_user.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -80,15 +80,15 @@ function intisaliseUser($convo_id)
 	$sb = "unknown browser";
 	
 	if(isset($_SERVER['REMOTE_ADDR'])){
-		$sa = mysql_escape_string($_SERVER['REMOTE_ADDR']);
+		$sa = mysql_real_escape_string($_SERVER['REMOTE_ADDR']);
 	} 
 	
 	if(isset($_SERVER['HTTP_REFERER'])){
-		$sr = mysql_escape_string($_SERVER['HTTP_REFERER']);
+		$sr = mysql_real_escape_string($_SERVER['HTTP_REFERER']);
 	}
 	
 	if(isset($_SERVER['HTTP_USER_AGENT'])){
-		$sb = mysql_escape_string($_SERVER['HTTP_USER_AGENT']);
+		$sb = mysql_real_escape_string($_SERVER['HTTP_USER_AGENT']);
 	}
 
 	$sql = "INSERT INTO `$dbn`.`users` (`id` ,`session_id`, `bot_id`, `chatlines` ,`ip` ,`referer` ,`browser` ,`date_logged_on` ,`last_update`)

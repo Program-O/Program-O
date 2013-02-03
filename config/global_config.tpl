@@ -18,29 +18,36 @@
     $baseURL = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
     $docRoot = $_SERVER['DOCUMENT_ROOT'];
 
-    define("_BASE_DIR_", $thisConfigParentFolder);
+    define('_BASE_DIR_', $thisConfigParentFolder);
     $path_separator = DIRECTORY_SEPARATOR;
 
     $thisFile = str_replace(_BASE_DIR_, '', $thisFile);
     $thisFile = str_replace($path_separator, '/', $thisFile);
     $baseURL = str_replace($thisFile, '', $baseURL);
-    define("_BASE_URL_", $baseURL);
+    define('_BASE_URL_', $baseURL);
 
     //------------------------------------------------------------------------
     // Define paths for include files
     //------------------------------------------------------------------------
 
-    define("_INC_PATH_",_BASE_DIR_.$path_separator);
-    define("_ADMIN_PATH_",_BASE_DIR_."admin".$path_separator);
-    define("_GLOBAL_PATH_",_BASE_DIR_."global".$path_separator);
-    define("_BOTCORE_PATH_",_BASE_DIR_."chatbot".$path_separator."core".$path_separator);
-    define("_AIMLPHP_PATH_",_BASE_DIR_."chatbot".$path_separator."aiml_to_php".$path_separator);
-    define("_LIB_PATH_",_BASE_DIR_."library".$path_separator);
-    define("_ADDONS_PATH_",_BASE_DIR_."chatbot".$path_separator."addons".$path_separator);
-    define("_CONF_PATH_",_BASE_DIR_."config".$path_separator);
-    define("_LOG_PATH_",_BASE_DIR_."logs".$path_separator);
-    define("_DEBUG_PATH_",_BASE_DIR_."chatbot".$path_separator."debug".$path_separator);
-    define("_INSTALL_PATH_",_BASE_DIR_.$path_separator."install".$path_separator);
+    define('_INC_PATH_',_BASE_DIR_.$path_separator);
+    define('_ADMIN_PATH_',_BASE_DIR_.'admin'.$path_separator);
+    define('_GLOBAL_PATH_',_BASE_DIR_.'global'.$path_separator);
+    define('_BOTCORE_PATH_',_BASE_DIR_.'chatbot'.$path_separator.'core'.$path_separator);
+    define('_AIMLPHP_PATH_',_BASE_DIR_.'chatbot'.$path_separator.'aiml_to_php'.$path_separator);
+    define('_LIB_PATH_',_BASE_DIR_.'library'.$path_separator);
+    define('_ADDONS_PATH_',_BASE_DIR_.'chatbot'.$path_separator.'addons'.$path_separator);
+    define('_CONF_PATH_',_BASE_DIR_.'config'.$path_separator);
+    define('_LOG_PATH_',_BASE_DIR_.'logs'.$path_separator);
+    define('_LOG_URL_',_BASE_URL_.'logs/');
+    define('_DEBUG_PATH_',_BASE_DIR_.'chatbot'.$path_separator.'debug'.$path_separator);
+    define('_INSTALL_PATH_',_BASE_DIR_.$path_separator.'install'.$path_separator);
+
+    //------------------------------------------------------------------------
+    // Define constant for the current version
+    //------------------------------------------------------------------------
+
+    define ('VERSION', '2.0.8');
 
     //------------------------------------------------------------------------
     // Error reporting
@@ -73,36 +80,36 @@
     // DB and time zone settings
     //------------------------------------------------------------------------
 
-    $time_zone_locale = "[timezone]"; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-    $dbh    = "[dbh]";  # dev remote server location
-    $dbPort = "[dbPort]";    # dev database name/prefix
-    $dbn    = "[dbn]";    # dev database name/prefix
-    $dbu    = "[dbu]";       # dev database username
-    $dbp    = "[dbp]";  # dev database password
+    $time_zone_locale = '[timezone]'; // a full list can be found at http://uk.php.net/manual/en/timezones.php
+    $dbh    = '[dbh]';  # dev remote server location
+    $dbPort = '[dbPort]';    # dev database name/prefix
+    $dbn    = '[dbn]';    # dev database name/prefix
+    $dbu    = '[dbu]';       # dev database username
+    $dbp    = '[dbp]';  # dev database password
 
     //these are the admin DB settings in case you want make the admin a different db user with more privs
-    $adm_dbu = "[adm_dbu]";
-    $adm_dbp = "[adm_dbp]";
+    $adm_dbu = '[adm_dbu]';
+    $adm_dbp = '[adm_dbp]';
 
     //------------------------------------------------------------------------
     // Default bot settings
     //------------------------------------------------------------------------
 
     //Used to populate the stack when first initialized
-    $default_stack_value = "om";
+    $default_stack_value = 'om';
     //Default conversation id will be set to current session
     $default_convo_id = session_id();
 
     //default bot config - this is the default bot most of this will be overwriten by the bot configuration in the db
     $default_bot_id = 1;
-    $default_format = "[default_format]";
+    $default_format = '[default_format]';
     $default_use_aiml_code = '[default_use_aiml_code]';
     $default_update_aiml_code = '[default_update_aiml_code]';
-    $default_pattern = "RANDOM PICKUP LINE";
-    $default_error_response = "No AIML category found. This is a Default Response.";
+    $default_pattern = 'RANDOM PICKUP LINE';
+    $default_error_response = 'No AIML category found. This is a Default Response.';
     $default_conversation_lines = '1';
     $default_remember_up_to = '10';
-    $default_debugemail = "[default_debugemail]";
+    $default_debugemail = '[default_debugemail]';
     /*
      * $default_debugshow - The level of messages to show the user
      * 0=none,
@@ -121,9 +128,9 @@
      * 3 = email each conversation line (not recommended)
      */
      $default_debugmode = '[default_debugmode]';
-     $default_save_state = "[default_save_state]";
-     $error_response = "[error_response]";
-     $unknown_user = "Seeker";
+     $default_save_state = '[default_save_state]';
+     $error_response = '[error_response]';
+     $unknown_user = 'Seeker';
 
     //------------------------------------------------------------------------
     // Default debug data
@@ -150,13 +157,13 @@
 
     //debug folders where txt files are stored
     $debugfolder = _DEBUG_PATH_;
-    $debugfile = $debugfolder.$default_convo_id.".txt";
+    $debugfile = $debugfolder.$default_convo_id.'.txt';
 
     //------------------------------------------------------------------------
     // Set Misc Data
     //------------------------------------------------------------------------
 
-    $botmaster_name = "[botmaster_name]";
+    $botmaster_name = '[botmaster_name]';
     $default_charset = 'UTF-8';
     $default_charset = 'ISO-8859-1';
 
@@ -181,11 +188,11 @@
     // Set timezone
     //------------------------------------------------------------------------
 
-    if(function_exists("date_default_timezone_set") && function_exists("date_default_timezone_get"))
+    if(function_exists('date_default_timezone_set') && function_exists('date_default_timezone_get'))
     {
       @date_default_timezone_set(@date_default_timezone_get());
     }
-    elseif(function_exists("date_default_timezone_set"))
+    elseif(function_exists('date_default_timezone_set'))
     {
       @date_default_timezone_set($time_zone_locale);
     }

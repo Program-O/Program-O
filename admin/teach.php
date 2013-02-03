@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.7
+//My Program-O Version 2.0.8
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -80,13 +80,13 @@ function insertAIML() {
   global $template, $msg;
   $dbconn = db_open();
   $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
-  $aimltemplate = mysql_escape_string(trim($_POST['template']));
-  $pattern = strtoupper(mysql_escape_string(trim($_POST['pattern'])));
-  $thatpattern = strtoupper(mysql_escape_string(trim($_POST['thatpattern'])));
+  $aimltemplate = mysql_real_escape_string(trim($_POST['template']));
+  $pattern = strtoupper(mysql_real_escape_string(trim($_POST['pattern'])));
+  $thatpattern = strtoupper(mysql_real_escape_string(trim($_POST['thatpattern'])));
   $aiml = str_replace('[pattern]', $pattern, $aiml);
   $aiml = (empty($thatpattern)) ? str_replace('[thatpattern]', "<that>$thatpattern</that>", $aiml) : $aiml;
   $aiml = str_replace('[template]', $aimltemplate, $aiml);
-  $topic = strtoupper(mysql_escape_string(trim($_POST['topic'])));
+  $topic = strtoupper(mysql_real_escape_string(trim($_POST['topic'])));
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
   if(($pattern=="") || ($template=="")) {
     $msg = 'You must enter a user input and bot response.';
