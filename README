@@ -1,9 +1,8 @@
 /********************************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.0.7
+* Version: 2.0.8
 * README
-* TEST
 ********************************************************/
 
 Introduction
@@ -24,8 +23,8 @@ Configuration of Program O itself is done in /config/global_config.php
 Using the bot
 ---------------------------------------------------------
 After installation you can chat to Program O in one of 3 ways
--HTML form (example in /gui/plain/index.php or /gui/jquery/index.php)
--HTML form using CURL (return response in XML or JSON) (example in /gui/htmltoxml/index.php)
+-HTML form (example in /gui/plain/index.php)
+-HTML form using AJAX (example in /gui/jquery/index.php)
 -send XML using CURL (return response in XML or JSON) (example in /gui/xml/index.php)
 
 Upgrade

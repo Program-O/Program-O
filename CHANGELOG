@@ -1,7 +1,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.0.7
+* Version: 2.0.8
 * FILE: CHANGELOG
 * AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
 * DATE: 01-02-2013
@@ -9,6 +9,13 @@
 ***************************************/
 
 Version History:
+
+2.0.8   Performed the following upgrades/fixes:
+            1.) Added version information to the admin page. so that botmasters can see at a glance which version
+                they're using. This is a prelude to a new "version check" feature that I'm working on.
+            2.) Corrected a bug where changing the bot's default page format wasn't being reflected in the config
+                file. PLEASE NOTE that if you have several chatbots, this will affect ALL of them, but if that's
+                the case, you shouldn't be relying on the default chatbot page anyway.
 
 2.0.7   Two major changes, this time:
             1.) Removed some settings from the install script that had been causing new chatbots to
