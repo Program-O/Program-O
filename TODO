@@ -1,0 +1,23 @@
+  /***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.1.0
+  * FILE: TODO
+  * AUTHOR: Elizabeth Perreau and Dave Morton
+  * DATE: 02-18-2013
+  * DETAILS: List of things to accomplish for the next revision
+  ***************************************/
+
+
+  1.) Add functions for the following AIML tags:
+          <that>
+          <input>
+          <thatstar>
+          <topicstar>
+          <person>
+          <person2>
+          <condition>
+          <system>
+          <learn>
+          <gossip>
+          <gender>
