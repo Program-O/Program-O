@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.5
+* Version: 2.1.0
 * FILE: chatbot/core/conversation/make_conversation.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -45,10 +45,10 @@ function add_aiml_to_php($convoArr){
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Adding PHP to table",4);
 	global $dbn,$con;
-	$evalthis = mysql_escape_string($convoArr['aiml']['aiml_to_php']);
+	$evalthis = mysql_real_escape_string($convoArr['aiml']['aiml_to_php']);
 	$sql = "UPDATE `$dbn`.`aiml` SET `php_code` = \"$evalthis\" WHERE `id` = '".$convoArr['aiml']['aiml_id']."' LIMIT 1";
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Adding new PHP to aiml table SQL: $sql",3);
-	$result = db_query($sql,$con);
+	//$result = db_query($sql,$con);
 	return $convoArr;
 }
 
@@ -72,7 +72,7 @@ function make_safe_to_eval($evalthis){
  * @param  string $evalthis - string to make safe
  * @return string $botsay
 **/	
-function eval_aiml_to_php_code(&$convoArr,$evalthis){
+function eval_aiml_to_php_code($convoArr,$evalthis){
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "",4);
 	$botsay = @run_aiml_to_php($convoArr,$evalthis);
@@ -88,7 +88,7 @@ function eval_aiml_to_php_code(&$convoArr,$evalthis){
  * @param  string $evalthis - string to make safe
  * @return string $result (-botsay)
 **/	
-function run_aiml_to_php(&$convoArr,$evalthis){
+function run_aiml_to_php($convoArr,$evalthis){
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Evaluating Stored PHP Code from the Database",4);
 	global $botsay;

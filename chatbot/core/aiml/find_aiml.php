@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.0.5
+* Version: 2.1.0
 * FILE: chatbot/core/aiml/find_aiml.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -12,27 +12,27 @@
 
 /**
  * function get_last_word()
- * This function gets the last word from a sentance
- * @param  string $sentance - the sentance to use
+ * This function gets the last word from a sentence
+ * @param  string $sentence - the sentence to use
  * @return string $last_word
 **/
-function get_last_word($sentance){
-	$wordArr = explode(' ', $sentance);
+function get_last_word($sentence){
+	$wordArr = explode(' ', $sentence);
 	$last_word = trim($wordArr[count($wordArr) - 1]);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentance: $sentance. Last word:$last_word",4);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentence: $sentence. Last word:$last_word",4);
 	return $last_word;
 }
 
 /**
  * function get_first_word()
- * This function gets the last word from a sentance
- * @param  string $sentance - the sentance to use
+ * This function gets the last word from a sentence
+ * @param  string $sentence - the sentence to use
  * @return string $last_word
 **/
-function get_first_word($sentance){
-	$wordArr = explode(' ', $sentance);
+function get_first_word($sentence){
+	$wordArr = explode(' ', $sentence);
 	$first_word = trim($wordArr[0]);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentance: $sentance. First word:$first_word",4);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentence: $sentence. First word:$first_word",4);
 	return $first_word;
 }
 
@@ -40,12 +40,12 @@ function get_first_word($sentance){
 
 /**
  * function make_like_pattern()
- * This function gets an input sentance from the user and a aiml tag and creates an sql like pattern
- * @param  string $sentance - the user input to be turned into a like pattern
+ * This function gets an input sentence from the user and a aiml tag and creates an sql like pattern
+ * @param  string $sentence - the user input to be turned into a like pattern
  * @param  string $field - the name of the aiml tag which we are going to use in our like pattern
  * @return string $sql_like_pattern - the like pattern
 **/
-function make_like_pattern($sentance,$field)
+function make_like_pattern($sentence,$field)
 {
 	global $offset;
 	
@@ -54,14 +54,14 @@ function make_like_pattern($sentance,$field)
 	$sql_like_pattern ="";
 	$i = 0;	
 	
-	//if the sentance is contained in an array extract the actual text sentance
-	if(is_array($sentance)){
-		$sentance = $sentance[$offset];
+	//if the sentence is contained in an array extract the actual text sentence
+	if(is_array($sentence)){
+		$sentence = $sentence[$offset];
 	}
-	$words = explode(" ",$sentance);
+	$words = explode(" ",$sentence);
 	$count_words = count($words)-1;
 	
-	//loop through the words in the sentance
+	//loop through the words in the sentence
 	foreach($words as $index => $word){
 		if($i==0){
 			$sql_like_pattern .=	" `$field` LIKE \"".$word." %\" OR ";
@@ -79,15 +79,15 @@ function make_like_pattern($sentance,$field)
 }
 
 /**
- * function wordsCount_inSentance()
- * This function counts the words in a sentance
- * @param  string $sentance - the user input to be turned into a like pattern
+ * function wordsCount_inSentence()
+ * This function counts the words in a sentence
+ * @param  string $sentence - the user input to be turned into a like pattern
  * @return int wordCount
 **/
-function wordsCount_inSentance($sentance){
-	$wordArr = explode(" ",$sentance);
+function wordsCount_inSentence($sentence){
+	$wordArr = explode(" ",$sentence);
 	$wordCount = count($wordArr);	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentance: $sentance numWords:$wordCount",4);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Sentence: $sentence numWords:$wordCount",4);
 	return $wordCount;
 }
 
@@ -204,7 +204,7 @@ function unset_all_bad_pattern_matches($allrows,$lookingfor,$current_thatpattern
 
 /**
  * function match_wildcard_rows()
- * This function takes a sentance and converts AIML wildcards to PHP wildcards
+ * This function takes a sentence and converts AIML wildcards to PHP wildcards
  * so that it can be matched in php 
  * @param string $item
  * @return string matchme
@@ -239,7 +239,7 @@ function score_matches($bot_parent_id,$allrows,$lookingfor,$current_thatpattern,
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Scoring the matches",4);
 	
-	//set the scores for each type of word or sentance to be used in this function
+	//set the scores for each type of word or sentence to be used in this function
 	$default_pattern_points = 2;
 	$underscore_points = 100;
 	$starscore_points = 1;	
@@ -425,19 +425,19 @@ function get_highest_score_rows($allrows,$lookingfor){
  * 
  * examples
  * 
- * $convoArr['conversation']['bot_id'] = get_convo_var($convoArr,'conversation','bot_id')
+ * $convoArr['conversation']['bot_id'] = $convoArr['conversation']['bot_id']
  * $convoArr['that'][1][1] = get_convo_var($convoArr,'that','',1,1) 
 **/
 function get_convo_var($convoArr,$index_1,$index_2="",$index_3="",$index_4=""){
 	
 	global $offset;
 	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4]",4);
-	
+
 	if($index_2=="")  $index_2 = "~NULL~";
 	if($index_3=="") $index_3 = $offset;
 	if($index_4=="") $index_4 = $offset;
-		
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4]",4);
+
 	if((isset($convoArr[$index_1]))  &&(!is_array($convoArr[$index_1]))&&($convoArr[$index_1]!='')){
 		$value = $convoArr[$index_1];
 	}	
@@ -499,9 +499,9 @@ function find_userdefined_aiml($convoArr)
 	
 	$i = 0;
 	$allrows = array();
-	$bot_id = get_convo_var($convoArr,'conversation','bot_id');
-	$user_id = get_convo_var($convoArr,'conversation','user_id');
-	$lookingfor = mysql_escape_string(get_convo_var($convoArr,"aiml","lookingfor"));
+	$bot_id = $convoArr['conversation']['bot_id'];
+	$user_id = $convoArr['conversation']['user_id'];
+	$lookingfor = mysql_real_escape_string($convoArr['aiml']['lookingfor']);
 	
 	//build sql
 	$sql = "SELECT * FROM `$dbn`.`aiml_userdefined` WHERE
@@ -542,12 +542,12 @@ function get_aiml_to_parse($convoArr)
 	global $offset;
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Running all functions to get the correct aiml from the DB",4);
 	
-	$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
-	$current_thatpattern = get_convo_var($convoArr,'that','',1,1);
-	$current_topic = get_convo_var($convoArr,'topic');
+	$lookingfor = $convoArr['aiml']['lookingfor'];
+	$current_thatpattern = $convoArr['that'][1][1];
+	$current_topic = $convoArr['topic'][1];
 	
-	$default_aiml_pattern = get_convo_var($convoArr,'conversation','default_aiml_pattern');
-	$bot_parent_id = get_convo_var($convoArr,'conversation','bot_parent_id');
+	$default_aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
+	$bot_parent_id = $convoArr['conversation']['bot_parent_id'];
 	$sendConvoArr = $convoArr;
 	
 	//check if match in user defined aiml
@@ -562,14 +562,15 @@ function get_aiml_to_parse($convoArr)
 		//score the relevant matches
 		$allrows = score_matches($bot_parent_id,$allrows,$lookingfor,$current_thatpattern,$current_topic,$default_aiml_pattern);
 		//get the highest 
-		$allrows = get_highest_score_rows($allrows,$lookingfor);	
+		$allrows = get_highest_score_rows($allrows,$lookingfor);
 	}
 
 	//Now we have the results put into the conversation array
 	$convoArr['aiml']['pattern']=$allrows['pattern'];
 	$convoArr['aiml']['thatpattern']=$allrows['thatpattern'];
 	$convoArr['aiml']['template']=$allrows['template'];
-	$convoArr['aiml']['html_template']=htmlentities($allrows['template']);
+	//$convoArr['aiml']['html_template']=htmlentities($allrows['template']);
+	$convoArr['aiml']['html_template']='';
 	$convoArr['aiml']['topic']=$allrows['topic'];
 	$convoArr['aiml']['score']=$allrows['score'];
 	$convoArr['aiml']['aiml_to_php'] = $allrows['aiml_to_php'];
@@ -596,21 +597,21 @@ function find_aiml_matches($convoArr){
 	$i=0;
 	
 	//TODO convert to get_it
-	$bot_id = get_convo_var($convoArr,"conversation","bot_id");
-	$bot_parent_id = get_convo_var($convoArr,"conversation","bot_parent_id");
-	$default_aiml_pattern = get_convo_var($convoArr,"conversation","default_aiml_pattern");
+	$bot_id = $convoArr['conversation']['bot_id'];
+	$bot_parent_id = $convoArr['conversation']['bot_parent_id'];
+	$default_aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
 	#$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
-	$lookingfor = mysql_escape_string(get_convo_var($convoArr,"aiml","lookingfor"));
+	$lookingfor = mysql_real_escape_string($convoArr['aiml']['lookingfor']);
 
 	//get the first and last words of the cleaned user input
 	$lastInputWord = get_last_word($lookingfor);
 	$firstInputWord = get_first_word($lookingfor);
 
 	//get the stored topic
-	$storedtopic = mysql_escape_string(get_convo_var($convoArr,"topic"));
+	$storedtopic = mysql_real_escape_string($convoArr['topic'][1]);
 		
 	//get the cleaned user input
-	$lastthat = get_convo_var($convoArr,'that','',1,1);
+	$lastthat = $convoArr['that'][1][1];
 	
 	//build like patterns
 	if($lastthat!=""){	
@@ -624,7 +625,7 @@ function find_aiml_matches($convoArr){
 	}
 	
 	//get the word count
-	$word_count = wordsCount_inSentance($lookingfor);
+	$word_count = wordsCount_inSentence($lookingfor);
 	
 	
 	if($bot_parent_id!=0)
@@ -658,7 +659,7 @@ function find_aiml_matches($convoArr){
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql",3);
 
 	$result = db_query($sql,$con);
-		
+
 	if(($result)&&(mysql_num_rows($result)>0)){
 		runDebug( __FILE__, __FUNCTION__, __LINE__, "FOUND: '".mysql_num_rows($result)."' potential AIML matches",2);	
 		//loop through results

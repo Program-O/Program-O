@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.5
+* Version: 2.1.0
 * FILE: spell_checker/spell_checker.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -19,16 +19,16 @@
 function run_spell_checker($convoArr)
 {
 	
-	$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
+	$lookingfor = $convoArr['aiml']['lookingfor'];
 	$wordArr = explode(' ', $lookingfor);
 	
 	foreach($wordArr as $index => $word)
 	{
-		$sentance .= spell_check($word,$convoArr['conversation']['bot_id'])." ";
+		$sentence .= spell_check($word,$convoArr['conversation']['bot_id'])." ";
 	}
 	
 	
-	$convoArr['aiml']['lookingfor']=$sentance;
+	$convoArr['aiml']['lookingfor']=$sentence;
 	
 	return $convoArr;
 }

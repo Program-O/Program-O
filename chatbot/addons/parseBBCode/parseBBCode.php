@@ -96,9 +96,9 @@ endLine;
   }
 
   function parseInput ($msg) {
-    if (RUN_DEBUG) runDebug(__FILE__, __FUNCTION__, __LINE__,"Pre-parsing input. Setting Timestamp. msg = |$msg|", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"Pre-parsing input. Setting Timestamp. msg = |$msg|", 4);
     #$out = '';
-    $smilieArray = file('inputEmotes.dat');
+    $smilieArray = file(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'inputEmotes.dat');
     rsort($smilieArray);
     $out = str_replace($smilieArray, 'emoteshown', $msg);
                                                                       // Edit the input to deal with multiple punctuation marks
@@ -108,7 +108,7 @@ endLine;
     $out = preg_replace($qmSearch, 'qmonly', $out);                   //
     $periodSearch = '/^\.+/';                                         // Period search string
     $out = preg_replace($periodSearch, 'periodonly', $out);           //
-    if (RUN_DEBUG) runDebug(__FILE__, __FUNCTION__, __LINE__,"msg now = |$out|", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"msg now = |$out|", 4);
     return $out;                                                      // Send back the processed image
   }
 

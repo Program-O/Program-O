@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.0.5
+  * Version: 2.1.0
   * FILE: gui/plain/index_better_divs.php
   * AUTHOR: ELIZABETH PERREAU
   * DATE: 19 JUNE 2012

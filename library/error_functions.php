@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.0.5
+* Version: 2.1.0
 * FILE: library/error_functions.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -60,7 +60,7 @@ function myErrorHandler($errno, $errstr, $errfile, $errline) {
 **/
 function sqlErrorHandler( $sql, $error, $erno, $file, $function, $line){
     $info = "MYSQL ERROR $erno - $error when excuting\n $sql";
-	runDebug($file, $function, $line, $info, 1);
+	runDebug($file, $function, $line, $info, 2);
 }
 
 
@@ -180,7 +180,7 @@ function handleDebug($convoArr){
 	
 	global $debugArr;
 	$convoArr['debug']=$debugArr;
-	$log ="";
+	$log = '';
 	
 	foreach($debugArr as $time => $subArray){
 		$log .= $time."[NEWLINE]";
@@ -208,7 +208,7 @@ function handleDebug($convoArr){
 	$log .= "CONVERSATION ARRAY";
 	$log .= "[NEWLINE]-----------------------[NEWLINE]";
 	
-	$debuglevel = get_convo_var($convoArr, 'conversation', 'debugshow', '', '');
+	$debuglevel = $convoArr['conversation']['debugshow'];
 
 	if($debuglevel == 4 )
 	{
@@ -262,10 +262,13 @@ function reduceConvoArr($convoArr)
 	$showconvoArr = array();
 	
 	$showconvoArr['conversation'] = $convoArr['conversation'];
-	$showconvoArr['topic']['1'] = $convoArr['topic']['1'];
-	$showconvoArr['that']['1'] = $convoArr['that']['1'];
-	$showconvoArr['star']['1'] = $convoArr['star']['1'];
-	$showconvoArr['input']['1'] = $convoArr['input']['1'];
+	$showconvoArr['topic'][1] = $convoArr['topic'][1];
+	$showconvoArr['that'][1] = $convoArr['that'][1];
+    foreach ($convoArr['star'] as $index => $star)
+    {
+      if (!empty($star)) $showconvoArr['star'][$index] = $star;
+    }
+	$showconvoArr['input'][1] = $convoArr['input'][1];
 	$showconvoArr['stack']['top'] = $convoArr['stack']['top'];
 	$showconvoArr['stack']['last'] = $convoArr['stack']['last'];
 	$showconvoArr['client_properties'] = $convoArr['client_properties'];
@@ -278,9 +281,9 @@ function reduceConvoArr($convoArr)
 	$showconvoArr['aiml']['aiml_to_php'] = $convoArr['aiml']['aiml_to_php'];
 	$showconvoArr['aiml']['aiml_id'] = $convoArr['aiml']['aiml_id'];
 	$showconvoArr['aiml']['parsed_template'] = $convoArr['aiml']['parsed_template'];
-	$showconvoArr['user_say']['1'] = $convoArr['user_say']['1'];
-	$showconvoArr['that_raw']['1'] = $convoArr['that_raw']['1'];
-	$showconvoArr['parsed_template']['1'] = $convoArr['parsed_template']['1'];
+	$showconvoArr['user_say'][1] = $convoArr['user_say'][1];
+	$showconvoArr['that_raw'][1] = $convoArr['that_raw'][1];
+	$showconvoArr['parsed_template'][1] = $convoArr['parsed_template'][1];
 	
 	return $showconvoArr;
 }
@@ -289,26 +292,17 @@ function reduceConvoArr($convoArr)
 /**
  * function writefile_debug()
  * Handles the debug when written to a file
- * @param  string $filename - the name of the file which is also the convo id
+ * @param  string $myFile - the name of the file which is also the convo id
  * @param  string $log - the data to write
 **/
 function writefile_debug($log)
-{	
+{
 	$myFile = _DEBUG_PATH_.session_id().".txt";
-
-	$mode = "w";
-	$file = "";
-	$tabs = "";
-	
-	
     if (DIRECTORY_SEPARATOR == '\\') {
-      $file = str_replace("\n", "\r\n", $log);
+      $log = str_replace("\n", "\r\n", $log);
     }
-	
-
-	file_put_contents($myFile, $file);
+	file_put_contents($myFile, $log);
 }
-
 
 
 /**

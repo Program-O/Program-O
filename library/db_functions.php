@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.0.5
+* Version: 2.1.0
 * FILE: library/db_functions.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -23,8 +23,8 @@
   function db_open() {
     global $dbh, $dbu, $dbp, $dbn, $dbPort;
     $host = (!empty($dbPort) and $dbPort != 3306) ? "$dbh:$dbPort" : $dbh; // add port selection if not the standard port number
-    $conn = mysql_connect($host, $dbu, $dbp) or sqlErrorHandler( "mysql_connect", mysql_error(), mysql_errno(), __FILE__, __FUNCTION__, __LINE__);
-    $x = mysql_select_db($dbn) or sqlErrorHandler( "mysql_select_db", mysql_error(), mysql_errno(), __FILE__, __FUNCTION__, __LINE__);
+    $conn = mysql_connect($host, $dbu, $dbp) or trigger_error('Couldn\'t connect to the DB. Error = ' . mysql_error());
+    $x = mysql_select_db($dbn) or trigger_error('Couldn\'t select the DB. Error = ' . mysql_error());
     return $conn;
   }
 
@@ -34,7 +34,7 @@
  * @param resource $con - the open connection
 **/
 function db_close($con) {
- $discdb = mysql_close($con) or sqlErrorHandler( "mysql_close", mysql_error(), mysql_errno(), __FILE__, __FUNCTION__, __LINE__);
+ $discdb = mysql_close($con) or trigger_error('Couldn\'t close the DB. Error = ' . mysql_error());
 
 }
 
@@ -47,7 +47,7 @@ function db_close($con) {
 **/
 function db_query($sql,$dbconn){
 	//run query
-	$result = mysql_query($sql,$dbconn)or sqlErrorHandler($sql, mysql_error(), mysql_errno(), __FILE__, __FUNCTION__, __LINE__);
+	$result = mysql_query($sql,$dbconn)or trigger_error('There was a problem with the following SQL query. Error = ' . mysql_error() . "\nSQL = $sql");
 	//if no results output message
 	if(!$result){
 	}

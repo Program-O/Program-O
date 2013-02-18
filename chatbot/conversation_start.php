@@ -3,41 +3,15 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.0.5
+  * Version: 2.1.0
   * FILE: chatbot/conversation_start.php
-  * AUTHOR: ELIZABETH PERREAU
+  * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 19 JUNE 2012
   * DETAILS: this file is the landing page for all calls to access the bots
   ***************************************/
-  $thisFile = __FILE__;
-  if ((isset ($_REQUEST['say'])) && (trim($_REQUEST['say']) == "clear properties"))
-  {
-    session_start();
-    // Unset all of the session variables.
-    $_SESSION = array();
-    // If it's desired to kill the session, also delete the session cookie.
-    // Note: This will destroy the session, and not just the session data!
-    if (ini_get("session.use_cookies"))
-    {
-      $params = session_get_cookie_params();
-      setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
-    }
-    // Finally, destroy the session.
-    session_destroy();
-    session_start();
-    session_regenerate_id();
-    $new_id = session_id();
-    //TODO WHICH ONE IS IT?
-    $_GET['convo_id'] = $new_id;
-    $_POST['convo_id'] = $new_id;
-    $_REQUEST['convo_id'] = $new_id;
-    $_REQUEST['say'] = "Hello";
-  }
-  else
-  {
-    session_start();
-  }
+
   $time_start = microtime(true);
+  $thisFile = __FILE__;
   require_once ("../config/global_config.php");
   //load shared files
   include_once (_LIB_PATH_ . "db_functions.php");
@@ -52,6 +26,7 @@
   include_once (_BOTCORE_PATH_ . "user" . $path_separator . "load_userfunctions.php");
   //load all the user addons
   include_once (_ADDONS_PATH_ . "load_addons.php");
+  runDebug(__FILE__, __FUNCTION__, __LINE__, "Loaded all Includes", 4);
   //------------------------------------------------------------------------
   // Error Handler
   //------------------------------------------------------------------------
@@ -62,15 +37,66 @@
   //initialise globals
   $convoArr = array();
   $display = "";
-  runDebug(__FILE__, __FUNCTION__, __LINE__, "Loaded all Includes", 4);
-  //if the user has said something
-  if ((isset ($_REQUEST['say'])) && (trim($_REQUEST['say']) != ""))
+  switch ($_SERVER['REQUEST_METHOD'])
   {
-    $say = trim($_REQUEST['say']);
+    case 'POST':
+      $form_vars = filter_input_array(INPUT_POST);
+      break;
+    case 'GET':
+      $form_vars = filter_input_array(INPUT_GET);
+      break;
+    default:
+      $say = '';
+  }
+  $say = (isset($say)) ? $say : trim($form_vars['say']);
+  session_name('PGOv2');
+  session_start();
+  //if the user has said something
+  if (!empty($say))
+  {
+    // Chect to see if the user is clearing properties
+    if (strtolower($say) == 'clear properties')
+    {
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Clearing client properties and starting over.", 4);
+      // Get old convo id, to use for later
+      $old_convo_id = (!empty($form_vars['convo_id'])) ? $form_vars['convo_id'] : '';
+      $_SESSION = array();
+      // If it's desired to kill the session, also delete the session cookie.
+      // Note: This will destroy the session, and not just the session data!
+      if (ini_get("session.use_cookies"))
+      {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+      }
+      // Finally, destroy the session.
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Generating new session ID.", 4);
+      session_destroy();
+      session_start();
+      session_regenerate_id();
+      $new_id = session_id();
+      $form_vars['convo_id'] = $new_id;
+      // Update the users table, and clear out any unused client properties as needed
+      $sql = "update `$dbn`.`users` set `session_id` = '$new_id' where `session_id` = '$old_convo_id';";
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Update user - SQL:\n$sql", 4);
+      $result = db_query($sql, $con);
+      // Get user id, so that we can clear the client properties
+      $sql = "select `id` from `$dbn`.`users` where `session_id` = '$new_id' limit 1;";
+      $result = db_query($sql, $con) or trigger_error('Cannot obtain user ID. Error = ' . mysql_error());
+      if ($result !== false)
+      {
+        $rows = mysql_fetch_assoc($result);
+        $row = $rows[0];
+        $user_id = $row['id'];
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "User ID = $user_id.", 4);
+        $sql = "delete from `$dbn`.`client_properties` where `user_id` = $user_id;";
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Clear client properties from the DB - SQL:\n$sql", 4);
+        //$result = db_query($sql, $con);
+      }
+      $say = "Hello";
+    }
     //add any pre-processing addons
-    #$say = run_pre_input_addons($say);
-    #die('say = ' . $say);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $_REQUEST['say'] . "\nConvo id: " . $_REQUEST['convo_id'] . "\nBot id: " . $_REQUEST['bot_id'] . "\nFormat: " . $_REQUEST['format'], 2);
+    $say = run_pre_input_addons($convoArr, $say);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $form_vars['convo_id'] . "\nBot id: " . $form_vars['bot_id'] . "\nFormat: " . $form_vars['format'], 2);
     //get the stored vars
     $convoArr = read_from_session();
     //now overwrite with the recieved data
@@ -83,14 +109,14 @@
     if (isset ($convoArr['conversation']['totallines']))
     {
     //reset the debug level here
-      $debuglevel = get_convo_var($convoArr, 'conversation', 'debugshow', '', '');
+      $debuglevel = $convoArr['conversation']['debugshow'];
     }
     else
     {
     //load the chatbot configuration
       $convoArr = load_bot_config($convoArr);
       //reset the debug level here
-      $debuglevel = get_convo_var($convoArr, 'conversation', 'debugshow', '', '');
+      $debuglevel = $convoArr['conversation']['debugshow'];
       //insita
       $convoArr = intialise_convoArray($convoArr);
       //add the bot_id dependant vars
@@ -113,7 +139,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending", 4);
     $convoArr = handleDebug($convoArr);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning " . $convoArr['conversation']['format'], 4);
-    if ($convoArr['conversation']['format'] == "html")
+    if (strtolower($convoArr['conversation']['format']) == "html")
     {
     //TODO what if it is ajax call
       $time_start = $convoArr['time_start'];
@@ -132,8 +158,10 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation intialised waiting user", 2);
   }
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
+  db_close($con);
   $time_end = microtime(true);
   $time = $time_end - $time_start;
+  $convoArr['star'] = null;
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Script took $time seconds", 2);
 
 ?>

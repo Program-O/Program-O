@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.5
+//My Program-O Version 2.1.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -175,8 +175,8 @@ function insertWordCensor() {
     global $template, $msg;
     $dbconn = db_open();
 
-    $replace_with = mysql_escape_string(trim($_POST['replace_with']));
-    $word_to_censor = mysql_escape_string(trim($_POST['word_to_censor']));
+    $replace_with = mysql_real_escape_string(trim($_POST['replace_with']));
+    $word_to_censor = mysql_real_escape_string(trim($_POST['word_to_censor']));
 
     if(($replace_with == "") || ($word_to_censor == "")) {
         $msg = '        <div id="errMsg">You must enter a spelling mistake and the replace_with.</div>' . "\n";
@@ -222,7 +222,7 @@ function runWordCensorSearch() {
     global $template;
     $dbconn = db_open();
     $i=0;
-    $search = mysql_escape_string(trim($_POST['search']));
+    $search = mysql_real_escape_string(trim($_POST['search']));
     $sql = "SELECT * FROM `wordcensor` WHERE `word_to_censor` LIKE '%$search%' OR `replace_with` LIKE '%$search%' LIMIT 50";
     $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     $htmltbl = '<table>
@@ -286,8 +286,8 @@ function updateWordCensor() {
   //global vars
   global $template, $msg;
   $dbconn = db_open();
-  $word_to_censor = mysql_escape_string(trim($_POST['word_to_censor']));
-  $replace_with = mysql_escape_string(trim($_POST['replace_with']));
+  $word_to_censor = mysql_real_escape_string(trim($_POST['word_to_censor']));
+  $replace_with = mysql_real_escape_string(trim($_POST['replace_with']));
   $id = trim($_POST['id']);
   if(($id=="")||($word_to_censor=="")||($replace_with=="")) {
     $msg = '<div id="errMsg">There was a problem editing the replace_with - no changes made.</div>';

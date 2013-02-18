@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.5
+//My Program-O Version 2.1.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -45,7 +45,7 @@ $upperScripts = <<<endScript
       </script>
 endScript;
   foreach ($_POST as $key => $value) {
-    $$key = mysql_escape_string($value);
+    $$key = mysql_real_escape_string($value);
   }
   $func = (isset($_POST['func'])) ? $_POST['func'] : 'showBugForm';
 # Build page sections

@@ -1,12 +1,15 @@
 <?PHP
-//-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.5
-//Program-O chatbot admin area
-//Written by Elizabeth Perreau and Dave Morton
-//May 2011
-//for more information and support please visit www.program-o.com
-//-----------------------------------------------------------------------------------------------
+  /***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.1.0
+  * FILE: install_programo.php
+  * AUTHOR: Elizabeth Perreau and Dave Morton
+  * DATE: 02-13-2013
+  * DETAILS: Program O's Automatic install script
+  ***************************************/
 
+$thisFile = __FILE__;
 # Test for PHP version 5+
 $myPHP_Version = (float)phpversion();
 If ($myPHP_Version < 5) die ("I'm sorry, but Program O requires PHP version 5.0 or greater to function. Please ask your hosting provider to upgrade.");
@@ -21,8 +24,8 @@ define ('SECTION_END', '<!-- Section [section] End -->'); # search params for st
 define ('PHP_SELF', $_SERVER['SCRIPT_NAME']); # This is more secure than $_SERVER['PHP_SELF'], and returns more or less the same thing
 ini_set("display_errors", 0);
 ini_set("log_errors", true);
-ini_set("error_log", _INSTALL_PATH_ . "error.log");
-if (!file_exists(_INSTALL_PATH_ . "error.log")) file_put_contents(_INSTALL_PATH_ . "error.log", '');
+ini_set("error_log", _BASE_DIR_ . "install-error.log");
+if (!file_exists(_BASE_DIR_ . "install-error.log")) file_put_contents(_BASE_DIR_ . "install-error.log", '');
 $myHost = $_SERVER['SERVER_NAME'];
 chdir(dirname( realpath( __FILE__ )));
 $page_template = file_get_contents('install.tpl.htm');
@@ -50,6 +53,7 @@ $content = str_replace('[cr6]', "\n ", $content);
 $content = str_replace('[cr4]', "\n ", $content);
 $content = str_replace("\r\n", "\n", $content);
 $content = str_replace("\n\n", "\n", $content);
+$content = str_replace('[admin_url]', _ADMIN_URL_, $content);
 $content .= <<<endPage
 
 </body>
@@ -78,6 +82,10 @@ function getSection($sectionName, $page_template, $notFoundReturn = true) {
 
 function Save() {
   global $page_template;
+  $default_pattern = "RANDOM PICKUP LINE";
+  $default_error_response = "No AIML category found. This is a Default Response.";
+  $default_conversation_lines = '1';
+  $default_remember_up_to = '10';
   $_SESSION['errorMessage'] = '';
 
   // First off, write the config file
@@ -113,10 +121,11 @@ function Save() {
   $result = mysql_query($sql,$conn) or upgrade($conn);
   $sql = 'select `php_code` from `aiml` where 1 limit 1';
   $result = mysql_query($sql,$conn) or upgrade($conn);
+  //  $default_pattern, $default_remember_up_to, $default_conversation_lines, $default_error_response
   $sql_template = "
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
 VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[use_aiml_code]', '[update_aiml_code]', '[save_state]', 
-'[conversation_lines]', '[remember_up_to]', '[debugemail]', '[debugshow]', '[debugmode]', '[error_response]', '[default_aiml_pattern]');";
+'$default_conversation_lines', '$default_remember_up_to', '[debugemail]', '[debugshow]', '[debugmode]', '$default_error_response', '$default_pattern');";
   
   require_once (_LIB_PATH_ . 'error_functions.php');
   require_once (_LIB_PATH_ . 'db_functions.php');
@@ -134,13 +143,14 @@ VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]',
   if (!isset($myPostVars["default_update_aiml_code"])) $myPostVars["default_update_aiml_code"] = 0;
   $sql = str_replace('[update_aiml_code]',$myPostVars["default_update_aiml_code"], $sql);
   $sql = str_replace('[save_state]',$myPostVars["default_save_state"], $sql);
-  $sql = str_replace('[conversation_lines]',$myPostVars["default_conversation_lines"], $sql);
-  $sql = str_replace('[remember_up_to]',$myPostVars["default_remember_up_to"], $sql);
+  $sql = str_replace('[conversation_lines]',$default_conversation_lines, $sql);
+  $sql = str_replace('[remember_up_to]',$default_remember_up_to, $sql);
   $sql = str_replace('[debugemail]',$myPostVars["default_debugemail"], $sql);
   $sql = str_replace('[debugshow]',$myPostVars["default_debugshow"], $sql);
   $sql = str_replace('[debugmode]',$myPostVars["default_debugmode"], $sql);
-  $sql = str_replace('[error_response]',$myPostVars["error_response"], $sql);
-  $sql = str_replace('[default_aiml_pattern]',$myPostVars["default_pattern"], $sql);
+  $sql = str_replace('[error_response]',$default_error_response, $sql);
+  $sql = str_replace('[default_aiml_pattern]',$default_pattern, $sql);
+  $save = file_put_contents(_CONF_PATH_ . 'sql.txt', $sql);
   $x = db_query($sql, $conn) or install_error('Could not enter bot info for bot #' . $bot_id . '!', mysql_error(), $sql);
   $encrypted_adm_dbp = md5($myPostVars["adm_dbp"]);
   $adm_dbu = $myPostVars["adm_dbu"];

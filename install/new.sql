@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `bots` (
   save_state enum('session','database') NOT NULL DEFAULT 'session',
   conversation_lines int(11) NOT NULL DEFAULT '7',
   remember_up_to int(11) NOT NULL DEFAULT '10',
-  debugemail int(11) NOT NULL,
+  debugemail text NOT NULL,
   debugshow int(11) NOT NULL DEFAULT '1',
   debugmode int(11) NOT NULL DEFAULT '1',
   error_response text not null,
@@ -238,4 +238,12 @@ CREATE TABLE IF NOT EXISTS `wordcensor` (
   PRIMARY KEY (censor_id));
 INSERT IGNORE INTO wordcensor (censor_id, word_to_censor, replace_with, bot_exclude) VALUES
 (1, 'shit', 's***', ''),
-(2, 'fuck', 'f***', '')
+(2, 'fuck', 'f***', '');
+CREATE TABLE IF NOT EXISTS `client_properties` (
+`id` INT NOT NULL ,
+`user_id` INT NOT NULL ,
+`bot_id` INT NOT NULL ,
+`name` TEXT NOT NULL ,
+`value` TEXT NOT NULL ,
+PRIMARY KEY ( `id` )
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;

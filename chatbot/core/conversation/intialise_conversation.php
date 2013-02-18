@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.5
+* Version: 2.1.0
 * FILE: chatbot/core/conversation/intialise_conversation.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -190,19 +190,20 @@ function add_firstturn_conversation_vars($convoArr){
 function push_on_front_convoArr($arrayIndex,$value,$convoArr)
 {
     global $offset,$rememLimit;
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "Pushing $value to front of $arrayIndex array",4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "Pushing $value to front of $arrayIndex array",2);
     $remember_up_to = $convoArr['conversation']['remember_up_to'];
-     
+
     //these subarray indexes are 2d
     $two_d_arrays = array("that","that_raw");
-    
+
     $arrayIndex=trim($arrayIndex);
-    
+
     //mini clean
     $value=trim($value);
     $value = preg_replace('/\s\s+/', ' ', $value);
     $value = preg_replace('/\s\./', '.', $value);
-    
+
     //there is a chance the subarray has not been set yet so check and if not set here
     if(!isset($convoArr[$arrayIndex][$offset]))    {
         $convoArr[$arrayIndex]=array();
@@ -210,13 +211,13 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
     }
 
     //if the subarray is itself an array check it here
-    if (in_array($arrayIndex, $two_d_arrays)) 
+    if (in_array($arrayIndex, $two_d_arrays))
     {
-        $matches = preg_match_all("# ?(([^\.\?!]*)+(?:[\.\?!]|(?:<br ?/?>))*)#ui",$value,$sentances);
+        $matches = preg_match_all("# ?(([^\.\?!]*)+(?:[\.\?!]|(?:<br ?/?>))*)#ui",$value,$sentences);
         $cmatch = 0;
 
         //do another check to make sure the array is not just full of blanks
-        foreach($sentances as $temp){
+        foreach($sentences as $temp){
             foreach($temp as $chk){
                 if(trim($chk)!=""){
                     $cmatch++;
@@ -224,44 +225,45 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
             }
         }
         runDebug( __FILE__, __FUNCTION__, __LINE__, print_r($convoArr[$arrayIndex],true),4);
-         
-        //if there definately is something in the sentance array build the temp sentance array
+
+        //if there definately is something in the sentence array build the temp sentence array
         if(($cmatch>0)&&($matches!==FALSE)){
-            foreach($sentances[1] as $index => $value){
+            foreach($sentences[1] as $index => $value){
                 if($arrayIndex=="that"){
                     $t = clean_that($value);
                     if($t!=""){
-                        $tmp_sentance[] = $t;
+                        $tmp_sentence[] = $t;
                     }
                 }
                 else{
-                    $tmp_sentance[] = $value;
+                    $tmp_sentence[] = $value;
                 }
             }
-            
+
             //reverse the array and store
-            $sentances = array();
-            $sentances = array_reverse($tmp_sentance);
+            $sentences = array();
+            $sentences = array_reverse($tmp_sentence);
         }
         else{
-            $sentances = array();
+            $sentences = array();
             if($arrayIndex=="that"){
-                $sentances[0] = clean_that($value);
+                $sentences[0] = clean_that($value);
             }
             else{
-                $sentances[0] = $value;
+                $sentences[0] = $value;
             }
-        } 
+        }
         
         //make a space so that [0] is null (in accordance with the AIML array offset)
-        array_unshift($sentances,NULL);
-        unset($sentances[0]);
+        array_unshift($sentences,NULL);
+        unset($sentences[0]);
         //push this onto the subarray and then clear [0] element (in accordance with the AIML array offset)
-        array_unshift($convoArr[$arrayIndex],$sentances);
+        array_unshift($convoArr[$arrayIndex],$sentences);
         array_unshift($convoArr[$arrayIndex],null);
         unset($convoArr[$arrayIndex][0]);
             
-    }else{
+    }
+    else{
         array_unshift($convoArr[$arrayIndex],$value);
         array_unshift($convoArr[$arrayIndex],NULL);
     }
@@ -274,14 +276,14 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
     {
     	$rememLimit_tmp = $remember_up_to;
     }
-    
+
     for($i=$rememLimit_tmp+1;$i<=count($convoArr[$arrayIndex]);$i++){
         if(isset($convoArr[$arrayIndex][$i])){
             unset($convoArr[$arrayIndex][$i]);
         }
     }
     unset($convoArr[$arrayIndex][0]);
-    
+
     if($arrayIndex=="topic"){
         push_stack($convoArr,$value);
     }
@@ -364,8 +366,8 @@ function log_conversation($convoArr){
     runDebug( __FILE__, __FUNCTION__, __LINE__, "logging the conversation turn in the db",4);        
         
     //clean and set
-    $usersay = mysql_escape_string($convoArr['aiml']['user_raw']);
-    $botsay = mysql_escape_string($convoArr['aiml']['parsed_template']);
+    $usersay = mysql_real_escape_string($convoArr['aiml']['user_raw']);
+    $botsay = mysql_real_escape_string($convoArr['aiml']['parsed_template']);
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
         
@@ -401,24 +403,25 @@ function log_conversation_state($convoArr){
     //get undefined defaults from the db
 
     runDebug( __FILE__, __FUNCTION__, __LINE__, "logging state",4);        
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+
+    $serialise_convo = mysql_real_escape_string(serialize($convoArr));
+    $user_id   = $convoArr['conversation']['user_id'];
+    $user_name = $convoArr['conversation']['user_name'];
+    $bot_id    = $convoArr['conversation']['bot_id'];
         
-    $serialise_convo = mysql_escape_String(serialize($convoArr));
-    $user_id = $convoArr['conversation']['user_id'];
-    $bot_id = $convoArr['conversation']['bot_id'];
-        
-    $client_name = get_convo_var($convoArr,'client_properties','name');
-   if(isset($client_name) && ($client_name!=""))
+   if(isset($user_name) && ($user_name!=""))
    {
-   	$sql_addon = "`name` = '". mysql_escape_string($client_name)."', ";
+   	$sql_addon = "`name` = '". mysql_real_escape_string($user_name)."', ";
    }
    else
    {
    	$sql_addon = "";
    }
     
-    
+
     $sql = "UPDATE `$dbn`.`users`
-                SET 
+                SET
                 `state` = '$serialise_convo', 
                 `last_update` = NOW(), 
                 $sql_addon
@@ -444,16 +447,18 @@ function get_conversation_state($convoArr){
     global $con,$dbn;
     runDebug( __FILE__, __FUNCTION__, __LINE__, "getting state",4);
     //get converstation state from the db
-    $serialise_convo = mysql_escape_string(serialize($convoArr));
+    $serialise_convo = mysql_real_escape_string(serialize($convoArr));
     $user_id = $convoArr['conversation']['user_id'];
         
-    $sql = "SELECT * FROM `$dbn`.`users` WHERE `id` = '$user_id' LIMIT 1"; 
+    $sql = "SELECT * FROM `$dbn`.`users` WHERE `id` = '$user_id' LIMIT 1";
     runDebug( __FILE__, __FUNCTION__, __LINE__, "Getting conversation state SQL: $sql",3);
     $result = db_query($sql,$con);        
         
     if(($result)&&(mysql_num_rows($result)>0)){
-        $row=mysql_fetch_array($result);
+        $row=mysql_fetch_assoc($result);
         $convoArr = unserialize($row['state']);
+        $convoArr['conversation']['user_name'] = $row['name'];
+        $convoArr['client_properties']['name'] = $row['name'];
     }
         
     return $convoArr;
@@ -532,11 +537,13 @@ function check_set_user($convoArr)
   $convo_id = (isset($convoArr['conversation']['convo_id'])) ? $convoArr['conversation']['convo_id'] : session_id();
   $bot_id = $convoArr['conversation']['bot_id'];
   $ip = $_SERVER['REMOTE_ADDR'];
+  $convoArr['client_properties']['ip_address'] = $ip;
   $sql = "select `name`, `id` from `users` where `session_id` = '$convo_id' limit 1;";
   $result = mysql_query($sql, $con) or $msg = SQL_error(mysql_errno(), __FILE__, __FUNCTION__, __LINE__);
   $numRows = mysql_num_rows($result);
   if ($numRows == 0) {
-    $user_id = intisaliseUser($convo_id);
+    $convoArr = intisaliseUser($convoArr);
+    $user_id = $convoArr['conversation']['user_id'];
   }
   else {
     $row = mysql_fetch_assoc($result);
@@ -544,7 +551,7 @@ function check_set_user($convoArr)
     $user_name = (!empty($row['name'])) ? $row['name'] : 'User';
   }
     $convoArr['conversation']['user_name'] = (!empty($user_name)) ? $user_name : $unknown_user;
-  #die("User name = $user_name<br />\n");
+    #die("User name = $user_name<br />\n");
     return $convoArr;
 }
 

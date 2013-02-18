@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.5
+//My Program-O Version 2.1.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -172,8 +172,8 @@ function insertSpell() {
     global $template, $msg;
     $dbconn = db_open();
 
-    $correction = mysql_escape_string(trim($_POST['correction']));
-    $missspell = mysql_escape_string(trim($_POST['missspell']));
+    $correction = mysql_real_escape_string(trim($_POST['correction']));
+    $missspell = mysql_real_escape_string(trim($_POST['missspell']));
 
     if(($correction == "") || ($missspell == "")) {
         $msg = '        <div id="errMsg">You must enter a spelling mistake and the correction.</div>' . "\n";
@@ -219,7 +219,7 @@ function runSpellSearch() {
     global $template;
     $dbconn = db_open();
     $i=0;
-    $search = mysql_escape_string(trim($_POST['search']));
+    $search = mysql_real_escape_string(trim($_POST['search']));
     $sql = "SELECT * FROM `spellcheck` WHERE `missspelling` LIKE '%$search%' OR `correction` LIKE '%$search%' LIMIT 50";
     $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     $htmltbl = '<table>
@@ -283,8 +283,8 @@ function updateSpell() {
   //global vars
   global $template, $msg;
   $dbconn = db_open();
-  $missspelling = mysql_escape_string(trim($_POST['missspelling']));
-  $correction = mysql_escape_string(trim($_POST['correction']));
+  $missspelling = mysql_real_escape_string(trim($_POST['missspelling']));
+  $correction = mysql_real_escape_string(trim($_POST['correction']));
   $id = trim($_POST['id']);
   if(($id=="")||($missspelling=="")||($correction=="")) {
     $msg = '<div id="errMsg">There was a problem editing the correction - no changes made.</div>';

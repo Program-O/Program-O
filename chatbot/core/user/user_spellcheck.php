@@ -2,7 +2,7 @@
 
 function make_wordArray($user_say)
 {
-	//break up the sentance into words
+	//break up the sentence into words
 	return explode(" ",$user_say);
 
 }

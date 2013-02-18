@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.5
+//My Program-O Version 2.1.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -12,9 +12,11 @@
   if (!file_exists('../config/global_config.php')) header('location: ../install/install_programo.php');
   require_once('../config/global_config.php');
 
+  //if (file_exists(_INSTALL_PATH_ . 'upgrade.php')) require_once(_INSTALL_PATH_ . 'upgrade.php');
+
   error_reporting(E_ALL);
   ini_set('log_errors', true);
-  ini_set('error_log', _ADMIN_PATH_ . 'error.log');
+  ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
   ini_set('html_errors', false);
   ini_set('display_errors', false);
   $msg = '';
@@ -49,6 +51,8 @@
   $template = new Template("$thisPath/default.page.htm");
   $leftLinks = makeLeftLinks();
   $topLinks = makeTopLinks();
+  $githubVersion = getCurrentVersion();
+  $version = ($githubVersion == VERSION) ? 'Program O version ' . VERSION : 'Program O ' . $githubVersion . ' is now available. <a href="https://github.com/Program-O/Program-O/archive/master.zip">Click here</a> to download it.';
 # set template section defaults
 
 # Build page sections
@@ -80,9 +84,9 @@
 
   if((isset($_POST['uname']))&&(isset($_POST['pw']))) {
     $_SESSION['poadmin']['display'] = $hide_logo;
-    $uname = mysql_escape_string(strip_tags(trim($_POST['uname'])));
-    $pw = mysql_escape_string(strip_tags(trim($_POST['pw'])));
     $dbconn = db_open();
+    $uname = filter_input(INPUT_POST,'uname',FILTER_SANITIZE_STRING);
+    $pw    = filter_input(INPUT_POST,'pw',FILTER_SANITIZE_STRING);
     $sql = "SELECT * FROM `myprogramo` WHERE uname = '".$uname."' AND pword = '".MD5($pw)."'";
     $result = mysql_query($sql,$dbconn) or $msg .= SQL_Error(mysql_errno());
     if ($result) {
@@ -194,7 +198,8 @@
                     '[bot_name]'      => $bot_name,
                     '[errMsgStyle]'   => $errMsgStyle,
                     '[noRightNav]'    => $noRightNav,
-                    '[noLeftNav]'     => $noLeftNav
+                    '[noLeftNav]'     => $noLeftNav,
+                    '[version]'       => $version,
                    );
   foreach ($searches as $search => $replace) {
     $content = str_replace($search, $replace, $content);
@@ -447,6 +452,7 @@ endFooter;
       curl_setopt($ch, CURLOPT_HEADER, 0);
       $data = curl_exec($ch);
       curl_close($ch);
+      if (false === $data) return 'The RSS Feed is not currently available. We apologise for the inconvenience.';
       $rss = new SimpleXmlElement($data, LIBXML_NOCDATA);
       if($rss) {
         $items = $rss->channel->item;
@@ -461,6 +467,27 @@ endFooter;
         }
     }
     else $out = 'RSS Feed not available';
+    return $out;
+  }
+
+  function getCurrentVersion()
+  {
+    $url = 'https://api.github.com/repos/Program-O/Program-O/contents/version.txt';
+    $out = false;
+    if (function_exists('curl_init'))
+    {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, $url);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      $out = curl_exec($ch);
+      if (false === $out) trigger_error('Not sure what it is, but there\'s a problem with checking the current version on GitHub. Maybe this will help: "' . curl_error($ch) . '"');
+      curl_close($ch);
+      $repoArray = json_decode($out, true);
+      $versionB64 = $repoArray['content'];
+      $version = base64_decode($versionB64);
+      $out = $version;
+    }
     return $out;
   }
 

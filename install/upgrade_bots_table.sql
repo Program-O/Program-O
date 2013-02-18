@@ -18,13 +18,24 @@ CREATE TABLE IF NOT EXISTS `bots` (
   `error_response` text not null,
   PRIMARY KEY (`bot_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
 CREATE TABLE IF NOT EXISTS `wordcensor` (
   `censor_id` int(11) NOT NULL AUTO_INCREMENT,
   `word_to_censor` varchar(50) NOT NULL,
   `replace_with` varchar(50) NOT NULL DEFAULT '****',
   `bot_exclude` varchar(255) NOT NULL,
   PRIMARY KEY (`censor_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `client_properties` (
+`id` INT NOT NULL ,
+`user_id` INT NOT NULL ,
+`bot_id` INT NOT NULL ,
+`name` TEXT NOT NULL ,
+`value` TEXT NOT NULL ,
+PRIMARY KEY ( `id` )
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
 ALTER TABLE `users` ADD `name` text NOT NULL AFTER `id`;
 ALTER TABLE `users` ADD `bot_id` int(11) NOT NULL AFTER `session_id`;
 ALTER TABLE `users` ADD `state` text NOT NULL AFTER `last_update`;

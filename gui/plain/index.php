@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.0.5
+  * Version: 2.1.0
   * FILE: gui/plain/index.php
   * AUTHOR: ELIZABETH PERREAU
   * DATE: 19 JUNE 2012
@@ -57,7 +57,7 @@
 		<form method="get" action="index.php">
 			<p>
 				<label>Say:</label>
-				<input type="text" id="input" name="say" id="say" />
+				<input type="text" id="input" name="say" id="say" size="70" />
 				<input type="submit" name="submit" id="say" value="say" />
 				<input type="hidden" name="convo_id" id="convo_id" value="<?php echo $convo_id;?>" />
 				<input type="hidden" name="bot_id" id="bot_id" value="<?php echo $bot_id;?>" />

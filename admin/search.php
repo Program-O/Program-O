@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.5
+//My Program-O Version 2.1.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -29,7 +29,7 @@
     $mainContent = $template->getSection('SearchAIMLForm');
   }
 
-  $upperScripts = '<script type="text/javascript" src="js/tablesorter.js"></script>'."\n";
+  $upperScripts = '<script type="text/javascript" src="scripts/tablesorter.js"></script>'."\n";
   $topNav        = $template->getSection('TopNav');
   $leftNav       = $template->getSection('LeftNav');
   $main          = $template->getSection('Main');
@@ -74,11 +74,11 @@
     $i=0;
     $searchTermsTemplate = " like '[value]' or\n  ";
     $searchTerms = '';
-    $search_topic    = mysql_escape_string(trim($_POST['search_topic']));
-    $search_filename = mysql_escape_string(trim($_POST['search_filename']));
-    $search_pattern  = mysql_escape_string(trim($_POST['search_pattern']));
-    $search_template = mysql_escape_string(trim($_POST['search_template']));
-    $search_that     = mysql_escape_string(trim($_POST['search_that']));
+    $search_topic    = mysql_real_escape_string(trim($_POST['search_topic']));
+    $search_filename = mysql_real_escape_string(trim($_POST['search_filename']));
+    $search_pattern  = mysql_real_escape_string(trim($_POST['search_pattern']));
+    $search_template = mysql_real_escape_string(trim($_POST['search_template']));
+    $search_that     = mysql_real_escape_string(trim($_POST['search_that']));
     if(!empty($search_topic) or !empty($search_filename) or !empty($search_pattern) or !empty($search_template) or !empty($search_that)) {
       $sql = "SELECT * FROM `aiml` WHERE `bot_id` = '$bot_id'  AND (\n  [searchTerms]\n) LIMIT 50;";
       $searchTerms .= (!empty($search_topic)) ? '`topic`' . str_replace('[value]', $search_topic, $searchTermsTemplate) : '';
@@ -180,11 +180,11 @@ endRow;
   function updateAIML() {
   //db globals
     $dbconn = db_open();
-    $template = mysql_escape_string(trim($_POST['template']));
-    $filename = mysql_escape_string(trim($_POST['filename']));
-    $pattern = strtoupper(mysql_escape_string(trim($_POST['pattern'])));
-    $thatpattern = strtoupper(mysql_escape_string(trim($_POST['thatpattern'])));
-    $topic = strtoupper(mysql_escape_string(trim($_POST['topic'])));
+    $template = mysql_real_escape_string(trim($_POST['template']));
+    $filename = mysql_real_escape_string(trim($_POST['filename']));
+    $pattern = strtoupper(mysql_real_escape_string(trim($_POST['pattern'])));
+    $thatpattern = strtoupper(mysql_real_escape_string(trim($_POST['thatpattern'])));
+    $topic = strtoupper(mysql_real_escape_string(trim($_POST['topic'])));
     $id = trim($_POST['id']);
     if(($template == "")||($pattern== "")||($id=="")) {
       $msg =  'Please make sure you have entered a user input and bot response ';

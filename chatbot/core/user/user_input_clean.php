@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.5
+* Version: 2.1.0
 * FILE: chatbot/core/user/user_input_clean.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -53,7 +53,7 @@ function whitespace_clean($text)
 function remove_allpuncutation($text)
 {
 	$otext = $text;
-	$text = preg_replace('/[^a-zA-Z0-9|+|-|\*|Å |Å¡|Å½|Å¾|Ã€|Ã�|Ã‚|Ãƒ|Ã„|Ã…|Ã†|Ã‡|Ãˆ|Ã‰|ÃŠ|Ã‹|ÃŒ|Ã�|ÃŽ|Ã�|Ã‘|Ã’|Ã“|Ã”|Ã•|Ã–|Ã˜|Ã™|Ãš|Ã›|Ãœ|Ã�|Ãž|ÃŸ|Ã |Ã¡|Ã¢|Ã£|Ã¤|Ã¥|Ã¦|Ã§|Ã¨|Ã©|Ãª|Ã«|Ã¬|Ã­|Ã®|Ã¯|Ã°|Ã±|Ã²|Ã³|Ã´|Ãµ|Ã¶|Ã¸|Ã¹|Ãº|Ã»|Ã½|Ã¾|Ã¿]/is', ' ', $text);
+	$text = preg_replace('/[^a-zA-Z0-9|+|-|\*|�|�|�|�|�||�|�|�|�|�|�|�|�|�|�|�||�||�|�|�|�|�|�|�|�|�|�|�||�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�]/is', ' ', $text);
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text",4);
 	
@@ -69,7 +69,7 @@ function remove_allpuncutation($text)
 function remove_puncutation($text)
 {	
 	$otext = $text;
-	$text = preg_replace('/[^a-zA-Z0-9|+|-|*|\/|\.|?|!|Å |Å¡|Å½|Å¾|Ã€|Ã�|Ã‚|Ãƒ|Ã„|Ã…|Ã†|Ã‡|Ãˆ|Ã‰|ÃŠ|Ã‹|ÃŒ|Ã�|ÃŽ|Ã�|Ã‘|Ã’|Ã“|Ã”|Ã•|Ã–|Ã˜|Ã™|Ãš|Ã›|Ãœ|Ã�|Ãž|ÃŸ|Ã |Ã¡|Ã¢|Ã£|Ã¤|Ã¥|Ã¦|Ã§|Ã¨|Ã©|Ãª|Ã«|Ã¬| Ã­|Ã®|Ã¯|Ã°|Ã±|Ã²|Ã³|Ã´|Ãµ|Ã¶|Ã¸|Ã¹|Ãº|Ã»|Ã½|Ã¾|Ã¿]/i', ' ', $text);
+	$text = preg_replace('/[^a-zA-Z0-9|+|-|*|\/|\.|?|!|�|�|�|�|�||�|�|�|�|�|�|�|�|�|�|�||�||�|�|�|�|�|�|�|�|�|�|�||�|�|�|�|�|�|�|�|�|�|�|�|�|�|�| �|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�|�]/i', ' ', $text);
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text",4);
 	

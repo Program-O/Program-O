@@ -1,337 +1,496 @@
 <?php
-/***************************************
-* http://www.program-o.com
-* PROGRAM O 
-* Version: 2.0.5
-* FILE: chatbot/core/aiml/make_aiml_to_php_code.php
-* AUTHOR: ELIZABETH PERREAU
-* DATE: MAY 4TH 2011
-* DETAILS: this file contains the functions generate php code from aiml
-***************************************/
-
-/**
- * function aiml_to_phpfunctions()
- * This function performs a big find and replace on the aiml to convert it to php code
- * @param  array $convoArr - the existing conversation array
- * @return array $convoArr
-**/
-function aiml_to_phpfunctions($convoArr)
-{
-	//TODO do we need this still?
-	global $botsay,$srai_iterations,$error_response; //TODO read from bot vars
-	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Converting the AIML to PHP code",4);
-	
-	
-	//extra debug info
-	$msg = "";
-    $useStoredPHP = $convoArr['conversation']['use_aiml_code'];
-    $uac = $convoArr['conversation']['update_aiml_code'];
-    #$uac = 0;
-	if($convoArr['aiml']['aiml_to_php']==""){
-		$msg .= " php code does not exist,";
-	} else {
-		$msg .= " php code exists,";
-	}
-	if($useStoredPHP==1) {
-		$msg .= " Use stored php code is set to YES($useStoredPHP)";
-	} else {
-		$msg .= " Use stored php code is set to NO($useStoredPHP)";
-	}
-	if($uac==1) {
-		$msg .= " update aiml to php is set to YES($uac)";
-	} else {
-		$msg .= " update aiml to php is set to NO($uac)";
-	}
-
-	//THIS MAY already have the code contained in the db in which case we can skip all of this
-	//UNLESS - update_aiml_code is set to 1 this means we want to re-write it each time
-	if(($convoArr['aiml']['aiml_to_php']!="") and ($uac==0) and ($useStoredPHP == 1)){
-
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "Using existing AIML to PHP code - $msg",2);
-		$parsed_template = get_convo_var($convoArr,'aiml','aiml_to_php');
-	} else {
-		
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "Generating new AIML to PHP code - $msg",2);
-			
-		//load the existing aiml template
-		$template = get_convo_var($convoArr,'aiml','template');
-
-		//make stars, apostrophes and encode foriegn chars just to make everything safe before the big replace
-		$template = str_replace("*","\*",$template);
-		$template = str_replace("'",'~apos~',$template);
-		$template = foreignchar_replace('encode',$template);
-		$template = entity_replace('encode',$template);	
-		$i=0;
-		
-		//to do this is in the add custom tags thing
-		//start the find and replace
-
-
-$template = preg_replace('#<bot name="([^"]*)"/>#ie', "\$convoArr['bot_properties']['$1']", $template);
-			runDebug( __FILE__, __FUNCTION__, __LINE__, "Made initial bot property replacements",4);
-
-
-			$find[$i]='#</say>#i';
-			$replace[$i]='\';';
-
-			
-			$i++;
-			$find[$i]='#<template>(\s)*?</template>#i';
-			$replace[$i]='';			
-
-			$i++;
-			$find[$i]='#<template/>#i';
-			$replace[$i]='';
-				
-			
-			$i++;
-			$find[$i]='#<say>#i';
-			$replace[$i]='$tmp_botsay .= \'';	
-
-			$i++;
-			$find[$i]='#<bot name="([^"]*)"/>#i';
-			$replace[$i]='\'.call_user_func(\'get_convo_var\',$convoArr,\'bot_properties\',\'$1\').\'';
-
-
-			$i++;
-			$find[$i]='#<date format="([^"]*)"/>#i';
-			$replace[$i]='\'.call_user_func(\'get_formatted_date\',\'$1\').\'';
-
-			$i++;
-			$find[$i]='#<bigthink></bigthink>#i';
-			$replace[$i]='; $tmp_botsay = ""; ';	
 
-			$i++;
-			$find[$i]='#<pushstack>(.*)([^<]*)</pushstack>#';
-			$replace[$i]='\'.call_user_func(\'push_stack\',&$convoArr,\'$1\').\'';
+  /***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.1.0
+  * FILE: chatbot/core/aiml/make_aiml_to_php_code.php
+  * AUTHOR: ELIZABETH PERREAU
+  * DATE: MAY 4TH 2011
+  * DETAILS: this file contains the functions generate php code from aiml
+  ***************************************/
+  /**
+  * function aiml_to_phpfunctions()
+  * This function performs a big find and replace on the aiml to convert it to php code
+  * @param  array $convoArr - the existing conversation array
+  * @return array $convoArr
+  **/
+  function aiml_to_phpfunctions($convoArr)
+  {
+  //TODO do we need this still?
+    global $botsay, $srai_iterations, $error_response;
+    //TODO read from bot vars
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Converting the AIML to PHP code", 4);
+    $template = add_text_tags($convoArr['aiml']['template']);
+    try
+    {
+      $aimlTemplate = new SimpleXMLElement($template);
+    }
+    catch (exception $e)
+    {
+      //exit ('Trouble in paradise! Check the logs!<br>' . $e->getMessage() . "<br>\n<pre>template = " . htmlentities($template));
+      trigger_error("There was a problem parsing the template as XML. Template value:\n$template", E_USER_WARNING);
+      $aimlTemplate = new SimpleXMLElement("<text>$error_response</text>");
+    }
+    //$x = file_put_contents(_DEBUG_PATH_ . 'template.txt', $template);
+    $responseArray = parseTemplateRecursive($convoArr, $aimlTemplate);
+    #$x = file_put_contents(_DEBUG_PATH_ . 'responseArray.txt', print_r($responseArray, true));
+    $botsay = trim(implode_recursive(' ', $responseArray, __FILE__, __FUNCTION__, __LINE__));
+    $botsay = str_replace(' .', '.', $botsay);
+    $botsay = str_replace('  ', ' ', $botsay);
+    #$x = file_put_contents(_DEBUG_PATH_ . 'botsay.txt', print_r($botsay, true));
+    $convoArr['aiml']['parsed_template'] = $botsay;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "The bot will say: $botsay", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Completed parsing the template.', 2);
+    return $convoArr;
+  }
+
+  function add_text_tags($in)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    // Since we're going to parse the template's contents as XML, we need to prepare it first
+    // by transforming it into valid XML
+    // First, wrap the template in TEMPLATE tags:
+    $template = "<template>$in</template>";
+    // SimpleXML can't deal with "mixed" content, so any "loose" text is wrapped in a <text> tag.
+    // The process will sometimes add extra <text> tags, so part of the process below deals with that.
+    $textTagsToRemove = array('<text></text>' => '', '<text> </text>' => '', '<say>' => '', '</say>' => '',
+    //'<bigthink></bigthink>' => '',
+    );
+    $template = preg_replace('~>\s*?<~', '><', $template);
+    $textTagSearch = array_keys($textTagsToRemove);
+    $textTagReplace = array_values($textTagsToRemove);
+    $template = str_replace("\n", '', $template);
+    $template = preg_replace('~>(.*?)<~', "><text>$1</text><", $template);
+    $template = str_replace($textTagSearch, $textTagReplace, $template);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning template:\n$template", 4);
+    return $template;
+  }
+
+  function implode_recursive($glue, $in, $file = 'unknown', $function = 'unknown', $line = 'unknown')
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "This function was called from $file, function $function at line $line.", 2);
+    if (!is_array($in))
+    {
+      trigger_error('Input not array! Input = ' . print_r($in, true));
+      return $in;
+    }
+    foreach ($in as $index => $element)
+    {
+      if (empty ($element))
+        continue;
+      if (is_array($element))
+      {
+        $in[$index] = implode_recursive($glue, $element, __FILE__, __FUNCTION__, __LINE__);
+      }
+    }
+    $out = (is_array($in)) ? implode($glue, $in) : $in;
+    return ltrim($out);
+  }
+
+  function parseTemplateRecursive($convoArr, SimpleXMLElement $element, $level = 0)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+    $doNotParseChildren = array('li');
+    $response = array();
+    $parentName = strtolower($element->getName());
+    $children = $element->children();
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Processing element $parentName at level $level. element XML = " . $element->asXML(), 2);
+    $func = 'parse_' . $parentName . '_tag';
+    if (function_exists($func))
+    {
+      if (!in_array(strtolower($parentName), $doNotParseChildren))
+      {
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Passing element $parentName to the $func function", 2);
+        $retVal = $func($convoArr, $element, $parentName, $level);
+        $retVal = (is_array($retVal)) ? $retVal = implode_recursive(' ', $retVal, __FILE__, __FUNCTION__, __LINE__) : $retVal;
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$retVal' to the response array. tag name is $parentName", 2);
+        $response[] = $retVal;
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+        return $response;
+      }
+    }
+    else
+    {
+      $retVal = $element;
+    }
+    $value = trim((string) $retVal);
+    $tmpResponse = ($level <= 1 and ($parentName != 'think') and (!in_array($parentName, $doNotParseChildren))) ? $value : '';
+    if (count($children) == 0 && !empty ($value))
+    {
+    }
+    if (count($children) > 0 and is_object($retVal))
+    {
+      $childLabel = (count($children) == 1) ? ' child' : ' children';
+      foreach ($children as $child)
+      {
+        $childName = $child->getName();
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+        if (in_array(strtolower($childName), $doNotParseChildren))
+          continue;
+        $tmpResponse = parseTemplateRecursive($convoArr, $child, $level + 1);
+        $tmpResponse = implode_recursive(' ', $tmpResponse, __FILE__, __FUNCTION__, __LINE__);
+        $tmpResponse = ($childName == 'think') ? '' : $tmpResponse;
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$tmpResponse' to the response array. tag name is $parentName.", 2);
+        $response[] = $tmpResponse;
+      }
+    }
+
+    /*
+    $response = array(
+    'This is a test',
+    'of the',
+    'implode_recursive()',
+    array('function.', 'This sentence','should make perfect'),
+    'sense.'
+    );
+    */
+    return $response;
+  }
+
+  function parse_text_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    return (string) $element;
+  }
+
+  function parse_star_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = array();
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "parseStar called from the $parentName tag at level $level. element = " . $element->asXML(), 2);
+    $attributes = $element->attributes();
+    if (count($attributes) != 0)
+    {
+      $index = $element->attributes()->index;
+    }
+    else
+      $index = 1;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Star index = $index.", 2);
+    $star = $convoArr['star'][(int) $index];
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$star' to the response array.", 2);
+    $response[] = $star;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Index value = $index, Star value = $star", 2);
+    return $response;
+  }
+
+  function parse_br_tag($convoArr, $element, $parentName, $level)
+  {
+    return "<br />\n";
+  }
+
+  function parse_date_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    global $time_zone_locale;
+    $isWindows = (DIRECTORY_SEPARATOR == '/') ? false : true;
+    $now = time();
+    $format = $element->attributes()->format;
+    $locale = $element->attributes()->locale;
+    $tz = $element->attributes()->timezone;
+    $format = (string) $format;
+    $locale = (string) $locale;
+    $tz = (string) $tz;
+    $tz = (empty ($tz)) ? $time_zone_locale : $tz;
+    $hereNow = new DateTimeZone($tz);
+    $ts = new DateTime("now", $hereNow);
+    //exit("ts = " . print_r($ts->getTimestamp(), true));
+    if (empty ($format))
+    {
+      $response = date($ts->getTimestamp());
+    }
+    else
+    {
+      if ($isWindows)
+        $format = str_replace('%l', '%#I', $format);
+      $response = strftime($format, $ts->getTimestamp());
+    }
+    return $response;
+  }
+
+  function parse_random_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $random = (array) $element;
+    $liArray = $random['li'];
+    $pick = array_rand($liArray);
+    //echo "picking option #$pick from random tag.\n";
+    $li = $element->li->$pick;
+    $li = $li->children();
+    $liTxt = $li->asXML();
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Chose '$liTxt' for output.", 2);
+    return $li;
+  }
+
+  function parse_get_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    global $con, $dbn;
+    $response = '';
+    $bot_id = $convoArr['conversation']['bot_id'];
+    $user_id = $convoArr['conversation']['user_id'];
+    $var_name = $element->attributes()->name;
+    $var_name = ($var_name == '*') ? $convoArr['star'][1] : $var_name;
+    if (empty ($var_name))
+      $response = 'undefined';
+    if (empty ($response))
+    {
+      $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the DB for $var_name - sql:\n$sql", 2);
+      $result = db_query($sql, $con);
+      if (($result) and (mysql_num_rows($result) > 0))
+      {
+        $row = mysql_fetch_array($result);
+        $response = $row['value'];
+      }
+      else
+        $response = 'undefined';
+    }
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for $var_name is $response.", 2);
+    return $response;
+  }
+
+  function parse_set_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    global $con, $dbn;
+    $element = $element->set;
+    $response = '';
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Processing element $parentName at level $level. element XML = " . $element->asXML(), 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+    $bot_id = $convoArr['conversation']['bot_id'];
+    $user_id = $convoArr['conversation']['user_id'];
+    $var_name = $element->attributes()->name;
+    $var_name = ($var_name == '*') ? $convoArr['star'][1] : $var_name;
+    $vn_type = gettype($var_name);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "var_name = $var_name and is type: $vn_type", 2);
+    $var_value = $element;
+    switch (true)
+    {
+    case (is_object($var_value)) : $children = $var_value->children();
+      $tmp_var_value = array();
+      foreach ($children as $child)
+      {
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+        $tmp_var_value[] = parseTemplateRecursive($convoArr, $child, $level + 1);
+      }
+      $var_value = implode_recursive(' ', $tmp_var_value, __FILE__, __FUNCTION__, __LINE__);
+      if ($var_name == 'name')
+      {
+        $convoArr['client_properties']['name'] = $var_value;
+        $convoArr['conversation']['user_name'] = $var_value;
+        $sql = "UPDATE `$dbn`.`users` set `name` = '$var_value' where `id` = $user_id;";
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Updating user name in the DB. SQL:\n$sql", 3);
+        $result = db_query($sql, $con) or trigger_error('Error setting user name in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
+        $numRows = mysql_affected_rows();
+        $sql = "select `name` from `$dbn`.`users` where `id` = $user_id;";
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the users table to see if the value has changed. - SQL:\n$sql", 2);
+        $result = db_query($sql, $con) or trigger_error('Error looking up DB info in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
+        $rowCount = mysql_num_rows($result);
+        if ($rowCount != 0)
+        {
+          $rows = mysql_fetch_assoc($result);
+          $tmp_name = $rows['name'];
+          #$tmp_name = print_r($rows, true);
+          runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for the user's name is $tmp_name.", 2);
+        }
+      }
+      break;
+    case (is_array($var_value)) : $var_value = implode_recursive(' ', $tmp_var_value, __FILE__, __FUNCTION__, __LINE__);
+      break;
+    case ($var_name == '*') : $star = $convoArr['star'][1];
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Transforming $var_name to $star.", 2);
+      $var_name = $star;
+      break;
+      default :
+    }
+    $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$sql", 2);
+    $result = db_query($sql, $con) or trigger_error('Error looking up DB info in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
+    $rowCount = mysql_num_rows($result);
+    if ($rowCount == 0)
+    {
+      $sql = "insert into `$dbn`.`client_properties` (`id`, `user_id`, `bot_id`, `name`, `value`)
+      values (NULL, $user_id, $bot_id, '$var_name', '$var_value');";
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "No value found for $var_name. Inserting $var_value into the table.", 2);
+    }
+    else
+    {
+      $sql = "update `$dbn`.`client_properties` set `value` = '$var_value' where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Value found for $var_name. Updating the table to  $var_value.", 2);
+    }
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving to DB - SQL:\n$sql", 2);
+    $result = db_query($sql, $con) or trigger_error('Error saving to db in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
+    $rowCount = mysql_affected_rows();
+    $response = $var_value;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Value for $var_name has ben set. Returning $var_value.", 2);
+    return $response;
+  }
+
+  function parse_think_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $children = $element->children();
+    if ($parentName == 'think')
+      $element = $children;
+    $parentName = strtolower($element->getName());
+    $children = $element->children();
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Processing element $parentName at level $level. element XML = " . $element->asXML(), 2);
+    $func = 'parse_' . $parentName . '_tag';
+    if (function_exists($func))
+    {
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Passing element $parentName to the $func function. element XML = " . $element->asXML(), 2);
+      $retVal = $func($convoArr, $element, $parentName, $level);
+      $retVal = '';
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$retVal' to the response array.", 2);
+      $response[] = $retVal;
+      return $response;
+    }
+    else
+    {
+      $retVal = $element;
+    }
+    if (is_string($retVal))
+    {
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$retVal' to the response array.", 2);
+      $response[] = $retVal;
+      return $response;
+    }
+    if (!empty ($children))
+    {
+      foreach ($children as $child)
+      {
+        $childName = $child->getName();
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Processing child $childName. element XML = " . $child->asXML(), 2);
+        //$response[] = parseTemplateRecursive($convoArr, $child, $level + 1);
+      }
+    }
+    return '';
+  }
+
+  function parse_bot_tag($convoArr, $element)
+  {
+    $attributeName = $element->attributes()->name;
+    $attributeName = ($attributeName == '*') ? $convoArr['star'][1] : $attributeName;
+    $response = (!empty ($convoArr['bot_properties'][$attributeName])) ? $convoArr['bot_properties'][$attributeName] : 'undefined';
+    return $response;
+  }
+
+  function parse_id_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    return $convoArr['conversation']['convo_id'];
+  }
+
+  function parse_version_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    return 'Program O version ' . VERSION;
+  }
+
+  function parse_uppercase_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = array();
+    $children = $element->children();
+    if (!empty ($children))
+    {
+      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+    }
+    else
+    {
+      $response[] = (string) $element;
+    }
+    $response_string = implode_recursive(' ', $response);
+    return ltrim(strtoupper($response_string), ' ');
+  }
+
+  function parse_lowercase_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = array();
+    $children = $element->children();
+    if (!empty ($children))
+    {
+      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+    }
+    else
+    {
+      $response[] = (string) $element;
+    }
+    $response_string = implode_recursive(' ', $response);
+    return ltrim(strtolower($response_string), ' ');
+  }
+
+  function parse_sentence_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = array();
+    $children = $element->children();
+    if (!empty ($children))
+    {
+      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+    }
+    else
+    {
+      $response[] = (string) $element;
+    }
+    $response_string = implode_recursive(' ', $response);
+    $response = ucfirst(strtolower($response_string));
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 2);
+    return $response;
+  }
+
+  function parse_formal_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = array();
+    $children = $element->children();
+    if (!empty ($children))
+    {
+      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+    }
+    else
+    {
+      $response[] = (string) $element;
+    }
+    $response_string = implode_recursive(' ', $response);
+    $response = ucwords(strtolower($response_string));
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 2);
+    return $response;
+  }
+
+  function parse_srai_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = array();
+    $children = $element->children();
+    if (!empty ($children))
+    {
+      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+    }
+    else
+    {
+      $response[] = (string) $element;
+    }
+    $response_string = implode_recursive(' ', $response);
+    $response = run_srai($convoArr, $response_string);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 2);
+    //exit("SRAI template = $response");
+    return $response;
+  }
+
+  function parse_sr_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = run_srai($convoArr, $convoArr['star'][1]);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 2);
+    //exit("SRAI template = $response");
+    return $response;
+  }
 
-			$i++;
-			$find[$i]='#PUSH\s?<([^>]*)>#';
-			$replace[$i]='\'.call_user_func(\'push_stack\',&$convoArr,\'<$1>\').\'';
-
-			$i++;
-			$find[$i]='#POP\s?<([^>]*)>#';
-			$replace[$i]='\'.call_user_func(\'pop_stack\',&$convoArr).\'';
-
-			$i++;
-			$find[$i]='#<popstack></popstack>#';
-			$replace[$i]='\'.call_user_func(\'pop_stack\',&$convoArr).\'';
-
-			$i++;
-			$find[$i]='#<personf/>#i';
-			$replace[$i]='\'.call_user_func(\'url_encode_star\',$convoArr).\'';
-
-			$i++;
-			$find[$i]='#<topic name=\"(A-Z0-9)\">#i';
-			$replace[$i]='\'.call_user_func(\'set_topicname\',$convoArr,\'$1\').\'';
-
-			$i++;
-			$find[$i]='#<star index="([^"]*?)"/>#i';
-			$replace[$i]='\'.call_user_func(\'get_convo_var\',$convoArr,\'star\',\'\',\'$1\').\'';
-
-
-
-			$i++;
-			$find[$i]='#<that index="(.*?),(.*?)"/>#i';
-			$replace[$i]='\'.call_user_func(\'get_convo_var\',$convoArr,\'that\',\'\',\'$1\',\'$2\').\'';
-
-			$i++;
-			$find[$i]='#<input index="([^"]*)"/>#i';
-			$replace[$i]='\'.call_user_func(\'get_convo_var\',$convoArr,\'input\',\'\',\'$1\').\'';
-
-			$i++;
-			$find[$i]='#<thatstar index="([^"]*)"/>#i';
-			$replace[$i]='\'.call_user_func(\'get_convo_var\',$convoArr,\'that_star\',\'\',\'$1\').\'';
-
-			$i++;
-			$find[$i]='#<topicstar index="([^"]*)"/>#i';
-			$replace[$i]='\'.call_user_func(\'get_convo_var\',$convoArr,\'topic_star\',\'\',\'$1\').\'';
-
-
-			$i++;
-			$find[$i]='#<get name="topic"(\s)?(/)?>#i';
-			$replace[$i]='\'.call_user_func(\'get_convo_var\',$convoArr,\'topic\').\'';
-
-			$i++;
-			$find[$i]='#<get name="([^"]*)"(/)?>#i';
-			$replace[$i]='\'.call_user_func(\'get_convo_var\',$convoArr,\'client_properties\',\'$1\').\'';
-
-
-
-
-
-
-			$i++;
-			$find[$i]='#<id/>#i';
-			$replace[$i]='\'.call_user_func(\'get_convo_var\',$convoArr,\'client_properties\',\'id\').\'';
-
-			$i++;
-			$find[$i]='#<uppercase>([^<]*)</uppercase>#i';
-			$replace[$i]='\'.call_user_func(\'format\',\'uppercase\',\'$1\').\'';
-
-			$i++;
-			$find[$i]='#<lowercase>([^<]*)</lowercase>#i';
-			$replace[$i]='\'.call_user_func(\'format\',\'lowercase\',\'$1\').\'';	
-
-			$i++;
-			$find[$i]='#<formal>([^<]*)</formal>#i';
-			$replace[$i]='\'.call_user_func(\'format\',\'formal\',\'$1\').\'';		
-
-			$i++;
-			$find[$i]='#<sentence>([^<]*)</sentence>#i';
-			$replace[$i]='\'.call_user_func(\'format\',\'sentence\',\'$1\').\'';		
-
-			$i++;
-			$find[$i]='#<srai>#i';
-			$replace[$i]='\'.call_user_func(\'run_srai\',&$convoArr,\'';	
-
-			$i++;
-			$find[$i]='#</srai>#i';
-			$replace[$i]='\').\'';	
-
-			$i++;
-			$find[$i]='#<think>#i';
-			$replace[$i]='\'.call_user_func(\'make_null\',\'';
-
-			$i++;
-			$find[$i]='#</think>#i';
-			$replace[$i]='\').\'';
-
-			$i++;
-			$find[$i]='#<person>([^<]*)</person>#i';
-			$replace[$i]='\'.call_user_func(\'transform_prounoun\',$convoArr,\'3\',\'$1\').\'';
-
-			$i++;
-			$find[$i]='#<person2>([^<]*)</person2>#i';
-			$replace[$i]='\'.call_user_func(\'transform_prounoun\',$convoArr,\'2\',\'$1\').\'';
-
-			$i++;
-			$find[$i]='#<condition>[\s]?<li name="([^"]*)" value="([^"]*)">#i';
-			$replace[$i]="';\r\n".' if( ((isset($convoArr[\'$1\'])) && (strtoupper($convoArr[\'$1\']) === strtoupper(\'$2\'))) || ((isset($convoArr[\'client_properties\'][\'$1\'])) && (strtoupper($convoArr[\'client_properties\'][\'$1\']) === strtoupper(\'$2\')))  )'."\r\n".' { $tmp_botsay .= \'';		
-
-			$i++;
-			$find[$i]='#<condition name="([^"]*)">#i';
-			$replace[$i]="\r\n".'; $condition = call_user_func(\'clean_condition\',\'$1\'); ';
-
-			$i++;
-			$find[$i]='#<li name="([0-9a-z]*)" value="([0-9a-z]*)">#i';
-			$replace[$i]="\r\n".' elseif( ((isset($convoArr[\'$1\'])) && (strtoupper($convoArr[\'$1\']) === strtoupper(\'$2\'))) || ((isset($convoArr[\'client_properties\'][\'$1\'])) && (strtoupper($convoArr[\'client_properties\'][\'$1\']) === strtoupper(\'$2\')))  )'."\r\n".' { $tmp_botsay .= \'';		
-
-			$i++;
-			$find[$i]='#<li value="([^"]*)">#i';
-			$replace[$i]="\r\n".' elseif( ((isset($convoArr[$condition])) && (strtoupper($convoArr[$condition]) === strtoupper(\'$1\'))) || ((isset($convoArr[\'client_properties\'][$condition])) && (strtoupper($convoArr[\'client_properties\'][$condition]) === strtoupper(\'$1\')))  )'."\r\n".' { $tmp_botsay .= \'';		
-
-			$i++;
-			$find[$i]='#;(\s|\s+)?elseif#i';
-			$replace[$i]=";\r\nif";		
-
-			
-			$i++;
-			$find[$i]="#<\random>(\?|\.|\!\s)?</li>#eis";
-			$replace[$i]='</random>$1\';}';			
-			
-			
-			//this has to be be evalutated immeditately as nothing will change we are just collecting a random value
-			$i++;
-			$find[$i]="#<random>([^<]*)</random>#eis";
-			$replace[$i]='call_user_func(\'select_random\',\'$1\')';
-
-			
-			// this needs a second attempt before i work out a proper fix
-			// the first removes the out random but if there is a nested random it wont work
-			$i++;
-			$find[$i]="#<random>(.*)</random>#eis";
-			$replace[$i]='call_user_func(\'select_random\',\'$1\')';
-			
-
-			$i++;
-			$find[$i]='#<li>(.*)</li>#i';
-			$replace[$i]="\r\n".'else { $tmp_botsay .=\'$1\'; } ';	
-
-			$i++;
-			$find[$i]='#</li>#i';
-			$replace[$i]='\'; } ';
-
-			$i++;
-			$find[$i]='#</condition>#i';
-			$replace[$i]="\r\n".'$condition = ""; ';		
-
-			//TODO WORK OUT WHY THIS OCCURES
-			$i++;
-			$find[$i]='#</conditio#i';
-			$replace[$i]="\r\n".'$condition = ""; ';	
-
-			$i++;
-			$find[$i]='#<set name="([^"]*)">#i';
-			$replace[$i]='\'.call_user_func(\'set_simple\',&$convoArr,\'$1\',\'';		
-
-			$i++;
-			$find[$i]='#<set name=\\\"([^\\\]*)\\\">#i';
-			$replace[$i]='\'.call_user_func(\'set_simple\',&$convoArr,\'$1\',\'';		
-
-			$i++;
-			$find[$i]='#</set>#i';
-			$replace[$i]='\').\'';		
-
-			$i++;
-			$find[$i]='#</get>#i';
-			$replace[$i]='';		
-
-			$i++;
-			$find[$i]='#<system>\s?(add|power|sqrt|divide|multiply|subtract)\s?(.*)[\s?](.*)</system>#i';
-			$replace[$i]='\'.call_user_func(\'run_system\',\'$1\',\'$2\',\'$3\').\'';
-
-
-			$i++;	
-			$find[$i]='#<learn>\s+?<category>\s+?<pattern>\s+?<eval>([^<]*)</eval>\s+?</pattern>\s+?<template>\s+?<eval>([^<]*)</eval>\s+?</template>\s+?</category>\s+?</learn>#ius';
-			$replace[$i]='\'; call_user_func(\'make_learn\',$convoArr,\'$1\',\'$2\');';	
-		
-			
-			runDebug( __FILE__, __FUNCTION__, __LINE__, "Built core tag array to make replacements",4);
-			
-			//custom tags handled here
-			$custom_tag_handle = custom_aiml_to_phpfunctions($find,$replace,$i);
-			
-			$find = $custom_tag_handle['find'];
-			$replace = $custom_tag_handle['replace'];
-			
-			runDebug( __FILE__, __FUNCTION__, __LINE__, "Built custom tag array to make replacements",4);
-			runDebug( __FILE__, __FUNCTION__, __LINE__, "Looking to replace: ".print_r($find,true),4);
-			runDebug( __FILE__, __FUNCTION__, __LINE__, "With replacements: ".print_r($replace,true),4);
-		
-			//actually do the find and replace here
-			$parsed_template = preg_replace($find, $replace, $template);
-			
-
-		
-			//clean up the find/replace code so that it can actaully evaluate as real php code
-			$parsed_template = clean_for_eval($parsed_template,0);
-
-
-			//decode back before sending
-			$parsed_template = entity_replace('decode',$parsed_template);
-			$parsed_template = foreignchar_replace('decode',$parsed_template);			
-			
-			
-			//write to convoArr
-			$convoArr['aiml']['aiml_to_php'] = $parsed_template;
-			
-			//update the aiml table
-			$convoArr = add_aiml_to_php($convoArr);
-	}
-
-	
-	
-	//evaluate the generated code
-	$botsay = eval_aiml_to_php_code($convoArr, $parsed_template); //if it works it works if not display error message
-	
-	//write the result (what the bot said) to the convoArr
-	$convoArr['aiml']['parsed_template']=$botsay." ";
-	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "The bot will say: $botsay",2);
-	
-
-	return $convoArr;
-}
 ?>

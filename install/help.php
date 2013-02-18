@@ -1,13 +1,13 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.5
+//My Program-O Version 2.1.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //May 2011
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // help.php
-ini_set("display_errors", true);
+ini_set("display_errors", false);
 ini_set("log_errors",true);
 ini_set("error_log","../logs/error.log");
 

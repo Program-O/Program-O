@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.5
+//My Program-O Version 2.1.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -50,7 +50,6 @@
     include('main.php');
   }
 function getBot() {
-  #die('entered function.');
   global $dbn;
   $dbconn = db_open();
   $formCell  = '                <td><label for="[row_label]"><span class="label">[row_label]:</span></label> <span class="formw"><input name="[row_label]" id="[row_label]" value="[row_value]" /></span></td>
@@ -177,7 +176,7 @@ function updateBot() {
     $postVal = (isset($_POST[$name])) ? $_POST[$name] : '';
     if (!empty($postVal)) {
        if ($postVal != $value){
-        $changes[$id] = mysql_escape_string(stripslashes_deep($postVal));
+        $changes[$id] = mysql_real_escape_string(stripslashes_deep($postVal));
         $additions[$id] = $name;
        }
     }
@@ -230,7 +229,7 @@ function addBotPersonality() {
       if (is_array($value)) {
         foreach ($value as $index => $fieldValue) {
           $field = $key[$fieldValue];
-          $fieldValue = mysql_escape_string(trim($fieldValue));
+          $fieldValue = mysql_real_escape_string(trim($fieldValue));
           $tmpSQL = str_replace('[key]', $field, $sql2);
           $tmpSQL = str_replace('[value]', $fieldValue, $tmpSQL);
           $sql .= $tmpSQL;
@@ -238,7 +237,7 @@ function addBotPersonality() {
         continue;
       }
       else {
-        $value = mysql_escape_string(trim($value));
+        $value = mysql_real_escape_string(trim($value));
         $tmpSQL = str_replace('[key]', $key, $sql2);
         $tmpSQL = str_replace('[value]', $value, $tmpSQL);
         $sql .= $tmpSQL;

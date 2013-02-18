@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.0.5
+* Version: 2.1.0
 * FILE: chatbot/core/conversation/display_conversation.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -20,10 +20,13 @@ function get_conversation_to_display($convoArr)
 	global $con,$dbn, $bot_name;
   $user_id = $convoArr['conversation']['user_id'];
   $bot_id = $convoArr['conversation']['bot_id'];
+  $user_name = $convoArr['conversation']['user_name'];
+/*
   $sql = "select `name` from `users` where `id` = $user_id limit 1;";
   $result = db_query($sql,$con);
   $row = mysql_fetch_assoc($result);
   $user_name = $row['name'];
+*/
   $user_name = (!empty($user_name)) ? $user_name : 'User';
   $convoArr['conversation']['user_name'] = $user_name;
   $convoArr['conversation']['bot_name'] = $bot_name;
