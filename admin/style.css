@@ -1,5 +1,5 @@
 /*
-My Program-O Version 2.1.0
+My Program-O Version 2.1.1
 Program-O  chatbot admin area
 Written by Elizabeth Perreau and Dave Morton
 Aug 2011
@@ -755,3 +755,6 @@ select#bot_id { width: auto; min-width: 30%; }
 
 #version{position: absolute;top: 5px;left: 5px;}
 
+div#status {
+  margin-top: 10px;
+}

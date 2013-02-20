@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.0
+* Version: 2.1.1
 * FILE: chatbot/core/user/handle_user.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011

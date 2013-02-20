@@ -6,7 +6,7 @@ error.log
 admin/error.log
 admin/skins
 admin/downloads
-config/global_config.php
+config/old_global_config.php
 config/error.log
 config/uploads/*
 chatbot/debug/*.txt

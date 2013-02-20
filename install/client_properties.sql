@@ -1,7 +1,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.1.0
+* Version: 2.1.1
 * FILE: client_properties.sql
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: 02-13-2013

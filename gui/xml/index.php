@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.1.0
+  * Version: 2.1.1
   * FILE: gui/xml/index.php
   * AUTHOR: ELIZABETH PERREAU and DAVE MORTON
   * DATE: JUNE. 19th, 2012

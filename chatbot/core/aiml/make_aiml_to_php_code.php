@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.0
+  * Version: 2.1.1
   * FILE: chatbot/core/aiml/make_aiml_to_php_code.php
   * AUTHOR: ELIZABETH PERREAU
   * DATE: MAY 4TH 2011
@@ -94,12 +94,14 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+    $HTML_tags = array('a','abbr','acronym','address','applet','area','b','bdo','big','blockquote','br','button','caption','center','cite','code','col','colgroup','dd','del','dfn','dir','div','dl','dt','em','fieldset','font','form','h1','h2','h3','h4','h5','h6','hr','i','iframe','img','input','ins','kbd','label','legend','ol','object','s','script','small','span','strike','strong','sub','sup','table','tbody','td','textarea','tfoot','th','thead','tr','tt','u','ul');
     $doNotParseChildren = array('li');
     $response = array();
     $parentName = strtolower($element->getName());
     $children = $element->children();
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Processing element $parentName at level $level. element XML = " . $element->asXML(), 2);
     $func = 'parse_' . $parentName . '_tag';
+    if (in_array($parentName, $HTML_tags)) $func = 'parse_html_tag';
     if (function_exists($func))
     {
       if (!in_array(strtolower($parentName), $doNotParseChildren))
@@ -492,5 +494,108 @@
     //exit("SRAI template = $response");
     return $response;
   }
+
+  function parse_condition_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = array();
+    $attrName = $element['name'];
+    if (!empty($attrName))
+    {
+      $attrValue = get_client_property($convoArr, (string) $attrName);
+      return "attrName = $attrName. value = $attrValue";
+      $attrName = ($attrName == '*') ? $convoArr['star'][1] : $attrName;
+      $search = $convoArr['client_properties'][$attrName];
+      $path = ($search != 'undefined') ? "//li[@value=\"$search\"]" : '//li[not@*]';
+      $choice = $element->xpath($path);
+      $choiceType = gettype($choice);
+      exit("<pre>Choice type = $choiceType. Value = " . print_r($choice, true));
+      $children = $choice[0]->children();
+      if (!empty($children))
+      {
+        $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+      }
+      else
+      {
+        $response[] = (string) $choice;
+      }
+      $response_string = implode_recursive(' ', $response);
+      return $response_string;
+    }
+    else
+    {
+      //
+    }
+    #exit("<pre>Element value:<br />\n" . print_r($element, true));
+    #exit("<pre>Element name:$parentName\nElement Attribute name: $attrName");
+/*
+    $attributes = $element->attributes();
+    $attArray = (array) $attributes;
+    $attKeys = array_keys($attArray['@attributes']);
+    $attName = $attKeys[0];
+    $name = $attributes->getName();
+    $attributeName = (string) $attributes[$name];
+    $pick = (!empty ($convoArray['client_properties'][$attributeName])) ? $convoArray['client_properties'][$attributeName] : $this->undefined;
+    #echo "attribute $attName = $attributeName, value = $pick<br>\n";
+    $path = ($pick != $this->undefined) ? "//li[@value=\"$pick\"]" : '//li[not(@*)]';
+    $choice = $element->xpath($path);
+    $out = (!empty ($choice[0]->text)) ? (string) $choice[0]->text : (string) $choice;
+    return $out;
+*/
+  }
+
+  function parse_person_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = array();
+    $children = $element->children();
+    if (!empty ($children))
+    {
+      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+    }
+    else
+    {
+      $response[] = $convoArr['star'][1];
+    }
+    $response_string = implode_recursive(' ', $response);
+    $response = swapPerson($convoArr, 3, $response_string);
+    return $response;
+  }
+
+  function parse_person2_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = array();
+    $children = $element->children();
+    if (!empty ($children))
+    {
+      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+    }
+    else
+    {
+      $response[] = $convoArr['star'][1];
+    }
+    $response_string = implode_recursive(' ', $response);
+    $response = swapPerson($convoArr, 2, $response_string);
+    return $response;
+  }
+
+  function parse_that_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $index = $element['index'];
+    if (!empty($index))
+    {
+      $is2D = strstr($index,',');
+    }
+  }
+
+  function parse_html_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    return (string) $element->asXML();
+  }
+
+
 
 ?>

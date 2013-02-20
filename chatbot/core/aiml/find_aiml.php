@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.1.0
+* Version: 2.1.1
 * FILE: chatbot/core/aiml/find_aiml.php
 * AUTHOR: ELIZABETH PERREAU
 * DATE: MAY 4TH 2011
@@ -465,24 +465,27 @@ function get_convo_var($convoArr,$index_1,$index_2="",$index_3="",$index_4=""){
 	return $value;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+function get_client_property($convoArr, $name)
+{
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+  runDebug(__FILE__, __FUNCTION__, __LINE__, "Looking for client property $name", 2);
+  global $con, $dbn;
+  If (!empty($convoArr['client_properties'][$name])) return $convoArr['client_properties'][$name];
+  $user_id = $convoArr['conversation']['user_id'];
+  $bot_id = $convoArr['conversation']['bot_id'];
+  $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$name' limit 1;";
+  runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for $name. SQL:\n$sql", 3);
+  $result = db_query($sql, $con);
+  $rowCount = mysql_num_rows($result);
+  if ($rowCount != 0)
+  {
+    $row = mysql_fetch_assoc($result);
+    $response = $row['value'];
+    $convoArr['client_properties'][$name] = $response;
+  }
+  else $response = 'undefined';
+  return $response;
+}
 
 
 
