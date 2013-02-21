@@ -226,7 +226,7 @@ function addBotPersonality() {
   $skipKeys = array('bot_id', 'action', 'func', 'newEntryName', 'newEntryValue');
   foreach($_POST as $key => $value) {
     if(!in_array($key, $skipKeys)) {
-      if($value=="")  continue;
+      #if($value=="")  continue;
       if (is_array($value)) {
         foreach ($value as $index => $fieldValue) {
           $field = $key[$fieldValue];

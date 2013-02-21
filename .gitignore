@@ -2,12 +2,13 @@
 ## Program O
 #################
 
-error.log
+*.log
 admin/error.log
 admin/skins
 admin/downloads
 config/global_config.php
 config/error.log
+config/*.txt
 config/uploads/*
 chatbot/debug/*.txt
 test
