@@ -1,14 +1,14 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.1
+  * Version: 2.1.2
   * FILE: UPGRADE_README
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
   * DETAILS: Outlines the upgrade process
   ***************************************/
 
-Upgrading Program O, starting with version 2.1.1, will be a "semi-automatic" process, in that, with
+Upgrading Program O, starting with version 2.1.2, will be a "semi-automatic" process, in that, with
 major revisions (e.g. 2.0 to 2.1, 2.1 to 2.2, etc), there will be a file in the install folder named
 upgrade.php, the presence of which will cause that file to be run, and any upgrade processes or tasks
 will be performed. If all upgrade tasks are completed, the script will delete it's own file from the

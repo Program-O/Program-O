@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.1
+  * Version: 2.1.2
   * FILE: TODO
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-18-2013
@@ -14,8 +14,4 @@
           <input>
           <thatstar>
           <topicstar>
-          <condition>
-          <system>
-          <learn>
           <gossip>
-          <gender>

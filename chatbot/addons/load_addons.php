@@ -2,9 +2,9 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.1
+* Version: 2.1.2
 * FILE: chatbot/addons/load_addons.php
-* AUTHOR: ELIZABETH PERREAU
+* AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
 * DETAILS: this file contains the calls to include addon functions
 ***************************************/

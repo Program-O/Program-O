@@ -2,9 +2,9 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.1
+* Version: 2.1.2
 * FILE: chatbot/core/conversation/make_conversation.php
-* AUTHOR: ELIZABETH PERREAU
+* AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
 * DETAILS: this file contains the functions control the creation of the conversation 
 ***************************************/
@@ -91,8 +91,7 @@ function eval_aiml_to_php_code($convoArr,$evalthis){
 function run_aiml_to_php($convoArr,$evalthis){
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Evaluating Stored PHP Code from the Database",4);
-	global $botsay;
-	global $error_response;
+	global $botsay, $error_response;
 
 	//this must be NULL if it is FALSE then its failed but  if its NULL its a success
 	$error_flag = eval($evalthis);
@@ -106,4 +105,22 @@ function run_aiml_to_php($convoArr,$evalthis){
 	
 	return $result;
 }
+
+/**
+ * function buildNounList()
+ * @param array $convoArr
+ * @param int $person
+ * @param string $in
+ * @return the tranformed string
+**/
+
+  function buildNounList($convoArr)
+  {
+    $fileName = _CONF_PATH_ . 'nounList.dat';
+    $nounList = file($fileName,FILE_IGNORE_NEW_LINES);
+    $convoArr['nounList'] = $nounList;
+    return $convoArr;
+  }
+
+
 ?>

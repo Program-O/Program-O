@@ -2,16 +2,16 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.1
+* Version: 2.1.2
 * FILE: custom_tags.php
-* AUTHOR: ELIZABETH PERREAU
+* AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
 * DETAILS: this file contains the addon library to process the custom <code> tag
 ***************************************/
 include('code_tag/code_tag.php');
 
 
-function custom_aiml_to_phpfunctions($find,$replace,$j)
+function custom_parse_aiml_as_XML($find,$replace,$j)
 {
 	//custom code aiml tags 
 	//found in code_tags/code_tags.php

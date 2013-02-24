@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.1
+//My Program-O Version 2.1.2
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -10,7 +10,7 @@
   $msg = '';
   $upperScripts = <<<endScript
 
-    <script type="text/javascript" src="scripts/tablesorter.js"></script>
+    <script type="text/javascript" src="scripts/tablesorter.min.js"></script>
     <script type="text/javascript">
 <!--
       var state = 'hidden';

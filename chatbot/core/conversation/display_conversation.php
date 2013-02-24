@@ -2,9 +2,9 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.1.1
+* Version: 2.1.2
 * FILE: chatbot/core/conversation/display_conversation.php
-* AUTHOR: ELIZABETH PERREAU
+* AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
 * DETAILS: this file contains the functions to handle the return of the conversation lines back to the user
 ***************************************/
@@ -28,7 +28,7 @@ function get_conversation_to_display($convoArr)
   $user_name = $row['name'];
 */
   $user_name = (!empty($user_name)) ? $user_name : 'User';
-  $convoArr['conversation']['user_name'] = $user_name;
+  //$convoArr['conversation']['user_name'] = $user_name;
   $convoArr['conversation']['bot_name'] = $bot_name;
 	if (empty($bot_name)) {
 	  $sql = "select `bot_name` from `bots` where `bot_id` = $bot_id limit 1;";

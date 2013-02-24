@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.1
+//My Program-O Version 2.1.2
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -52,7 +52,7 @@
   $leftLinks = makeLeftLinks();
   $topLinks = makeTopLinks();
   $githubVersion = getCurrentVersion();
-  $version = ($githubVersion == VERSION) ? 'Program O version ' . VERSION : 'Program O ' . $githubVersion . ' is now available. <a href="https://github.com/Program-O/Program-O/archive/master.zip">Click here</a> to download it.';
+  $version = ($githubVersion == VERSION) ? 'Program O version ' . VERSION : 'Program O ' . $githubVersion . ' is now available. <a href="https://github.com/Dave-Morton/Program-O/archive/master.zip">Click here</a> to download it.';
 # set template section defaults
 
 # Build page sections
@@ -445,34 +445,49 @@ endFooter;
       default:
       $feedURL = RSS_URL;
     }
+    $failed = 'The RSS Feed is not currently available. We apologise for the inconvenience.';
     $out = '';
+    $msg = '';
     if (function_exists('curl_init')) {
       $ch = curl_init($feedURL);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($ch, CURLOPT_HEADER, 0);
       $data = curl_exec($ch);
       curl_close($ch);
-      if (false === $data) return 'The RSS Feed is not currently available. We apologise for the inconvenience.';
-      $rss = new SimpleXmlElement($data, LIBXML_NOCDATA);
+      if (false === $data or empty($data)) return $failed;
+      try
+      {
+        $rss = new SimpleXmlElement($data, LIBXML_NOCDATA);
+      }
+      catch (exception $e)
+      {
+        $rss = false;
+        $msg = $e->getMessage();
+      }
       if($rss) {
         $items = $rss->channel->item;
-          foreach ($items as $item) {
-            $title = $item->title;
-            $link = $item->link;
-            $published_on = $item->pubDate;
-            $description = $item->description;
-            $out .= "<h3><a target=\"_blank\" href=\"$link\">$title</a></h3>\n";
-            $out .= "<p>$description</p>";
-          }
+        foreach ($items as $item) {
+          $title = $item->title;
+          $link = $item->link;
+          $published_on = $item->pubDate;
+          $description = $item->description;
+          $out .= "<h3><a target=\"_blank\" href=\"$link\">$title</a></h3>\n";
+          $out .= "<p>$description</p>";
         }
+      }
+      else {
+        $out = $failed;
+      }
     }
-    else $out = 'RSS Feed not available';
+    else {
+      $out = $failed;
+    }
     return $out;
   }
 
   function getCurrentVersion()
   {
-    $url = 'https://api.github.com/repos/Program-O/Program-O/contents/version.txt';
+    $url = 'https://api.github.com/repos/Dave-Morton/Program-O/contents/version.txt';
     $out = false;
     if (function_exists('curl_init'))
     {

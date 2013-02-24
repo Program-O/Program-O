@@ -37,6 +37,7 @@
     define('_LIB_PATH_',_BASE_DIR_.'library'.$path_separator);
     define('_ADDONS_PATH_',_BASE_DIR_.'chatbot'.$path_separator.'addons'.$path_separator);
     define('_CONF_PATH_',_BASE_DIR_.'config'.$path_separator);
+    define('_UPLOAD_PATH_',_CONF_PATH_.'uploads'.$path_separator);
     define('_LOG_PATH_',_BASE_DIR_.'logs'.$path_separator);
     define('_LOG_URL_',_BASE_URL_.'logs/');
     define('_DEBUG_PATH_',_BASE_DIR_.'chatbot'.$path_separator.'debug'.$path_separator);
@@ -46,7 +47,7 @@
     // Define constant for the current version
     //------------------------------------------------------------------------
 
-    define ('VERSION', '2.1.1');
+    define ('VERSION', '2.1.2');
 
     //------------------------------------------------------------------------
     // Error reporting

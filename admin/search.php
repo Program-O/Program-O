@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.1
+//My Program-O Version 2.1.2
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -29,7 +29,7 @@
     $mainContent = $template->getSection('SearchAIMLForm');
   }
 
-  $upperScripts = '<script type="text/javascript" src="scripts/tablesorter.js"></script>'."\n";
+  $upperScripts = '<script type="text/javascript" src="scripts/tablesorter.min.js"></script>'."\n";
   $topNav        = $template->getSection('TopNav');
   $leftNav       = $template->getSection('LeftNav');
   $main          = $template->getSection('Main');

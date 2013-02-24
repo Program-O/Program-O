@@ -2,9 +2,9 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.1
+* Version: 2.1.2
 * FILE: spell_checker/spell_checker.php
-* AUTHOR: ELIZABETH PERREAU
+* AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
 * DETAILS: this file contains the addon library to spell check into before its matched in the database
 ***************************************/

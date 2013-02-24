@@ -3,9 +3,9 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.1
+  * Version: 2.1.2
   * FILE: gui/plain/index_better_divs.php
-  * AUTHOR: ELIZABETH PERREAU
+  * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 19 JUNE 2012
   * DETAILS: simple example gui
   ***************************************/

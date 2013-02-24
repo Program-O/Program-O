@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-    <title>Program O Installation help</title>
+    <title>Program O GUI Samples</title>
     <link rel="stylesheet" href="../admin/style.css" type="text/css" />
   </head>
   <body>
@@ -19,8 +19,7 @@
       <div id="container">
         <p>
           The following are simple, "bare-bones" examples of how to interface with Program O on your
-          website. The Twitter example will require some basic installation and configuration prior to
-          use. View the files index.php and page.php in the twitter directory prior to use.
+          website. Please choose from the following options:
         </p>
         <div class="row"><a href="jquery/">JSON example</a></div>
         <div class="row"><a href="plain/">HTML example</a></div>

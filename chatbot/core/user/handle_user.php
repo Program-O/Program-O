@@ -2,9 +2,9 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.1
+* Version: 2.1.2
 * FILE: chatbot/core/user/handle_user.php
-* AUTHOR: ELIZABETH PERREAU
+* AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
 * DETAILS: this file contains the functions to handle the  
 *          user in the conversation 
@@ -25,7 +25,7 @@ function load_new_client_defaults($convoArr)
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation element = " . print_r($convoArr['conversation'], true), 2);
   $sql = "";
   $convoArr['client_properties']['name'] = $unknown_user;
-  $convoArr['client_properties']['id'] = $_SERVER['REMOTE_ADDR'];
+  $convoArr['client_properties']['id'] = session_id();
   
   return $convoArr;
 }  

@@ -2,9 +2,9 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.1
+* Version: 2.1.2
 * FILE: chatbot/core/conversation/intialise_conversation.php
-* AUTHOR: ELIZABETH PERREAU
+* AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
 * DETAILS: this file contains the functions intialise 
 *          the conversation
@@ -190,7 +190,7 @@ function add_firstturn_conversation_vars($convoArr){
 function push_on_front_convoArr($arrayIndex,$value,$convoArr)
 {
     global $offset,$rememLimit;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
     runDebug( __FILE__, __FUNCTION__, __LINE__, "Pushing $value to front of $arrayIndex array",2);
     $remember_up_to = $convoArr['conversation']['remember_up_to'];
 
@@ -261,7 +261,7 @@ function push_on_front_convoArr($arrayIndex,$value,$convoArr)
         array_unshift($convoArr[$arrayIndex],$sentences);
         array_unshift($convoArr[$arrayIndex],null);
         unset($convoArr[$arrayIndex][0]);
-            
+
     }
     else{
         array_unshift($convoArr[$arrayIndex],$value);
@@ -398,27 +398,18 @@ function log_conversation($convoArr){
  * @return $convoArr (updated)
 **/    
 function log_conversation_state($convoArr){
-        
-    global $con,$dbn;
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    global $con,$dbn, $user_name;
     //get undefined defaults from the db
 
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "logging state",4);        
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client properties = " . print_r($convoArr['client_properties'], true), 2);
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "logging state",4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "user name = $user_name. Stored user name = " . $convoArr['conversation']['user_name'], 4);
 
-    $serialise_convo = mysql_real_escape_string(serialize($convoArr));
+    $serialise_convo = mysql_real_escape_string(serialize(reduceConvoArr($convoArr)));
     $user_id   = $convoArr['conversation']['user_id'];
-    $user_name = $convoArr['conversation']['user_name'];
     $bot_id    = $convoArr['conversation']['bot_id'];
         
-   if(isset($user_name) && ($user_name!=""))
-   {
-   	$sql_addon = "`name` = '". mysql_real_escape_string($user_name)."', ";
-   }
-   else
-   {
-   	$sql_addon = "";
-   }
-    
+   $sql_addon = (!empty($user_name)) ?"`name` = '". mysql_real_escape_string($user_name)."', " : '';
 
     $sql = "UPDATE `$dbn`.`users`
                 SET
@@ -430,7 +421,7 @@ function log_conversation_state($convoArr){
                 
     
     
-    runDebug( __FILE__, __FUNCTION__, __LINE__, "updating conversation state SQL: $sql",3);    
+    runDebug( __FILE__, __FUNCTION__, __LINE__, "updating conversation state SQL: $sql",3);
     db_query($sql,$con);
         
     return $convoArr;
@@ -525,8 +516,8 @@ function check_set_convo_id($convoArr)
 }
 
 /**
- * function check_set_convo_id(()
- * A function to check and set the convo id
+ * function check_set_user(()
+ * A function to check and set the user's information
  * @param  array $convoArr - the current state of the conversation array
  * @return $convoArr (updated)
 **/
@@ -550,7 +541,9 @@ function check_set_user($convoArr)
     $user_id = (!empty($row['id'])) ? $row['id'] : 0;
     $user_name = (!empty($row['name'])) ? $row['name'] : 'User';
   }
-    $convoArr['conversation']['user_name'] = (!empty($user_name)) ? $user_name : $unknown_user;
+    $user_name = (!empty($user_name)) ? $user_name : $unknown_user;
+    $convoArr['conversation']['user_name'] = $user_name;
+    $convoArr['client_properties']['name'] = $user_name;
     #die("User name = $user_name<br />\n");
     return $convoArr;
 }
@@ -594,5 +587,39 @@ function check_set_format($convoArr){
     return $convoArr;
 }
 
+function load_that($convoArr)
+{
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+  global $con, $dbn, $default_remember_up_to;
+  $remember_up_to = (!empty($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $default_remember_up_to;
+  $user_id = $convoArr['conversation']['user_id'];
+  $bot_id  = $convoArr['conversation']['bot_id'];
+  $limit   = $remember_up_to;
+  $sql = "select `response` from `$dbn`.`conversation_log` where `userid` = $user_id and `bot_id` = $bot_id order by `id` desc limit $limit;";
+  runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation log entries for the current user. SQL:\n$sql", 3);
+  $result = db_query($sql, $con);
+  if ($result)
+  {
+    $tmpRows = array();
+    $tmpThat = array();
+    $puncuation = array(',', '?', ';', '!');
+    while ($row = mysql_fetch_assoc($result))
+    {
+      $tmpRows[] = $row['response'];
+    }
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished loading previous responses into the ~THAT~ array.', 4);
+    array_reverse($tmpRows);
+    foreach ($tmpRows as $row)
+    {
+      $row = str_replace($puncuation, '.', $row);
+      $tmpThat[] = explode('.', $row);
+    }
+    array_unshift($tmpThat, NULL);
+    unset($tmpThat[0]);
+    array_walk_recursive($tmpThat, 'clean_for_aiml_match');
+    $convoArr['that'] = $tmpThat;
+  }
+  return $convoArr;
+}
 
 ?>
