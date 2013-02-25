@@ -45,7 +45,7 @@
 */
   #$mainContent   = "test... func = $func";
   $mainTitle     = 'Bot Personality Settings for '.$bot_name;
-  if ($func == 'updateBot' or $func == 'addBotPersonaity') {
+  if ($func == 'updateBot' or $func == 'addBotPersonality') {
     $msg = updateBot();
     include('main.php');
   }
