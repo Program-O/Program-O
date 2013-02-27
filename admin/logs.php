@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.2
+//My Program-O Version 2.1.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -8,10 +8,11 @@
 //-----------------------------------------------------------------------------------------------
 // logs.php
 
-$show = (isset($_GET['showing'])) ? $_GET['showing'] : "last 20";//showThis($show)
+$get_vars = filter_input_array(INPUT_GET);
+$show = (isset($get_vars['showing'])) ? $get_vars['showing'] : "last 20";//showThis($show)
 $show_this = showThis($show);
-$convo = (isset($_GET['id'])) ? getuserConvo($_GET['id'],$show) : "Please select a conversation from the side bar.";
-$user_list = (isset($_GET['id'])) ? getuserList($_GET['id'],$show) : getuserList($_SESSION['poadmin']['bot_id'],$show);
+$convo = (isset($get_vars['id'])) ? getuserConvo($get_vars['id'],$show) : "Please select a conversation from the side bar.";
+$user_list = (isset($get_vars['id'])) ? getuserList($get_vars['id'],$show) : getuserList($_SESSION['poadmin']['bot_id'],$show);
 $bot_name = (isset($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'unknown';
 $upperScripts = <<<endScript
 
@@ -67,7 +68,7 @@ endScript;
 
 function getUserNames() {
   $dbconn = db_open();
-  $sql = "select `id`, `name` from `users` where 1;";
+  $sql = "select `id`, `user_name` from `users` where 1;";
   $result = mysql_query($sql,$dbconn);
   $nameList = array();
   while ($row = mysql_fetch_assoc($result)) {
@@ -79,14 +80,14 @@ function getUserNames() {
 
 function getuserList($showing) {
   //db globals
-  global $template;
+  global $template, $get_vars;
   $nameList = getUserNames();
-  $curUserid = (isset($_GET['id'])) ? $_GET['id'] : -1;
+  $curUserid = (isset($get_vars['id'])) ? $get_vars['id'] : -1;
   #die ("user names:<br />\n" . print_r($nameList, true) . "\n<br />\n");
   $dbconn = db_open();
   $bot_id = $_SESSION['poadmin']['bot_id'];
   $linkTag = $template->getSection('NavLink');
-  $sql = "SELECT DISTINCT(`userid`),COUNT(`userid`) AS TOT FROM `conversation_log`  WHERE bot_id = '$bot_id' AND DATE(`timestamp`) = '[repl_date]' GROUP BY `userid` ORDER BY ABS(`userid`) ASC";
+  $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = '$bot_id' AND DATE(`timestamp`) = '[repl_date]' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC";
   $showarray = array("last 20","previous week","previous 2 weeks","previous month","last 6 months","this year","previous year","all years");
   switch ($showing) {
     case "today":
@@ -108,11 +109,11 @@ function getuserList($showing) {
       $repl_date = strtotime("-1 year");
       break;
     case "all time":
-      $sql = "SELECT DISTINCT(`userid`),COUNT(`userid`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `userid` ORDER BY ABS(`userid`) ASC";
+      $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC";
       $repl_date = time();
       break;
     default:
-      $sql = "SELECT DISTINCT(`userid`),COUNT(`userid`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `userid` ORDER BY ABS(`userid`) ASC";
+      $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC";
       $repl_date = time();
   }
   $sql = str_replace('[repl_date]', $repl_date, $sql);
@@ -130,7 +131,7 @@ endList;
     $TOT = $row['TOT'];
     $tmpLink = str_replace('[linkClass]'," class=\"$linkClass\"", $linkTag);
     $tmpLink = str_replace('[linkOnclick]','', $tmpLink);
-    $tmpLink = str_replace('[linkHref]',"href=\"./?page=logs&showing=$showing&id=$userid#$userid\" name=\"$userid\"", $tmpLink);
+    $tmpLink = str_replace('[linkHref]',"href=\"index.php?page=logs&showing=$showing&id=$userid#$userid\" name=\"$userid\"", $tmpLink);
     $tmpLink = str_replace('[linkTitle]'," title=\"Show entries for user $userName\"", $tmpLink);
     $tmpLink = str_replace('[linkLabel]',"USER:$userName($TOT)", $tmpLink);
     $anchor = "            <a name=\"$userid\" />\n";
@@ -156,7 +157,7 @@ function showThis($showing="last 20") {
   }
 
   $form = <<<endForm
-        <form name="showthis" method="post" action="./?page=logs">
+        <form name="showthis" method="post" action="index.php?page=logs">
           <select name="showing" id="showing">
 $options
           </select>
@@ -213,7 +214,7 @@ function getuserConvo($id, $showing) {
   $i = 1;
   $dbconn = db_open();
   //get undefined defaults from the db
-  $sql = "SELECT *  FROM `conversation_log` WHERE `bot_id` = '$bot_id' AND `userid` = $id $sqladd ORDER BY `id` ASC";
+  $sql = "SELECT *  FROM `conversation_log` WHERE `bot_id` = '$bot_id' AND `user_id` = $id $sqladd ORDER BY `id` ASC";
   $list = "<hr><br/><h4>$title conversations for user: $id</h4>";
   $list .="<div class=\"convolist\">";
   $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql\n");

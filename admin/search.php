@@ -1,29 +1,31 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.2
+//My Program-O Version 2.1.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // search.php
+  $post_vars = filter_input_array(INPUT_POST);
+  $get_vars = filter_input_array(INPUT_GET);
 
 
-  if((isset($_POST['action']))&&($_POST['action']=="search")) {
+  if((isset($post_vars['action']))&&($post_vars['action']=="search")) {
     $mainContent = $template->getSection('SearchAIMLForm');
     $mainContent .= runSearch();
   }
-  elseif((isset($_POST['action']))&&($_POST['action']=="update")) {
+  elseif((isset($post_vars['action']))&&($post_vars['action']=="update")) {
     $mainContent = $template->getSection('SearchAIMLForm');
     $mainContent .= updateAIML();
   }
-  elseif((isset($_GET['action']))&&($_GET['action']=="del")&&(isset($_GET['id']))&&($_GET['id']!="")) {
+  elseif((isset($get_vars['action']))&&($get_vars['action']=="del")&&(isset($get_vars['id']))&&($get_vars['id']!="")) {
     $mainContent = $template->getSection('SearchAIMLForm');
-    $mainContent .= delAIML($_GET['id']);
+    $mainContent .= delAIML($get_vars['id']);
   }
-  elseif((isset($_GET['action']))&&($_GET['action']=="edit")&&(isset($_GET['id']))&&($_GET['id']!="")) {
+  elseif((isset($get_vars['action']))&&($get_vars['action']=="edit")&&(isset($get_vars['id']))&&($get_vars['id']!="")) {
     $mainContent = $template->getSection('SearchAIMLForm');
-    $mainContent .= editAIMLForm($_GET['id']);
+    $mainContent .= editAIMLForm($get_vars['id']);
   }
   else {
     $mainContent = $template->getSection('SearchAIMLForm');
@@ -69,16 +71,16 @@
 
 
   function runSearch() {
-    global $bot_id, $bot_name;
+    global $bot_id, $bot_name, $post_vars;
     $dbconn = db_open();
     $i=0;
     $searchTermsTemplate = " like '[value]' or\n  ";
     $searchTerms = '';
-    $search_topic    = mysql_real_escape_string(trim($_POST['search_topic']));
-    $search_filename = mysql_real_escape_string(trim($_POST['search_filename']));
-    $search_pattern  = mysql_real_escape_string(trim($_POST['search_pattern']));
-    $search_template = mysql_real_escape_string(trim($_POST['search_template']));
-    $search_that     = mysql_real_escape_string(trim($_POST['search_that']));
+    $search_topic    = mysql_real_escape_string(trim($post_vars['search_topic']));
+    $search_filename = mysql_real_escape_string(trim($post_vars['search_filename']));
+    $search_pattern  = mysql_real_escape_string(trim($post_vars['search_pattern']));
+    $search_template = mysql_real_escape_string(trim($post_vars['search_template']));
+    $search_that     = mysql_real_escape_string(trim($post_vars['search_that']));
     if(!empty($search_topic) or !empty($search_filename) or !empty($search_pattern) or !empty($search_template) or !empty($search_that)) {
       $sql = "SELECT * FROM `aiml` WHERE `bot_id` = '$bot_id'  AND (\n  [searchTerms]\n) LIMIT 50;";
       $searchTerms .= (!empty($search_topic)) ? '`topic`' . str_replace('[value]', $search_topic, $searchTermsTemplate) : '';
@@ -113,10 +115,10 @@ endtHead;
         $filename = $row['filename'];
         $id = $row['id'];
         $action = <<<endLink
-          <a href="./?page=search&amp;action=edit&amp;id=$id">
+          <a href="index.php?page=search&amp;action=edit&amp;id=$id">
             <img src="images/edit.png" border=0 width="15" height="15" alt="Edit this entry" title="Edit this entry" />
           </a>
-          <a href="./?page=search&amp;action=del&amp;id=$id" onclick="return confirm('Do you really want to delete this AIML record? You will not be able to undo this!')";>
+          <a href="index.php?page=search&amp;action=del&amp;id=$id" onclick="return confirm('Do you really want to delete this AIML record? You will not be able to undo this!')";>
             <img src="images/del.png" border=0 width="15" height="15" alt="Delete this entry" title="Delete this entry" />
           </a>
 endLink;
@@ -178,14 +180,14 @@ endRow;
   }
 
   function updateAIML() {
-  //db globals
+    global $post_vars;
     $dbconn = db_open();
-    $template = mysql_real_escape_string(trim($_POST['template']));
-    $filename = mysql_real_escape_string(trim($_POST['filename']));
-    $pattern = strtoupper(mysql_real_escape_string(trim($_POST['pattern'])));
-    $thatpattern = strtoupper(mysql_real_escape_string(trim($_POST['thatpattern'])));
-    $topic = strtoupper(mysql_real_escape_string(trim($_POST['topic'])));
-    $id = trim($_POST['id']);
+    $template = mysql_real_escape_string(trim($post_vars['template']));
+    $filename = mysql_real_escape_string(trim($post_vars['filename']));
+    $pattern = strtoupper(mysql_real_escape_string(trim($post_vars['pattern'])));
+    $thatpattern = strtoupper(mysql_real_escape_string(trim($post_vars['thatpattern'])));
+    $topic = strtoupper(mysql_real_escape_string(trim($post_vars['topic'])));
+    $id = trim($post_vars['id']);
     if(($template == "")||($pattern== "")||($id=="")) {
       $msg =  'Please make sure you have entered a user input and bot response ';
     }

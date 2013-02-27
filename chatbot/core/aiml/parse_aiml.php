@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.1.2
+  * Version: 2.1.3
   * FILE: chatbot/core/aiml/parse_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -274,10 +274,11 @@
     $ap = str_replace("+", "\+", $ap);
     $ap = str_replace("*", "(.*)", $ap);
     $ap = str_replace("_", "(.*)", $ap);
-    $wildcards = str_replace("_", "(.*)?", str_replace("*", "(.*)?", $aiml_pattern));
-    if ($wildcards != $aiml_pattern)
+    // Set pattern wildcards
+    $pattern_wildcards = str_replace("_", "(.*)?", str_replace("*", "(.*)?", $aiml_pattern));
+    if ($pattern_wildcards != $aiml_pattern)
     {
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "We have stars to process!", 2);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "We have pattern stars to process!", 2);
       if (!isset ($convoArr['aiml']['user_raw']))
       {
         $checkagainst = $convoArr['aiml']['lookingfor'];
@@ -302,6 +303,35 @@
       else
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Something is not right here.", 2);
     }
+    // Set that stars (match against just the first instance of that for now - need to work out something for all instances, though)
+    $aiml_thatpattern = $convoArr['aiml']['thatpattern'];
+    $tp = trim($aiml_thatpattern);
+    $tp = str_replace("+", "\+", $tp);
+    $tp = str_replace("*", "(.*)", $tp);
+    $tp = str_replace("_", "(.*)", $tp);
+    $thatpattern_wildcards = str_replace("_", "(.*)?", str_replace("*", "(.*)?", $aiml_thatpattern));
+    if ($thatpattern_wildcards != $aiml_thatpattern)
+    {
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "We have thatpattern stars to process!", 2);
+      $that = $convoArr['that'][1];
+      $checkagainst = implode_recursive(' ', $that, __FILE__, __FUNCTION__, __LINE__);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking '$tp' against '$checkagainst'.", 2);
+      if (preg_match_all("~$ap~si", $checkagainst, $matches))
+      {
+        runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($matches, true), 2);
+        for ($i = 1; $i < count($matches); $i++)
+        {
+          $curStar = $matches[$i][0];
+          $curStar = trim(remove_all_punctuation($curStar));
+          $curIndex = $i;
+          runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding $curStar to the that_star stack.", 2);
+          $convoArr['that_star'][$i] = $curStar;
+        }
+      }
+      else
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Something is not right here.", 2);
+    }
+
     return $convoArr;
   }
 

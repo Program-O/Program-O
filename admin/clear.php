@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.2
+//My Program-O Version 2.1.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -43,13 +43,14 @@ $content ="";
 //-->
     </script>
 endScript;
+$post_vars = filter_input_array(INPUT_POST);
 
 
-if((isset($_POST['action']))&&($_POST['action']=="clear")) {
+if((isset($post_vars['action']))&&($post_vars['action']=="clear")) {
   $content .= clearAIML();
 }
-elseif((isset($_POST['clearFile']))&&($_POST['clearFile'] != "null")) {
-  $content .= clearAIMLByFileName($_POST['clearFile']);
+elseif((isset($post_vars['clearFile']))&&($post_vars['clearFile'] != "null")) {
+  $content .= clearAIMLByFileName($post_vars['clearFile']);
 }
 else {
 }
@@ -131,7 +132,7 @@ else {
           Deleting AIML categories from the database is <strong>permanent</strong>!
           This action <strong>CANNOT</strong> be undone!<br />
           <div id="clearForm">
-          <form name="clearForm" action="./?page=clear" method="POST" onsubmit="return verify()">
+          <form name="clearForm" action="index.php?page=clear" method="POST" onsubmit="return verify()">
           <table class="formTable">
             <tr>
               <td>

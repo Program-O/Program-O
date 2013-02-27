@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.2
+  * Version: 2.1.3
   * FILE: TODO
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-18-2013
@@ -9,9 +9,12 @@
   ***************************************/
 
 
-  1.) Add functions for the following AIML tags:
-          <that>
-          <input>
-          <thatstar>
-          <topicstar>
-          <gossip>
+  1.) Add functionality for botmasters to see what inputs triggered the default
+      response category, so that they may be able to more easily determine what
+      AIML categories need to be added.
+
+  2.) Add a page to the admin script that helps botmasters create new AIML categories
+      based on the functionality mentioned in item 1, above.
+
+  3.) Add a page to the admin script that allows botmasters to edit the config file
+      directly.

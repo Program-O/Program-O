@@ -1,7 +1,7 @@
 <?php
 
   //-----------------------------------------------------------------------------------------------
-  //My Program-O Version 2.1.2
+  //My Program-O Version 2.1.3
   //Program-O  chatbot admin area
   //Written by Elizabeth Perreau and Dave Morton
   //Aug 2011
@@ -48,6 +48,7 @@
 //-->
     </script>
 endScript;
+  $post_vars = filter_input_array(INPUT_POST);
 
   $XmlEntities = array('&amp;' => '&', '&lt;' => '<', '&gt;' => '>', '&apos;' => '\'', '&quot;' => '"',);
   $g_tagName = null;
@@ -91,19 +92,19 @@ endScript;
 
   function parseAIML($fn,$aimlContent)
   {
-    if (empty ($aimlContent))
-      return "File $fn was empty!";
+    global $post_vars;
+    if (empty ($aimlContent)) return "File $fn was empty!";
     global $debugmode, $bot_id, $default_charset;
     $fileName = basename($fn);
     $success = false;
     $dbconn = db_open();
     #Clear the database of the old entries
     $sql = "DELETE FROM `aiml`  WHERE `filename` = '$fileName' AND bot_id = '$bot_id'";
-    if (isset ($_POST['clearDB']))
+    if (isset ($post_vars['clearDB']))
     {
       $x = updateDB($sql);
     }
-    $myBot_id = (isset ($_POST['bot_id'])) ? $_POST['bot_id'] : $bot_id;
+    $myBot_id = (isset ($post_vars['bot_id'])) ? $post_vars['bot_id'] : $bot_id;
     # Read new file into the XML parser
     $sql_start = "insert into `aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`, `php_code`) values\n";
     $sql = $sql_start;

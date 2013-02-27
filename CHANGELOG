@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.2
+  * Version: 2.1.3
   * FILE: CHANGELOG
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -9,6 +9,26 @@
   ***************************************/
 
 Version History:
+
+2.1.3   Added the last of the AIML tag functions/Refactored the DB/Multiple Bug Fixes
+            1.) Added functions for the remaining AIML tags:
+                <thatstar>
+                <topicstar>
+                <gossip>
+            2.) Refactored the database, standardizing field names across all of the tables.
+            3.) Refactored the admin pages, replacing $_GET, $_POST and $_REQUEST with input
+                filtering functions.
+            4.) Fixed several minor bugs that were discovered during the database refactoring
+                process.
+            5.) Re-designed the AIML tag functions, consolidating duplicate code into a single
+                function. this cut more than 70 lines of code from the script while retaining
+                exactly the same functionality and performance.
+            6.) Created an experimental config file editor to the admin folder, to allow
+                botmasters to edit the file directly. For now, the script doesn't actually
+                change the config file, but that functionality will be added in the coming
+                weeks.
+            7.) Updated and modified the automatic upgrade script to incorporate all of the
+                above listed changes.
 
 2.1.2   Added more AIML tag functions/Script Streamlining
             1.) Added functions for the following AIML tags:
@@ -58,8 +78,8 @@ Version History:
 2.0.6   Performed the following upgrades/fixes:
             1.) Corrected typographical errors in several files, both in the admin pages, and in the config files.
             2.) Consolidated error logging, adding a /logs/ folder to the base directory. Error logs are
-              also named for the pages where the errors occur. (e.g. admin-error.log for the admin pages,
-              install-error.log, etc.)
+              also named for the pages where the errors occur. (e.g. admin.error.log for the admin pages,
+              install.error.log, etc.)
             3.) Updated the addon checkForBan, activating it, and adding functionality to add banned users
               to the list of banned IP addresses. It's still up to the botmaster to implement banning in
               their AIML files. To ban a user, insert the following into the apropriate AIML template:

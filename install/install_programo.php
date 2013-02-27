@@ -2,7 +2,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.2
+  * Version: 2.1.3
   * FILE: install_programo.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -91,7 +91,7 @@ function Save() {
   // First off, write the config file
   $myPostVars = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
   ksort($myPostVars);
-  $configContents = file_get_contents(_CONF_PATH_ . 'global_config.tpl');
+  $configContents = file_get_contents(_CONF_PATH_ . 'config.template.php');
   foreach ($myPostVars as $key => $value) {
     $tagSearch[] = "[$key]";
     $varReplace[] = $value;
@@ -126,7 +126,7 @@ function Save() {
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
 VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[use_aiml_code]', '[update_aiml_code]', '[save_state]', 
 '$default_conversation_lines', '$default_remember_up_to', '[debugemail]', '[debugshow]', '[debugmode]', '$default_error_response', '$default_pattern');";
-  
+
   require_once (_LIB_PATH_ . 'error_functions.php');
   require_once (_LIB_PATH_ . 'db_functions.php');
   $bot_id = 1;
@@ -144,10 +144,10 @@ VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]',
   $sql = str_replace('[update_aiml_code]',$myPostVars["default_update_aiml_code"], $sql);
   $sql = str_replace('[save_state]',$myPostVars["default_save_state"], $sql);
   $sql = str_replace('[conversation_lines]',$default_conversation_lines, $sql);
-  $sql = str_replace('[remember_up_to]',$default_remember_up_to, $sql);
+  $sql = str_replace('[default_remember_up_to]',$default_remember_up_to, $sql);
   $sql = str_replace('[debugemail]',$myPostVars["default_debugemail"], $sql);
-  $sql = str_replace('[debugshow]',$myPostVars["default_debugshow"], $sql);
-  $sql = str_replace('[debugmode]',$myPostVars["default_debugmode"], $sql);
+  $sql = str_replace('[debugshow]',$myPostVars["default_debug_level"], $sql);
+  $sql = str_replace('[debugmode]',$myPostVars["default_debug_mode"], $sql);
   $sql = str_replace('[error_response]',$default_error_response, $sql);
   $sql = str_replace('[default_aiml_pattern]',$default_pattern, $sql);
   $save = file_put_contents(_CONF_PATH_ . 'sql.txt', $sql);
@@ -155,7 +155,7 @@ VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]',
   $encrypted_adm_dbp = md5($myPostVars["adm_dbp"]);
   $adm_dbu = $myPostVars["adm_dbu"];
   $cur_ip = $_SERVER['REMOTE_ADDR'];
-  $adminSQL = "insert ignore into `myprogramo` (`id`, `uname`, `pword`, `lastip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
+  $adminSQL = "insert ignore into `myprogramo` (`id`, `user_name`, `password`, `last_ip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
   $result = db_query($adminSQL, $conn) or install_error('Could not add admin credentials! Check line #' . __LINE__, mysql_error(), $sql);
 
   mysql_close($conn);
@@ -177,12 +177,12 @@ endError;
 }
 
 function upgrade($conn) {
-  $upgradeSQL = file_get_contents('upgrade_bots_table.sql');
+  $upgradeSQL = file_get_contents('upgrade_2.0_2.1.sql');
   $queries = explode(';',$upgradeSQL);
-  foreach ($queries as $sql) {
+  foreach ($queries as $line => $sql) {
     $sql = trim($sql);
     if (!empty($sql)) {
-      $result = mysql_query($sql, $conn) or install_error('Error upgrading the database! check line #' . __LINE_, mysql_error(), $sql);
+      $result = mysql_query($sql, $conn) or install_error('Error upgrading the database! check line #' . $line + 1 . ' of the SQL file. Error:', mysql_error() . "\nSQL: $sql\n", $sql);
       $success = mysql_affected_rows();
     }
   }

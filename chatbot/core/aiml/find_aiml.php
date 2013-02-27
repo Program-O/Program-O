@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.2
+  * Version: 2.1.3
   * FILE: chatbot/core/aiml/find_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -49,34 +49,23 @@
   {
     global $offset;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making a like pattern to use in the sql", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Transforming $field: " . print_r($sentence, true), 4);
     $sql_like_pattern = '';
     $i = 0;
     //if the sentence is contained in an array extract the actual text sentence
     if (is_array($sentence))
     {
-      $sentence = $sentence[$offset];
+      #$sentence = $sentence[$offset];
+      $sentence = implode_recursive(' ', $sentence, __FILE__, __FUNCTION__, __LINE__);
     }
     $words = explode(" ", $sentence);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "word list:\n" . print_r($words, true), 4);
     $count_words = count($words) - 1;
-    //loop through the words in the sentence
-    foreach ($words as $index => $word)
-    {
-      if ($i == 0)
-      {
-        $sql_like_pattern .= " `$field` LIKE \"" . $word . " %\" OR ";
-      }
-      elseif ($i == $count_words)
-      {
-        $sql_like_pattern .= " `$field` LIKE \"% " . $word . "\" OR ";
-      }
-      else
-      {
-        $sql_like_pattern .= " `$field` LIKE \"% " . $word . " %\" OR ";
-      }
-      $i++;
-    }
-    //clean
-    $sql_like_pattern = trim($sql_like_pattern, "OR ");
+    $first_word = $words[0];
+    $last_word = $words[$count_words];
+
+    $sql_like_pattern .= " `$field` like '%$first_word %' OR  `$field` like '% $last_word%' OR  `$field` like '$first_word % $last_word'";
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "returning like pattern:\n$sql_like_pattern", 4);
     //return
     return $sql_like_pattern;
   }
@@ -411,6 +400,7 @@
   function sort2DArray($opName, $thisArr, $sortByItem, $sortAsc = 1, $limit = 10)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName - sorting " . count($thisArr) . " results and getting the top $limit for debugging", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($thisArr, true), 4);
     $i = 0;
     $tmpSortArr = array();
     $resArr = array();
@@ -594,8 +584,8 @@
     $lookingfor = mysql_real_escape_string($convoArr['aiml']['lookingfor']);
     //build sql
     $sql = "SELECT * FROM `$dbn`.`aiml_userdefined` WHERE
-		`botid` = '$bot_id' AND
-		`userid` = '$user_id' AND
+		`bot_id` = '$bot_id' AND
+		`user_id` = '$user_id' AND
 		`pattern` = '$lookingfor'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined SQL: $sql", 3);
     $result = db_query($sql, $con);

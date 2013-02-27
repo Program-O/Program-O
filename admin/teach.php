@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.2
+//My Program-O Version 2.1.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -40,9 +40,10 @@ $upperScripts = <<<endScript
 //-->
     </script>
 endScript;
+  $post_vars = filter_input_array(INPUT_POST);
 
   $msg = '';
-  if((isset($_POST['action']))&&($_POST['action']=="teach")) {
+  if((isset($post_vars['action']))&&($post_vars['action']=="teach")) {
     $msg = insertAIML();
   }
   $teachContent = $template->getSection('TeachBotForm');
@@ -77,16 +78,16 @@ endScript;
 
 function insertAIML() {
   //db globals
-  global $template, $msg;
+  global $template, $msg, $post_vars;
   $dbconn = db_open();
   $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
-  $aimltemplate = mysql_real_escape_string(trim($_POST['template']));
-  $pattern = strtoupper(mysql_real_escape_string(trim($_POST['pattern'])));
-  $thatpattern = strtoupper(mysql_real_escape_string(trim($_POST['thatpattern'])));
+  $aimltemplate = mysql_real_escape_string(trim($post_vars['template']));
+  $pattern = strtoupper(mysql_real_escape_string(trim($post_vars['pattern'])));
+  $thatpattern = strtoupper(mysql_real_escape_string(trim($post_vars['thatpattern'])));
   $aiml = str_replace('[pattern]', $pattern, $aiml);
   $aiml = (empty($thatpattern)) ? str_replace('[thatpattern]', "<that>$thatpattern</that>", $aiml) : $aiml;
   $aiml = str_replace('[template]', $aimltemplate, $aiml);
-  $topic = strtoupper(mysql_real_escape_string(trim($_POST['topic'])));
+  $topic = strtoupper(mysql_real_escape_string(trim($post_vars['topic'])));
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
   if(($pattern=="") || ($template=="")) {
     $msg = 'You must enter a user input and bot response.';

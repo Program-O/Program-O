@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.2
+* Version: 2.1.3
 * FILE: chatbot/core/user/handle_user.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
@@ -21,8 +21,9 @@ function load_new_client_defaults($convoArr)
   global $unknown_user;
   //to do could put this in an array
   //todo check this out
-  runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading client defaults",1);
-  runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation element = " . print_r($convoArr['conversation'], true), 2);
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+  runDebug( __FILE__, __FUNCTION__, __LINE__, 'Loading client defaults', 2);
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Conversation element = ' . print_r($convoArr['conversation'], true), 2);
   $sql = "";
   $convoArr['client_properties']['name'] = $unknown_user;
   $convoArr['client_properties']['id'] = session_id();
@@ -52,7 +53,7 @@ function get_user_id($convoArr)
     $convoArr['conversation']['user_id'] = $row['id'];
     // add user name, if set
     #$convoArr['conversation']['user_name'] = (!empty($row['name'])) ? $row['name'] : (!empty($convoArr['client_properties']['name'])) ? $convoArr['client_properties']['name'] : $unknown_user;
-    $convoArr['conversation']['user_name'] = (!empty($convoArr['client_properties']['name'])) ? $convoArr['client_properties']['name'] : (!empty($row['name'])) ? $row['name'] : $unknown_user;
+    $convoArr['conversation']['user_name'] = (!empty($convoArr['client_properties']['name'])) ? $convoArr['client_properties']['name'] : (!empty($row['user_name'])) ? $row['user_name'] : $unknown_user;
     $convoArr['client_properties']['name'] = $convoArr['conversation']['user_name'];
     $msg = "existing";
   }
@@ -97,7 +98,7 @@ function intisaliseUser($convoArr)
     $sb = mysql_real_escape_string($_SERVER['HTTP_USER_AGENT']);
   }
 
-  $sql = "INSERT INTO `$dbn`.`users` (`id`, `name`, `session_id`, `bot_id`, `chatlines` ,`ip` ,`referer` ,`browser` ,`date_logged_on` ,`last_update`, `state`)
+  $sql = "INSERT INTO `$dbn`.`users` (`id`, `user_name`, `session_id`, `bot_id`, `chatlines` ,`ip` ,`referer` ,`browser` ,`date_logged_on` ,`last_update`, `state`)
   VALUES ( NULL , '$unknown_user', '$convo_id', $default_bot_id, '0', '$sa', '$sr', '$sb', CURRENT_TIMESTAMP , '0000-00-00 00:00:00', '')";
 
   mysql_query($sql,$con) or trigger_error('Error trying to add user. Error = ' . mysql_error());

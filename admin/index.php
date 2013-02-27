@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.2
+//My Program-O Version 2.1.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -25,19 +25,22 @@
   $bot_name = 'unknown';
   $bot_id = 1;
   session_start();
-  $myPage = (isset($_GET['myPage'])) ? $_GET['myPage'] : '';
+  $post_vars = filter_input_array(INPUT_POST);
+  $get_vars = filter_input_array(INPUT_GET);
+
+  $myPage = (isset($get_vars['myPage'])) ? $get_vars['myPage'] : '';
   $hide_logo = (isset($_SESSION['display'])) ? $_SESSION['display'] : '';
   if (!empty($_SESSION)) {
     if((!isset($_SESSION['poadmin']['uid'])) || ($_SESSION['poadmin']['uid']=="")) {
       $msg .= "Session timed out<br>\n";
-      $_GET['page'] = 'logout';
+      $get_vars['page'] = 'logout';
     }
     else {
       $name = $_SESSION['poadmin']['name'];
       $ip = $_SESSION['poadmin']['ip'];
-      $last = $_SESSION['poadmin']['lastlogin'];
+      $last = $_SESSION['poadmin']['last_login'];
       $lip = $_SESSION['poadmin']['lip'];
-      $llast = $_SESSION['poadmin']['llastlogin'];
+      $llast = $_SESSION['poadmin']['llast_login'];
       $bot_name = $_SESSION['poadmin']['bot_name'];
       $bot_id = $_SESSION['poadmin']['bot_id'];
     }
@@ -82,21 +85,21 @@
   $pageTitle     = 'My-Program O - Login';
   $upperScripts  = '';
 
-  if((isset($_POST['uname']))&&(isset($_POST['pw']))) {
+  if((isset($post_vars['user_name']))&&(isset($post_vars['pw']))) {
     $_SESSION['poadmin']['display'] = $hide_logo;
     $dbconn = db_open();
-    $uname = filter_input(INPUT_POST,'uname',FILTER_SANITIZE_STRING);
+    $user_name = filter_input(INPUT_POST,'user_name',FILTER_SANITIZE_STRING);
     $pw    = filter_input(INPUT_POST,'pw',FILTER_SANITIZE_STRING);
-    $sql = "SELECT * FROM `myprogramo` WHERE uname = '".$uname."' AND pword = '".MD5($pw)."'";
+    $sql = "SELECT * FROM `myprogramo` WHERE user_name = '".$user_name."' AND password = '".MD5($pw)."'";
     $result = mysql_query($sql,$dbconn) or $msg .= SQL_Error(mysql_errno());
     if ($result) {
       $count = mysql_num_rows($result);
       if($count > 0) {
         $row=mysql_fetch_array($result);
         $_SESSION['poadmin']['uid']=$row['id'];
-        $_SESSION['poadmin']['name']=$row['uname'];
-        $_SESSION['poadmin']['lip']=$row['lastip'];
-        $_SESSION['poadmin']['llastlogin']=date('l jS \of F Y h:i:s A', strtotime($row['lastlogin']));
+        $_SESSION['poadmin']['name']=$row['user_name'];
+        $_SESSION['poadmin']['lip']=$row['last_ip'];
+        $_SESSION['poadmin']['llast_login']=date('l jS \of F Y h:i:s A', strtotime($row['last_login']));
         if(!empty($_SERVER['HTTP_CLIENT_IP'])) {  //check ip from share internet
           $ip=$_SERVER['HTTP_CLIENT_IP'];
         }
@@ -106,11 +109,11 @@
         else {
           $ip=$_SERVER['REMOTE_ADDR'];
         }
-        $sqlupdate = "UPDATE `myprogramo` SET `lastip` = '$ip', `lastlogin` = CURRENT_TIMESTAMP WHERE uname = '$uname' limit 1";
+        $sqlupdate = "UPDATE `myprogramo` SET `last_ip` = '$ip', `last_login` = CURRENT_TIMESTAMP WHERE user_name = '$user_name' limit 1";
         $result = mysql_query($sqlupdate,$dbconn);
         $transact = mysql_affected_rows($dbconn);
         $_SESSION['poadmin']['ip']=$ip;
-        $_SESSION['poadmin']['lastlogin']=date('l jS \of F Y h:i:s A');
+        $_SESSION['poadmin']['last_login']=date('l jS \of F Y h:i:s A');
         $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
         $result = mysql_query($sql,$dbconn);
         $count = mysql_num_rows($result);
@@ -133,11 +136,11 @@
       include ('main.php');
     }
   }
-  elseif(isset($_GET['msg'])) {
-    $msg .= htmlentities($_GET['msg']);
+  elseif(isset($get_vars['msg'])) {
+    $msg .= htmlentities($get_vars['msg']);
   }
-  elseif(isset($_GET['page'])) {
-    $curPage = $_GET['page'];
+  elseif(isset($get_vars['page'])) {
+    $curPage = $get_vars['page'];
     if ($curPage == 'logout') {
       if(isset($_COOKIE[session_name()])) {
         setcookie(session_name(), '', time()-42000, '/');
@@ -225,7 +228,7 @@
         $tmp = str_replace($search, $replace, $tmp);
       }
       $linkClass = $needle['[linkHref]'];
-      $linkClass = str_replace(' href="./?page=', '', $linkClass);
+      $linkClass = str_replace(' href="index.php?page=', '', $linkClass);
       $linkClass = str_replace('"', '', $linkClass);
       #die ("linkClass = $linkClass<br />\nstrstr = $sp<br />\n");
       #$curClass = ($linkClass == $curPage) ? 'selected' : 'noClass';
@@ -246,8 +249,8 @@
     $ip = $_SERVER['REMOTE_ADDR'];
     $name = $_SESSION['poadmin']['name'];
     $lip = $_SESSION['poadmin']['lip'];
-    $last = $_SESSION['poadmin']['lastlogin'];
-    $llast = $_SESSION['poadmin']['llastlogin'];
+    $last = $_SESSION['poadmin']['last_login'];
+    $llast = $_SESSION['poadmin']['llast_login'];
     $admess = "You are logged in as: $name from $ip since: $last";
     $admess .= "<br />You last logged in from $lip on $llast";
     $today = date("Y");
@@ -261,7 +264,7 @@ endFooter;
     $out = array(
                          array(
                                '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="./?page=main"',
+                               '[linkHref]' => ' href="index.php?page=main"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="Home"',
                                '[linkTitle]' => ' title="Home"',
@@ -285,7 +288,7 @@ endFooter;
                                ),
                          array(
                                '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="./?page=bugs"',
+                               '[linkHref]' => ' href="index.php?page=bugs"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="Bug reporting"',
                                '[linkTitle]' => ' title="Bug reporting"',
@@ -293,7 +296,7 @@ endFooter;
                                ),
                          array(
                                '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="./?page=stats"',
+                               '[linkHref]' => ' href="index.php?page=stats"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="Get bot statistics"',
                                '[linkTitle]' => ' title="Get bot statistics"',
@@ -301,7 +304,7 @@ endFooter;
                                ),
                          array(
                                '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="./?page=support"',
+                               '[linkHref]' => ' href="index.php?page=support"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="Get support for Program O"',
                                '[linkTitle]' => ' title="Get support for Program O"',
@@ -309,7 +312,7 @@ endFooter;
                                ),
                          array(
                                '[linkClass]' => '',
-                               '[linkHref]' => ' href="./?page=logout"',
+                               '[linkHref]' => ' href="index.php?page=logout"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="Log out"',
                                '[linkTitle]' => ' title="Log out"',
@@ -322,7 +325,7 @@ endFooter;
     $out = array(
                  array( # Change bot
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=select_bots"',
+                       '[linkHref]' => ' href="index.php?page=select_bots"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Change or edit the current bot"',
                        '[linkTitle]' => ' title="Change or edit the current bot"',
@@ -330,7 +333,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=botpersonality"',
+                       '[linkHref]' => ' href="index.php?page=botpersonality"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Edit your bot\'s personality"',
                        '[linkTitle]' => ' title="Edit your bot\'s personality"',
@@ -338,7 +341,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=logs"',
+                       '[linkHref]' => ' href="index.php?page=logs"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="View the log files"',
                        '[linkTitle]' => ' title="View the log files"',
@@ -346,7 +349,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=teach"',
+                       '[linkHref]' => ' href="index.php?page=teach"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Train your bot"',
                        '[linkTitle]' => ' title="Train your bot"',
@@ -354,7 +357,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=upload"',
+                       '[linkHref]' => ' href="index.php?page=upload"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Upload AIML files"',
                        '[linkTitle]' => ' title="Upload AIML files"',
@@ -362,7 +365,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=download"',
+                       '[linkHref]' => ' href="index.php?page=download"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Download AIML files"',
                        '[linkTitle]' => ' title="Download AIML files"',
@@ -370,7 +373,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=clear"',
+                       '[linkHref]' => ' href="index.php?page=clear"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Clear AIML Categories"',
                        '[linkTitle]' => ' title="Clear AIML Categories"',
@@ -378,7 +381,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=spellcheck"',
+                       '[linkHref]' => ' href="index.php?page=spellcheck"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Edit the SpellCheck entries"',
                        '[linkTitle]' => ' title="Edit the SpellCheck entries"',
@@ -386,7 +389,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=wordcensor"',
+                       '[linkHref]' => ' href="index.php?page=wordcensor"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Edit the Word Censor entries"',
                        '[linkTitle]' => ' title="Edit the Word Censor entries"',
@@ -394,7 +397,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=search"',
+                       '[linkHref]' => ' href="index.php?page=search"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Search and edit specific AIML categories"',
                        '[linkTitle]' => ' title="Search and edit specific AIML categories"',
@@ -402,7 +405,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="./?page=demochat"',
+                       '[linkHref]' => ' href="index.php?page=demochat"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Run a demo version of your bot"',
                        '[linkTitle]' => ' title="Run a demo version of your bot"',
@@ -410,7 +413,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => '',
-                       '[linkHref]' => ' href="./?page=members"',
+                       '[linkHref]' => ' href="index.php?page=members"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Edit Admin Accounts"',
                        '[linkTitle]' => ' title="Edit Admin Accounts"',
@@ -418,7 +421,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => '',
-                       '[linkHref]' => ' href="./?page=logout"',
+                       '[linkHref]' => ' href="index.php?page=logout"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Log out"',
                        '[linkTitle]' => ' title="Log out"',

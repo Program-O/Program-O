@@ -30,33 +30,21 @@
 
   # process upgrade here
   $con = db_open();
-  $upgrade_not_needed = 'Please remove the file upgrade.php from the install folder. It\'s not needed.';
-  $needs_upgrade = check_for_upgrade();
-
-  $msg = ($needs_upgrade == 1) ? $upgrade_not_needed : '';
-  if (empty($msg))
-  {
-    $success = upgrade();
-    if (!$success) die(failure());
-    $msg = success();
-  }
-
-  $msg .= ' <a href="' . _BASE_URL_ .  "gui/$gui" . '">Click here</a> to procede to the chatbot,
-or <a href="' . _ADMIN_URL_ . '">here</a> to log into the admin page.
-';
-
-  echo($msg);
+  $upgrade = check_for_upgrade();
+  (!$upgrade) ? header('location: ' . _BASE_URL_ . "gui/$gui") : (upgrade()) ? success() : failure();
 
 
   function check_for_upgrade()
   {
     global $con, $dbn;
     $out = array();
-    $sql = "show columns from `aiml_userdefined` like 'bot_id';";
+    $sql = "show columns from aiml_userdefined like 'bot_id';";
     $result = db_query($sql, $con);
-    if (!$result) die(failure());
-    else $out = mysql_num_rows($result);
-    return $out; //
+    if ($result !== false)
+    {
+      $rowCount = mysql_num_rows($result);
+    }
+    return ($rowCount == 0) ? true : false;
   }
 
   function upgrade()
@@ -80,13 +68,12 @@ or <a href="' . _ADMIN_URL_ . '">here</a> to log into the admin page.
 
   function success()
   {
-    unlink(__FILE__);
-    return 'DB upgrade successful!';
+    $msg = 'DB upgrade successful! ';
   }
 
   function failure()
   {
-    return 'Upgrade failed! Please see the error logs for details.';
+    die('Upgrade failed!');
   }
 
 ?>

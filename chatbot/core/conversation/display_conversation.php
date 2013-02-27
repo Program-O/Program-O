@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.1.2
+* Version: 2.1.3
 * FILE: chatbot/core/conversation/display_conversation.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
@@ -17,17 +17,17 @@
 **/
 function get_conversation_to_display($convoArr)
 {
-	global $con,$dbn, $bot_name;
+	global $con,$dbn, $bot_name, $unknown_user;
   $user_id = $convoArr['conversation']['user_id'];
   $bot_id = $convoArr['conversation']['bot_id'];
   $user_name = $convoArr['conversation']['user_name'];
 /*
-  $sql = "select `name` from `users` where `id` = $user_id limit 1;";
+  $sql = "select `user_name` from `users` where `id` = $user_id limit 1;";
   $result = db_query($sql,$con);
   $row = mysql_fetch_assoc($result);
   $user_name = $row['name'];
 */
-  $user_name = (!empty($user_name)) ? $user_name : 'User';
+  $user_name = (!empty($user_name)) ? $user_name : $unknown_user;
   //$convoArr['conversation']['user_name'] = $user_name;
   $convoArr['conversation']['bot_name'] = $bot_name;
 	if (empty($bot_name)) {
@@ -44,7 +44,7 @@ function get_conversation_to_display($convoArr)
 	
 	$sql = "SELECT * FROM `$dbn`.`conversation_log`
 		WHERE 
-		`userid` = '".$convoArr['conversation']['user_id']."'
+		`user_id` = '".$convoArr['conversation']['user_id']."'
 		AND `bot_id` = '".$convoArr['conversation']['bot_id']."'
 		ORDER BY id DESC $limit ";
 		#$x = save_file('conversationLogSQL.txt', "SQL = \r\n$sql");

@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.2
+//My Program-O Version 2.1.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -9,22 +9,20 @@
 // members.php
   ini_set('memory_limit','128M');
   ini_set('max_execution_time','0');
-  $myPost = print_r($_POST, true);
-  #$msg = "<pre>$myPost</pre><br>\n";
-  #if (!empty($_POST)) die ("<pre>\n Post Vars:\n$myPost\n</pre>\n");
+  $post_vars = filter_input_array(INPUT_POST);
 
-  $uname = '';
-  $action = (isset($_POST['action'])) ? ucfirst(strtolower($_POST['action'])) : 'Add';
-  if (!empty($_POST)) {
+  $user_name = '';
+  $action = (isset($post_vars['action'])) ? ucfirst(strtolower($post_vars['action'])) : 'Add';
+  if (!empty($post_vars)) {
     $msg = save($action);
     #$action = ($action == 'editfromlist') ? 'Edit' : $action;
   }
 
-  $id = (isset($_POST['id']) and $action != 'Add') ? $_POST['id'] : getNextID();
+  $id = (isset($post_vars['id']) and $action != 'Add') ? $post_vars['id'] : getNextID();
   $id = ($id <= 0) ? getNextID() : $id;
-  if (isset($_POST['memberSelect'])) {
-    $id = $_POST['memberSelect'];
-    getMemberData($_POST['memberSelect']);
+  if (isset($post_vars['memberSelect'])) {
+    $id = $post_vars['memberSelect'];
+    getMemberData($post_vars['memberSelect']);
   }
   $upperScripts = <<<endScript
 
@@ -95,7 +93,7 @@ endScript;
   $mainContent       = str_replace('[members_content]', $membersForm, $mainContent);
   $mainContent       = str_replace('[showHelp]', $showHelp, $mainContent);
   $mainContent       = str_replace('[members_list_form]', $members_list_form, $mainContent);
-  $mainContent       = str_replace('[uname]', $uname, $mainContent);
+  $mainContent       = str_replace('[user_name]', $user_name, $mainContent);
   $mainContent       = str_replace('[action]', $action, $mainContent);
   $mainContent       = str_replace('[id]', $id, $mainContent);
   $mainTitle         = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
@@ -109,35 +107,35 @@ endScript;
   }
 
   function save($action) {
-    global $dbn, $action;
+    global $dbn, $action, $post_vars;
     #return 'action = ' . $action;
-    if (isset($_POST['memberSelect'])) {
-      $id = $_POST['memberSelect'];
+    if (isset($post_vars['memberSelect'])) {
+      $id = $post_vars['memberSelect'];
     }
     else {
-      if (!isset($_POST['uname']) or !isset($_POST['pword']) or !isset($_POST['pwordConfirm'])) return 'You left something out!';
-      $id = $_POST['id'];
-      $uname = $_POST['uname'];
-      $pword1 = $_POST['pword'];
-      $pword2 = $_POST['pwordConfirm'];
-      $pword = md5($pword1);
-      if ($action != 'Delete' and ($pword1 != $pword2)) return 'The passwords don\'t match!';
+      if (!isset($post_vars['user_name']) or !isset($post_vars['password']) or !isset($post_vars['passwordConfirm'])) return 'You left something out!';
+      $id = $post_vars['id'];
+      $user_name = $post_vars['user_name'];
+      $password1 = $post_vars['password'];
+      $password2 = $post_vars['passwordConfirm'];
+      $password = md5($password1);
+      if ($action != 'Delete' and ($password1 != $password2)) return 'The passwords don\'t match!';
     }
     switch ($action) {
       case 'Add':
       $ip = $_SERVER['REMOTE_HOST'];
-      $sql = "insert into myprogramo (id, uname, pword, lastip, lastlogin) values (null, '$uname', '$pword','$ip', CURRENT_TIMESTAMP);";
-      $out = "Account for $uname successfully added!";
+      $sql = "insert into myprogramo (id, user_name, password, last_ip, last_login) values (null, '$user_name', '$password','$ip', CURRENT_TIMESTAMP);";
+      $out = "Account for $user_name successfully added!";
       break;
       case 'Delete':
       $action = 'Add';
       $sql = "DELETE FROM `$dbn`.`myprogramo` WHERE `myprogramo`.`id` = $id LIMIT 1";
-      $out = "Account for $uname successfully deleted!";
+      $out = "Account for $user_name successfully deleted!";
       break;
       case 'Edit':
       $action = 'Add';
-      $sql = "update myprogramo set uname = '$uname', pword = '$pword' where id = $id;";
-      $out = "Account for $uname successfully updated!";
+      $sql = "update myprogramo set user_name = '$user_name', password = '$password' where id = $id;";
+      $out = "Account for $user_name successfully updated!";
       break;
       default:
       $action = 'Edit';
@@ -156,12 +154,12 @@ endScript;
     $out = "                  <!-- Start List of Current Admin Accounts -->\n";
     $dbconn = db_open();
     $optionTemplate = "                  <option value=\"[val]\">[key]</option>\n";
-    $sql = 'SELECT id, uname FROM myprogramo order by uname;';
+    $sql = 'SELECT id, user_name FROM myprogramo order by user_name;';
     $result = mysql_query($sql,$dbconn) or die(mysql_error());
     while ($row = mysql_fetch_assoc($result)) {
-      $uname = $row['uname'];
+      $user_name = $row['user_name'];
       $id = $row['id'];
-      $curOption = str_replace('[key]', $row['uname'], $optionTemplate);
+      $curOption = str_replace('[key]', $row['user_name'], $optionTemplate);
       $curOption = str_replace('[val]', $row['id'], $curOption);
       $out .= $curOption;
     }
@@ -172,18 +170,18 @@ endScript;
 
   function getMemberData($id) {
     if ($id <= 0) return false;
-    global $dbn, $uname, $id;
-    $sql = "select id, uname from myprogramo where id = $id limit 1;";
+    global $dbn, $user_name, $id;
+    $sql = "select id, user_name from myprogramo where id = $id limit 1;";
     $dbconn = db_open();
     $result = mysql_query($sql,$dbconn) or die(mysql_error());
     $row = mysql_fetch_assoc($result);
-    $uname = $row['uname'];
+    $user_name = $row['user_name'];
     $id = $row['id'];
     mysql_close($dbconn);
   }
 
   function getNextID() {
-    global $dbn, $uname;
+    global $dbn, $user_name;
     $sql = "select id from myprogramo order by id desc limit 1;";
     $dbconn = db_open();
     $result = mysql_query($sql,$dbconn) or die(mysql_error());

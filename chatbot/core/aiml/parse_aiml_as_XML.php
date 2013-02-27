@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.2
+  * Version: 2.1.3
   * FILE: chatbot/core/aiml/parse_aiml_as_XML.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -91,7 +91,7 @@
   function parseTemplateRecursive($convoArr, SimpleXMLElement $element, $level = 0)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $HTML_tags = array('a', 'abbr', 'acronym', 'address', 'applet', 'area', 'b', 'bdo', 'big', 'blockquote', 'br', 'button', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir', 'div', 'dl', 'dt', 'em', 'fieldset', 'font', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'label', 'legend', 'ol', 'object', 's', 'script', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'tt', 'u', 'ul');
+    $HTML_tags = array('a', 'abbr', 'acronym', 'address', 'applet', 'area', 'b', 'bdo', 'big', 'blockquote', 'br', 'button', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir', 'div', 'dl', 'dt', 'em', 'fieldset', 'font', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'iframe', 'img', 'ins', 'kbd', 'label', 'legend', 'ol', 'object', 's', 'script', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'tt', 'u', 'ul');
     $doNotParseChildren = array('li');
     $response = array();
     $parentName = strtolower($element->getName());
@@ -145,18 +145,37 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
     $response = array();
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "parseStar called from the $parentName tag at level $level. element = " . $element->asXML(), 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "parse_star_tag called from the $parentName tag at level $level. element = " . $element->asXML(), 2);
     $attributes = $element->attributes();
     if (count($attributes) != 0)
     {
       $index = $element->attributes()->index;
     }
     else $index = 1;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Star index = $index.", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "star index = $index.", 2);
     $star = $convoArr['star'][(int) $index];
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$star' to the response array.", 2);
     $response[] = $star;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Index value = $index, Star value = $star", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Index value = $index, star value = $star", 2);
+    return $response;
+  }
+
+  function parse_thatstar_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = array();
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "parse_thatstar_tag called from the $parentName tag at level $level. element = " . $element->asXML(), 2);
+    $attributes = $element->attributes();
+    if (count($attributes) != 0)
+    {
+      $index = $element->attributes()->index;
+    }
+    else $index = 1;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "thatstar index = $index.", 2);
+    $star = $convoArr['that_star'][(int) $index];
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$star' to the response array.", 2);
+    $response[] = $star;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Index value = $index, thatstar value = $star", 2);
     return $response;
   }
 
@@ -233,42 +252,30 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
     global $con, $dbn, $user_name;
-    $response = array();
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Processing element $parentName at level $level. element XML = " . $element->asXML(), 2);
-
-    $children = $element->children();
-    if (!empty ($children))
-    {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
-    }
-    else
-    {
-      $response[] = (string) $element;
-    }
+    $var_value = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $var_name = (string)$element->attributes()->name;
     $var_name = ($var_name == '*') ? $convoArr['star'][1] : $var_name;
     $vn_type = gettype($var_name);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "var_name = $var_name and is type: $vn_type", 2);
-    $var_value = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     if ($var_name == 'name')
     {
       $user_name = $var_value;
       $convoArr['client_properties']['name'] = $var_value;
       $convoArr['conversation']['user_name'] = $var_value;
-      $sql = "UPDATE `$dbn`.`users` set `name` = '$var_value' where `id` = $user_id;";
+      $sql = "UPDATE `$dbn`.`users` set `user_name` = '$var_value' where `id` = $user_id;";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Updating user name in the DB. SQL:\n$sql", 3);
       $result = db_query($sql, $con) or trigger_error('Error setting user name in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
       $numRows = mysql_affected_rows();
-      $sql = "select `name` from `$dbn`.`users` where `id` = $user_id;";
+      $sql = "select `user_name` from `$dbn`.`users` where `id` = $user_id;";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the users table to see if the value has changed. - SQL:\n$sql", 2);
       $result = db_query($sql, $con) or trigger_error('Error looking up DB info in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
       $rowCount = mysql_num_rows($result);
       if ($rowCount != 0)
       {
-        $rows = mysql_fetch_assoc($result);
-        $tmp_name = $rows['name'];
+        $row = mysql_fetch_assoc($result);
+        $tmp_name = $row['user_name'];
         runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for the user's name is $tmp_name.", 2);
       }
     }
@@ -300,12 +307,7 @@
   function parse_think_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $response = array();
-    $children = $element->children();
-    if (!empty ($children))
-    {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
-    }
+    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     return '';
   }
 
@@ -332,33 +334,14 @@
   function parse_uppercase_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $response = array();
-    $children = $element->children();
-    if (!empty ($children))
-    {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
-    }
-    else
-    {
-      $response[] = (string) $element;
-    }
-    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     return ltrim(strtoupper($response_string), ' ');
   }
 
   function parse_lowercase_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $response = array();
-    $children = $element->children();
-    if (!empty ($children))
-    {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
-    }
-    else
-    {
-      $response[] = (string) $element;
-    }
+    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     return ltrim(strtolower($response_string), ' ');
   }
@@ -366,17 +349,7 @@
   function parse_sentence_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $response = array();
-    $children = $element->children();
-    if (!empty ($children))
-    {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
-    }
-    else
-    {
-      $response[] = (string) $element;
-    }
-    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $response = ucfirst(strtolower($response_string));
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 2);
     return $response;
@@ -385,17 +358,7 @@
   function parse_formal_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $response = array();
-    $children = $element->children();
-    if (!empty ($children))
-    {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
-    }
-    else
-    {
-      $response[] = (string) $element;
-    }
-    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $response = ucwords(strtolower($response_string));
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 2);
     return $response;
@@ -404,17 +367,7 @@
   function parse_srai_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $response = array();
-    $children = $element->children();
-    if (!empty ($children))
-    {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
-    }
-    else
-    {
-      $response[] = (string) $element;
-    }
-    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $response = run_srai($convoArr, $response_string);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 2);
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
@@ -432,8 +385,11 @@
 
   /*
   * function parse_condition_tag
-  * parses the XML contained within the $element variable supplied, returning the apropriate value
-  * @param [array] $convoArr
+  * Acts as a de-facto if/else structure, selecting a specific output, based on certain criteria
+  * @param [array] $convoArr    - The conversation array (a container for a number of necessary variables)
+  * @param [object] $element    - The current XML element being parsed
+  * @param [string] $parentName - The parent tag (if applicable)
+  * @param [int] $level         - The current recursion level
   * @return [string] $response_string
   */
 
@@ -526,17 +482,7 @@
   function parse_person_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $response = array();
-    $children = $element->children();
-    if (!empty ($children))
-    {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
-    }
-    else
-    {
-      $response[] = $convoArr['star'][1];
-    }
-    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'star');
     $response = swapPerson($convoArr, 3, $response_string);
     return $response;
   }
@@ -544,17 +490,7 @@
   function parse_person2_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $response = array();
-    $children = $element->children();
-    if (!empty ($children))
-    {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
-    }
-    else
-    {
-      $response[] = $convoArr['star'][1];
-    }
-    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'star');
     $response = swapPerson($convoArr, 2, $response_string);
     return $response;
   }
@@ -568,18 +504,7 @@
   function parse_gender_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $response = array();
-    $children = $element->children();
-    if (!empty ($children))
-    {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
-    }
-    else
-    {
-      $response[] = $convoArr['star'][1];
-    }
-    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
-    $response_string = " $response_string";
+    $response_string = ' ' . tag_to_string($convoArr, $element, $parentName, $level, 'star');
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Original response string = '$response_string'", 2);
     $nounList = $convoArr['nounList'];
     foreach ($nounList as $noun)
@@ -609,16 +534,30 @@
     $element = $element->that;
     $index = $element['index'];
     $index = (!empty ($index)) ? $index : 1;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "index = $index.", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the THAT tag. Index = $index.", 4);
     if (!is_numeric($index))
     {
-      list($idx1, $idx2) = explode(',', $index, 2);
-      $idx2 = ltrim($idx2);
-      $response = $convoArr['that'][$idx1][$idx2];
+      if (strstr($index, ',') !== false)
+      {
+        list($index1, $index2) = explode(',', $index, 2);
+        $index2 = ltrim($index2);
+        $response = $convoArr['that'][$index1][$index2];
+      }
     }
     else
       $response = $convoArr['that'][$index];
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    return $response_string;
+  }
+
+  function parse_input_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $element = $element->input;
+    $index = $element['index'];
+    $index = (!empty ($index)) ? $index : 1;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the INPUT tag. Index = $index.", 4);
+    $response_string = $convoArr['input'][$index];
     return $response_string;
   }
 
@@ -635,24 +574,14 @@
   function parse_system_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $response = array();
-    $children = $element->children();
-    if (!empty ($children))
-    {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
-    }
-    else
-    {
-      $response[] = (string) $element;
-    }
-    $system_call = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    $system_call = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $response_string = shell_exec($system_call);
     return $response_string;
   }
 
   /*
    * function parse_learn_tag
-   * Loads an AIML file into the DB
+   * Loads an AIML file or inline category into the DB
    * @param (array) $convoArr
    * @param (SimpleXMLelement) $element
    * @param (string) $parentName
@@ -664,37 +593,137 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
     global $dbn, $con;
+    $bot_id = $convoArr['conversation']['bot_id'];
+    $sqlTemplate = "insert into `$dbn`.`aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`, `php_code`)
+values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '[topic]', '[fileName]', '');";
+    $sql = '';
     $failure = false;
+    $remove = array('<text>', '</text>');
     $fileName = (string) $element['filename'];
-    if (empty($fileName)) $falure = 'Filename attribute is empty!';
-    $uploaded_file = _UPLOAD_PATH_ . $fileName;
-    if (!file_exists($uploaded_file)) $failure = "File $fileName does not exist in the upload path!";
+    if (empty($fileName)) // enclosed text is the category to add to the DB
+    {
+      $fileName = 'add_from_learn_tag.aiml';
+      $topic       = $element->topic;
+      $category    = $element->category;
+      $catXML      = $category->asXML();
+      $pattern     = $category->pattern->asXML();
+      $pattern_eval = $category->template->eval;
+      if (!empty($pattern_eval))
+      {
+        $parsed_pattern_eval = parse_eval_tag($convoArr, $template_eval, 'learn_pattern', $level + 1);
+        $pattern = preg_replace('~<eval>(.*?)</eval>~i', $parsed_pattern_eval, $pattern);
+      }
+
+      $thatpattern = (string)$category->that;
+      $topicName = (string)$topic;
+      $template    = $category->template->asXML();
+      $template_eval = $category->template->eval;
+      if (!empty($template_eval))
+      {
+        $parsed_template_eval = parse_eval_tag($convoArr, $template_eval, 'learn_template', $level + 1);
+        $template = preg_replace('~<eval>(.*?)</eval>~i', $parsed_template_eval, $template);
+      }
+
+      $sqlAdd = str_replace('[aiml]', $catXML, $sqlTemplate);
+      $sqlAdd = str_replace('[pattern]', $pattern, $sqlAdd);
+      $sqlAdd = str_replace('[that]', $thatpattern, $sqlAdd);
+      $sqlAdd = str_replace('[template]', $template, $sqlAdd);
+      $sqlAdd = str_replace('[topic]', $topicName, $sqlAdd);
+      $sqlAdd = str_replace('[fileName]', $fileName, $sqlAdd);
+      $sql .= $sqlAdd;
+    }
     else
     {
-      $aiml = simplexml_load_file($uploaded_file);
-      if (!$aiml) $failure = "Could not parse file $uploaded_file as XML!";
+      $uploaded_file = _UPLOAD_PATH_ . $fileName;
+      if (!file_exists($uploaded_file)) $failure = "File $fileName does not exist in the upload path!";
       else
       {
-        $sqlTemplate = "insert into `$dbn`.`aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`, `php_code`)
-values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '[topic]', '$fileName', '');";
-        foreach ($aiml->topic as $topic)
+        $aiml = simplexml_load_file($uploaded_file);
+        if (!$aiml) $failure = "Could not parse file $uploaded_file as XML!";
+        else
         {
-          $topicName = $topic['name'];
-          foreach ($topic as $category)
+          foreach ($aiml->topic as $topic)
           {
-            $catXML  = $category->asXML();
-            $pattern = $category->pattern->asXML();
-            $thatpattern = $category->that->asXML();
-            $template = $category->template->asXML();
-            $sql = str_replace('[aiml]', $catXML, $sqlTemplate);
-            $sql = str_replace('[pattern]', $pattern, $sql);
-            $sql = str_replace('[that]', $thatpattern, $sql);
-            $sql = str_replace('[template]', $template, $sql);
-            $sql = str_replace('[topic]', $topicName, $sql);
+            $topicName = (string)$topic['name'];
+            foreach ($topic as $category)
+            {
+              $catXML  = $category->asXML();
+              $pattern = $category->pattern->asXML();
+              $thatpattern = $category->that->asXML();
+              $template = $category->template->asXML();
+
+              $sqlAdd = str_replace('[aiml]', $catXML, $sqlTemplate);
+              $sqlAdd = str_replace('[pattern]', $pattern, $sqlAdd);
+              $sqlAdd = str_replace('[that]', $thatpattern, $sqlAdd);
+              $sqlAdd = str_replace('[template]', $template, $sqlAdd);
+              $sqlAdd = str_replace('[topic]', $topicName, $sqlAdd);
+              $sqlAdd = str_replace('[fileName]', $fileName, $sqlAdd);
+              $sql .= $sqlAdd;
+            }
           }
         }
       }
     }
+    if ($failure) trigger_error($failure);
+    else
+    {
+      $sql = str_replace($remove, '', $sql);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding AIML to the DB. SQL:\n$sql", 3);
+    }
+    return '';
+  }
+
+  /*
+   * function parse_eval_tag
+   * Evaluates the enclosed contents, for use with eht <learn> tag
+   * @param (array) $convoArr
+   * @param (SimpleXMLelement) $element
+   * @param (string) $parentName
+   * @param (int) $level
+   * @return (string) $response_string
+   */
+
+  function parse_eval_tag($convoArr, $element, $parentName, $level)
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+    // do something here
+    return $response_string;
+  }
+
+  /*
+   * function parse_tostring_tag
+   * Converts the contents of the AIML tag to a string.
+   * @param (array) $convoArr
+   * @param (SimpleXMLelement) $element
+   * @param (string) $parentName
+   * @param (int) $level
+   * @return (string) $response_string
+   */
+
+  function tag_to_string($convoArr, $element, $parentName, $level, $type = 'element')
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    $response = array();
+    $children = $element->children();
+    if (!empty ($children))
+    {
+      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+    }
+    else
+    {
+      switch ($type)
+      {
+        case 'element':
+        $response[] = (string) $element;
+        break;
+        default:
+        $response[] = $convoArr['star'][1];
+      }
+    }
+    $response_string = implode_recursive(' ', $response);
+    // do something here
+    return $response_string;
   }
 
 

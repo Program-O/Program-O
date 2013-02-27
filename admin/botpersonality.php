@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.2
+//My Program-O Version 2.1.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -12,9 +12,9 @@
 
 # Build page sections
 # ordered here in the order that the page is constructed
+  $post_vars = filter_input_array(INPUT_POST);
   $bot_name = (isset($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'unknown';
-  $func = (isset($_POST['func'])) ? $_POST['func'] : 'getBot';
-  #die ("func = $func");
+  $func = (isset($post_vars['func'])) ? $post_vars['func'] : 'getBot';
   $topNav        = $template->getSection('TopNav');
   $leftNav       = $template->getSection('LeftNav');
   $main          = $template->getSection('Main');
@@ -29,9 +29,7 @@
   $noRightNav    = $template->getSection('NoRightNav');
   $headerTitle   = 'Actions:';
   $pageTitle     = 'My-Program O - Bot Personality';
-  #$mainContent   = ($func != 'updateBot') ? $func() : '';
   $mainContent   = "main content";
-  #$msg           = "function = $func";
   switch ($func) {
     case 'updateBot':
     $msg = $func();
@@ -39,15 +37,10 @@
     break;
     default:
     $mainContent = $func();
-    #$msg = "function = $func";
   }
-/*
-*/
-  #$mainContent   = "test... func = $func";
   $mainTitle     = 'Bot Personality Settings for '.$bot_name;
   if ($func == 'updateBot' or $func == 'addBotPersonaity') {
     $msg = updateBot();
-    include('main.php');
   }
 function getBot() {
   global $dbn;
@@ -63,8 +56,7 @@ function getBot() {
   $bot_name = $_SESSION['poadmin']['bot_name'];
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
   //get the current bot's personality table from the db
-  $sql = "SELECT * FROM `botpersonality` where  bot = $bot_id";
-  #die ("SQL = $sql<br />db name = $dbn\n");
+  $sql = "SELECT * FROM `botpersonality` where  `bot_id` = $bot_id";
   $result = mysql_query($sql,$dbconn)or $msg .= SQL_Error(mysql_errno());
   if ($result) {
   $rowCount = mysql_num_rows($result);
@@ -106,7 +98,7 @@ function getBot() {
   }
   if (empty($func)) $func = 'getBot';
   $form = <<<endForm2
-          <form name="botpersonality" action="./?page=botpersonality" method="post">
+          <form name="botpersonality" action="index.php?page=botpersonality" method="post">
             <table class="botForm">
               <tr>
 $inputs
@@ -137,14 +129,14 @@ function stripslashes_deep($value) {
 
 
 function updateBot() {
-  global $bot_id, $bot_name;
-  $botId = (isset($_POST['bot_id'])) ? $_POST['bot_id'] : $bot_id;
+  global $bot_id, $bot_name, $post_vars;
+  $botId = (isset($post_vars['bot_id'])) ? $post_vars['bot_id'] : $bot_id;
   $dbconn = db_open();
   $msg = "";
-  if (!empty($_POST['newEntryName'])) {
-    $newEntryNames  = $_POST['newEntryName'];
-    $newEntryValues = $_POST['newEntryValue'];
-    $addSQL = "Insert into `botpersonality` (`id`, `bot`, `name`, `value`) values\n";
+  if (!empty($post_vars['newEntryName'])) {
+    $newEntryNames  = $post_vars['newEntryName'];
+    $newEntryValues = $post_vars['newEntryValue'];
+    $addSQL = "Insert into `botpersonality` (`id`, `bot_id`, `name`, `value`) values\n";
     $addSQLTemplate = "(null, $bot_id, '[key]', '[value]'),\n";
     foreach ($newEntryNames as $index => $key) {
       $value = $newEntryValues[$index];
@@ -154,7 +146,7 @@ function updateBot() {
       $addSQL .= $tmpSQL;
     }
     $addSQL = rtrim($addSQL,",\n");
-    $result = mysql_query($addSQL,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />SQL:<br /><pre>\n$addSQL\n<br />\n</pre>\n");
+    $result = mysql_query($addSQL,$dbconn) or trigger_error('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />SQL:<br /><pre>\n$addSQL\n<br />\n</pre>\n");
     if(!$result) {
       $msg = 'Error updating bot personality.';
     }
@@ -164,7 +156,7 @@ function updateBot() {
   }
 
   $updateSQL = "UPDATE `botpersonality` SET `value` = CASE `name` \n";
-  $sql = "SELECT * FROM `botpersonality` where bot = $botId;";
+  $sql = "SELECT * FROM `botpersonality` where `bot_id` = $botId;";
   $changes = array();
   $additions = array();
   $result = mysql_query($sql, $dbconn) or $msg .= SQL_Error(mysql_errno());
@@ -173,7 +165,7 @@ function updateBot() {
     $id = $row['id'];
     $name = $row['name'];
     $value = $row['value'];
-    $postVal = (isset($_POST[$name])) ? $_POST[$name] : '';
+    $postVal = (isset($post_vars[$name])) ? $post_vars[$name] : '';
     if (!empty($postVal)) {
        if ($postVal != $value){
         $changes[$id] = mysql_real_escape_string(stripslashes_deep($postVal));
@@ -194,23 +186,19 @@ function updateBot() {
     if (!$result) $msg = 'Error updating bot.';
     $msg = (empty($msg)) ? 'Bot personality updated.' : $msg;
   }
-  else $msg = 'Something';
+  else $msg .= 'Bot personality updated.';
   mysql_close($dbconn);
   return $msg;
 }
 
 function addBotPersonality() {
   $dbconn = db_open();
-/*
-  $postVars = print_r($_POST, true);
-  die ("Post vars:<pre>\n$postVars\n</pre>");
-*/
-  $bot_id = $_POST['bot_id'];
+  $bot_id = $post_vars['bot_id'];
   $sql = "Insert into `botpersonality` (`id`, `bot`, `name`, `value`) values\n";
   $sql2 = "(null, $bot_id, '[key]', '[value]'),\n";
   $msg = "";
-  $newEntryNames = (isset($_POST['newEntryName'])) ? $_POST['newEntryName'] : '';
-  $newEntryValues = (isset($_POST['newEntryValue'])) ? $_POST['newEntryValue'] : '';
+  $newEntryNames = (isset($post_vars['newEntryName'])) ? $post_vars['newEntryName'] : '';
+  $newEntryValues = (isset($post_vars['newEntryValue'])) ? $post_vars['newEntryValue'] : '';
   if (!empty($newEntryNames)) {
     foreach ($newEntryNames as $index => $key) {
       $value = $newEntryValues[$index];
@@ -223,7 +211,7 @@ function addBotPersonality() {
   }
 
   $skipKeys = array('bot_id', 'action', 'func', 'newEntryName', 'newEntryValue');
-  foreach($_POST as $key => $value) {
+  foreach($post_vars as $key => $value) {
     if(!in_array($key, $skipKeys)) {
       if($value=="")  continue;
       if (is_array($value)) {
@@ -301,6 +289,5 @@ function addBotPersonality() {
     return $out;
 
   }
-
 
 ?>

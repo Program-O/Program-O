@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.2
+//My Program-O Version 2.1.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -35,8 +35,10 @@
 //-->
     </script>
 endScript;
+  $post_vars = filter_input_array(INPUT_POST);
+  $get_vars = filter_input_array(INPUT_GET);
 
-  $group = (isset($_GET['group'])) ? $_GET['group'] : 1;
+  $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
   $content  = $template->getSection('SearchSpellForm');
   $sc_action = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : '';
   $sc_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : -1;
@@ -94,6 +96,7 @@ endScript;
     $rightNav    = str_replace('[headerTitle]', paginate(), $rightNav);
 
   function paginate() {
+    global $get_vars;
     $dbConn = db_open();
     $sql = "select count(*) from `spellcheck` where 1";
     $result = mysql_query($sql) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
@@ -105,8 +108,8 @@ endScript;
     if ($remainder > 0) $lastPage++;
     #die ("Session values:<br />\n" . print_r($_SESSION, true) . "<br />\nCount = $count<br />\n");
     $out = "Missspelled Words<br />\n50 words per page:<br />\n";
-    $link=" - <a class=\"paginate\" href=\"./?page=spellcheck&amp;group=[group]\">[label]</a>";
-    $curStart = (isset($_GET['group'])) ? $_GET['group'] : 1;
+    $link=" - <a class=\"paginate\" href=\"index.php?page=spellcheck&amp;group=[group]\">[label]</a>";
+    $curStart = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
     $firstPage = 1;
     $prev  = ($curStart > ($firstPage + 1)) ? $curStart - 1 : -1;
     $next = ($lastPage > ($curStart + 1)) ? $curStart + 1 : -1;
@@ -125,15 +128,15 @@ endScript;
   }
 
   function getMisspelledWords() {
-    global $template;
+    global $template, $get_vars;
     # pagination variables
-    $group = (isset($_GET['group'])) ? $_GET['group'] : 1;
+    $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
     $_SESSION['poadmin']['group'] = $group;
     $startEntry = ($group - 1) * 50;
     $end = $group + 50;
     $_SESSION['poadmin']['page_start'] = $group;
     $dbconn = db_open();
-    $curID = (isset($_GET['id'])) ? $_GET['id'] : -1;
+    $curID = (isset($get_vars['id'])) ? $get_vars['id'] : -1;
     $sql = "select `id`,`missspelling` from `spellcheck` where 1 order by abs(`id`) asc limit $startEntry, 50;";
     #die ("SQL = $sql<br />\n");
     $baseLink = $template->getSection('NavLink');
@@ -145,7 +148,7 @@ endScript;
       $linkClass = ($linkId == $curID) ? 'selected' : 'noClass';
       $missspelling = $row['missspelling'];
       $tmpLink = str_replace('[linkClass]', " class=\"$linkClass\"", $baseLink);
-      $linkHref = " href=\"./?page=spellcheck&amp;action=edit&amp;id=$linkId&amp;group=$group#$linkId\" name=\"$linkId\"";
+      $linkHref = " href=\"index.php?page=spellcheck&amp;action=edit&amp;id=$linkId&amp;group=$group#$linkId\" name=\"$linkId\"";
       $tmpLink = str_replace('[linkHref]', $linkHref, $tmpLink);
       $tmpLink = str_replace('[linkOnclick]', '', $tmpLink);
       $tmpLink = str_replace('[linkTitle]', " title=\"Edit spelling correction for the word '$missspelling'\"", $tmpLink);
@@ -160,20 +163,20 @@ endScript;
   }
 
 function spellCheckForm() {
-  global $template;
+  global $template, $get_vars;
   $out = $template->getSection('SpellcheckForm');
-  $group = (isset($_GET['group'])) ? $_GET['group'] : 1;
+  $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
   $out  = str_replace('[group]', $group, $out);
   return $out;
 }
 
 function insertSpell() {
     //global vars
-    global $template, $msg;
+    global $template, $msg, $post_vars;
     $dbconn = db_open();
 
-    $correction = mysql_real_escape_string(trim($_POST['correction']));
-    $missspell = mysql_real_escape_string(trim($_POST['missspell']));
+    $correction = mysql_real_escape_string(trim($post_vars['correction']));
+    $missspell = mysql_real_escape_string(trim($post_vars['missspell']));
 
     if(($correction == "") || ($missspell == "")) {
         $msg = '        <div id="errMsg">You must enter a spelling mistake and the correction.</div>' . "\n";
@@ -216,10 +219,10 @@ function delSpell($id) {
 
 function runSpellSearch() {
     //global vars
-    global $template;
+    global $template, $post_vars;
     $dbconn = db_open();
     $i=0;
-    $search = mysql_real_escape_string(trim($_POST['search']));
+    $search = mysql_real_escape_string(trim($post_vars['search']));
     $sql = "SELECT * FROM `spellcheck` WHERE `missspelling` LIKE '%$search%' OR `correction` LIKE '%$search%' LIMIT 50";
     $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     $htmltbl = '<table>
@@ -237,8 +240,8 @@ function runSpellSearch() {
         $correction = strtoupper($row['correction']);
         $id = $row['id'];
         $group = round(($id / 50));
-        $action = "<a href=\"./?page=spellcheck&amp;action=edit&amp;id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>
-                    <a href=\"./?page=spellcheck&amp;action=del&amp;id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this missspelling? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>";
+        $action = "<a href=\"index.php?page=spellcheck&amp;action=edit&amp;id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>
+                    <a href=\"index.php?page=spellcheck&amp;action=del&amp;id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this missspelling? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>";
         $htmltbl .= "<tr valign=top>
                             <td>$misspell</td>
                             <td>$correction</td>
@@ -264,8 +267,8 @@ function runSpellSearch() {
 
 function editSpellForm($id) {
   //global vars
-  global $template;
-  $group = (isset($_GET['group'])) ? $_GET['group'] : 1;
+  global $template, $get_vars;
+  $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
   $form   = $template->getSection('EditSpellForm');
   $dbconn = db_open();
   $sql    = "SELECT * FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
@@ -281,11 +284,11 @@ function editSpellForm($id) {
 
 function updateSpell() {
   //global vars
-  global $template, $msg;
+  global $template, $msg, $post_vars;
   $dbconn = db_open();
-  $missspelling = mysql_real_escape_string(trim($_POST['missspelling']));
-  $correction = mysql_real_escape_string(trim($_POST['correction']));
-  $id = trim($_POST['id']);
+  $missspelling = mysql_real_escape_string(trim($post_vars['missspelling']));
+  $correction = mysql_real_escape_string(trim($post_vars['correction']));
+  $id = trim($post_vars['id']);
   if(($id=="")||($missspelling=="")||($correction=="")) {
     $msg = '<div id="errMsg">There was a problem editing the correction - no changes made.</div>';
   }

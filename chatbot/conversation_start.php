@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.2
+  * Version: 2.1.3
   * FILE: chatbot/conversation_start.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 19 JUNE 2012
@@ -11,13 +11,14 @@
   ***************************************/
 
   $time_start = microtime(true);
+  $last_timestamp = $time_start;
   $thisFile = __FILE__;
   require_once ("../config/global_config.php");
   //load shared files
   include_once (_LIB_PATH_ . "db_functions.php");
   include_once (_LIB_PATH_ . "error_functions.php");
   //leave this first debug call in as it wipes any existing file for this session
-  runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Starting", 1);
+  runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Starting", 0);
   //load all the chatbot functions
   include_once (_BOTCORE_PATH_ . "aiml" . $path_separator . "load_aimlfunctions.php");
   //load all the user functions
@@ -61,13 +62,15 @@
     if (strtolower($say) == 'clear properties')
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Clearing client properties and starting over.", 4);
+      $convoArr = read_from_session();
       $_SESSION = array();
-      $convoArr['client_properties'] = null;
-      $tmpConvoArr = check_set_user($convoArr);
-      $tmpUser_id = $tmpConvoArr['conversation']['user_id'];
-      $sql = "delete from `$dbn`.`client_properties` where `user_id` = $tmpUser_id;";
+      $user_id = $convoArr['conversation']['user_id'];
+      $sql = "delete from `$dbn`.`client_properties` where `user_id` = $user_id;";
       $result = db_query($sql, $con);
       $numRows = mysql_affected_rows();
+      $convoArr['client_properties'] = null;
+      $convoArr['conversation'] = null;
+      $convoArr['conversation']['user_id'] = $user_id;
 /*
       // Get old convo id, to use for later
       $old_convo_id = (!empty($form_vars['convo_id'])) ? $form_vars['convo_id'] : '';
@@ -112,6 +115,7 @@
     //get the stored vars
     $convoArr = read_from_session();
     //now overwrite with the recieved data
+    $convoArr = check_set_convo_id($convoArr);
     $convoArr = check_set_bot($convoArr);
     $convoArr = check_set_convo_id($convoArr);
     $convoArr = check_set_user($convoArr);
@@ -123,14 +127,14 @@
     if (isset ($convoArr['conversation']['totallines']))
     {
     //reset the debug level here
-      $debuglevel = $convoArr['conversation']['debugshow'];
+      $debug_level = $convoArr['conversation']['debug_level'];
     }
     else
     {
     //load the chatbot configuration
       $convoArr = load_bot_config($convoArr);
       //reset the debug level here
-      $debuglevel = $convoArr['conversation']['debugshow'];
+      $debug_level = $convoArr['conversation']['debug_level'];
       //insita
       $convoArr = intialise_convoArray($convoArr);
       //add the bot_id dependant vars
@@ -143,6 +147,7 @@
     $convoArr = add_new_conversation_vars($say, $convoArr);
     //parse the aiml
     $convoArr = make_conversation($convoArr);
+    $convoArr = run_mid_level_addons($convoArr);
     $convoArr = log_conversation($convoArr);
     $convoArr = log_conversation_state($convoArr);
     $convoArr = write_to_session($convoArr);
@@ -150,23 +155,11 @@
     $convoArr = run_post_response_useraddons($convoArr);
     //return the values to display
     $display = $convoArr['send_to_user'];
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending", 4);
+    $time_start = $convoArr['time_start'];
+    $time_end = microtime(true);
+    $time = round(($time_end - $time_start) * 1000,4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
     unset($convoArr['nounList']);
-    $convoArr = handleDebug($convoArr);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning " . $convoArr['conversation']['format'], 4);
-    if (strtolower($convoArr['conversation']['format']) == "html")
-    {
-    //TODO what if it is ajax call
-      $time_start = $convoArr['time_start'];
-      $time_end = microtime(true);
-      $time = $time_end - $time_start;
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Script took $time seconds", 2);
-      return $convoArr['send_to_user'];
-    }
-    else
-    {
-      echo $convoArr['send_to_user'];
-    }
   }
   else
   {
@@ -174,9 +167,6 @@
   }
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
   db_close($con);
-  $time_end = microtime(true);
-  $time = $time_end - $time_start;
-  $convoArr['star'] = null;
-  runDebug(__FILE__, __FUNCTION__, __LINE__, "Script took $time seconds", 2);
+  $convoArr = handleDebug($convoArr); // Make sure this is the last line in the file, so that all debug entries are captured.
 
 ?>

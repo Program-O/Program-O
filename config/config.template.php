@@ -42,12 +42,13 @@
     define('_LOG_URL_',_BASE_URL_.'logs/');
     define('_DEBUG_PATH_',_BASE_DIR_.'chatbot'.$path_separator.'debug'.$path_separator);
     define('_INSTALL_PATH_',_BASE_DIR_.$path_separator.'install'.$path_separator);
+    define('_INSTALL_URL_',_BASE_URL_.'install/');
 
     //------------------------------------------------------------------------
     // Define constant for the current version
     //------------------------------------------------------------------------
 
-    define ('VERSION', '2.1.2');
+    define ('VERSION', '2.1.3');
 
     //------------------------------------------------------------------------
     // Error reporting
@@ -80,7 +81,7 @@
     // DB and time zone settings
     //------------------------------------------------------------------------
 
-    $time_zone_locale = '[timezone]'; // a full list can be found at http://uk.php.net/manual/en/timezones.php
+    $time_zone_locale = '[time_zone_locale]'; // a full list can be found at http://uk.php.net/manual/en/timezones.php
     $dbh    = '[dbh]';  # dev remote server location
     $dbPort = '[dbPort]';    # dev database name/prefix
     $dbn    = '[dbn]';    # dev database name/prefix
@@ -108,26 +109,26 @@
     $default_pattern = 'RANDOM PICKUP LINE';
     $default_error_response = 'No AIML category found. This is a Default Response.';
     $default_conversation_lines = '1';
-    $default_remember_up_to = '10';
+    $default_remember_up_to = '[default_remember_up_to]';
     $default_debugemail = '[default_debugemail]';
     /*
-     * $default_debugshow - The level of messages to show the user
+     * $default_debug_level - The level of messages to show the user
      * 0=none,
      * 1=errors only
      * 1=error+general,
      * 2=error+general+sql,
      * 3=everything
      */
-    $default_debugshow = '[default_debugshow]';
+    $default_debug_level = '[default_debug_level]';
 
     /*
-     * $default_debugmode - How to show the debug data
+     * $default_debug_mode - How to show the debug data
      * 0 = source code view - show debugging in source code
      * 1 = file log - log debugging to a file
      * 2 = page view - display debugging on the webpage
      * 3 = email each conversation line (not recommended)
      */
-     $default_debugmode = '[default_debugmode]';
+     $default_debug_mode = '[default_debug_mode]';
      $default_save_state = '[default_save_state]';
      $error_response = '[error_response]';
      $unknown_user = 'Seeker';
@@ -141,7 +142,7 @@
     error_reporting($e_all);
 
     //initially set here but overwriten by bot configuration in the admin panel
-    $debuglevel = $default_debugshow;
+    $debug_level = $default_debug_level;
 
     //for quick debug to override the bot config debug options
     //0 - Do not show anything
@@ -157,7 +158,7 @@
 
     //debug folders where txt files are stored
     $debugfolder = _DEBUG_PATH_;
-    $debugfile = $debugfolder.$default_convo_id.'.txt';
+    $debugfile = "$debugfolder$default_convo_id.txt";
 
     //------------------------------------------------------------------------
     // Set Misc Data
@@ -208,12 +209,6 @@
     }
 
     $commonwordsArr = $_SESSION['commonWords'];
-
-    if (empty($_SESSION['allowedHtmlTags']))
-    {
-      $_SESSION['allowedHtmlTags'] = file(_CONF_PATH_.'allowedHtmlTags.dat', FILE_IGNORE_NEW_LINES);
-    }
-    $allowed_html_tags = $_SESSION['allowedHtmlTags'];
 
     //------------------------------------------------------------------------
     // Set Program O globals

@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.2
+//My Program-O Version 2.1.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -35,12 +35,12 @@
 //-->
     </script>
 endScript;
-  $form = print_r($_REQUEST, true);
-  #die("<pre>\nRequest vars:\n\n$form\n</pre>\n");
-  $group = (isset($_REQUEST['group'])) ? $_REQUEST['group'] : 1;
+  $post_vars = filter_input_array(INPUT_POST);
+  $get_vars = filter_input_array(INPUT_GET);
+  $group = (isset($post_vars['group'])) ? $post_vars['group'] : 1;
   $content  = $template->getSection('SearchWordCensorForm');
-  $wc_action = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : '';
-  $wc_id = isset($_REQUEST['censor_id']) ? $_REQUEST['censor_id'] : -1;
+  $wc_action = isset($post_vars['action']) ? strtolower($post_vars['action']) : '';
+  $wc_id = isset($post_vars['censor_id']) ? $post_vars['censor_id'] : -1;
   if (!empty($wc_action)) {
     switch($wc_action) {
       case 'search':
@@ -96,6 +96,7 @@ endScript;
     $rightNav    = str_replace('[headerTitle]', paginate(), $rightNav);
 
   function paginate() {
+    global $get_vars;
     $dbConn = db_open();
     $sql = "select count(*) from `wordcensor` where 1";
     $result = mysql_query($sql) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
@@ -107,8 +108,8 @@ endScript;
     if ($remainder > 0) $lastPage++;
     #die ("Session values:<br />\n" . print_r($_SESSION, true) . "<br />\nCount = $count<br />\n");
     $out = "Censored Words<br />\n50 words per page:<br />\n";
-    $link=" - <a class=\"paginate\" href=\"./?page=wordcensor&amp;group=[group]\">[label]</a>";
-    $curStart = (isset($_GET['group'])) ? $_GET['group'] : 1;
+    $link=" - <a class=\"paginate\" href=\"index.php?page=wordcensor&amp;group=[group]\">[label]</a>";
+    $curStart = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
     $firstPage = 1;
     $prev  = ($curStart > ($firstPage + 1)) ? $curStart - 1 : -1;
     $next = ($lastPage > ($curStart + 1)) ? $curStart + 1 : -1;
@@ -127,16 +128,16 @@ endScript;
   }
 
   function getWordCensorWords() {
-    global $template;
+    global $template, $get_vars;
     # pagination variables
-    $group = (isset($_GET['group'])) ? $_GET['group'] : 1;
+    $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
     $_SESSION['poadmin']['group'] = $group;
     $startEntry = ($group - 1) * 50;
     $startEntry = ($startEntry < 0) ? 0 : $startEntry;
     $end = $group + 50;
     $_SESSION['poadmin']['page_start'] = $group;
     $dbconn = db_open();
-    $curID = (isset($_GET['id'])) ? $_GET['id'] : -1;
+    $curID = (isset($get_vars['id'])) ? $get_vars['id'] : -1;
     $sql = "select `censor_id`,`word_to_censor` from `wordcensor` where 1 order by abs(`censor_id`) asc limit $startEntry, 50;";
     #die ("SQL = $sql<br />\n");
     $baseLink = $template->getSection('NavLink');
@@ -148,7 +149,7 @@ endScript;
       $linkClass = ($linkId == $curID) ? 'selected' : 'noClass';
       $word_to_censor = $row['word_to_censor'];
       $tmpLink = str_replace('[linkClass]', " class=\"$linkClass\"", $baseLink);
-      $linkHref = " href=\"./?page=wordcensor&amp;action=edit&amp;censor_id=$linkId&amp;group=$group#$linkId\" name=\"$linkId\"";
+      $linkHref = " href=\"index.php?page=wordcensor&amp;action=edit&amp;censor_id=$linkId&amp;group=$group#$linkId\" name=\"$linkId\"";
       $tmpLink = str_replace('[linkHref]', $linkHref, $tmpLink);
       $tmpLink = str_replace('[linkOnclick]', '', $tmpLink);
       $tmpLink = str_replace('[linkTitle]', " title=\"Edit spelling replace_with for the word '$word_to_censor'\"", $tmpLink);
@@ -163,20 +164,20 @@ endScript;
   }
 
 function wordCensorForm() {
-  global $template;
+  global $template, $get_vars;
   $out = $template->getSection('WordCensorForm');
-  $group = (isset($_GET['group'])) ? $_GET['group'] : 1;
+  $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
   $out  = str_replace('[group]', $group, $out);
   return $out;
 }
 
 function insertWordCensor() {
     //global vars
-    global $template, $msg;
+    global $template, $msg, $post_vars;
     $dbconn = db_open();
 
-    $replace_with = mysql_real_escape_string(trim($_POST['replace_with']));
-    $word_to_censor = mysql_real_escape_string(trim($_POST['word_to_censor']));
+    $replace_with = mysql_real_escape_string(trim($post_vars['replace_with']));
+    $word_to_censor = mysql_real_escape_string(trim($post_vars['word_to_censor']));
 
     if(($replace_with == "") || ($word_to_censor == "")) {
         $msg = '        <div id="errMsg">You must enter a spelling mistake and the replace_with.</div>' . "\n";
@@ -219,10 +220,10 @@ function delWordCensor($id) {
 
 function runWordCensorSearch() {
     //global vars
-    global $template;
+    global $template, $post_vars;
     $dbconn = db_open();
     $i=0;
-    $search = mysql_real_escape_string(trim($_POST['search']));
+    $search = mysql_real_escape_string(trim($post_vars['search']));
     $sql = "SELECT * FROM `wordcensor` WHERE `word_to_censor` LIKE '%$search%' OR `replace_with` LIKE '%$search%' LIMIT 50";
     $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     $htmltbl = '<table>
@@ -240,8 +241,8 @@ function runWordCensorSearch() {
         $replace_with = strtoupper($row['replace_with']);
         $id = $row['censor_id'];
         $group = round(($id / 50));
-        $action = "<a href=\"./?page=wordcensor&amp;action=edit&amp;censor_id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>
-                    <a href=\"./?page=wordcensor&amp;action=delete&amp;censor_id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this entry? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\" alt=\"Delete this entry\" title=\"Delete this entry\" /></a>";
+        $action = "<a href=\"index.php?page=wordcensor&amp;action=edit&amp;censor_id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>
+                    <a href=\"index.php?page=wordcensor&amp;action=delete&amp;censor_id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this entry? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\" alt=\"Delete this entry\" title=\"Delete this entry\" /></a>";
         $htmltbl .= "<tr valign=top>
                             <td>$word_to_censor</td>
                             <td>$replace_with</td>
@@ -267,8 +268,8 @@ function runWordCensorSearch() {
 
 function editWordCensorForm($id) {
   //global vars
-  global $template;
-  $group = (isset($_GET['group'])) ? $_GET['group'] : 1;
+  global $template, $get_vars;
+  $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
   $form   = $template->getSection('EditWordCensorForm');
   $dbconn = db_open();
   $sql    = "SELECT * FROM `wordcensor` WHERE `censor_id` = '$id' LIMIT 1";
@@ -284,11 +285,11 @@ function editWordCensorForm($id) {
 
 function updateWordCensor() {
   //global vars
-  global $template, $msg;
+  global $template, $msg, $post_vars;
   $dbconn = db_open();
-  $word_to_censor = mysql_real_escape_string(trim($_POST['word_to_censor']));
-  $replace_with = mysql_real_escape_string(trim($_POST['replace_with']));
-  $id = trim($_POST['id']);
+  $word_to_censor = mysql_real_escape_string(trim($post_vars['word_to_censor']));
+  $replace_with = mysql_real_escape_string(trim($post_vars['replace_with']));
+  $id = trim($post_vars['id']);
   if(($id=="")||($word_to_censor=="")||($replace_with=="")) {
     $msg = '<div id="errMsg">There was a problem editing the replace_with - no changes made.</div>';
   }

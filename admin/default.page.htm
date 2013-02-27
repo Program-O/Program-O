@@ -142,10 +142,10 @@ between the start and end section tags are the only parts of the template that a
 [blank]        <div id="form_table">
           <fieldset>
             <legend>Login </legend>
-            <form id="fm-form" method="post" action="./?page=login" >
+            <form id="fm-form" method="post" action="index.php?page=login" >
               <div class="row center">
-                <label for="uname">Username:</label>
-                <input name="uname" id="uname" type="text" maxlength="20" size="15"/>
+                <label for="user_name">Username:</label>
+                <input name="user_name" id="user_name" type="text" maxlength="20" size="15"/>
               </div>
               <div class="row">
                 <label for="pw">Password:</label>
@@ -160,7 +160,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section LoginForm End -->
 <!-- Section ChangeBot Start -->
         <!--fieldset-->
-          <form id="changebot" action="?page=select_bots" method="post">
+          <form id="changebot" action="index.php?page=select_bots" method="post">
             <div>
               <label>Change Active Bot</label>
               <select name="bot_id" id="bot_id" onchange="submit()">
@@ -174,7 +174,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section SelectBotForm Start -->
 
 [blank]    <!--fieldset-->
-      <form id="botAttributes" action="?page=select_bots" method="post">
+      <form id="botAttributes" action="index.php?page=select_bots" method="post">
         <div class="leftHalf noBorder">
           <table class="formTable">
             <tr>
@@ -338,7 +338,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section ConversationLogs1 End -->
 <!-- Section SpellcheckForm Start -->
         <fieldset style="margin-bottom: 3px;">
-          <form id="spellCheck" action="./?page=spellcheck&amp;group=[group]" method="post">
+          <form id="spellCheck" action="index.php?page=spellcheck&amp;group=[group]" method="post">
             <div class="row bold">Add a Misspelled word and it's correction:</div>
             <div class="row fm-opt">
               <label for="missspell">Misspell: </label>
@@ -356,7 +356,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section SpellcheckForm End -->
 <!-- Section SearchSpellForm Start -->
           <fieldset style="margin-bottom: 3px;">
-            <form id="search" action="./?page=spellcheck&amp;group=[group]" method="post">
+            <form id="search" action="index.php?page=spellcheck&amp;group=[group]" method="post">
             <div class="row bold">Search for a Misspelled word:</div>
               <div class="row fm-req">
                 <input type="text" id="search" name="search" />
@@ -367,7 +367,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section SearchSpellForm End -->
 <!-- Section EditSpellForm Start -->
         <fieldset style="margin-bottom: 3px;">
-          <form id="spell" action="./?page=spellcheck&amp;group=[group]" method="post">
+          <form id="spell" action="index.php?page=spellcheck&amp;group=[group]" method="post">
              <div class="row bold">Edit the entry for the Misspelled word [missspelling]:</div>
            <div class="row fm-opt">
               <label for="topic">Misspelling: </label>
@@ -387,7 +387,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section EditSpellForm End -->
 <!-- Section WordCensorForm Start -->
         <fieldset style="margin-bottom: 3px;">
-          <form id="wordCensor" action="./?page=wordcensor&amp;group=[group]" method="post">
+          <form id="wordCensor" action="index.php?page=wordcensor&amp;group=[group]" method="post">
             <div class="row bold">Add an improper word and it's replacement:</div>
             <div class="row fm-opt">
               <label for="word_to_censor">Bad word: </label>
@@ -406,7 +406,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section WordCensorForm End -->
 <!-- Section SearchWordCensorForm Start -->
           <fieldset style="margin-bottom: 3px;">
-            <form id="search" action="./?page=wordcensor&amp;group=[group]" method="post">
+            <form id="search" action="index.php?page=wordcensor&amp;group=[group]" method="post">
             <div class="row bold">Search for an improper word:</div>
               <div class="row fm-req">
                 <input type="text" id="search" name="search" />
@@ -417,7 +417,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section SearchWordCensorForm End -->
 <!-- Section EditWordCensorForm Start -->
         <fieldset style="margin-bottom: 3px;">
-          <form id="wordCensor" action="./?page=wordcensor&amp;group=[group]" method="post">
+          <form id="wordCensor" action="index.php?page=wordcensor&amp;group=[group]" method="post">
              <div class="row bold">Edit the entry for the improper word [word_to_censor]:</div>
            <div class="row fm-opt">
               <label for="topic">Bad Word: </label>
@@ -444,7 +444,7 @@ between the start and end section tags are the only parts of the template that a
           </div>
 <!-- Section TeachMain End -->
 <!-- Section TeachBotForm Start -->
-[blank]            <form id="teach" action="./?page=teach" method="post">
+[blank]            <form id="teach" action="index.php?page=teach" method="post">
               <fieldset>
                 <div class="row">
                   <label for="topic"><span class="twentyPercent">Topic: </span></label>
@@ -645,23 +645,23 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section MembersMain End -->
 <!-- Section MembersForm Start -->
 [blank]          <p><strong>[action] Admin Account:</strong></p>
-            <form id="members" action="./?page=members" method="post">
+            <form id="members" action="index.php?page=members" method="post">
               <fieldset class="noBorder">
                 <div class="row">
                   <input name="id" id="id" value="[id]" autocomplete="off" disabled="disabled" />
                   <label for="id">Account ID: (<u>not editable</u>) </label>
                 </div>
                 <div class="row">
-                  <input name="uname" id="uname" value="[uname]" />
-                  <label for="uname">Login Name: </label>
+                  <input name="user_name" id="user_name" value="[user_name]" />
+                  <label for="user_name">Login Name: </label>
                 </div>
                 <div class="row">
-                  <input name="pword" id="pword" type="password" autocomplete="off">
-                  <label for="pword">Password: </label>
+                  <input name="password" id="password" type="password" autocomplete="off">
+                  <label for="password">Password: </label>
                 </div>
                 <div class="row">
-                  <input name="pwordConfirm" id="pwordConfirm" type="password" autocomplete="off">
-                  <label for="pwordConfirm"> Confirm Password: </label>
+                  <input name="passwordConfirm" id="passwordConfirm" type="password" autocomplete="off">
+                  <label for="passwordConfirm"> Confirm Password: </label>
                 </div>
                 <div class="row">
                   <input type="hidden" name="id" id="id" value="[id]" />
@@ -673,7 +673,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section MembersForm End -->
 <!-- Section MembersListForm Start -->
 [blank]            <div class="row">
-              <form id="memberList" action="./?page=members" method="post">
+              <form id="memberList" action="index.php?page=members" method="post">
                 <fieldset class="noBorder">
                   <label for="memberSelect">Current Admins: </label>
                   <select name="memberSelect" id="memberSelect" size="1">
@@ -740,7 +740,7 @@ between the start and end section tags are the only parts of the template that a
             </form>
 <!-- Section UploadAIMLForm End -->
 <!-- Section SearchAIMLForm Start -->
-[blank]            <form id="search" action="./?page=search" method="post">
+[blank]            <form id="search" action="index.php?page=search" method="post">
               <fieldset>
                 <div class="row">
                   <label for="search_topic"><span class="twentyPercent">Search Topic: </span></label>
@@ -773,7 +773,7 @@ between the start and end section tags are the only parts of the template that a
             </form>
 <!-- Section SearchAIMLForm End -->
 <!-- Section EditAIMLForm Start -->
-          <form id="edit" action="./?page=search" method="post">
+          <form id="edit" action="index.php?page=search" method="post">
             <fieldset>
               <div class="row fm-opt">
                 <label for="topic"><span class="twentyPercent">Topic: </span></label>

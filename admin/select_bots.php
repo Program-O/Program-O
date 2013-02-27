@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.2
+//My Program-O Version 2.1.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -9,18 +9,19 @@
 // select_bots.php
 
 $selectBot ="";
+$post_vars = filter_input_array(INPUT_POST);
 
-if((isset($_POST['action']))&&($_POST['action']=="update")) {
+if((isset($post_vars['action']))&&($post_vars['action']=="update")) {
   $selectBot .= getChangeList();
   $msg = updateBotSelection();
   $selectBot .= getSelectedBot();
 }
-elseif((isset($_POST['action']))&&($_POST['action']=="change")) {
+elseif((isset($post_vars['action']))&&($post_vars['action']=="change")) {
   changeBot();
   $selectBot .= getChangeList();
   $selectBot .= getSelectedBot();
 }
-elseif((isset($_POST['action']))&&($_POST['action']=="add")) {
+elseif((isset($post_vars['action']))&&($post_vars['action']=="add")) {
   $selectBot .= addBot();
   $selectBot .= getChangeList();
   $selectBot .= getSelectedBot();
@@ -45,10 +46,6 @@ else {
     $pageTitle     = 'My-Program O - Select or Edit a Bot';
     $mainContent   = $selectBot;
     $mainTitle     = 'Choose/Edit a Bot';
-
-  function replaceTags(&$selectBot) {
-
-  }
 
 function getBotParentList($current_parent,$dbconn) {
     //db globals
@@ -227,16 +224,16 @@ function getSelectedBot() {
 
 function updateBotSelection() {
   //db globals
-  global $msg, $default_format;
+  global $msg, $default_format, $post_vars;
   $logFile = _LOG_URL_ . 'error.log';
   $dbconn = db_open();
   $sql = "";
   $msg = "";
-  foreach($_POST as $key => $value) {
+  foreach($post_vars as $key => $value) {
     if(($key!="bot_id")||($key!="action")) {
       $value = mysql_real_escape_string(trim(stripslashes($value)));
       if(($key != "bot_id")&&($key != "action")&&($value!="")) {
-        $sql = "UPDATE `bots` SET `$key` ='$value' where `bot_id` = '".$_POST['bot_id']."' limit 1; ";
+        $sql = "UPDATE `bots` SET `$key` ='$value' where `bot_id` = '".$post_vars['bot_id']."' limit 1; ";
         $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
         if(!$result) {
           $msg = "Error updating bot details. See the <a href=\"$logFile\">error log</a> for details.<br />";
@@ -249,8 +246,9 @@ function updateBotSelection() {
 
   $format = filter_input(INPUT_POST,'format');
 
-  if ($format !== $default_format)
+  if (strtoupper($format) !== strtoupper($default_format))
   {
+    $format = strtoupper($format);
     $cfn = _CONF_PATH_ . 'global_config.php';
     $configFile = file(_CONF_PATH_ . 'global_config.php',FILE_IGNORE_NEW_LINES);
     $search = '    $default_format = \'' . $default_format . '\';';
@@ -280,8 +278,8 @@ function updateBotSelection() {
 
 function addBot() {
   //db globals
-  global $msg;
-  foreach ($_POST as $key => $value) {
+  global $msg, $post_vars;
+  foreach ($post_vars as $key => $value) {
     $$key = mysql_real_escape_string(trim($value));
   }
   $dbconn = db_open();
@@ -301,7 +299,7 @@ endSQL;
 
   $_SESSION['poadmin']['bot_id'] = mysql_insert_id();
   $bot_id = $_SESSION['poadmin']['bot_id'];
-  $_SESSION['poadmin']['bot_name'] = $_POST['bot_name'];
+  $_SESSION['poadmin']['bot_name'] = $post_vars['bot_name'];
   $bot_name = mysql_real_escape_string($_SESSION['poadmin']['bot_name']);
 
   $sql = <<<endSQL
@@ -382,10 +380,10 @@ endSQL;
 }
 
 function changeBot() {
-  global $msg, $bot_id;
-  $botId = (isset($_POST['bot_id'])) ? $_POST['bot_id'] : $bot_id;
+  global $msg, $bot_id, $post_vars;
+  $botId = (isset($post_vars['bot_id'])) ? $post_vars['bot_id'] : $bot_id;
   $dbconn = db_open();
-  if($_POST['bot_id']!="new") {
+  if($post_vars['bot_id']!="new") {
     $sql = "SELECT * FROM `bots` WHERE bot_id = '$botId'";
     $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
     $count = mysql_num_rows($result);

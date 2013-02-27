@@ -1,7 +1,7 @@
 
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.2
+//My Program-O Version 2.1.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -9,7 +9,8 @@
 //-----------------------------------------------------------------------------------------------
 // download.php
 
-$content ="";
+$content ='';
+$status = '';
 
 $upperScripts = <<<endScript
 
@@ -44,16 +45,18 @@ $upperScripts = <<<endScript
 //-->
     </script>
 endScript;
+$post_vars = filter_input_array(INPUT_POST);
+$get_vars = filter_input_array(INPUT_GET);
 
-$msg = (isset($_REQUEST['msg'])) ? $_REQUEST['msg'] : '';
-if((isset($_POST['action']))&&($_POST['action']=="AIML")) {
-  $status = getAIMLByFileName($_POST['getFile']);
+$msg = (isset($post_vars['msg'])) ? $post_vars['msg'] : '';
+if((isset($post_vars['action']))&&($post_vars['action']=="AIML")) {
+  $status = getAIMLByFileName($post_vars['getFile']);
 }
-elseif((isset($_POST['action']))&&($_POST['action']=="SQL")) {
-  $status = getSQLByFileName($_POST['getFile']);
+elseif((isset($post_vars['action']))&&($post_vars['action']=="SQL")) {
+  $status = getSQLByFileName($post_vars['getFile']);
 }
-elseif(isset($_GET['file'])) {
-  $status = serveFile($_GET['file'], $msg);
+elseif(isset($get_vars['file'])) {
+  $status = serveFile($get_vars['file'], $msg);
 }
 else {
 }
@@ -217,7 +220,7 @@ else {
     $content = <<<endForm
           <div id="downloadForm" class="fullWidth noBorder">
           Please select the AIML file you wish to download from the list below.<br />
-          <form name="getFileForm" action="./?page=download" method="POST">
+          <form name="getFileForm" action="index.php?page=download" method="POST">
           <table class="formTable">
             <tr>
               <td>
@@ -251,6 +254,7 @@ endForm;
   }
 
   function serveFile($req_file, &$msg = '') {
+    global $get_vars;
     $fileserver_path = dirname(__FILE__) . '/downloads';  // change this to the directory your files reside
     $whoami			 = basename(__FILE__);  // you are free to rename this file
     $myMsg = urlencode($msg);
@@ -269,7 +273,7 @@ if (!file_exists("$fileserver_path/$req_file")) {
   return "File <strong>$req_file</strong> doesn't exist.";
 }
 
-if (empty($_GET['send_file'])) {
+if (empty($get_vars['send_file'])) {
   header("Refresh: 5; url=$whoami?file=$req_file&send_file=yes&msg=$myMsg");
 }
 else {
