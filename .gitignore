@@ -3,7 +3,9 @@
 #################
 
 admin/skins
-admin/downloads
+!admin/downloads
+admin/downloads/*
+!admin/downloads/index.html
 config/global_config.php
 config/uploads/*
 chatbot/debug/*.txt
