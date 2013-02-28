@@ -32,6 +32,7 @@
   $mainContent   = "main content";
   switch ($func) {
     case 'updateBot':
+    case 'addBotPersonaity':
     $msg = $func();
     $mainContent = getBot();
     break;
@@ -182,7 +183,7 @@ function updateBot() {
     }
     $updateSQL .= "END WHERE `id` IN ($changesText);";
     $saveSQL = str_replace("\n", "\r\n", $updateSQL);
-    $result = mysql_query($updateSQL, $dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />SQL:<br /><pre>\n$updateSQL\n<br />\n</pre>\n");
+    $result = mysql_query($updateSQL, $dbconn) or trigger_error('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />SQL:<br /><pre>\n$updateSQL\n<br />\n</pre>\n");
     if (!$result) $msg = 'Error updating bot.';
     $msg = (empty($msg)) ? 'Bot personality updated.' : $msg;
   }
@@ -192,9 +193,10 @@ function updateBot() {
 }
 
 function addBotPersonality() {
+  global $post_vars;
   $dbconn = db_open();
   $bot_id = $post_vars['bot_id'];
-  $sql = "Insert into `botpersonality` (`id`, `bot`, `name`, `value`) values\n";
+  $sql = "Insert into `botpersonality` (`id`, `bot_id`, `name`, `value`) values\n";
   $sql2 = "(null, $bot_id, '[key]', '[value]'),\n";
   $msg = "";
   $newEntryNames = (isset($post_vars['newEntryName'])) ? $post_vars['newEntryName'] : '';
@@ -213,7 +215,6 @@ function addBotPersonality() {
   $skipKeys = array('bot_id', 'action', 'func', 'newEntryName', 'newEntryValue');
   foreach($post_vars as $key => $value) {
     if(!in_array($key, $skipKeys)) {
-      if($value=="")  continue;
       if (is_array($value)) {
         foreach ($value as $index => $fieldValue) {
           $field = $key[$fieldValue];
@@ -233,7 +234,7 @@ function addBotPersonality() {
     }
   }
   $sql = rtrim($sql,",\n");
-  $result = mysql_query($sql,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />SQL:<br /><pre>\n$sql\n<br />\n</pre>\n");
+  $result = mysql_query($sql,$dbconn) or trigger_error('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />SQL:<br /><pre>\n$sql\n<br />\n</pre>\n");
   if(!$result) {
     $msg = 'Error updating bot personality.';
   }
