@@ -65,8 +65,8 @@ function getStats($interval) {
 		$sqladd ="";
 	}
 	//get undefined defaults from the db
-	$sql = "SELECT count(distinct(`userid`)) AS TOT FROM `conversation_log` WHERE bot_id = '$bot_id' $sqladd";
-	$result = mysql_query($sql,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+	$sql = "SELECT count(distinct(`user_id`)) AS TOT FROM `conversation_log` WHERE bot_id = '$bot_id' $sqladd";
+	if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
 	$row = mysql_fetch_assoc($result);
 	$res = $row['TOT'];
 	return $res;
@@ -78,7 +78,7 @@ function getChatLines($i,$j) {
 		$sql = <<<endSQL
 SELECT AVG(`chatlines`) AS TOT
 				FROM `users`
-				INNER JOIN `conversation_log` ON `users`.`id` = `conversation_log`.`userid`
+				INNER JOIN `conversation_log` ON `users`.`id` = `conversation_log`.`user_id`
 				WHERE `conversation_log`.`bot_id` = $bot_id AND [endCondition];
 endSQL;
 	if($i=="average") {
@@ -89,7 +89,7 @@ endSQL;
 	}
   $sql = str_replace('[endCondition]', $endCondition, $sql);
 	//get undefined defaults from the db
-	$result = mysql_query($sql,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+	if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
 	$row = mysql_fetch_assoc($result);
 	$res = $row['TOT'];
 	return $res;

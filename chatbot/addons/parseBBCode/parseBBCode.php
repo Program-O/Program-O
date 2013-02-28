@@ -3,7 +3,6 @@
   function parseEmotes($msg) {
     $emotesFile = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'emotes.dat';
     $smilieArray = file($emotesFile);
-    #die ('<pre>Emotes File = ' . print_r($smilieArray, true) . "</pre><br />\n");
     rsort($smilieArray);
     $emotesPath = "./chatbot/addons/parseBBCode/images/";                                           // Define the location of the emote image
     foreach ($smilieArray as $line) {                                   // Iterate through the list
@@ -97,7 +96,6 @@ endLine;
 
   function parseInput ($msg) {
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Pre-parsing input. Setting Timestamp. msg = |$msg|", 4);
-    #$out = '';
     $smilieArray = file(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'inputEmotes.dat');
     rsort($smilieArray);
     $out = str_replace($smilieArray, 'emoteshown', $msg);

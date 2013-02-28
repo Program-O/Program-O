@@ -72,7 +72,7 @@ function getUserNames() {
   $result = mysql_query($sql,$dbconn);
   $nameList = array();
   while ($row = mysql_fetch_assoc($result)) {
-    $nameList[$row['id']] = $row['name'];
+    $nameList[$row['id']] = $row['user_name'];
   }
   mysql_close($dbconn);
   return $nameList;
@@ -83,7 +83,6 @@ function getuserList($showing) {
   global $template, $get_vars;
   $nameList = getUserNames();
   $curUserid = (isset($get_vars['id'])) ? $get_vars['id'] : -1;
-  #die ("user names:<br />\n" . print_r($nameList, true) . "\n<br />\n");
   $dbconn = db_open();
   $bot_id = $_SESSION['poadmin']['bot_id'];
   $linkTag = $template->getSection('NavLink');
@@ -123,18 +122,18 @@ function getuserList($showing) {
         <ul>
 
 endList;
-  $result = mysql_query($sql,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+  if (($result = mysql_query($sql,$dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
   while($row = mysql_fetch_array($result)) {
-    $userid = $row['userid'];
-    $linkClass = ($userid == $curUserid) ? 'selected' : 'noClass';
-    $userName = @$nameList[$userid];
+    $user_id = $row['user_id'];
+    $linkClass = ($user_id == $curUserid) ? 'selected' : 'noClass';
+    $userName = @$nameList[$user_id];
     $TOT = $row['TOT'];
     $tmpLink = str_replace('[linkClass]'," class=\"$linkClass\"", $linkTag);
     $tmpLink = str_replace('[linkOnclick]','', $tmpLink);
-    $tmpLink = str_replace('[linkHref]',"href=\"index.php?page=logs&showing=$showing&id=$userid#$userid\" name=\"$userid\"", $tmpLink);
+    $tmpLink = str_replace('[linkHref]',"href=\"index.php?page=logs&showing=$showing&id=$user_id#$user_id\" name=\"$user_id\"", $tmpLink);
     $tmpLink = str_replace('[linkTitle]'," title=\"Show entries for user $userName\"", $tmpLink);
     $tmpLink = str_replace('[linkLabel]',"USER:$userName($TOT)", $tmpLink);
-    $anchor = "            <a name=\"$userid\" />\n";
+    $anchor = "            <a name=\"$user_id\" />\n";
     $anchor = '';
     $list .= "$tmpLink\n$anchor";
   }
@@ -217,7 +216,7 @@ function getuserConvo($id, $showing) {
   $sql = "SELECT *  FROM `conversation_log` WHERE `bot_id` = '$bot_id' AND `user_id` = $id $sqladd ORDER BY `id` ASC";
   $list = "<hr><br/><h4>$title conversations for user: $id</h4>";
   $list .="<div class=\"convolist\">";
-  $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql\n");
+  if (($result = mysql_query($sql,$dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql\n");
   while($row = mysql_fetch_array($result)) {
     $thisdate = date("Y-m-d",strtotime($row['timestamp']));
     if($thisdate!=$lasttimestamp) {

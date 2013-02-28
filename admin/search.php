@@ -46,7 +46,6 @@
   $noRightNav    = $template->getSection('NoRightNav');
   $headerTitle   = 'Actions:';
   $pageTitle     = 'My-Program O - Search/Edit AIML';
-  #$mainContent   = 'This will eventually be the page for searching and/or editing AIML categories.';
   $mainTitle     = 'Search/Edit AIML';
 
   function delAIML($id) {
@@ -54,7 +53,7 @@
     $dbconn = db_open();
     if($id!="") {
       $sql = "DELETE FROM `aiml` WHERE `id` = '$id' LIMIT 1";
-      $result = mysql_query($sql,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+      if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
       if(!$result) {
         $msg = 'Error AIML couldn\'t be deleted - no changes made.</div>';
       }
@@ -90,8 +89,7 @@
       $searchTerms .= (!empty($search_that)) ? '`thatpattern`' . str_replace('[value]', $search_that, $searchTermsTemplate) : '';
       $searchTerms = rtrim($searchTerms, " or\n ");
       $sql = str_replace('[searchTerms]', $searchTerms, $sql);
-      #die ("SQL = <pre>\n$sql\n</pre>\n");
-      $result = mysql_query($sql,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+      if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
       $htmltbl = <<<endtHead
           <table width="99%" border="1" cellpadding="1" cellspacing="1">
             <thead>
@@ -160,7 +158,7 @@ endRow;
     global $template;
     $dbconn = db_open();
     $sql = "SELECT * FROM `aiml` WHERE `id` = '$id' LIMIT 1";
-    $result = mysql_query($sql,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     $row=mysql_fetch_array($result);
     $topic = $row['topic'];
     $pattern = $row['pattern'];
@@ -193,7 +191,7 @@ endRow;
     }
     else {
       $sql = "UPDATE `aiml` SET `pattern` = '$pattern',`thatpattern`='$thatpattern',`template`='$template',`topic`='$topic',`filename`='$filename' WHERE `id`='$id' LIMIT 1";
-      $result = mysql_query($sql,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+      if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
       if($result) {
         $msg =  'AIML Updated.';
       }

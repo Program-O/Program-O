@@ -57,7 +57,7 @@
     }
 
     protected function throwError($message) {
-      die ($message);
+      exit($message);
     }
   }
 ?>

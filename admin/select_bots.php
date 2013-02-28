@@ -53,7 +53,7 @@ function getBotParentList($current_parent,$dbconn) {
   //get active bots from the db
   if(empty($current_parent)) $current_parent = 0;
   $sql = "SELECT * FROM `bots` where bot_active = '1'";
-  $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');;
+  if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');;
 
   $options = '                  <option value="0"[noBot]>No Parent Bot</option>';
 
@@ -107,7 +107,7 @@ function getSelectedBot() {
     $bot_id = $_SESSION['poadmin']['bot_id'];
     //get data for all of the bots from the db
     $sql = "SELECT * FROM `bots` where bot_id = '$bot_id';";
-    $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
     while($row = mysql_fetch_assoc($result)) {
       foreach ($row as $key => $value) {
         if (strstr($key,'bot_') != false){
@@ -234,7 +234,7 @@ function updateBotSelection() {
       $value = mysql_real_escape_string(trim(stripslashes($value)));
       if(($key != "bot_id")&&($key != "action")&&($value!="")) {
         $sql = "UPDATE `bots` SET `$key` ='$value' where `bot_id` = '".$post_vars['bot_id']."' limit 1; ";
-        $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
+        if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
         if(!$result) {
           $msg = "Error updating bot details. See the <a href=\"$logFile\">error log</a> for details.<br />";
           trigger_error("There was a problem adding '$key' to the database. The value was '$value'.");
@@ -287,7 +287,7 @@ function addBot() {
 INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `use_aiml_code`, `update_aiml_code`, `error_response`)
 VALUES (NULL,'$bot_name','$bot_desc','$bot_active','$bot_parent_id','$format','$save_state','$conversation_lines','$remember_up_to','$debugemail','$debugshow','$debugmode','$default_aiml_pattern','$use_aiml_code','$update_aiml_code', '$error_response');
 endSQL;
-  $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
+  if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
 
   if($result) {
     $msg = "$bot_name Bot details added, please dont forget to create the bot personality and add the aiml.";
@@ -365,7 +365,7 @@ INSERT INTO `botpersonality` VALUES
   (NULL,  $bot_id, 'website', '');
 endSQL;
 
-  $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
+  if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
 
   if($result)
   {
@@ -385,7 +385,7 @@ function changeBot() {
   $dbconn = db_open();
   if($post_vars['bot_id']!="new") {
     $sql = "SELECT * FROM `bots` WHERE bot_id = '$botId'";
-    $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
     $count = mysql_num_rows($result);
     if($count>0) {
       $row=mysql_fetch_array($result);
@@ -412,7 +412,7 @@ function getChangeList() {
   $inputs="";
   //get bot names from the db
   $sql = "SELECT * FROM `bots` ORDER BY bot_name";
-  $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
+  if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
   $options = '<option value="new" selected="selected">Add New Bot</option>' . "\n";
   while($row = mysql_fetch_array($result)) {
     if($_SESSION['poadmin']['bot_id']==$row['bot_id']) {

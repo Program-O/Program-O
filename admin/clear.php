@@ -87,7 +87,7 @@ else {
 
     $sql = "DELETE FROM `aiml` WHERE `bot_id` = $bot_id;";
     #return "SQL = $sql";
-    $result = mysql_query($sql,$dbconn) or die(mysql_error());
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception(mysql_error());
     mysql_close($dbconn);
     $msg = "<strong>All AIML categories cleared for $bot_name!</strong><br />";
     return $msg;
@@ -99,7 +99,7 @@ else {
     $cleanedFilename = mysql_real_escape_string($filename, $dbconn);
     $sql = "delete from `aiml` where `filename` like '$cleanedFilename' and `bot_id` = $bot_id;";
     #return "SQL = $sql";
-    $result = mysql_query($sql,$dbconn) or die(mysql_error());
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception(mysql_error());
     mysql_close($dbconn);
     $msg = "<br/><strong>AIML categories cleared for file $filename!</strong><br />";
     return $msg;
@@ -112,7 +112,7 @@ else {
     $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     #return "SQL = $sql";
-    $result = mysql_query($sql,$dbconn) or die(mysql_error());
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception(mysql_error());
     if (mysql_num_rows($result) == 0) $msg = "This bot has no AIML categories to clear.";
     while ($row = mysql_fetch_assoc($result)) {
       if (empty($row['filename'])) {

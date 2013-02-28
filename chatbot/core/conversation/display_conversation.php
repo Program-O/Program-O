@@ -60,7 +60,7 @@ function get_conversation_to_display($convoArr)
 		}
 		else 
 		{
-			$orderedRows =array('id'=>NULL, 'input'=>"", 'response'=>"", 'userid'=>$convoArr['conversation']['user_id'], 'bot_id'=>$convoArr['conversation']['bot_id'], 'timestamp'=>"");
+			$orderedRows =array('id'=>NULL, 'input'=>"", 'response'=>"", 'user_id'=>$convoArr['conversation']['user_id'], 'bot_id'=>$convoArr['conversation']['bot_id'], 'timestamp'=>"");
 			
 		}
 	

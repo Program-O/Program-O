@@ -101,7 +101,7 @@ endScript;
 
   function updateDB($sql) {
     $dbconn = db_open();
-    $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>$sql</pre><br />\n");
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>$sql</pre><br />\n");
     $commit = mysql_affected_rows($dbconn);
     return $commit;
   }
@@ -155,7 +155,7 @@ endScript;
     $dbconn = db_open();
     $optionTemplate = "                  <option value=\"[val]\">[key]</option>\n";
     $sql = 'SELECT id, user_name FROM myprogramo order by user_name;';
-    $result = mysql_query($sql,$dbconn) or die(mysql_error());
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception(mysql_error());
     while ($row = mysql_fetch_assoc($result)) {
       $user_name = $row['user_name'];
       $id = $row['id'];
@@ -173,7 +173,7 @@ endScript;
     global $dbn, $user_name, $id;
     $sql = "select id, user_name from myprogramo where id = $id limit 1;";
     $dbconn = db_open();
-    $result = mysql_query($sql,$dbconn) or die(mysql_error());
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception(mysql_error());
     $row = mysql_fetch_assoc($result);
     $user_name = $row['user_name'];
     $id = $row['id'];
@@ -184,7 +184,7 @@ endScript;
     global $dbn, $user_name;
     $sql = "select id from myprogramo order by id desc limit 1;";
     $dbconn = db_open();
-    $result = mysql_query($sql,$dbconn) or die(mysql_error());
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception(mysql_error());
     $row = mysql_fetch_assoc($result);
     $id = $row['id'];
     mysql_close($dbconn);

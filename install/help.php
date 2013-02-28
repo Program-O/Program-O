@@ -20,7 +20,7 @@ $content = getSection('HelpPage', $template, false);
 $helpContent = getSection('HelpMain',$template);
 $content = str_replace('[helpContent]', $helpContent, $content);
 
-die($content);
+echo($content);
 
 
 function getSection($sectionName, $page_template, $notFoundReturn = true) {

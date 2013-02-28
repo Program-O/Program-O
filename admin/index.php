@@ -19,6 +19,7 @@
   ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
   ini_set('html_errors', false);
   ini_set('display_errors', false);
+  set_exception_handler("handle_exceptions");
   $msg = '';
 
 
@@ -146,7 +147,6 @@
         setcookie(session_name(), '', time()-42000, '/');
       }
       session_destroy();
-      //header('location: ./');
     }
     else {
       $_SESSION['poadmin']['curPage'] = $curPage;
@@ -211,7 +211,6 @@
   $content = str_replace('[divDecoration]', $divDecoration, $content);
   $content = str_replace('[blank]', '', $content);
   if(function_exists('replaceTags')) replaceTags($content); // Handle any extra replacement tags, as needed.
-  #die ('<pre>' . print_r($_SESSION, true) . "</pre><br />\ndisplay = $hide_logo<br />\n");
   exit($content);
 
   function makeLinks($section, $linkArray, $spaces = 2) {
@@ -230,12 +229,8 @@
       $linkClass = $needle['[linkHref]'];
       $linkClass = str_replace(' href="index.php?page=', '', $linkClass);
       $linkClass = str_replace('"', '', $linkClass);
-      #die ("linkClass = $linkClass<br />\nstrstr = $sp<br />\n");
-      #$curClass = ($linkClass == $curPage) ? 'selected' : 'noClass';
       $curClass = ($linkClass == $curPage) ? 'selected' : 'noClass';
       if ($curPage == 'main') $curClass = (stripos($linkClass,'main') !== false) ? 'selected' : 'noClass';
-/*
-*/
       $tmp = str_replace('[curClass]', $curClass, $tmp);
       $out .= "$tmp\n";
     }
@@ -507,6 +502,15 @@ endFooter;
       $out = $version;
     }
     return $out;
+  }
+
+  function handle_exceptions(exception $e)
+  {
+    global $msg;
+    $trace = $e->getTrace();
+    file_put_contents(_LOG_PATH_ . 'admin.exception.log', print_r($trace, true), FILE_APPEND);
+    $msg .= $e->getMessage();
+
   }
 
 ?>

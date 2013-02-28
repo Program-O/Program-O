@@ -47,8 +47,6 @@
   $chatbotURLpath = str_replace('/gui/xml/index.php', '/chatbot', $thisFileURL);
   define("CHATBOT_URL_PATH", $chatbotURLpath);
   $send = "http://" . $_SERVER['HTTP_HOST'] . CHATBOT_URL_PATH . "/conversation_start.php?say=$say&convo_id=$convo_id&bot_id=$bot_id&format=$format";
-  #$X = file_put_contents('URL.txt', "$send\r\n",FILE_APPEND);
-  #die();
   $sXML = trim(get_response($send));
   //just output as an example
   $responseXML = htmlentities($sXML);

@@ -27,13 +27,10 @@
     $pathInfo = pathinfo(realpath(__FILE__));
     $thisDir = $pathInfo['dirname'];
     $banList = $thisDir . DIRECTORY_SEPARATOR . 'banList.txt';
-    //die ("ban list = $banList");
-    //echo "Testing the ban function.<br>\n<pre>\n";
     $IP = $_SERVER['REMOTE_ADDR'];
     if (!file_exists($banList)) $x = file_put_contents($banList,'');
     $ipList = file($banList, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     $l = print_r($ipList, true);
-    //die("<pre>$l\n</pre>\n");
     if (in_array($IP,$ipList)) {
       $convoArr['send_to_user'] = <<<endMessage
 You have been banned from using this chat interface.

@@ -148,7 +148,6 @@ match should allow the user access, while failure should be handled accordingly.
       break;
   }
   $capString = str_replace('[objectWord]',$objectWord, $capString);
-  #die ("capKey = $capKey.<br />\ncapString = $capString.<br />\nfilename = $fn.<br />\n");
 
   // Set up the image
   $image = imagecreatetruecolor($X, $Y);

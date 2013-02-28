@@ -48,8 +48,6 @@ endScript;
   }
   $teachContent = $template->getSection('TeachBotForm');
   $showHelp = $template->getSection('TeachShowHelp');
-  #$teachContent = '';
-  #$showHelp = '';
 
     $topNav        = $template->getSection('TopNav');
     $leftNav       = $template->getSection('LeftNav');
@@ -66,7 +64,6 @@ endScript;
     $headerTitle   = 'Actions:';
     $pageTitle     = 'My-Program O - Teaching Interface';
     $mainContent   = $template->getSection('TeachMain');
-    #die ("main content = <pre>|$mainContent|</pre><br />\n");
     #$mainContent   = 'Hello!';
     $mainTitle     = "Chatbot Teaching Interface for $bot_name [helpLink]";
 
@@ -94,7 +91,7 @@ function insertAIML() {
   }
   else {
     $sql = "INSERT INTO `aiml` (`id`,`bot_id`, `aiml`, `pattern`,`thatpattern`,`template`,`topic`,`filename`, `php_code`) VALUES (NULL,'$bot_id', '$aiml','$pattern','$thatpattern','$aimltemplate','$topic','admin_added.aiml', '')";
-    $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
 
     if($result) {
       $msg = "AIML added.";

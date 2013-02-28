@@ -17,9 +17,6 @@
   ini_set('log_errors',1);
   ini_set('error_log', _LOG_PATH_ . 'upgrade.error.log');
   $test =$_SERVER['HTTP_REFERER'];
-  //die('Referer = ');
-
-
 	//load shared files
 	include_once(_LIB_PATH_."db_functions.php");
 	include_once(_LIB_PATH_."error_functions.php");
@@ -37,7 +34,7 @@
   if (empty($msg))
   {
     $success = upgrade();
-    if (!$success) die(failure());
+    if (!$success) exit(failure());
     $msg = success();
   }
 
@@ -54,7 +51,7 @@ or <a href="' . _ADMIN_URL_ . '">here</a> to log into the admin page.
     $out = array();
     $sql = "show columns from `aiml_userdefined` like 'bot_id';";
     $result = db_query($sql, $con);
-    if (!$result) die(failure());
+    if (!$result) exit(failure());
     else $out = mysql_num_rows($result);
     return $out; //
   }

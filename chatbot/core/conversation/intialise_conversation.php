@@ -10,6 +10,7 @@
   * DETAILS: this file contains the functions intialise
   *          the conversation
   ***************************************/
+
   /**
   * function intialise_convoArray()
   * A function to intialise the conversation array
@@ -297,7 +298,7 @@
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '" . $convoArr['conversation']['bot_id'] . "'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "load bot config SQL: $sql", 3);
-    $result = db_query($sql, $con) or die('You have a SQL error on line ' . __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line ' . __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     if ($result !== false and (mysql_num_rows($result) > 0))
     {
       while ($row = mysql_fetch_array($result))
