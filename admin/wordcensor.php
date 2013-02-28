@@ -37,10 +37,11 @@
 endScript;
   $post_vars = filter_input_array(INPUT_POST);
   $get_vars = filter_input_array(INPUT_GET);
-  $group = (isset($post_vars['group'])) ? $post_vars['group'] : 1;
+  $request_vars = (array)$post_vars + (array)$get_vars;
+  $group = (isset($request_vars['group'])) ? $request_vars['group'] : 1;
   $content  = $template->getSection('SearchWordCensorForm');
-  $wc_action = isset($post_vars['action']) ? strtolower($post_vars['action']) : '';
-  $wc_id = isset($post_vars['censor_id']) ? $post_vars['censor_id'] : -1;
+  $wc_action = isset($request_vars['action']) ? strtolower($request_vars['action']) : '';
+  $wc_id = isset($request_vars['censor_id']) ? $request_vars['censor_id'] : -1;
   if (!empty($wc_action)) {
     switch($wc_action) {
       case 'search':
@@ -96,7 +97,7 @@ endScript;
     $rightNav    = str_replace('[headerTitle]', paginate(), $rightNav);
 
   function paginate() {
-    global $get_vars;
+    global $request_vars;
     $dbConn = db_open();
     $sql = "select count(*) from `wordcensor` where 1";
     $result = mysql_query($sql) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
@@ -109,7 +110,7 @@ endScript;
     #die ("Session values:<br />\n" . print_r($_SESSION, true) . "<br />\nCount = $count<br />\n");
     $out = "Censored Words<br />\n50 words per page:<br />\n";
     $link=" - <a class=\"paginate\" href=\"index.php?page=wordcensor&amp;group=[group]\">[label]</a>";
-    $curStart = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
+    $curStart = (isset($request_vars['group'])) ? $request_vars['group'] : 1;
     $firstPage = 1;
     $prev  = ($curStart > ($firstPage + 1)) ? $curStart - 1 : -1;
     $next = ($lastPage > ($curStart + 1)) ? $curStart + 1 : -1;
@@ -128,16 +129,16 @@ endScript;
   }
 
   function getWordCensorWords() {
-    global $template, $get_vars;
+    global $template, $request_vars;
     # pagination variables
-    $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
+    $group = (isset($request_vars['group'])) ? $request_vars['group'] : 1;
     $_SESSION['poadmin']['group'] = $group;
     $startEntry = ($group - 1) * 50;
     $startEntry = ($startEntry < 0) ? 0 : $startEntry;
     $end = $group + 50;
     $_SESSION['poadmin']['page_start'] = $group;
     $dbconn = db_open();
-    $curID = (isset($get_vars['id'])) ? $get_vars['id'] : -1;
+    $curID = (isset($request_vars['id'])) ? $request_vars['id'] : -1;
     $sql = "select `censor_id`,`word_to_censor` from `wordcensor` where 1 order by abs(`censor_id`) asc limit $startEntry, 50;";
     #die ("SQL = $sql<br />\n");
     $baseLink = $template->getSection('NavLink');
@@ -164,20 +165,20 @@ endScript;
   }
 
 function wordCensorForm() {
-  global $template, $get_vars;
+  global $template, $request_vars;
   $out = $template->getSection('WordCensorForm');
-  $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
+  $group = (isset($request_vars['group'])) ? $request_vars['group'] : 1;
   $out  = str_replace('[group]', $group, $out);
   return $out;
 }
 
 function insertWordCensor() {
     //global vars
-    global $template, $msg, $post_vars;
+    global $template, $msg, $request_vars;
     $dbconn = db_open();
 
-    $replace_with = mysql_real_escape_string(trim($post_vars['replace_with']));
-    $word_to_censor = mysql_real_escape_string(trim($post_vars['word_to_censor']));
+    $replace_with = mysql_real_escape_string(trim($request_vars['replace_with']));
+    $word_to_censor = mysql_real_escape_string(trim($request_vars['word_to_censor']));
 
     if(($replace_with == "") || ($word_to_censor == "")) {
         $msg = '        <div id="errMsg">You must enter a spelling mistake and the replace_with.</div>' . "\n";
@@ -220,10 +221,10 @@ function delWordCensor($id) {
 
 function runWordCensorSearch() {
     //global vars
-    global $template, $post_vars;
+    global $template, $request_vars;
     $dbconn = db_open();
     $i=0;
-    $search = mysql_real_escape_string(trim($post_vars['search']));
+    $search = mysql_real_escape_string(trim($request_vars['search']));
     $sql = "SELECT * FROM `wordcensor` WHERE `word_to_censor` LIKE '%$search%' OR `replace_with` LIKE '%$search%' LIMIT 50";
     $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     $htmltbl = '<table>
@@ -268,8 +269,8 @@ function runWordCensorSearch() {
 
 function editWordCensorForm($id) {
   //global vars
-  global $template, $get_vars;
-  $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
+  global $template, $request_vars;
+  $group = (isset($request_vars['group'])) ? $request_vars['group'] : 1;
   $form   = $template->getSection('EditWordCensorForm');
   $dbconn = db_open();
   $sql    = "SELECT * FROM `wordcensor` WHERE `censor_id` = '$id' LIMIT 1";
@@ -285,11 +286,11 @@ function editWordCensorForm($id) {
 
 function updateWordCensor() {
   //global vars
-  global $template, $msg, $post_vars;
+  global $template, $msg, $request_vars;
   $dbconn = db_open();
-  $word_to_censor = mysql_real_escape_string(trim($post_vars['word_to_censor']));
-  $replace_with = mysql_real_escape_string(trim($post_vars['replace_with']));
-  $id = trim($post_vars['id']);
+  $word_to_censor = mysql_real_escape_string(trim($request_vars['word_to_censor']));
+  $replace_with = mysql_real_escape_string(trim($request_vars['replace_with']));
+  $id = trim($request_vars['id']);
   if(($id=="")||($word_to_censor=="")||($replace_with=="")) {
     $msg = '<div id="errMsg">There was a problem editing the replace_with - no changes made.</div>';
   }

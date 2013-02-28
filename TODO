@@ -18,3 +18,6 @@
 
   3.) Add a page to the admin script that allows botmasters to edit the config file
       directly.
+
+  4.) Add functionality to the downloads section of the admin to download multiple
+      AIML files ad a single zip file.
