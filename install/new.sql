@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `botpersonality` (
   `name` varchar(255) NOT NULL DEFAULT '',
   `value` text NOT NULL,
   PRIMARY KEY (id),
-  KEY botname (bot,`name`));
+  KEY botname (bot_id,`name`));
 CREATE TABLE IF NOT EXISTS `conversation_log` (
   id int(11) NOT NULL AUTO_INCREMENT,
   input text NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `myprogramo` (
   last_ip varchar(25) NOT NULL,
   last_login timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY uname (uname));
+  UNIQUE KEY user_name (user_name));
 CREATE TABLE IF NOT EXISTS `spellcheck` (
   id int(11) NOT NULL AUTO_INCREMENT,
   missspelling varchar(100) NOT NULL,

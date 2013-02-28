@@ -112,7 +112,7 @@ function Save() {
     $queries = preg_split("/;/", $sql);
     foreach ($queries as $query){
       if (strlen(trim($query)) > 0) {
-        $result = mysql_query($query,$conn) or install_error('Error creating new tables for DB!',mysql_error(), $sql);
+        $result = mysql_query($query,$conn) or install_error('Error creating new tables for DB!',mysql_error(), $query);
         $success = mysql_affected_rows();
       }
     }
