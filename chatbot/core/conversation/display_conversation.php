@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.1.3
+* Version: 2.1.4
 * FILE: chatbot/core/conversation/display_conversation.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
@@ -46,6 +46,7 @@ function get_conversation_to_display($convoArr)
 		WHERE 
 		`user_id` = '".$convoArr['conversation']['user_id']."'
 		AND `bot_id` = '".$convoArr['conversation']['bot_id']."'
+		AND `convo_id` = '".$convoArr['conversation']['convo_id']."'
 		ORDER BY id DESC $limit ";
 		#$x = save_file('conversationLogSQL.txt', "SQL = \r\n$sql");
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql",3);
@@ -110,15 +111,11 @@ function get_html($convoArr,$conversation)
 	$show= "";
 	$user_name = $convoArr['conversation']['user_name'];
 	$bot_name  = $convoArr['conversation']['bot_name'];
-	foreach($conversation as $index => $conversation_subarray){
-		$show .= "<div class=\"usersay\">$user_name: ".stripslashes($conversation_subarray['input'])."</div>";
-		$show .= "<div class=\"botsay\">$bot_name: ".stripslashes($conversation_subarray['response'])."</div>";
-		
-		
-		
-		
+	foreach($conversation as $index => $conversation_subarray)
+    {
+      $show .= "<div class=\"usersay\">$user_name: ".stripslashes($conversation_subarray['input'])."</div>";
+	  $show .= "<div class=\"botsay\">$bot_name: ".stripslashes($conversation_subarray['response'])."</div>";
 	}
-	
 	$convoArr['send_to_user']=$show;
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning HTML",4);
 	return $convoArr;

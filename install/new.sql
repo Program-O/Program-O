@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `conversation_log` (
   input text NOT NULL,
   response text NOT NULL,
   user_id int(11) NOT NULL,
-  convo_id int(11) NOT NULL,
+  convo_id text NOT NULL,
   bot_id int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id));

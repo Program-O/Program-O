@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.3
+//My Program-O Version 2.1.4
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -67,14 +67,14 @@ endScript;
     $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
 
 function getUserNames() {
-  $dbconn = db_open();
+  $dbConn = db_open();
   $sql = "select `id`, `user_name` from `users` where 1;";
-  $result = mysql_query($sql,$dbconn);
+  $result = mysql_query($sql,$dbConn);
   $nameList = array();
   while ($row = mysql_fetch_assoc($result)) {
     $nameList[$row['id']] = $row['user_name'];
   }
-  mysql_close($dbconn);
+  mysql_close($dbConn);
   return $nameList;
 }
 
@@ -83,10 +83,10 @@ function getuserList($showing) {
   global $template, $get_vars;
   $nameList = getUserNames();
   $curUserid = (isset($get_vars['id'])) ? $get_vars['id'] : -1;
-  $dbconn = db_open();
+  $dbConn = db_open();
   $bot_id = $_SESSION['poadmin']['bot_id'];
   $linkTag = $template->getSection('NavLink');
-  $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = '$bot_id' AND DATE(`timestamp`) = '[repl_date]' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC";
+  $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = '$bot_id' AND DATE(`timestamp`) = '[repl_date]' GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC";
   $showarray = array("last 20","previous week","previous 2 weeks","previous month","last 6 months","this year","previous year","all years");
   switch ($showing) {
     case "today":
@@ -122,7 +122,8 @@ function getuserList($showing) {
         <ul>
 
 endList;
-  if (($result = mysql_query($sql,$dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+  if (($result = mysql_query($sql,$dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+  if (mysql_num_rows($result) == 0) $list .= '          <li>No log entries found</li>';
   while($row = mysql_fetch_array($result)) {
     $user_id = $row['user_id'];
     $linkClass = ($user_id == $curUserid) ? 'selected' : 'noClass';
@@ -138,7 +139,7 @@ endList;
     $list .= "$tmpLink\n$anchor";
   }
   $list .="\n       </div>\n";
-  mysql_close($dbconn);
+  mysql_close($dbConn);
   return $list;
 }
 
@@ -211,12 +212,12 @@ function getuserConvo($id, $showing) {
   }
   $lasttimestamp = "";
   $i = 1;
-  $dbconn = db_open();
+  $dbConn = db_open();
   //get undefined defaults from the db
   $sql = "SELECT *  FROM `conversation_log` WHERE `bot_id` = '$bot_id' AND `user_id` = $id $sqladd ORDER BY `id` ASC";
   $list = "<hr><br/><h4>$title conversations for user: $id</h4>";
   $list .="<div class=\"convolist\">";
-  if (($result = mysql_query($sql,$dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql\n");
+  if (($result = mysql_query($sql,$dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql\n");
   while($row = mysql_fetch_array($result)) {
     $thisdate = date("Y-m-d",strtotime($row['timestamp']));
     if($thisdate!=$lasttimestamp) {
@@ -234,7 +235,7 @@ function getuserConvo($id, $showing) {
     $lasttimestamp = $thisdate;
   }
   $list .="</div>";
-  mysql_close($dbconn);
+  mysql_close($dbConn);
   $list = str_ireplace('<script', '&lt;script', $list);
   return $list;
 }

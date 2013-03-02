@@ -48,7 +48,7 @@
     // Define constant for the current version
     //------------------------------------------------------------------------
 
-    define ('VERSION', '2.1.3');
+    define ('VERSION', '2.1.4');
 
     //------------------------------------------------------------------------
     // Error reporting
@@ -104,12 +104,10 @@
     //default bot config - this is the default bot most of this will be overwriten by the bot configuration in the db
     $default_bot_id = 1;
     $default_format = '[default_format]';
-    $default_use_aiml_code = '[default_use_aiml_code]';
-    $default_update_aiml_code = '[default_update_aiml_code]';
     $default_pattern = 'RANDOM PICKUP LINE';
     $default_error_response = 'No AIML category found. This is a Default Response.';
     $default_conversation_lines = '1';
-    $default_remember_up_to = '[default_remember_up_to]';
+    $default_remember_up_to = 10;
     $default_debugemail = '[default_debugemail]';
     /*
      * $default_debug_level - The level of messages to show the user
@@ -208,16 +206,24 @@
       $_SESSION['commonWords'] = file(_CONF_PATH_.'commonWords.dat', FILE_IGNORE_NEW_LINES);
     }
 
-    $commonwordsArr = $_SESSION['commonWords'];
+    $common_words_array = $_SESSION['commonWords'];
 
     //------------------------------------------------------------------------
     // Set Program O globals
     // Do not edit
     //------------------------------------------------------------------------
-    $srai_iterations = '';
-    $offset=1;
+    $srai_iterations = 1;
     $rememLimit = 20;
     $debugArr = array();
+
+    //------------------------------------------------------------------------
+    // Addon Configuration - Set as desired
+    //------------------------------------------------------------------------
+
+    define('USE_SPELL_CHECKER', true);
+    define('PARSE_BBCODE', true);
+    define('USE_WORD_CENSOR', true);
+    define('USE_CUSTOM_TAGS', true);
 
     //------------------------------------------------------------------------
     // Set Script Installation as completed

@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.3
+  * Version: 2.1.4
   * FILE: chatbot/conversation_start.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 19 JUNE 2012
@@ -71,28 +71,19 @@
       $convoArr['client_properties'] = null;
       $convoArr['conversation'] = null;
       $convoArr['conversation']['user_id'] = $user_id;
-/*
       // Get old convo id, to use for later
-      $old_convo_id = (!empty($form_vars['convo_id'])) ? $form_vars['convo_id'] : '';
-      // If it's desired to kill the session, also delete the session cookie.
+      $old_convo_id = session_id();
       // Note: This will destroy the session, and not just the session data!
-      if (ini_get("session.use_cookies"))
-      {
-        $params = session_get_cookie_params();
-        setcookie($session_name, '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
-      }
       // Finally, destroy the session.
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Generating new session ID.", 4);
-      session_destroy();
-      session_start($session_name);
-      session_regenerate_id();
+      session_regenerate_id(true);
       $new_convo_id = session_id();
       setcookie($session_name, $new_convo_id, time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
-      $form_vars['convo_id'] = $new_convo_id;
       // Update the users table, and clear out any unused client properties as needed
       $sql = "update `$dbn`.`users` set `session_id` = '$new_convo_id' where `session_id` = '$old_convo_id';";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Update user - SQL:\n$sql", 4);
       $result = db_query($sql, $con);
+      $confirm = mysql_affected_rows($con);
       // Get user id, so that we can clear the client properties
       $sql = "select `id` from `$dbn`.`users` where `session_id` = '$new_convo_id' limit 1;";
       $result = db_query($sql, $con) or trigger_error('Cannot obtain user ID. Error = ' . mysql_error());
@@ -101,17 +92,17 @@
         $row = mysql_fetch_assoc($result);
         $user_id = $row['id'];
         $convoArr['conversation']['user_id'] = $user_id;
+        $convoArr['conversation']['convo_id'] = $new_convo_id;
         runDebug(__FILE__, __FUNCTION__, __LINE__, "User ID = $user_id.", 4);
         $sql = "delete from `$dbn`.`client_properties` where `user_id` = $user_id;";
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Clear client properties from the DB - SQL:\n$sql", 4);
-        //$result = db_query($sql, $con);
       }
-*/
       $say = "Hello";
     }
+    $convo_id = session_id();
     //add any pre-processing addons
     $say = run_pre_input_addons($convoArr, $say);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $form_vars['convo_id'] . "\nBot id: " . $form_vars['bot_id'] . "\nFormat: " . $form_vars['format'], 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $form_vars['bot_id'] . "\nFormat: " . $form_vars['format'], 2);
     //get the stored vars
     $convoArr = read_from_session();
     //now overwrite with the recieved data
@@ -123,7 +114,8 @@
     $convoArr = load_that($convoArr);
     $convoArr = buildNounList($convoArr);
     $convoArr['time_start'] = $time_start;
-    //if totallines = 0 then this is new user
+    $convoArr = load_bot_config($convoArr);
+    //if totallines isn't set then this is new user
     if (isset ($convoArr['conversation']['totallines']))
     {
     //reset the debug level here
@@ -132,7 +124,6 @@
     else
     {
     //load the chatbot configuration
-      $convoArr = load_bot_config($convoArr);
       //reset the debug level here
       $debug_level = $convoArr['conversation']['debug_level'];
       //insita
@@ -149,7 +140,7 @@
     $convoArr = make_conversation($convoArr);
     $convoArr = run_mid_level_addons($convoArr);
     $convoArr = log_conversation($convoArr);
-    $convoArr = log_conversation_state($convoArr);
+    #$convoArr = log_conversation_state($convoArr);
     $convoArr = write_to_session($convoArr);
     $convoArr = get_conversation($convoArr);
     $convoArr = run_post_response_useraddons($convoArr);

@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.1.3
+  * Version: 2.1.4
   * FILE: chatbot/core/conversation/intialise_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -51,10 +51,9 @@
   function load_blank_convoArray($arrayIndex, $defaultValue, $convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Loading blank $arrayIndex array", 4);
-    global $offset;
     //set in global config file
     $remember_up_to = $convoArr['conversation']['remember_up_to'];
-    for ($i = 1; $i <= ($remember_up_to + $offset); $i++)
+    for ($i = 1; $i <= ($remember_up_to + 1); $i++)
     {
       $convoArr[$arrayIndex][$i] = $defaultValue;
     }
@@ -181,8 +180,7 @@
   **/
   function push_on_front_convoArr($arrayIndex, $value, $convoArr)
   {
-    global $offset, $rememLimit;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    global $rememLimit;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Pushing $value to front of $arrayIndex array", 2);
     $remember_up_to = $convoArr['conversation']['remember_up_to'];
     //these subarray indexes are 2d
@@ -193,7 +191,7 @@
     $value = preg_replace('/\s\s+/', ' ', $value);
     $value = preg_replace('/\s\./', '.', $value);
     //there is a chance the subarray has not been set yet so check and if not set here
-    if (!isset ($convoArr[$arrayIndex][$offset]))
+    if (!isset ($convoArr[$arrayIndex][1]))
     {
       $convoArr[$arrayIndex] = array();
       $convoArr = load_blank_convoArray($arrayIndex, "", $convoArr);
@@ -293,33 +291,29 @@
   **/
   function load_bot_config($convoArr)
   {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading config data for the current bot.', 2);
     global $con, $dbn, $default_format, $default_pattern, $default_update_aiml_code, $default_conversation_lines, $default_remember_up_to, $default_debugemail, $default_debug_level, $default_debug_mode, $default_save_state, $error_response;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting bot config from DB", 1);
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '" . $convoArr['conversation']['bot_id'] . "'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "load bot config SQL: $sql", 3);
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line ' . __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-    if ($result !== false and (mysql_num_rows($result) > 0))
+    if (($result = mysql_query($sql, $con)) === false) throw new Exception('You have a SQL error on line ' . __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (mysql_num_rows($result) > 0)
     {
-      while ($row = mysql_fetch_array($result))
-      {
-        $convoArr['conversation']['use_aiml_code'] = $row['use_aiml_code'];
-        $convoArr['conversation']['update_aiml_code'] = $row['update_aiml_code'];
-        $convoArr['conversation']['conversation_lines'] = $row['conversation_lines'];
-        $convoArr['conversation']['remember_up_to'] = $row['remember_up_to'];
-        $convoArr['conversation']['debugemail'] = $row['debugemail'];
-        $convoArr['conversation']['debug_level'] = $row['debugshow'];
-        $convoArr['conversation']['debugmode'] = $row['debugmode'];
-        $convoArr['conversation']['save_state'] = $row['save_state'];
-        $convoArr['conversation']['default_aiml_pattern'] = $row['default_aiml_pattern'];
-        $convoArr['conversation']['bot_parent_id'] = $row['bot_parent_id'];
-        $error_response = $row['error_response'];
-      }
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading bot details from the database.', 4);
+      $row = mysql_fetch_assoc($result);
+      $convoArr['conversation']['conversation_lines'] = $row['conversation_lines'];
+      $convoArr['conversation']['remember_up_to'] = $row['remember_up_to'];
+      $convoArr['conversation']['debugemail'] = $row['debugemail'];
+      $convoArr['conversation']['debug_level'] = $row['debugshow'];
+      $convoArr['conversation']['debugmode'] = $row['debugmode'];
+      $convoArr['conversation']['save_state'] = $row['save_state'];
+      $convoArr['conversation']['default_aiml_pattern'] = $row['default_aiml_pattern'];
+      $convoArr['conversation']['bot_parent_id'] = $row['bot_parent_id'];
+      $error_response = $row['error_response'];
     }
     else
     {
-      $convoArr['conversation']['use_aiml_code'] = $default_use_aiml_code;
-      $convoArr['conversation']['update_aiml_code'] = $default_update_aiml_code;
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Unable to load bot details from the database. Loading default values.', 4);
       $convoArr['conversation']['conversation_lines'] = $default_conversation_lines;
       $convoArr['conversation']['remember_up_to'] = $default_remember_up_to;
       $convoArr['conversation']['debugemail'] = $default_debugemail;
@@ -347,7 +341,7 @@
   {
     //db globals
     global $con, $dbn;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Saving the conversation to the DB.', 2);
     //clean and set
     $usersay = mysql_real_escape_string($convoArr['aiml']['user_raw']);
     $botsay = mysql_real_escape_string($convoArr['aiml']['parsed_template']);
@@ -355,18 +349,23 @@
     $convo_id = $convoArr['conversation']['convo_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
     $sql = "INSERT INTO `$dbn`.`conversation_log` (
-                `id` ,
-                `input` ,
-                `response` ,
-                `user_id` ,
-                `convo_id` ,
-                `bot_id` ,
-                `timestamp`
-                )
-                VALUES (
-                NULL , '$usersay', '$botsay', '$user_id', '$convo_id', '$bot_id',
-                CURRENT_TIMESTAMP
-                )";
+      `id` ,
+      `input` ,
+      `response` ,
+      `user_id` ,
+      `convo_id` ,
+      `bot_id` ,
+      `timestamp`
+    )
+    VALUES (
+      NULL ,
+      '$usersay',
+      '$botsay',
+      '$user_id',
+      '$convo_id',
+      '$bot_id',
+      CURRENT_TIMESTAMP
+    )";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving conservation SQL: $sql", 3);
     db_query($sql, $con);
     return $convoArr;
@@ -380,7 +379,7 @@
   **/
   function log_conversation_state($convoArr)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Logging the state of the conversation.', 2);
     global $con, $dbn, $user_name;
     //get undefined defaults from the db
     runDebug(__FILE__, __FUNCTION__, __LINE__, "logging state", 4);
@@ -398,6 +397,7 @@
                 WHERE `id` = '$user_id' LIMIT 1";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "updating conversation state SQL: $sql", 3);
     db_query($sql, $con);
+    $confirm = mysql_affected_rows($con);
     return $convoArr;
   }
 
@@ -435,6 +435,7 @@
   **/
   function check_set_bot($convoArr)
   {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking and/or setting the current bot.', 2);
     global $con, $dbn, $default_bot_id, $error_response;
     //check to see if bot_id has been passed if not load default
     if ((isset ($_REQUEST['bot_id'])) && (trim($_REQUEST['bot_id']) != ""))
@@ -464,7 +465,6 @@
     }
     else
     {
-      $convoArr['debug']['intialisation_error'] = "Bot ID: $bot_id does not exist";
       $convoArr['conversation']['bot_id'] = $bot_id;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "ERROR - Cannot find bot id: $bot_id", 1);
     }
@@ -503,7 +503,7 @@
   function check_set_user($convoArr)
   {
     global $con, $dbn, $unknown_user;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking and setting the user info, as needed.', 2);
     //check to see if user_name has been set if not set as default
     $convo_id = (isset ($convoArr['conversation']['convo_id'])) ? $convoArr['conversation']['convo_id'] : session_id();
     if (!isset ($convoArr['conversation']['convo_id']))
@@ -565,7 +565,7 @@
 
   function load_that($convoArr)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading the THAT array.', 2);
     global $con, $dbn, $default_remember_up_to;
     $remember_up_to = (!empty ($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $default_remember_up_to;
     $user_id = $convoArr['conversation']['user_id'];

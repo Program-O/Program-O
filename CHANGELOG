@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.3
+  * Version: 2.1.4
   * FILE: CHANGELOG
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -9,6 +9,20 @@
   ***************************************/
 
 Version History:
+
+2.1.4   Bug fixes & minor styling/feature changes
+            1.) Fixed several bugs that arose from the database refactor.
+            2.) Fixed the long-standing bug that caused the script to create a new user
+                instead of just updating the current user when they typed in the phrase
+                "clear properties".
+            3.) Fixed bugs in both the word censor and spell checker addons that prevented
+                botmasters from making changes to the DB.
+            4.) Updated the spell checker addon to allow botmasters to enable/disable
+                spell checking by editing the config file. In time, this will expand to
+                the ability to enable or disable the addon per bot (future plans).
+            5.) Changed the styling of the admin pages to include visible cues for BBCode
+                [code] blocks from the Program O Support Forums, when viewing posts from
+                the Support tab of the admin pages.
 
 2.1.3   Added the last of the AIML tag functions/Refactored the DB/Multiple Bug Fixes
             1.) Added functions for the remaining AIML tags:

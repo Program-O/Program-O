@@ -1,0 +1,4 @@
+
+INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
+VALUES (1, 't2', 'none', '1', '1', 'html', '0', '0', 'session', 
+'1', '10', 'dmorton@geekcavecreations.com', '4', '1', 'No AIML category found. This is a Default Response.', 'RANDOM PICKUP LINE');

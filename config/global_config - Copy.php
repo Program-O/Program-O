@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.1.3
+* Version: 2.1.4
 * FILE: config/global_config.php
 * AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
 * DATE: MAY 4TH 2011
@@ -61,7 +61,7 @@
     // Define constant for the current version
     //------------------------------------------------------------------------
 
-    define ('VERSION', '2.1.3');
+    define ('VERSION', '2.1.4');
 
     //------------------------------------------------------------------------
     // Error reporting
@@ -208,14 +208,13 @@
       $_SESSION['commonWords'] = file(_CONF_PATH_.'commonWords.dat', FILE_IGNORE_NEW_LINES);
     }
 
-    $commonwordsArr = $_SESSION['commonWords'];
+    $common_words_array = $_SESSION['commonWords'];
 
     //------------------------------------------------------------------------
     // Set Program O globals
     // Do not edit
     //------------------------------------------------------------------------
     $srai_iterations = '';
-    $offset=1;
     $rememLimit = 20;
     $debugArr = array();
 

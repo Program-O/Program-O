@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.3
+//My Program-O Version 2.1.4
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -28,9 +28,9 @@
 
   function showChatFrame() {
     global $template, $bot_name, $bot_id;
-    $dbconn = db_open();
+    $dbConn = db_open();
     $sql = "select `format` from `bots` where `bot_id` = $bot_id limit 1;";
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     $row = mysql_fetch_assoc($result);
     $format = strtolower($row['format']);
     switch ($format) {

@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.1.3
+  * Version: 2.1.4
   * FILE: chatbot/core/aiml/parse_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -344,7 +344,7 @@
   **/
   function run_srai(& $convoArr, $now_look_for_this)
   {
-    global $srai_iterations, $offset, $error_response;
+    global $srai_iterations, $error_response;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running SRAI $srai_iterations on $now_look_for_this", 3);
     runDebug(__FILE__, __FUNCTION__, __LINE__, $convoArr['aiml']['html_template'], 4);
     //number of srai iterations - will stop recursion if it is over 10
@@ -359,7 +359,7 @@
     $tmp_convoArr = array();
     $tmp_convoArr = $convoArr;
     $tmp_convoArr['aiml'] = array();
-    $tmp_convoArr['that'][$offset][$offset] = "";
+    $tmp_convoArr['that'][1][1] = "";
     //added
     $tmp_convoArr['aiml']['parsed_template'] = "";
     $tmp_convoArr['aiml']['lookingfor'] = $now_look_for_this;

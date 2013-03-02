@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.3
+//My Program-O Version 2.1.4
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -76,7 +76,7 @@ endScript;
 function insertAIML() {
   //db globals
   global $template, $msg, $post_vars;
-  $dbconn = db_open();
+  $dbConn = db_open();
   $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
   $aimltemplate = mysql_real_escape_string(trim($post_vars['template']));
   $pattern = strtoupper(mysql_real_escape_string(trim($post_vars['pattern'])));
@@ -91,7 +91,7 @@ function insertAIML() {
   }
   else {
     $sql = "INSERT INTO `aiml` (`id`,`bot_id`, `aiml`, `pattern`,`thatpattern`,`template`,`topic`,`filename`, `php_code`) VALUES (NULL,'$bot_id', '$aiml','$pattern','$thatpattern','$aimltemplate','$topic','admin_added.aiml', '')";
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
 
     if($result) {
       $msg = "AIML added.";
@@ -100,7 +100,7 @@ function insertAIML() {
       $msg = "There was a problem adding the AIML - no changes made.";
     }
   }
-  mysql_close($dbconn);
+  mysql_close($dbConn);
 
   return $msg;
 }

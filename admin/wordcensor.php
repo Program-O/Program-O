@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.3
+//My Program-O Version 2.1.4
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -99,7 +99,7 @@ endScript;
     global $request_vars;
     $dbConn = db_open();
     $sql = "select count(*) from `wordcensor` where 1";
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     $row = mysql_fetch_array($result);
     $rowCount = $row[0];
     mysql_close($dbConn);
@@ -135,12 +135,12 @@ endScript;
     $startEntry = ($startEntry < 0) ? 0 : $startEntry;
     $end = $group + 50;
     $_SESSION['poadmin']['page_start'] = $group;
-    $dbconn = db_open();
+    $dbConn = db_open();
     $curID = (isset($request_vars['id'])) ? $request_vars['id'] : -1;
     $sql = "select `censor_id`,`word_to_censor` from `wordcensor` where 1 order by abs(`censor_id`) asc limit $startEntry, 50;";
     $baseLink = $template->getSection('NavLink');
     $links = '      <div class="userlist">' . "\n";
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     $count = 0;
     while ($row = mysql_fetch_assoc($result)) {
       $linkId = $row['censor_id'];
@@ -172,7 +172,7 @@ function wordCensorForm() {
 function insertWordCensor() {
     //global vars
     global $template, $msg, $request_vars;
-    $dbconn = db_open();
+    $dbConn = db_open();
 
     $replace_with = mysql_real_escape_string(trim($request_vars['replace_with']));
     $word_to_censor = mysql_real_escape_string(trim($request_vars['word_to_censor']));
@@ -182,7 +182,7 @@ function insertWordCensor() {
     }
     else {
         $sql = "INSERT INTO `wordcensor` (`censor_id`, `word_to_censor`, `replace_with`, `bot_exclude`) VALUES (NULL,'$word_to_censor','$replace_with', '')";
-        if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+        if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
 
         if($result) {
             $msg = '<div id="successMsg">Correction added.</div>';
@@ -191,20 +191,20 @@ function insertWordCensor() {
             $msg = '<div id="errMsg">There was a problem editing the replace_with - no changes made.</div>';
         }
     }
-    mysql_close($dbconn);
+    mysql_close($dbConn);
 
     return $msg;
 }
 
 function delWordCensor($id) {
     global $template, $msg;
-    $dbconn = db_open();
+    $dbConn = db_open();
     if($id=="") {
         $msg = '<div id="errMsg">There was a problem editing the replace_with - no changes made.</div>';
     }
     else {
         $sql = "DELETE FROM `wordcensor` WHERE `censor_id` = '$id' LIMIT 1";
-        if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+        if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
         if($result) {
             $msg = '<div id="successMsg">Correction deleted.</div>';
         }
@@ -212,18 +212,18 @@ function delWordCensor($id) {
             $msg = '<div id="errMsg">There was a problem editing the replace_with - no changes made.</div>';
         }
     }
-    mysql_close($dbconn);
+    mysql_close($dbConn);
 }
 
 
 function runWordCensorSearch() {
     //global vars
     global $template, $request_vars;
-    $dbconn = db_open();
+    $dbConn = db_open();
     $i=0;
     $search = mysql_real_escape_string(trim($request_vars['search']));
     $sql = "SELECT * FROM `wordcensor` WHERE `word_to_censor` LIKE '%$search%' OR `replace_with` LIKE '%$search%' LIMIT 50";
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     $htmltbl = '<table>
                   <thead>
                     <tr>
@@ -260,7 +260,7 @@ function runWordCensorSearch() {
         $msg = "Found $i results for '<b>$search</b>'";
     }
     $htmlresults = "<div id=\"pTitle\">$msg</div>".$htmltbl;
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     return $htmlresults;
 }
 
@@ -269,22 +269,22 @@ function editWordCensorForm($id) {
   global $template, $request_vars;
   $group = (isset($request_vars['group'])) ? $request_vars['group'] : 1;
   $form   = $template->getSection('EditWordCensorForm');
-  $dbconn = db_open();
+  $dbConn = db_open();
   $sql    = "SELECT * FROM `wordcensor` WHERE `censor_id` = '$id' LIMIT 1";
-  if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+  if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
   $row    = mysql_fetch_array($result);
   $form   = str_replace('[censor_id]', $row['censor_id'], $form);
   $form   = str_replace('[word_to_censor]', strtoupper($row['word_to_censor']), $form);
   $form   = str_replace('[replace_with]', strtoupper($row['replace_with']), $form);
   $form   = str_replace('[group]', $group, $form);
-  mysql_close($dbconn);
+  mysql_close($dbConn);
   return $form;
 }
 
 function updateWordCensor() {
   //global vars
   global $template, $msg, $request_vars;
-  $dbconn = db_open();
+  $dbConn = db_open();
   $word_to_censor = mysql_real_escape_string(trim($request_vars['word_to_censor']));
   $replace_with = mysql_real_escape_string(trim($request_vars['replace_with']));
   $id = trim($request_vars['id']);
@@ -293,7 +293,7 @@ function updateWordCensor() {
   }
   else {
     $sql = "UPDATE `wordcensor` SET `word_to_censor` = '$word_to_censor',`replace_with`='$replace_with' WHERE `censor_id`='$id' LIMIT 1";
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     if($result) {
       $msg = '<div id="successMsg">Correction edited.</div>';
     }

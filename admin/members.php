@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.3
+//My Program-O Version 2.1.4
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -100,9 +100,9 @@ endScript;
 
 
   function updateDB($sql) {
-    $dbconn = db_open();
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>$sql</pre><br />\n");
-    $commit = mysql_affected_rows($dbconn);
+    $dbConn = db_open();
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>$sql</pre><br />\n");
+    $commit = mysql_affected_rows($dbConn);
     return $commit;
   }
 
@@ -123,7 +123,7 @@ endScript;
     }
     switch ($action) {
       case 'Add':
-      $ip = $_SERVER['REMOTE_HOST'];
+      $ip = (isset($_SERVER['REMOTE_HOST'])) ? $_SERVER['REMOTE_HOST'] : gethostbyaddr($_SERVER['REMOTE_ADDR']);
       $sql = "insert into myprogramo (id, user_name, password, last_ip, last_login) values (null, '$user_name', '$password','$ip', CURRENT_TIMESTAMP);";
       $out = "Account for $user_name successfully added!";
       break;
@@ -152,10 +152,10 @@ endScript;
     function getAdminsOpts() {
     global $dbn;
     $out = "                  <!-- Start List of Current Admin Accounts -->\n";
-    $dbconn = db_open();
+    $dbConn = db_open();
     $optionTemplate = "                  <option value=\"[val]\">[key]</option>\n";
     $sql = 'SELECT id, user_name FROM myprogramo order by user_name;';
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception(mysql_error());
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
     while ($row = mysql_fetch_assoc($result)) {
       $user_name = $row['user_name'];
       $id = $row['id'];
@@ -163,7 +163,7 @@ endScript;
       $curOption = str_replace('[val]', $row['id'], $curOption);
       $out .= $curOption;
     }
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     $out .= "                  <!-- End List of Current Admin Accounts -->\n";
     return $out;
   }
@@ -172,22 +172,22 @@ endScript;
     if ($id <= 0) return false;
     global $dbn, $user_name, $id;
     $sql = "select id, user_name from myprogramo where id = $id limit 1;";
-    $dbconn = db_open();
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception(mysql_error());
+    $dbConn = db_open();
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
     $row = mysql_fetch_assoc($result);
     $user_name = $row['user_name'];
     $id = $row['id'];
-    mysql_close($dbconn);
+    mysql_close($dbConn);
   }
 
   function getNextID() {
     global $dbn, $user_name;
     $sql = "select id from myprogramo order by id desc limit 1;";
-    $dbconn = db_open();
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception(mysql_error());
+    $dbConn = db_open();
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
     $row = mysql_fetch_assoc($result);
     $id = $row['id'];
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     return $id + 1;
   }
 

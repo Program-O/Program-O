@@ -278,10 +278,10 @@ between the start and end section tags are the only parts of the template that a
             </span></td>
           </tr>
             <tr>
-              <td><label for="remember_up_to"><span class="label">Bot History Lines</span></label></td>
+              <td><label for="default_remember_up_to"><span class="label">Bot History Lines</span></label></td>
               <td>
                 <span class="formw">
-                  <input type="text"  class="fm-req" id="remember_up_to" name="remember_up_to" value="[bot_remember_up_to]"/>
+                  <input type="text"  class="fm-req" id="remember_up_to" name="remember_up_to" value="[remember_up_to]"/>
                 </span>
               </td>
             </tr>
@@ -292,7 +292,7 @@ between the start and end section tags are the only parts of the template that a
             </span></td>
           </tr>
             <tr>
-              <td><label for="debugmode"><span class="label">Debug Output</span></label></td>
+              <td><label for="debugmode"><span class="label">Debug Mode</span></label></td>
               <td>
                 <span class="formw">
                   <select name="debugmode" id="debugmode">
@@ -305,7 +305,7 @@ between the start and end section tags are the only parts of the template that a
               </td>
             </tr>
           <tr>
-            <td><label for="debugshow"><span class="label">Debug Mode</span></label></td>
+            <td><label for="debugshow"><span class="label">Debug Level</span></label></td>
             <td><span class="formw">
               <select name="debugshow" id="debugshow">
                   <option value="0" [ds_]>Show no debugging</option>
@@ -356,6 +356,12 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section SpellcheckForm End -->
 <!-- Section SearchSpellForm Start -->
           <fieldset style="margin-bottom: 3px;">
+            <span>The Spell checker addon is <u>[sc_enabled]</u></span><br />
+            <span>
+              <strong>Note:</strong>
+              To enable or disable the spell checker, you will need to edit the config file.
+              Please see the README file in the chatbot/addons/spell_checker folder for more details.
+            </span><br />
             <form id="search" action="index.php?page=spellcheck&amp;group=[group]" method="post">
             <div class="row bold">Search for a Misspelled word:</div>
               <div class="row fm-req">
@@ -460,7 +466,7 @@ between the start and end section tags are the only parts of the template that a
                 </div>
                 <div class="row fm-opt">
                   <label for="template"><span class="twentyPercent">Bot Response: </span></label>
-                  <span class="eightyPercent"><input id="template" name="template" class="wide" /></span>
+                  <span class="eightyPercent"><textarea id="template" name="template" class="wide"></textarea></span>
                 </div>
                 <div class="row">For help, click the icon in the title, above.</div>
               <div id="row" class="fm-req">
@@ -789,7 +795,7 @@ between the start and end section tags are the only parts of the template that a
               </div>
               <div class="row fm-opt">
                 <label for="template"><span class="twentyPercent">Bot Response: </span></label>
-                <span class="eightyPercent"><input type="text" id="template" name="template"  value="[template]" class="wide" /></span>
+                <span class="eightyPercent"><textarea id="template" name="template" class="wide" />[template]</textarea></span>
               </div>
               <div class="row fm-opt">
                 <label for="filename"><span class="twentyPercent">Filename: </span></label>

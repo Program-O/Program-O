@@ -3,12 +3,26 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.1.3
+  * Version: 2.1.4
   * FILE: spell_checker/spell_checker.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
   * DETAILS: this file contains the addon library to spell check into before its matched in the database
   ***************************************/
+
+  if (!defined('SPELLCHECK_PATH'))
+  {
+    $this_folder = dirname( realpath( __FILE__ ) ) . DIRECTORY_SEPARATOR;
+    define('SPELLCHECK_PATH', $this_folder);
+  }
+
+      if (empty($_SESSION['spellcheck_common_words']))
+    {
+      $_SESSION['spellcheck_common_words'] = file(SPELLCHECK_PATH.'spellcheck_common_words.dat', FILE_IGNORE_NEW_LINES);
+    }
+
+    $spellcheck_common_words = $_SESSION['commonWords'];
+
   /**
   * function run_spellcheck_say()
   * A function to run the spellchecking of the userinput
@@ -35,7 +49,13 @@
   **/
   function spell_check($word, $bot_id)
   {
-    global $con, $dbn;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    global $con, $dbn, $spellcheck_common_words;
+    if (in_array($word, $spellcheck_common_words))
+    {
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Word $word is in common words list. Returning without checking.", 4);
+      return $word;
+    }
     $corrected_word = $word;
   //set in global config file
     $sql = "SELECT `correction` FROM `$dbn`.`spellcheck` WHERE `missspelling` = '$word' LIMIT 1";
@@ -45,7 +65,7 @@
       $row = mysql_fetch_assoc($result);
       $corrected_word = $row['correction'];
     }
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Corrected spelling. Old word = $word. New word = $corrected_word.", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Corrected spelling. Old word = '$word' New word = '$corrected_word'", 2);
     return $corrected_word;
   }
 

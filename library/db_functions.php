@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.3
+  * Version: 2.1.4
   * FILE: library/db_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -23,9 +23,9 @@
     global $dbh, $dbu, $dbp, $dbn, $dbPort;
     $host = (!empty ($dbPort) and $dbPort != 3306) ? "$dbh:$dbPort" : $dbh;
     // add port selection if not the standard port number
-    $conn = mysql_connect($host, $dbu, $dbp) or trigger_error('Couldn\'t connect to the DB. Error = ' . mysql_error());
+    $con = mysql_connect($host, $dbu, $dbp) or trigger_error('Couldn\'t connect to the DB. Error = ' . mysql_error());
     $x = mysql_select_db($dbn) or trigger_error('Couldn\'t select the DB. Error = ' . mysql_error());
-    return $conn;
+    return $con;
   }
 
   /**
@@ -35,6 +35,7 @@
   **/
   function db_close($con)
   {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'This DB is now closed. You don\'t have to go home, but you can\'t stay here.', 2);
     $discdb = mysql_close($con) or trigger_error('Couldn\'t close the DB. Error = ' . mysql_error());
   }
 
@@ -45,12 +46,11 @@
   * @param string $sql - the sql query to run
   * @return resource $result - the result resource
   **/
-  function db_query($sql, $dbconn)
+  function db_query($sql, $dbConn)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "SQL query: $sql", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Querying the DB, for some reason.', 2);
     //run query
-    $result = mysql_query($sql, $dbconn) or trigger_error('There was a problem with the following SQL query. Error = ' . mysql_error() . "\nSQL = $sql");
+    $result = mysql_query($sql, $dbConn) or trigger_error('There was a problem with the following SQL query. Error = ' . mysql_error() . "\nSQL = $sql");
     //if no results output message
     if (!$result)
     {
@@ -59,20 +59,6 @@
     return $result;
   }
 
-  /**
-  * function db_make_safe()
-  * Makes a str safe to insert in the db
-  * @param string $str - the string to make safe
-  * @return string $str - the safe string
-  **/
-  function db_make_safe($str)
-  {
-    $dbconn = db_open();
-    $out = mysql_real_escape_string($str, $dbconn);
-    // Takes into account the character set of the chosen database
-    mysql_close($dbconn);
-    return $out;
-  }
 
   /**
   * function db_res_count()
@@ -83,17 +69,6 @@
   function db_res_count($result)
   {
     return mysql_num_rows($result);
-  }
-
-  /**
-  * function db_res_array()
-  * returns an array of rows from the result
-  * @param resource $result - the result resource
-  * @return array $row - the array of results
-  **/
-  function db_res_array($result)
-  {
-    return mysql_fetch_array($result);
   }
 
 ?>

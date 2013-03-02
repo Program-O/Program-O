@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.3
+  * Version: 2.1.4
   * FILE: library/error_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -71,7 +71,8 @@
   **/
   function runDebug($fileName, $functionName, $line, $info, $level = 0)
   {
-    global $debugArr, $srai_iterations, $debug_level, $quickdebug, $writetotemp, $convoArr, $last_timestamp;
+    global $debugArr, $srai_iterations, $quickdebug, $writetotemp, $convoArr, $last_timestamp, $default_debug_level;
+    $debug_level = (isset($convoArr['conversation']['debug_level'])) ? $convoArr['conversation']['debug_level'] : $default_debug_level;
     if (empty ($functionName)) $functionName = 'Called outside of function';
     //only log the debug info if the info level is equal to or less than the chosen level
     if (($level <= $debug_level))// && ($level != 0) && ($debug_level != 0)
@@ -86,7 +87,7 @@
       }
       list($usec, $sec) = explode(' ', microtime());
       //build timestamp index for the debug array
-      $index = date('d-m-Y H:i:s') . ltrim($usec, '0') . " - Elapsed: $elapsed_time milliseconds";
+      $index = date('d-m-Y H:i:s') . ltrim($usec, '0') . "[$level][$debug_level] - Elapsed: $elapsed_time milliseconds";
       //add to array
       $debugArr[$index]['fileName'] = basename($fileName);
       $debugArr[$index]['functionName'] = $functionName;
@@ -192,8 +193,8 @@
   {
     $showConvoArr = array();
     $showConvoArr['conversation'] = $convoArr['conversation'];
-    $showConvoArr['topic'][1] = $convoArr['topic'][1];
-    $showConvoArr['that'][1] = $convoArr['that'][1];
+    $showConvoArr['topic'][1] = (isset($convoArr['topic'][1])) ? $convoArr['topic'][1] : '';
+    $showConvoArr['that'][1] = (isset($convoArr['that'][1])) ? $convoArr['that'][1] : '';
     foreach ($convoArr['star'] as $index => $star)
     {
       if (!empty ($star))

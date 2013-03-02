@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.3
+  * Version: 2.1.4
   * FILE: buildSelect.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-21-2013

@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.3
+* Version: 2.1.4
 * FILE: chatbot/core/user/handle_user.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
@@ -21,13 +21,11 @@ function load_new_client_defaults($convoArr)
   global $unknown_user;
   //to do could put this in an array
   //todo check this out
-  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
   runDebug( __FILE__, __FUNCTION__, __LINE__, 'Loading client defaults', 2);
-  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Conversation element = ' . print_r($convoArr['conversation'], true), 2);
   $sql = "";
   $convoArr['client_properties']['name'] = $unknown_user;
   $convoArr['client_properties']['id'] = session_id();
-  
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Conversation element = ' . print_r($convoArr['conversation'], true), 4);
   return $convoArr;
 }  
 
@@ -41,7 +39,7 @@ function get_user_id($convoArr)
 {
   //db globals
   global $con,$dbn,$unknown_user;
-  
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Getting user ID.', 2);
   //get undefined defaults from the db
   $sql = "SELECT * FROM `$dbn`.`users` WHERE `session_id` = '".$convoArr['conversation']['convo_id']."' limit 1";
   $result = mysql_query($sql,$con) or trigger_error('Error trying to load user data. Error = ' . mysql_error());
@@ -78,7 +76,7 @@ function get_user_id($convoArr)
 **/
 function intisaliseUser($convoArr)
 {
-
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Initializing user.', 2);
   //db globals
   global $con,$dbn, $default_bot_id, $unknown_user;
   $convo_id = $convoArr['conversation']['convo_id'];

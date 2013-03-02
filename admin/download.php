@@ -1,7 +1,7 @@
 
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.3
+//My Program-O Version 2.1.4
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -94,8 +94,8 @@ else {
     $bmnLen = strlen($botmaster_name) - 2; // The "- 2" accommodates the extra 2 spaces from the year.
     $bmnSearch = str_pad('[bm_name]',$bmnLen);
     $categoryTemplate = '<category><pattern>[pattern]</pattern>[that]<template>[template]</template></category>';
-    $dbconn = db_open();
-    $cleanedFilename = mysql_real_escape_string($filename, $dbconn);
+    $dbConn = db_open();
+    $cleanedFilename = mysql_real_escape_string($filename, $dbConn);
     $fileNameSearch = '[fileName]';
     $cfnLen = strlen($cleanedFilename);
     $fileNameSearch = str_pad($fileNameSearch, $cfnLen);
@@ -113,7 +113,7 @@ else {
     $fileContent = str_replace($fileNameSearch, $cleanedFilename, $fileContent);
     $sql = "select distinct topic from aiml where filename like '$cleanedFilename';";
     #return "SQL = $sql";
-    $result = mysql_query($sql,$dbconn) or trigger_error('Cannot load the list of topics from the DB. Error = ' . mysql_error());
+    $result = mysql_query($sql,$dbConn) or trigger_error('Cannot load the list of topics from the DB. Error = ' . mysql_error());
     while ($row = mysql_fetch_assoc($result)) {
       $topicArray[] = $row['topic'];
     }
@@ -121,7 +121,7 @@ else {
       if (!empty($topic)) $fileContent .= "<topic name=\"$topic\">\n";
       $sql = "select pattern, thatpattern, template from aiml where topic like '$topic' and filename like '$cleanedFilename';";
       $fileContent .= "\r\n\r\n<!-- SQL = $sql -->\r\n\r\n";
-      $result = mysql_query($sql,$dbconn) or trigger_error('Cannot obtain the AIML categories from the DB. Error = ' . mysql_error());
+      $result = mysql_query($sql,$dbConn) or trigger_error('Cannot obtain the AIML categories from the DB. Error = ' . mysql_error());
       while ($row = mysql_fetch_assoc($result)) {
         $pattern = strtoupper($row['pattern']);
         $template = str_replace("\r\n",'',$row['template']);
@@ -138,7 +138,7 @@ else {
     $outFile = ltrim($fileContent, "\n\r\n");
     $x = file_put_contents("./downloads/$cleanedFilename", trim($outFile));
 
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     $msg = "Your file, <strong>$filename</strong>, is being prepaired. If it doesn't start, please <a href=\"file.php?file=$filename&send_file=yes\">Click Here</a>.<br />\n";
     return serveFile($filename, $msg);
   }
@@ -150,9 +150,9 @@ else {
     $dbFilename = $filename;
     $filename = str_ireplace('.aiml', '.sql', $filename); // change to sql extension for clarity
     $categoryTemplate = "    ([id],[bot_id],'[aiml]','[pattern]','[thatpattern]','[template]','[topic]','[filename]','[php_code]'),";
-    $dbconn = db_open();
+    $dbConn = db_open();
     $phpVer = phpversion();
-    $cleanedFilename = mysql_real_escape_string($dbFilename, $dbconn);
+    $cleanedFilename = mysql_real_escape_string($dbFilename, $dbConn);
     # Get all topics within the file
     $topicArray = array();
     $sql = "select * from aiml where filename like '$cleanedFilename' order by id asc;";
@@ -166,14 +166,14 @@ else {
     $fileContent = str_replace('[curDate]', $curDate, $fileContent);
     $fileContent = str_replace('[fileName]', $cleanedFilename, $fileContent);
 
-    $result = mysql_query($sql,$dbconn) or trigger_error('Cannot load the AIML categories from the DB. Error = ' . mysql_error());;
+    $result = mysql_query($sql,$dbConn) or trigger_error('Cannot load the AIML categories from the DB. Error = ' . mysql_error());;
     while ($row = mysql_fetch_assoc($result)) {
       $aiml = str_replace("\r\n",'',$row['aiml']);
       $aiml = str_replace("\n",'',$aiml);
-      $aiml = mysql_real_escape_string($aiml,$dbconn);
+      $aiml = mysql_real_escape_string($aiml,$dbConn);
       $template = str_replace("\r\n",'',$row['template']);
       $template = str_replace("\n",'',$template);
-      $template = mysql_real_escape_string($template,$dbconn);
+      $template = mysql_real_escape_string($template,$dbConn);
       $newLine = str_replace('[id]',         $row['id'], $categoryTemplate);
       $newLine = str_replace('[bot_id]',     $row['bot_id'],      $newLine);
       $newLine = str_replace('[aiml]',       $aiml,               $newLine);
@@ -189,7 +189,7 @@ else {
     $fileContent .= "\n";
     $x = file_put_contents("./downloads/$filename", trim($fileContent));
 
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     $msg = "Your file, <strong>$filename</strong>, is being prepaired. If it doesn't start, please <a href=\"file.php?file=$filename&send_file=yes\">Click Here</a>.<br />\n";
     return serveFile($filename, $msg);
   }
@@ -197,11 +197,11 @@ else {
   function getSelOpts() {
     global $dbn, $bot_id, $msg;
     $out = "                  <!-- Start Selectbox Options -->\n";
-    $dbconn = db_open();
+    $dbConn = db_open();
     $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     #return "SQL = $sql";
-    $result = mysql_query($sql,$dbconn) or trigger_error('Cannot load the list of filenames from the DB. Error = ' . mysql_error());
+    $result = mysql_query($sql,$dbConn) or trigger_error('Cannot load the list of filenames from the DB. Error = ' . mysql_error());
     if (mysql_num_rows($result) == 0) $msg = "This bot has no AIML categories. Please select another bot.";
     while ($row = mysql_fetch_assoc($result)) {
       if (empty($row['filename'])) {
@@ -210,7 +210,7 @@ else {
       else $curOption = str_replace('[val]', $row['filename'], $optionTemplate);
       $out .= $curOption;
     }
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     $out .= "                  <!-- End Selectbox Options -->\n";
     return $out;
   }

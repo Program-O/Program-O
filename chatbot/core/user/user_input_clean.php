@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.1.3
+  * Version: 2.1.4
   * FILE: chatbot/core/user/user_input_clean.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -17,7 +17,7 @@
   **/
   function clean_for_aiml_match($text)
   {
-    //runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Oh, my! how dirty! I just HAVE to clean this up!', 2);
     $otext = $text;
     $text = remove_all_punctuation($text);
     //was not all before
@@ -35,7 +35,7 @@
   **/
   function whitespace_clean($text)
   {
-    //runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Wiping out all whitespace!', 2);
     $otext = $text;
     $text = preg_replace('/\s\s+/', ' ', $text);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text", 4);
@@ -50,24 +50,9 @@
   **/
   function remove_all_punctuation($text)
   {
-    //runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Im stripping out all punctuation if you dont mind', 2);
     $otext = $text;
     $text = preg_replace('/[^a-zA-Z0-9|+|-|\*|Š|š|Ž|ž|À||Â|Ã|Ä|Å|Æ|Ç|È|É|Ê|Ë|Ì||Î||Ñ|Ò|Ó|Ô|Õ|Ö|Ø|Ù|Ú|Û|Ü||Þ|ß|à|á|â|ã|ä|å|æ|ç|è|é|ê|ë|ì|í|î|ï|ð|ñ|ò|ó|ô|õ|ö|ø|ù|ú|û|ý|þ|ÿ]/is', ' ', $text);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text", 4);
-    return $text;
-  }
-
-  /**
-  * function remove_puncutation()
-  * this function removes puncutation (leaves in some required for extra functions
-  * @param string $text
-  * @return string text
-  **/
-  function remove_puncutation($text)
-  {
-    //runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
-    $otext = $text;
-    $text = preg_replace('/[^a-zA-Z0-9|+|-|*|\/|\.|?|!|Š|š|Ž|ž|À||Â|Ã|Ä|Å|Æ|Ç|È|É|Ê|Ë|Ì||Î||Ñ|Ò|Ó|Ô|Õ|Ö|Ø|Ù|Ú|Û|Ü||Þ|ß|à|á|â|ã|ä|å|æ|ç|è|é|ê|ë|ì| í|î|ï|ð|ñ|ò|ó|ô|õ|ö|ø|ù|ú|û|ý|þ|ÿ]/i', ' ', $text);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text", 4);
     return $text;
   }
@@ -80,7 +65,7 @@
   **/
   function capitalize($text)
   {
-    //runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'LET\'S JUST CAPITALIZE EVERYTHING, SHALL WE?', 2);
     $otext = $text;
     $text = strtoupper($text);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text", 4);

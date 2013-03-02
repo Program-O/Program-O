@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.3
+* Version: 2.1.4
 * FILE: chatbot/addons/load_addons.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
@@ -20,7 +20,7 @@ runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading addons",4);
 
 function run_pre_input_addons(&$convoArr, $say) {
   global $format;
-  $say = run_spell_checker_say($say);
+  $say = (USE_SPELL_CHECKER) ? run_spell_checker_say($say) : $say;
   //$convoArr = checkIP($convoArr);
   if ($format == 'html') $say =  parseInput($say);
   return $say;

@@ -1,7 +1,7 @@
 <?php
 
   //-----------------------------------------------------------------------------------------------
-  //My Program-O Version 2.1.3
+  //My Program-O Version 2.1.4
   //Program-O  chatbot admin area
   //Written by Elizabeth Perreau and Dave Morton
   //Aug 2011
@@ -97,7 +97,7 @@ endScript;
     global $debugmode, $bot_id, $default_charset;
     $fileName = basename($fn);
     $success = false;
-    $dbconn = db_open();
+    $dbConn = db_open();
     #Clear the database of the old entries
     $sql = "DELETE FROM `aiml`  WHERE `filename` = '$fileName' AND bot_id = '$bot_id'";
     if (isset ($post_vars['clearDB']))
@@ -220,9 +220,9 @@ endScript;
 
   function updateDB($sql)
   {
-    $dbconn = db_open();
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception('You have a SQL error on line ' . __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>" . htmlentities($sql) . "</pre><br />\n");
-    $commit = mysql_affected_rows($dbconn);
+    $dbConn = db_open();
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line ' . __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>" . htmlentities($sql) . "</pre><br />\n");
+    $commit = mysql_affected_rows($dbConn);
     return $commit;
   }
 
@@ -269,9 +269,9 @@ endScript;
   {
     global $dbn, $bot_id;
     $out = "                  <!-- Start List of Currently Stored AIML files -->\n";
-    $dbconn = db_open();
+    $dbConn = db_open();
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception(mysql_error());
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
     while ($row = mysql_fetch_assoc($result))
     {
       if (empty ($row['filename']))
@@ -281,7 +281,7 @@ endScript;
       else
         $out .= $row['filename'] . "<br />\n";
     }
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     $out .= "                  <!-- End List of Currently Stored AIML files -->\n";
     return $out;
   }
@@ -290,9 +290,9 @@ endScript;
   {
     global $dbn, $bot_id;
     $botOptions = '';
-    $dbconn = db_open();
+    $dbConn = db_open();
     $sql = 'SELECT `bot_name`, `bot_id` FROM `bots` order by `bot_id`;';
-    if (($result = mysql_query($sql, $dbconn)) === false) throw new Exception(mysql_error());
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
     while ($row = mysql_fetch_assoc($result))
     {
       $bn = $row['bot_name'];
@@ -300,7 +300,7 @@ endScript;
       $sel = ($bot_id == $bi) ? ' selected="selected"' : '';
       $botOptions .= "                    <option$sel value=\"$bi\">$bn</option>\n";
     }
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     return $botOptions;
   }
 

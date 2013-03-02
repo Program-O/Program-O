@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.3
+  * Version: 2.1.4
   * FILE: chatbot/core/aiml/find_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -47,7 +47,6 @@
   **/
   function make_like_pattern($sentence, $field)
   {
-    global $offset;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making a like pattern to use in the sql", 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Transforming $field: " . print_r($sentence, true), 4);
     $sql_like_pattern = '';
@@ -55,7 +54,6 @@
     //if the sentence is contained in an array extract the actual text sentence
     if (is_array($sentence))
     {
-      #$sentence = $sentence[$offset];
       $sentence = implode_recursive(' ', $sentence, __FILE__, __FUNCTION__, __LINE__);
     }
     $words = explode(" ", $sentence);
@@ -221,7 +219,7 @@
   **/
   function score_matches($bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $default_aiml_pattern)
   {
-    global $commonwordsArr;
+    global $common_words_array;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Scoring the matches", 4);
     //set the scores for each type of word or sentence to be used in this function
     $default_pattern_points = 2;
@@ -348,7 +346,7 @@
         foreach ($wordsArr as $index => $word)
         {
           $word = strtolower(trim($word));
-          if (in_Array($word, $commonwordsArr))
+          if (in_Array($word, $common_words_array))
           {
           // if it is a commonword increase with (lower) score
             $allrows[$all]['score'] += $common_word_points;
@@ -504,13 +502,12 @@
   **/
   function get_convo_var($convoArr, $index_1, $index_2 = '', $index_3 = '', $index_4 = '')
   {
-    global $offset;
     if ($index_2 == '')
       $index_2 = "~NULL~";
     if ($index_3 == '')
-      $index_3 = $offset;
+      $index_3 = 1;
     if ($index_4 == '')
-      $index_4 = $offset;
+      $index_4 = 1;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4]", 4);
     if ((isset ($convoArr[$index_1])) && (!is_array($convoArr[$index_1])) && ($convoArr[$index_1] != ''))
     {
@@ -546,7 +543,7 @@
 
   function get_client_property($convoArr, $name)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Rummaging through the DB and stuff for a client property.', 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Looking for client property $name", 2);
     global $con, $dbn;
     If (isset($convoArr['client_properties'][$name]))
@@ -615,7 +612,6 @@
   **/
   function get_aiml_to_parse($convoArr)
   {
-    global $offset;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running all functions to get the correct aiml from the DB", 4);
     $lookingfor = $convoArr['aiml']['lookingfor'];
     $current_thatpattern = (isset($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';

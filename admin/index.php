@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.3
+//My Program-O Version 2.1.4
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -19,7 +19,7 @@
   ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
   ini_set('html_errors', false);
   ini_set('display_errors', false);
-  set_exception_handler("handle_exceptions");
+  #set_exception_handler("handle_exceptions");
   $msg = '';
 
 
@@ -88,11 +88,11 @@
 
   if((isset($post_vars['user_name']))&&(isset($post_vars['pw']))) {
     $_SESSION['poadmin']['display'] = $hide_logo;
-    $dbconn = db_open();
+    $dbConn = db_open();
     $user_name = filter_input(INPUT_POST,'user_name',FILTER_SANITIZE_STRING);
     $pw    = filter_input(INPUT_POST,'pw',FILTER_SANITIZE_STRING);
     $sql = "SELECT * FROM `myprogramo` WHERE user_name = '".$user_name."' AND password = '".MD5($pw)."'";
-    $result = mysql_query($sql,$dbconn) or $msg .= SQL_Error(mysql_errno());
+    $result = mysql_query($sql,$dbConn) or $msg .= SQL_Error(mysql_errno());
     if ($result) {
       $count = mysql_num_rows($result);
       if($count > 0) {
@@ -111,12 +111,12 @@
           $ip=$_SERVER['REMOTE_ADDR'];
         }
         $sqlupdate = "UPDATE `myprogramo` SET `last_ip` = '$ip', `last_login` = CURRENT_TIMESTAMP WHERE user_name = '$user_name' limit 1";
-        $result = mysql_query($sqlupdate,$dbconn);
-        $transact = mysql_affected_rows($dbconn);
+        $result = mysql_query($sqlupdate,$dbConn);
+        $transact = mysql_affected_rows($dbConn);
         $_SESSION['poadmin']['ip']=$ip;
         $_SESSION['poadmin']['last_login']=date('l jS \of F Y h:i:s A');
         $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
-        $result = mysql_query($sql,$dbconn);
+        $result = mysql_query($sql,$dbConn);
         $count = mysql_num_rows($result);
         if($count > 0) {
           $row=mysql_fetch_array($result);
@@ -132,7 +132,7 @@
         $msg .= "incorrect username/password<br>\n";
       }
     }
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     if($msg == "") {
       include ('main.php');
     }

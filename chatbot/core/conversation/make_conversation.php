@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.3
+* Version: 2.1.4
 * FILE: chatbot/core/conversation/make_conversation.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
@@ -18,10 +18,9 @@
 function make_conversation($convoArr){
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Making conversation",4);
-	global $offset;
 	//get the user input and clean it
 	//$convoArr = clean_for_aiml_match('user_say','lookingfor',$convoArr);
-	$convoArr['aiml']['lookingfor'] =  clean_for_aiml_match($convoArr['user_say'][$offset]);
+	$convoArr['aiml']['lookingfor'] =  clean_for_aiml_match($convoArr['user_say'][1]);
 	//find an aiml match in the db
 	$convoArr = get_aiml_to_parse($convoArr);
 	$convoArr = parse_matched_aiml($convoArr,'normal');
