@@ -78,4 +78,3 @@ $convo_id = session_id();
 	</body>
 </html>
 
-?>
