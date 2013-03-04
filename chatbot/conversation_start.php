@@ -78,10 +78,11 @@
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Generating new session ID.", 4);
       session_regenerate_id(true);
       $new_convo_id = session_id();
+      $params = session_get_cookie_params();
       setcookie($session_name, $new_convo_id, time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
       // Update the users table, and clear out any unused client properties as needed
       $sql = "update `$dbn`.`users` set `session_id` = '$new_convo_id' where `session_id` = '$old_convo_id';";
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Update user - SQL:\n$sql", 4);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Update user - SQL:\n$sql", 3);
       $result = db_query($sql, $con);
       $confirm = mysql_affected_rows($con);
       // Get user id, so that we can clear the client properties
@@ -110,7 +111,8 @@
     $convoArr = check_set_bot($convoArr);
     $convoArr = check_set_convo_id($convoArr);
     $convoArr = check_set_user($convoArr);
-    $convoArr = check_set_format($convoArr);
+    if (!isset($convoArr['conversation']['user_id']) and isset($user_id)) $convoArr['conversation']['user_id'] = $user_id;
+    #$convoArr = check_set_format($convoArr);
     $convoArr = load_that($convoArr);
     $convoArr = buildNounList($convoArr);
     $convoArr['time_start'] = $time_start;

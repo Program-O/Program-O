@@ -39,7 +39,9 @@
            For specific support questions, please use the <a href="$forumURL">Program O Forums</a> and post your question.<br />
            Below are the most recent forum posts:
          </div>
-         <div id="rssOutput">[rssOutput]</div>
+         <div id="rssOutput">
+           [rssOutput]
+         </div>
         </div>
 endMain;
   $mainContent = str_replace('[rssOutput]', getRSS('support'), $mainContent);

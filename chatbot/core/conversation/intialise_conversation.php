@@ -435,12 +435,13 @@
   **/
   function check_set_bot($convoArr)
   {
+    global  $form_vars;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking and/or setting the current bot.', 2);
-    global $con, $dbn, $default_bot_id, $error_response;
+    global $con, $dbn, $default_bot_id, $error_response, $default_format;
     //check to see if bot_id has been passed if not load default
-    if ((isset ($_REQUEST['bot_id'])) && (trim($_REQUEST['bot_id']) != ""))
+    if ((isset ($form_vars['bot_id'])) && (trim($form_vars['bot_id']) != ""))
     {
-      $bot_id = trim($_REQUEST['bot_id']);
+      $bot_id = trim($form_vars['bot_id']);
     }
     elseif (isset ($convoArr['conversation']['bot_id']))
     {
@@ -461,10 +462,12 @@
       $error_response = $row['error_response'];
       $convoArr['conversation']['bot_name'] = $bot_name;
       $convoArr['conversation']['bot_id'] = $bot_id;
+      $convoArr['conversation']['format'] = $row['format'];
       runDebug(__FILE__, __FUNCTION__, __LINE__, "BOT ID: $bot_id", 2);
     }
     else
     {
+      $convoArr['conversation']['format'] = $default_format;
       $convoArr['conversation']['bot_id'] = $bot_id;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "ERROR - Cannot find bot id: $bot_id", 1);
     }
@@ -539,12 +542,12 @@
   **/
   function check_set_format($convoArr)
   {
-    global $default_format;
+    global $default_format, $form_vars;
     $formatsArr = array('html', 'xml', 'json');
     //at thsi point we can overwrite the conversation format.
-    if ((isset ($_REQUEST['format'])) && (trim($_REQUEST['format']) != ""))
+    if ((isset ($form_vars['format'])) && (trim($form_vars['format']) != ""))
     {
-      $format = trim($_REQUEST['format']);
+      $format = trim($form_vars['format']);
     }
     else
     {
@@ -558,7 +561,7 @@
     }
     else
     {
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Using format: $format", 2);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Using format: $format", 4);
     }
     return $convoArr;
   }

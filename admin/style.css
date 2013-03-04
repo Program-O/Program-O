@@ -1,5 +1,5 @@
 /*
-My Program-O Version 2.0.9
+My Program-O Version 2.1.4
 Program-O  chatbot admin area
 Written by Elizabeth Perreau and Dave Morton
 Aug 2011
@@ -449,10 +449,11 @@ span.eightyPercent textarea.wide { width: 67%; min-height: 150px; margin: 0; flo
   position: absolute;
   left: 0;
   right: 0;
-  top: 35px;
+  top: 45px;
   bottom: 0;
   overflow: auto;
   padding: 5px;
+  border-top: 1px solid #000;
 }
 
 #col1 {
@@ -767,3 +768,10 @@ dl.codebox dd span {padding-left: 7px;}
 .syntaxdefault {color: #00B;}
 .syntaxkeyword {color: #060;}
 .syntaxstring {color: #D00;}
+
+blockquote.uncited {
+  background: #EEE url(http://forum.program-o.com/styles/prosilver/theme/images/quote.gif) no-repeat top left;
+  padding: 12px;
+  border: 1px solid #ccc;
+  width: auto;
+}

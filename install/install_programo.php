@@ -145,7 +145,7 @@ VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]',
   $sql = str_replace('[debugmode]',$myPostVars["default_debug_mode"], $sql);
   $sql = str_replace('[error_response]',$default_error_response, $sql);
   $sql = str_replace('[default_aiml_pattern]',$default_pattern, $sql);
-  $save = file_put_contents(_CONF_PATH_ . 'sql.txt', $sql);
+  #$save = file_put_contents(_CONF_PATH_ . 'sql.txt', $sql); // For debugging purposes only
   $x = db_query($sql, $conn) or install_error('Could not enter bot info for bot #' . $bot_id . '!', mysql_error(), $sql);
   $encrypted_adm_dbp = md5($myPostVars["adm_dbp"]);
   $adm_dbu = $myPostVars["adm_dbu"];

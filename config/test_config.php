@@ -35,14 +35,12 @@
     define('_ADMIN_URL_',_BASE_URL_.'admin/');
     define('_BOTCORE_PATH_',_BASE_DIR_.'chatbot'.$path_separator.'core'.$path_separator);
     define('_LIB_PATH_',_BASE_DIR_.'library'.$path_separator);
-    define('_LIB_URL_',_BASE_URL_.'library/');
     define('_ADDONS_PATH_',_BASE_DIR_.'chatbot'.$path_separator.'addons'.$path_separator);
     define('_CONF_PATH_',_BASE_DIR_.'config'.$path_separator);
     define('_UPLOAD_PATH_',_CONF_PATH_.'uploads'.$path_separator);
     define('_LOG_PATH_',_BASE_DIR_.'logs'.$path_separator);
     define('_LOG_URL_',_BASE_URL_.'logs/');
     define('_DEBUG_PATH_',_BASE_DIR_.'chatbot'.$path_separator.'debug'.$path_separator);
-    define('_DEBUG_URL_',_BASE_URL_.'chatbot/debug/');
     define('_INSTALL_PATH_',_BASE_DIR_.$path_separator.'install'.$path_separator);
     define('_INSTALL_URL_',_BASE_URL_.'install/');
 
@@ -66,6 +64,22 @@
     ini_set('html_errors', false);
     ini_set('display_errors', false);
 
+//------------------------------------------------------------------------
+// User Configuration Settings
+//------------------------------------------------------------------------
+
+
+    //------------------------------------------------------------------------
+    // User Configuration Settings
+    //------------------------------------------------------------------------
+    // Here, I'm going to start migrating the configuration settings into an
+    // array, so that it will be simpler to access configuration settings without
+    // having to use a lot of "global $x" crap. the config array will be the first
+    // item attached to the conversation array.
+    //------------------------------------------------------------------------
+
+    $config = array();
+
     //------------------------------------------------------------------------
     // parent bot
     // the parent bot is used to find aiml matches if no match is found for the current bot
@@ -73,7 +87,7 @@
     // if no parent bot is used this is set to zero
     // the actual parent bot is set later on in program o there is no need to edit this value
     //------------------------------------------------------------------------
-    $bot_parent_id = 1;
+    $config['bot_parent_id'] = 1;
 
 //------------------------------------------------------------------------
 // Set the default bot configuration And the database settings
@@ -83,34 +97,32 @@
     // DB and time zone settings
     //------------------------------------------------------------------------
 
-    $time_zone_locale = '[time_zone_locale]'; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-    $dbh    = '[dbh]';  # dev remote server location
-    $dbPort = '[dbPort]';    # dev database name/prefix
-    $dbn    = '[dbn]';    # dev database name/prefix
-    $dbu    = '[dbu]';       # dev database username
-    $dbp    = '[dbp]';  # dev database password
+    $config['time_zone_locale'] = 'America/Los Angeles'; // a full list can be found at http://uk.php.net/manual/en/timezones.php
+    $config['dbh']    = 'localhost';  # dev remote server location
+    $config['dbPort'] = '3306';    # dev database name/prefix
+    $config['dbn']    = 'pgo_v2_test_copy';    # dev database name/prefix
+    $config['dbu']    = 'Dave';       # dev database username
+    $config['dbp']    = '411693055';  # dev database password
 
     //these are the admin DB settings in case you want make the admin a different db user with more privs
-    $adm_dbu = '[adm_dbu]';
-    $adm_dbp = '[adm_dbp]';
+    $config['adm_dbu'] = 'Dave';
+    $config['adm_dbp'] = '411693055';
 
     //------------------------------------------------------------------------
     // Default bot settings
     //------------------------------------------------------------------------
 
     //Used to populate the stack when first initialized
-    $default_stack_value = 'om';
-    //Default conversation id will be set to current session
-    $default_convo_id = session_id();
+    $config['default_stack_value'] = 'om';
 
     //default bot config - this is the default bot most of this will be overwriten by the bot configuration in the db
-    $default_bot_id = 1;
-    $default_format = '[default_format]';
-    $default_pattern = 'RANDOM PICKUP LINE';
-    $default_error_response = 'No AIML category found. This is a Default Response.';
-    $default_conversation_lines = '1';
-    $default_remember_up_to = 10;
-    $default_debugemail = '[default_debugemail]';
+    $config['default_bot_id'] = 1;
+    $config['default_format'] = 'html';
+    $config['default_pattern'] = 'RANDOM PICKUP LINE';
+    $config['default_error_response'] = 'No AIML category found. This is a Default Response.';
+    $config['default_conversation_lines'] = '1';
+    $config['default_remember_up_to'] = 10;
+    $config['default_debugemail'] = 'dmorton@geekcavecreations.com';
     /*
      * $default_debug_level - The level of messages to show the user
      * 0=none,
@@ -119,7 +131,7 @@
      * 2=error+general+sql,
      * 3=everything
      */
-    $default_debug_level = '[default_debug_level]';
+    $config['default_debug_level'] = '4';
 
     /*
      * $default_debug_mode - How to show the debug data
@@ -128,45 +140,33 @@
      * 2 = page view - display debugging on the webpage
      * 3 = email each conversation line (not recommended)
      */
-     $default_debug_mode = '[default_debug_mode]';
-     $default_save_state = '[default_save_state]';
-     $error_response = '[error_response]';
-     $unknown_user = 'Seeker';
+     $config['default_debug_mode'] = '1';
+     $config['default_save_state'] = 'session';
+     $config['error_response'] = '[error_response]';
+     $config['unknown_user'] = 'Seeker';
 
     //------------------------------------------------------------------------
     // Default debug data
     //------------------------------------------------------------------------
 
-    // Report all PHP errors
-    $e_all = defined('E_DEPRECATED') ? E_ALL ^ E_DEPRECATED : E_ALL;
-    error_reporting($e_all);
-
-    //initially set here but overwriten by bot configuration in the admin panel
-    $debug_level = $default_debug_level;
-
     //for quick debug to override the bot config debug options
     //0 - Do not show anything
     //1 - will print out to screen immediately
-    $quickdebug = 0;
+    $config['quickdebug'] = 0;
 
     //for quick debug
     //1 = will write debug data to file regardless of the bot config choice
     //it will write it as soon as it becomes available but this this will be finally
     //overwriten once if and when the conversation turn is complete
     //this will hammer the server if left on so dont leave it on... use in emergencies.
-    $writetotemp = 0;
-
-    //debug folders where txt files are stored
-    $debugfolder = _DEBUG_PATH_;
-    $debugfile = "$debugfolder$default_convo_id.txt";
+    $config['writetotemp'] = 0;
 
     //------------------------------------------------------------------------
     // Set Misc Data
     //------------------------------------------------------------------------
 
-    $botmaster_name = '[botmaster_name]';
-    $default_charset = 'ISO-8859-1';
-    $default_charset = 'UTF-8';
+    $config['botmaster_name'] = 'Dave Morton';
+    $config['default_charset'] = 'UTF-8';
 
     //------------------------------------------------------------------------
     // Set Program O Website URLs
@@ -195,7 +195,7 @@
     }
     elseif(function_exists('date_default_timezone_set'))
     {
-      @date_default_timezone_set($time_zone_locale);
+      @date_default_timezone_set($config['time_zone_locale']);
     }
 
 
@@ -208,21 +208,21 @@
       $_SESSION['commonWords'] = file(_CONF_PATH_.'commonWords.dat', FILE_IGNORE_NEW_LINES);
     }
 
-    $common_words_array = $_SESSION['commonWords'];
+    $config['common_words_array'] = $_SESSION['commonWords'];
 
     //------------------------------------------------------------------------
     // Set Program O globals
     // Do not edit
     //------------------------------------------------------------------------
-    $srai_iterations = 1;
-    $rememLimit = 20;
+    $config['srai_iterations'] = 1;
+    $config['rememLimit'] = 20;
     $debugArr = array();
 
     //------------------------------------------------------------------------
     // Addon Configuration - Set as desired
     //------------------------------------------------------------------------
 
-    define('USE_SPELL_CHECKER', true);
+    define('USE_SPELL_CHECKER', false);
     define('PARSE_BBCODE', true);
     define('USE_WORD_CENSOR', true);
     define('USE_CUSTOM_TAGS', true);

@@ -48,7 +48,6 @@ function get_conversation_to_display($convoArr)
 		AND `bot_id` = '".$convoArr['conversation']['bot_id']."'
 		AND `convo_id` = '".$convoArr['conversation']['convo_id']."'
 		ORDER BY id DESC $limit ";
-		#$x = save_file('conversationLogSQL.txt', "SQL = \r\n$sql");
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql",3);
 		
 		$result = db_query($sql,$con);

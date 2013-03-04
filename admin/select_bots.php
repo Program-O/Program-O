@@ -279,8 +279,9 @@ function updateBotSelection() {
 function addBot() {
   //db globals
   global $msg, $post_vars;
+  $dbConn = db_open();
   foreach ($post_vars as $key => $value) {
-    $$key = mysql_real_escape_string(trim($value));
+    $$key = mysql_real_escape_string(trim($value),$dbConn);
   }
   $dbConn = db_open();
   $sql = <<<endSQL
