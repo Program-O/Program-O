@@ -45,28 +45,53 @@
 
   /**
   * function spell_check()
-  * A function query the db and get find mispelt words
+  * Checks the given word against a list of commonly misspelled words, replacing it with a correction, if necessary.
+  * @param [type] [variable used]
+  * @return [type] [return value]
   **/
   function spell_check($word, $bot_id)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
     global $con, $dbn, $spellcheck_common_words;
+    if (!isset($_SESSION['spellcheck'])) load_spelling_list();
     if (in_array($word, $spellcheck_common_words))
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Word $word is in common words list. Returning without checking.", 4);
       return $word;
     }
-    $corrected_word = $word;
+    if (in_array($word, array_keys($_SESSION['spellcheck'])))
+    {
+      $corrected_word = $_SESSION['spellcheck'][$word];
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Misspelling found! Replaced $word with $corrected_word.", 4);
+    }
+    else $corrected_word = $word;
   //set in global config file
-    $sql = "SELECT `correction` FROM `$dbn`.`spellcheck` WHERE `missspelling` = '$word' LIMIT 1";
+    return $corrected_word;
+  }
+
+  /**
+  * function load_spelling_list
+  * Gets all missspelled words and their corrections from the DB, loading them into a session variable.
+  * @param (none)
+  * @return (void)
+  **/
+  function load_spelling_list()
+  {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading the spellcheck list from the DB.', 2);
+    global $con, $dbn;
+    $_SESSION['spellcheck'] = array();
+    $sql = "SELECT `missspelling`, `correction` FROM `$dbn`.`spellcheck`;";
     $result = db_query($sql, $con);
     if (mysql_num_rows($result) > 0)
     {
-      $row = mysql_fetch_assoc($result);
-      $corrected_word = $row['correction'];
+      while($row = mysql_fetch_assoc($result))
+      {
+        $missspelling = $row['missspelling'];
+        $correction = $row['correction'];
+        $_SESSION['spellcheck'][$missspelling] = $correction;
+      }
     }
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Corrected spelling. Old word = '$word' New word = '$corrected_word'", 2);
-    return $corrected_word;
+
   }
 
 ?>

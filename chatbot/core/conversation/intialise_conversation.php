@@ -482,8 +482,14 @@
   **/
   function check_set_convo_id($convoArr)
   {
+    global $form_vars;
     //check to see if convo_id has been passed if not load default
-    if (isset ($convoArr['conversation']['convo_id']))
+    if (isset($form_vars['convo_id']))
+    {
+      $convo_id = $form_vars['convo_id'];
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Obtaining the convo id from form vars. Valie: $convo_id", 4);
+    }
+    elseif (isset ($convoArr['conversation']['convo_id']))
     {
       $convo_id = $convoArr['conversation']['convo_id'];
       runDebug(__FILE__, __FUNCTION__, __LINE__, "CONVO ID already exists. Value: $convo_id", 2);

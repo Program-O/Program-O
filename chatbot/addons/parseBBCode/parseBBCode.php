@@ -2,9 +2,9 @@
 // Program O Addon - Parse BB_Code
   function parseEmotes($msg) {
     $emotesFile = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'emotes.dat';
+    $emotes_URL = _BASE_URL_ . "chatbot/addons/parseBBCode/images/";                                           // Define the location of the emote image
     $smilieArray = file($emotesFile);
     rsort($smilieArray);
-    $emotesPath = "./chatbot/addons/parseBBCode/images/";                                           // Define the location of the emote image
     foreach ($smilieArray as $line) {                                   // Iterate through the list
       $line = rtrim($line);                                             // Trim off excess line feeds and whitespace
       list($symbol, $fname, $width, $height, $alt) = explode(", ",$line); // Seperate the various values from the list
@@ -14,7 +14,7 @@
       $ds = DIRECTORY_SEPARATOR;
       if (strpos($msg,$symbol) !== false) {                             // If it finds an emoticon symbol, then process it
         $emot = <<<endLine
-<img src="$emotesPath$fname" width="$width" height="$height" alt="$tmpAlt" title="$tmpAlt" />
+<img src="$emotes_URL$fname" width="$width" height="$height" alt="$tmpAlt" title="$tmpAlt" />
 
 endLine;
         //$x = saveFile("txt/image.txt", $emot, true);
@@ -58,25 +58,42 @@ endLine;
   }
 
   function parseColors($msg) {
-    if (preg_match("~(\[(?:/)?\#(?:[0-9]|[A-F]|[a-f]){6}\])~", $msg, $matches)) {
+    $test = $msg;
+    if (preg_match("~\[color=(.*?)\]~", $test, $matches))
+    {
+      $openTag = $matches[0];
+      $tagColor = $matches[1];
+      $closeTag = '[/color]';
+      $msg = str_replace($openTag, "<span style='color:$tagColor'>", $msg);
+      $msg = str_ireplace($closeTag, "</span>", $msg);
+    }
+    if (preg_match("~\[(\#(?:[0-9]|[A-F]|[a-f]){6})\]~", $test, $matches))
+    {
       $openTag = $matches[0];
       $closeTag = str_replace("[#", "[/#", $openTag);
-      $tagColor = str_replace("[", "", $openTag);
+      $tagColor = $matches[1];
+      $msg = str_replace($openTag, "<span style='color:$tagColor'>", $msg);
+      $msg = str_replace($closeTag, "</span>", $msg);
+    }
+    if (preg_match("~\[(\#(?:[0-9]|[A-F]|[a-f]){3})\]~", $test, $matches))
+    {
+      #file_put_contents(_ADDONS_PATH_ . 'spell_checker/matches.txt', print_r($matches, true), FILE_APPEND);
+      $openTag = $matches[0];
+      $tagColor = $matches[1];
       $tagColor = str_replace("]", "", $tagColor);
       $msg = str_replace($openTag, "<span style='color:$tagColor'>", $msg);
       $msg = str_replace($closeTag, "</span>", $msg);
-      //$x = saveFile("txt/preg.txt", print_r($matches, true), true);
     }
     $colorFile = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'colors.dat';
     $colorList = file($colorFile);
-      $clSpan = "</span>";
+      $closeSpan = "</span>";
     foreach($colorList as $colorRow) {
       list($color, $css) = explode(", ", $colorRow);
-      $oSymbol = "[$color]";
-      $clSymbol = "[/$color]";
-      $oSpan = "<span style='color:$css'>";
-      $msg = str_replace($oSymbol, $oSpan, $msg);
-      $msg = str_replace($clSymbol, $clSpan, $msg);
+      $openSymbol = "[$color]";
+      $closeSymbol = "[/$color]";
+      $openSpan = "<span style='color:$css'>";
+      $msg = str_ireplace($openSymbol, $openSpan, $msg);
+      $msg = str_ireplace($closeSymbol, $closeSpan, $msg);
     }
     return $msg;
   }

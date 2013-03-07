@@ -27,24 +27,6 @@ $convo_id = session_id();
     <title>Program O AIML PHP Chatbot</title>
     <meta name="Description" content="A Free Open Source AIML PHP MySQL Chatbot called Program-O. Version2" />
     <meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2" />
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></script>
-    <script type="text/javascript" >
-     $(document).ready(function() {
-      // put all your jQuery goodness in here.
-        $('#talkform').submit(function() {
-          user = $('#say').val();
-          $('.usersay').text(user);
-          formdata = $("#talkform").serialize();
-          $('#say').val('')
-          $('#say').focus();
-          $.post('../../chatbot/conversation_start.php', formdata, function(data){
-            var b = data.botsay;
-            $('.botsay').html(b);
-          }, 'json');
-          return false;
-        });
-      });
-    </script>
   </head>
   <body>
     <div class="centerthis">
@@ -66,5 +48,23 @@ $convo_id = session_id();
         </p>
       </form>
     </div>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></script>
+    <script type="text/javascript" >
+     $(document).ready(function() {
+      // put all your jQuery goodness in here.
+        $('#talkform').submit(function() {
+          user = $('#say').val();
+          $('.usersay').text(user);
+          formdata = $("#talkform").serialize();
+          $('#say').val('')
+          $('#say').focus();
+          $.post('../../chatbot/conversation_start.php', formdata, function(data){
+            var b = data.botsay;
+            $('.botsay').html(b);
+          }, 'json');
+          return false;
+        });
+      });
+    </script>
   </body>
 </html>

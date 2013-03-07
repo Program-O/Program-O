@@ -43,7 +43,7 @@
   {
     $_SESSION['isLoggedIn'] = false;
     header('Location: ./index.php');
-    file_put_contents(_LOG_PATH_ . 'logout.txt', print_r($postVars, true));
+    #file_put_contents(_LOG_PATH_ . 'logout.txt', print_r($postVars, true));
   }
 
   if (isset($postVars['name']))

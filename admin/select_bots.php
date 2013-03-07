@@ -103,8 +103,10 @@ function getSelectedBot() {
   $dm_ii = "";
   $dm_iii = "";
   $dm_iv = "";
-  if($_SESSION['poadmin']['bot_id']!="new") {
-    $bot_id = $_SESSION['poadmin']['bot_id'];
+  $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 'new';
+  if($bot_id != "new")
+  {
+    #$bot_id = $_SESSION['poadmin']['bot_id'];
     //get data for all of the bots from the db
     $sql = "SELECT * FROM `bots` where bot_id = '$bot_id';";
     if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
@@ -409,6 +411,7 @@ function changeBot() {
 function getChangeList() {
   //db globals
   global $template;
+  $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
   $dbConn = db_open();
   $inputs="";
   //get bot names from the db
@@ -416,7 +419,7 @@ function getChangeList() {
   if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
   $options = '<option value="new" selected="selected">Add New Bot</option>' . "\n";
   while($row = mysql_fetch_array($result)) {
-    if($_SESSION['poadmin']['bot_id']==$row['bot_id']) {
+    if($bot_id == $row['bot_id']) {
       $sel = ' selected="selected"';
     }
     else {

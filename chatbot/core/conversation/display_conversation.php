@@ -130,6 +130,7 @@ function get_html($convoArr,$conversation)
 **/	
 function get_json($convoArr,$conversation)
 {
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Outputting response as JSON', 2);
 	$conversation_lines = $convoArr['conversation']['conversation_lines'];
 	$show_json = array();
 	$i=0;
@@ -149,7 +150,7 @@ function get_json($convoArr,$conversation)
 	
 	
 	$convoArr['send_to_user']= json_encode($show_json);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning JSON",4);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning JSON string: " . $convoArr['send_to_user'] ,4);
 	return $convoArr;	
 }	
 
@@ -183,5 +184,34 @@ function get_xml($convoArr,$conversation)
 		$convoArr['send_to_user']=$convo_xml;
 		runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning XML",4);
 	return $convoArr;
-}	
+}
+
+  /**
+  * function display_conversation()
+  * Displays the output of the conversation if the current format is XML or JSON
+  * @param (array) $convoArr
+  * @return (void) [return value]
+  **/
+
+  function display_conversation($display, $format)
+  {
+    switch ($format)
+    {
+      case 'json':
+      case 'xml':
+        echo $display;
+        break;
+      default:
+    }
+  }
+
+
+
+
+
+
+
+
+
+
 ?>

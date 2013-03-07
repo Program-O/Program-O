@@ -242,10 +242,10 @@
 
   function getFooter() {
     $ip = $_SERVER['REMOTE_ADDR'];
-    $name = $_SESSION['poadmin']['name'];
-    $lip = $_SESSION['poadmin']['lip'];
-    $last = $_SESSION['poadmin']['last_login'];
-    $llast = $_SESSION['poadmin']['llast_login'];
+    $name = (isset($_SESSION['poadmin']['name'])) ?  $_SESSION['poadmin']['name'] : 'unknown';
+    $lip = (isset($_SESSION['poadmin']['lip'])) ?  $_SESSION['poadmin']['lip'] : 'unknown';
+    $last = (isset($_SESSION['poadmin']['last_login'])) ?  $_SESSION['poadmin']['last_login'] : 'unknown';
+    $llast = (isset($_SESSION['poadmin']['llast_login'])) ?  $_SESSION['poadmin']['llast_login'] : 'unknown';
     $admess = "You are logged in as: $name from $ip since: $last";
     $admess .= "<br />You last logged in from $lip on $llast";
     $today = date("Y");

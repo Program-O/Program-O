@@ -55,6 +55,9 @@
   $session_name = 'PGOv2';
   session_name($session_name);
   session_start();
+  if (isset($form_vars['convo_id'])) session_id($form_vars['convo_id']);
+  $convo_id = session_id();
+  #file_put_contents(_LOG_PATH_ . 'session_id.txt', session_id());
   //if the user has said something
   if (!empty($say))
   {
@@ -100,19 +103,18 @@
       }
       $say = "Hello";
     }
-    $convo_id = session_id();
     //add any pre-processing addons
     $say = run_pre_input_addons($convoArr, $say);
+    $format = (isset($form_vars['format'])) ? $form_vars['format'] : $default_format;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $form_vars['bot_id'] . "\nFormat: " . $form_vars['format'], 2);
     //get the stored vars
     $convoArr = read_from_session();
     //now overwrite with the recieved data
     $convoArr = check_set_convo_id($convoArr);
     $convoArr = check_set_bot($convoArr);
-    $convoArr = check_set_convo_id($convoArr);
     $convoArr = check_set_user($convoArr);
     if (!isset($convoArr['conversation']['user_id']) and isset($user_id)) $convoArr['conversation']['user_id'] = $user_id;
-    #$convoArr = check_set_format($convoArr);
+    $convoArr = check_set_format($convoArr);
     $convoArr = load_that($convoArr);
     $convoArr = buildNounList($convoArr);
     $convoArr['time_start'] = $time_start;
@@ -161,5 +163,5 @@
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
   db_close($con);
   $convoArr = handleDebug($convoArr); // Make sure this is the last line in the file, so that all debug entries are captured.
-
+  display_conversation($display, $format);
 ?>
