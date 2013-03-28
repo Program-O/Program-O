@@ -61,7 +61,6 @@
     {
       $row = mysql_fetch_assoc($result);
       $verify = $row['password'];
-      echo "Pass = $pass, verify = $verify.<br />\n";
       if ($pass == $verify)
       {
         $_SESSION['isLoggedIn'] = true;
