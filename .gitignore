@@ -5,15 +5,17 @@
 admin/skins
 !admin/downloads
 admin/downloads/*
+!admin/downloads/bot_test.aiml
 !admin/downloads/index.html
 config/global_config.php
 config/uploads/*
 chatbot/debug/*.txt
+gui/jquery/gui.php
 logs/*.log
 logs/*.txt
 
 #################
-## WeBuilder
+## WeBuilder/ Rapid PHP
 #################
 
 *.flist

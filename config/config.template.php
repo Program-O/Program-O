@@ -47,10 +47,14 @@
     define('_INSTALL_URL_',_BASE_URL_.'install/');
 
     //------------------------------------------------------------------------
-    // Define constant for the current version
+    // Define constants for the current version of Program O, and for the OS name and version
     //------------------------------------------------------------------------
 
-    define ('VERSION', '2.1.4');
+    define ('VERSION', '2.1.4'); # Program O version
+
+    $os  = php_uname('s');
+    $osv = php_uname('v');
+    header("x-server-os: $os - $osv");
 
     //------------------------------------------------------------------------
     // Error reporting
