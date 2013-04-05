@@ -723,6 +723,7 @@
     $result = db_query($sql, $con);
     if (($result) && (mysql_num_rows($result) > 0))
     {
+      $x = file_put_contents(_DEBUG_PATH_ . 'numrows.txt', 'Function: ' . __FUNCTION__ . "\r\nSQL:\r\n$sql\r\nRows found: " . mysql_num_rows($result) . "\r\n", FILE_APPEND);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: '" . mysql_num_rows($result) . "' potential AIML matches", 2);
       //loop through results
       while ($row = mysql_fetch_array($result))

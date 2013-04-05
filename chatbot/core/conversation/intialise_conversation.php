@@ -536,6 +536,7 @@
     }
     $user_name = (!empty ($user_name)) ? $user_name : $unknown_user;
     $convoArr['conversation']['user_name'] = $user_name;
+    $convoArr['conversation']['user_id'] = $user_id;
     $convoArr['client_properties']['name'] = $user_name;
     return $convoArr;
   }
