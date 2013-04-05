@@ -212,13 +212,13 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a RANDOM tag, or doing some stargazing, or fomenting chaos, or...', 2);
     $liArray = $element->xpath('li');
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"Pick array:\n" . print_r($liArray, true), 4);
     $pick = array_rand($liArray);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Picking option #$pick from random tag.\n", 4);
-    $li = $liArray[$pick]->children();
-    //$li = $li;
-    $liTxt = $li->asXML();
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Chose '$liTxt' for output.", 4);
-    return $li;
+    $response = parseTemplateRecursive($convoArr, $liArray[$pick], $level + 1);
+    $response = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Chose Random Response of '$response' for output.", 4);
+    return $response;
   }
 
   function parse_get_tag($convoArr, $element, $parentName, $level)
