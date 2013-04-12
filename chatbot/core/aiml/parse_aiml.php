@@ -366,9 +366,9 @@
     $tmp_convoArr = get_aiml_to_parse($tmp_convoArr);
     $tmp_convoArr = parse_matched_aiml($tmp_convoArr, "srai");
     $srai_parsed_template = $tmp_convoArr['aiml']['parsed_template'];
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "SRAI Found: '$srai_parsed_template'", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "SRAI Found. Returning '$srai_parsed_template'", 2);
     $convoArr['client_properties'] = $tmp_convoArr['client_properties'];
-    $convoArr['topic'] = $tmp_convoArr['topic'][1];
+    $convoArr['topic'] = $tmp_convoArr['topic'];
     $convoArr['stack'] = $tmp_convoArr['stack'];
     $srai_iterations--;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Decrementing srai iterations to $srai_iterations", 4);

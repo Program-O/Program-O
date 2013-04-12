@@ -39,7 +39,15 @@
   $convoArr = array();
   $new_convo_id = false;
   $old_convo_id = false;
+  $say = '';
   $display = "";
+  $form_vars_post = filter_input_array(INPUT_POST);
+  $form_vars_get = filter_input_array(INPUT_GET);
+  $form_vars = ($form_vars_get !== null and $form_vars_post !== null)
+    ? array_merge($form_vars_get, $form_vars_post)
+    : ($form_vars_get !== null) ? $form_vars_get
+    : $form_vars_post;
+/*
   switch ($_SERVER['REQUEST_METHOD'])
   {
     case 'POST':
@@ -51,7 +59,9 @@
     default:
       $say = '';
   }
-  $say = (isset($say)) ? $say : trim($form_vars['say']);
+*/
+  $format = (isset($form_vars['format'])) ? $form_vars['format'] : $default_format;
+  $say = (isset($say) and $say !== '') ? $say : trim($form_vars['say']);
   $session_name = 'PGOv2';
   session_name($session_name);
   session_start();
@@ -67,7 +77,7 @@
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Clearing client properties and starting over.", 4);
       $convoArr = read_from_session();
       $_SESSION = array();
-      $user_id = $convoArr['conversation']['user_id'];
+      $user_id = (isset($convoArr['conversation']['user_id'])) ? $convoArr['conversation']['user_id'] : -1;
       $sql = "delete from `$dbn`.`client_properties` where `user_id` = $user_id;";
       $result = db_query($sql, $con);
       $numRows = mysql_affected_rows();
@@ -105,8 +115,8 @@
     }
     //add any pre-processing addons
     $say = run_pre_input_addons($convoArr, $say);
-    $format = (isset($form_vars['format'])) ? $form_vars['format'] : $default_format;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $form_vars['bot_id'] . "\nFormat: " . $form_vars['format'], 2);
+    $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $default_bot_id;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $bot_id . "\nFormat: " . $form_vars['format'], 2);
     //get the stored vars
     $convoArr = read_from_session();
     //now overwrite with the recieved data

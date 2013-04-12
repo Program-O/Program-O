@@ -71,7 +71,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "This function was called from $file, function $function at line $line.", 4);
     if (!is_array($in))
     {
-      trigger_error('Input not array! Input = ' . print_r($in, true));
+      trigger_error("Input not array! Error originated in $file, function $function, line $line. Input = " . print_r($in, true));
       return $in;
     }
     foreach ($in as $index => $element)
@@ -84,7 +84,7 @@
       }
     }
     $out = (is_array($in)) ? implode($glue, $in) : $in;
-    if ($function != 'implode_recursive') runDebug(__FILE__, __FUNCTION__, __LINE__, "Imploding complete. Returning $out", 4);
+    if ($function != 'implode_recursive') runDebug(__FILE__, __FUNCTION__, __LINE__, "Imploding complete. Returning '$out'", 4);
     return ltrim($out);
   }
 
@@ -95,7 +95,9 @@
     $doNotParseChildren = array('li');
     $response = array();
     $parentName = strtolower($element->getName());
-    $children = $element->children();
+    $elementCount = count($element);
+    #$children = $element->children();
+    $children = ($elementCount > 0) ? $element->children() : $element;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Processing element $parentName at level $level. element XML = " . $element->asXML(), 4);
     $func = 'parse_' . $parentName . '_tag';
     if (in_array($parentName, $HTML_tags))
@@ -281,6 +283,7 @@
       }
     }
     else $convoArr['client_properties'][$var_name] = $var_value;
+    if (strtolower($var_name) == 'topic') $convoArr['topic'][1] = $var_value;
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$sql", 3);
     $result = db_query($sql, $con) or trigger_error('Error looking up DB info in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
@@ -300,7 +303,6 @@
     $result = db_query($sql, $con) or trigger_error('Error saving to db in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
     $rowCount = mysql_affected_rows();
     $response = $var_value;
-
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Value for $var_name has ben set. Returning $var_value.", 4);
     return $response;
   }
@@ -373,7 +375,7 @@
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $response = run_srai($convoArr, $response_string);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 4);
-    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    $response_string = (is_array($response_string)) ? implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__) : $response;
     return $response_string;
   }
 
@@ -381,7 +383,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SR tag.', 4);
     $response = run_srai($convoArr, $convoArr['star'][1]);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SR tag', 4);
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     return $response_string;
   }
@@ -478,7 +480,7 @@
     {
       $response[] = (string) $pick;
     }
-    $response_string = implode_recursive(' ', $response);
+    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     return $response_string;
   }
 
@@ -723,7 +725,7 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '[topic]',
         $response[] = $convoArr['star'][1];
       }
     }
-    $response_string = implode_recursive(' ', $response);
+    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     // do something here
     return $response_string;
   }

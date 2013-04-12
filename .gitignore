@@ -2,6 +2,7 @@
 ## Program O
 #################
 
+admin/*.log
 admin/skins
 !admin/downloads
 admin/downloads/*

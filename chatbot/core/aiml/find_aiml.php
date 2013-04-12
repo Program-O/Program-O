@@ -217,10 +217,10 @@
   * @param string $current_topic - the current topic
   * @return array allrows - the SCORED results
   **/
-  function score_matches($bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $default_aiml_pattern)
+  function score_matches($convoArr, $bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $default_aiml_pattern)
   {
     global $common_words_array;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Scoring the matches", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Scoring the matches. Topic = $current_topic", 4);
     //set the scores for each type of word or sentence to be used in this function
     $default_pattern_points = 2;
     $underscore_points = 100;
@@ -456,6 +456,7 @@
     $bestResponse = array();
     $bestResponseArr = array();
     $last_high_score = 0;
+    $tmpArr = array();
     //loop through the results
     foreach ($allrows as $all => $subrow)
     {
@@ -464,8 +465,8 @@
       }
       elseif ($subrow['score'] > $last_high_score)
       {
-      //if higher than last score then reset tmp array and store this result
         $tmpArr = array();
+      //if higher than last score then reset tmp array and store this result
         $tmpArr[] = $subrow;
         $last_high_score = $subrow['score'];
       }
@@ -476,7 +477,7 @@
       }
     }
     //there may be any number of results with the same score so pick any random one
-    $bestResponseArr = $tmpArr[array_rand($tmpArr)];
+    $bestResponseArr = (count($tmpArr) > 0) ? $tmpArr[array_rand($tmpArr)] : false;
     $cRes = count($tmpArr);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Best Responses: " . print_r($tmpArr, true), 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Will use randomly picked best response chosen out of $cRes responses with same score: " . $bestResponseArr['aiml_id'] . " - " . $bestResponseArr['pattern'], 2);
@@ -544,10 +545,15 @@
   function get_client_property($convoArr, $name)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Rummaging through the DB and stuff for a client property.', 2);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Looking for client property $name", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Looking for client property '$name'", 2);
     global $con, $dbn;
     If (isset($convoArr['client_properties'][$name]))
+    {
+      $value = $convoArr['client_properties'][$name];
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Found client property '$name' in the conversation array. Returning '$value'", 2);
       return $convoArr['client_properties'][$name];
+    }
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client property '$name' not found in the conversation array. Searching the DB.", 2);
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$name' limit 1;";
@@ -559,11 +565,13 @@
       $row = mysql_fetch_assoc($result);
       $response = $row['value'];
       $convoArr['client_properties'][$name] = $response;
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Found client property '$name' in the DB. Adding it to the conversation array and returning '$response'", 2);
+
     }
     else
       $response = 'undefined';
-    return $response;
-  }
+      return $response;
+    }
 
   /**
   * function find_userdefined_aiml()
@@ -614,8 +622,9 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running all functions to get the correct aiml from the DB", 4);
     $lookingfor = $convoArr['aiml']['lookingfor'];
+    $raw_that = print_r($convoArr['that'], true);
     $current_thatpattern = (isset($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
-    $current_topic = $convoArr['topic'][1];
+    $current_topic = get_topic($convoArr);
     $default_aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
     $sendConvoArr = $convoArr;
@@ -629,7 +638,7 @@
       //unset all irrelvant matches
       $allrows = unset_all_bad_pattern_matches($allrows, $lookingfor, $current_thatpattern, $current_topic, $default_aiml_pattern);
       //score the relevant matches
-      $allrows = score_matches($bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $default_aiml_pattern);
+      $allrows = score_matches($convoArr, $bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $default_aiml_pattern);
       //get the highest
       $allrows = get_highest_score_rows($allrows, $lookingfor);
     }
@@ -670,6 +679,7 @@
     $firstInputWord = get_first_word($lookingfor);
     //get the stored topic
     $storedtopic = mysql_real_escape_string($convoArr['topic'][1]);
+    if ($storedtopic == '') $storedtopic = get_topic($convoArr);
     //get the cleaned user input
     $lastthat =  (isset($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
     //build like patterns
@@ -723,7 +733,7 @@
     $result = db_query($sql, $con);
     if (($result) && (mysql_num_rows($result) > 0))
     {
-      $x = file_put_contents(_DEBUG_PATH_ . 'numrows.txt', 'Function: ' . __FUNCTION__ . "\r\nSQL:\r\n$sql\r\nRows found: " . mysql_num_rows($result) . "\r\n", FILE_APPEND);
+      //$x = file_put_contents(_DEBUG_PATH_ . 'numrows.txt', 'Function: ' . __FUNCTION__ . "\r\nSQL:\r\n$sql\r\nRows found: " . mysql_num_rows($result) . "\r\n", FILE_APPEND);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: '" . mysql_num_rows($result) . "' potential AIML matches", 2);
       //loop through results
       while ($row = mysql_fetch_array($result))
@@ -750,6 +760,20 @@
       $allrows[$i]['aiml_to_php'] = "\$botsay=\"$error_response\"";
     }
     return $allrows;
+  }
+
+  function get_topic($convoArr)
+  {
+    global $con,$dbn;
+    $bot_id = $convoArr['conversation']['bot_id'];
+    $user_id = $convoArr['conversation']['user_id'];
+    $sql = "SELECT `value` FROM `client_properties` WHERE `user_id` = $user_id AND `bot_id` = $bot_id and `name` = 'topic';";
+    $result = db_query($sql, $con);
+    $num_rows = mysql_num_rows($result);
+    if ($num_rows == 0) return '';
+    $row = mysql_fetch_assoc($result);
+    $retval = $row['value'];
+    return $retval;
   }
 
 ?>

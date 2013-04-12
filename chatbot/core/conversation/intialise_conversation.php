@@ -50,9 +50,10 @@
   **/
   function load_blank_convoArray($arrayIndex, $defaultValue, $convoArr)
   {
+    global $default_remember_up_to;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Loading blank $arrayIndex array", 4);
     //set in global config file
-    $remember_up_to = $convoArr['conversation']['remember_up_to'];
+    $remember_up_to = (isset($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $default_remember_up_to;
     for ($i = 1; $i <= ($remember_up_to + 1); $i++)
     {
       $convoArr[$arrayIndex][$i] = $defaultValue;
@@ -180,9 +181,9 @@
   **/
   function push_on_front_convoArr($arrayIndex, $value, $convoArr)
   {
-    global $rememLimit;
+    global $rememLimit, $default_remember_up_to;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Pushing $value to front of $arrayIndex array", 2);
-    $remember_up_to = $convoArr['conversation']['remember_up_to'];
+    $remember_up_to = (isset($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $default_remember_up_to;
     //these subarray indexes are 2d
     $two_d_arrays = array("that", "that_raw");
     $arrayIndex = trim($arrayIndex);
@@ -581,7 +582,7 @@
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
     $limit = $remember_up_to;
-    $sql = "select `response` from `$dbn`.`conversation_log` where `user_id` = $user_id and `bot_id` = $bot_id order by `id` desc limit $limit;";
+    $sql = "select `response` from `$dbn`.`conversation_log` where `user_id` = $user_id and `bot_id` = $bot_id order by `id` asc limit $limit;"; // desc
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation log entries for the current user. SQL:\n$sql", 3);
     $result = db_query($sql, $con);
     if ($result)

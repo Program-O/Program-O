@@ -12,7 +12,6 @@
   ini_set('max_execution_time', '0');
   ini_set('display_errors', false);
   ini_set('log_errors', true);
-  ini_set('error_log', _ADMIN_PATH_ . 'upload.error.log');
   libxml_use_internal_errors(true);
   $msg = (array_key_exists('aimlfile', $_FILES)) ? processUpload() : '';
   $upperScripts = <<<endScript

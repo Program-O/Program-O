@@ -9,6 +9,7 @@
   * DATE: MAY 4TH 2011
   * DETAILS: common library of debugging functions
   ***************************************/
+
   /**
   * function myErrorHandler()
   * Process PHP errors
@@ -43,6 +44,8 @@
     {
       runDebug($errfile, '', $errline, $info, 1);
     }
+    $current_DateTime = date('m/d/Y H:i:s');
+    save_file(_LOG_PATH_ . 'error.log', "$current_DateTime - $info\r\n", true);
   }
 
   /**
@@ -88,6 +91,7 @@
       list($usec, $sec) = explode(' ', microtime());
       //build timestamp index for the debug array
       $index = date('d-m-Y H:i:s') . ltrim($usec, '0') . "[$level][$debug_level] - Elapsed: $elapsed_time milliseconds";
+      //mem_tracer($fileName, $functionName, $line); # only uncomment this to trace memory leaks!
       //add to array
       $debugArr[$index]['fileName'] = basename($fileName);
       $debugArr[$index]['functionName'] = $functionName;
@@ -119,8 +123,9 @@
   **/
   function handleDebug($convoArr)
   {
-    global $debugArr;
-    $debug_level = $convoArr['conversation']['debug_level'];
+    global $debugArr, $default_debug_level, $default_debug_mode;
+    $debug_level = (isset($convoArr['conversation']['debug_level'])) ? $convoArr['conversation']['debug_level'] : $default_debug_level;
+    $debug_mode = (isset($convoArr['conversation']['debugmode'])) ? $convoArr['conversation']['debugmode'] : $default_debug_mode;
     $convoArr['debug'] = $debugArr;
     $log = '';
     foreach ($debugArr as $time => $subArray)
@@ -155,11 +160,13 @@
       //$log .= '[NEWLINE]-----------------------[NEWLINE]';
       $log .= "Debug Level: $debug_level";
       $log .= '[NEWLINE]-----------------------[NEWLINE]';
+      $log .= "Debug Mode: $debug_mode";
+      $log .= '[NEWLINE]-----------------------[NEWLINE]';
       $log .= 'CONVERSATION ARRAY';
       $log .= '[NEWLINE]-----------------------[NEWLINE]';
       $log .= print_r($showArr, true);
     }
-    switch ($convoArr['conversation']['debugmode'])
+    switch ($debug_mode)
     {
       case 0 :
         //show in source code
@@ -169,6 +176,7 @@
       case 1 :
         //write to log file
         $log = str_replace('[NEWLINE]', "\r\n", $log);
+        $log = str_replace("\r\r", "\r", $log);
         writefile_debug($log, $convoArr);
         break;
       case 2 :
@@ -191,6 +199,7 @@
   */
   function reduceConvoArr($convoArr)
   {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Reducing the conversation array.', 0);
     $showConvoArr = array();
     $showConvoArr['conversation'] = $convoArr['conversation'];
     $showConvoArr['topic'][1] = (isset($convoArr['topic'][1])) ? $convoArr['topic'][1] : '';
@@ -233,6 +242,7 @@
     if (DIRECTORY_SEPARATOR == '\\')
     {
       $log = str_replace("\n", "\r\n", $log);
+      $log = str_replace("\r\r", "\r", $log);
     }
     file_put_contents($myFile, $log);
   }
@@ -326,7 +336,7 @@
   {
     if (function_exists('file_put_contents'))
     {
-      $x = file_put_contents($file, $content, $append);
+      ($append) ? $x = file_put_contents($file, $content, FILE_APPEND) : $x = file_put_contents($file, $content);
     }
     else
     {
@@ -337,6 +347,15 @@
       fclose($fh);
     }
     return 1;
+  }
+
+  function mem_tracer($file, $function, $line)
+  {
+    $mem_state = number_format(memory_get_usage(true));
+    $trace_file = _DEBUG_PATH_ . session_id() . '.mem_trace.txt';
+    $append = true;
+    $content = "$file.$function.$line: Memory used = $mem_state bytes\r\n";
+    save_file($trace_file, $content, $append);
   }
 
 ?>

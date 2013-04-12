@@ -227,7 +227,7 @@ function getSelectedBot() {
 function updateBotSelection() {
   //db globals
   global $msg, $default_format, $post_vars;
-  $logFile = _LOG_URL_ . 'error.log';
+  $logFile = _LOG_URL_ . 'admin.error.log';
   $dbConn = db_open();
   $sql = "";
   $msg = "";
