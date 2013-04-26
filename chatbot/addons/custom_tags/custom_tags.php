@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.1.4
+* Version: 2.1.5
 * FILE: custom_tags.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
@@ -13,7 +13,7 @@ include('code_tag/code_tag.php');
 
 function custom_parse_aiml_as_XML($convoArr)
 {
-  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking for custom AIML tags to parse.', 2);
   return $convoArr;
 }
 
@@ -29,7 +29,7 @@ function custom_parse_aiml_as_XML($convoArr)
 
 function parse_php_tag($convoArr, $element, $parentName, $level)
 {
-  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing custom PHP tag.', 2);
   $response = array();
   $children = $element->children();
   if (!empty ($children))

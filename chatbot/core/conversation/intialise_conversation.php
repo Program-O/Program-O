@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.1.4
+  * Version: 2.1.5
   * FILE: chatbot/core/conversation/intialise_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -182,7 +182,7 @@
   function push_on_front_convoArr($arrayIndex, $value, $convoArr)
   {
     global $rememLimit, $default_remember_up_to;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Pushing $value to front of $arrayIndex array", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Pushing '$value' to the front of the [$arrayIndex] array", 2);
     $remember_up_to = (isset($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $default_remember_up_to;
     //these subarray indexes are 2d
     $two_d_arrays = array("that", "that_raw");

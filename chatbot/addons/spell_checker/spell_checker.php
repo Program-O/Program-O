@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.1.4
+  * Version: 2.1.5
   * FILE: spell_checker/spell_checker.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -32,7 +32,7 @@
   function run_spell_checker_say($say)
   {
     global $bot_id, $default_bot_id;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Not to be a nudge, but I want to check your spelling.', 2);
     $sentence = '';
     $bid = (!empty ($bot_id)) ? $bot_id : $default_bot_id;
     $wordArr = explode(' ', $say);
@@ -51,20 +51,25 @@
   **/
   function spell_check($word, $bot_id)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Preforming a spel chek on $word.", 2);
     global $con, $dbn, $spellcheck_common_words;
+    $test_word = strtolower($word);
     if (!isset($_SESSION['spellcheck'])) load_spelling_list();
-    if (in_array($word, $spellcheck_common_words))
+    if (in_array($test_word, $spellcheck_common_words))
     {
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Word $word is in common words list. Returning without checking.", 4);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "The word '$word' is a common word. Returning without checking.", 4);
       return $word;
     }
-    if (in_array($word, array_keys($_SESSION['spellcheck'])))
+    if (in_array($test_word, array_keys($_SESSION['spellcheck'])))
     {
       $corrected_word = $_SESSION['spellcheck'][$word];
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Misspelling found! Replaced $word with $corrected_word.", 4);
     }
-    else $corrected_word = $word;
+    else
+    {
+      runDebug(__FILE__, __FUNCTION__, __LINE__,'Spelling check passed.', 4);
+      $corrected_word = $word;
+    }
   //set in global config file
     return $corrected_word;
   }
@@ -86,7 +91,7 @@
     {
       while($row = mysql_fetch_assoc($result))
       {
-        $missspelling = $row['missspelling'];
+        $missspelling = strtolower($row['missspelling']);
         $correction = $row['correction'];
         $_SESSION['spellcheck'][$missspelling] = $correction;
       }

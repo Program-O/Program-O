@@ -38,7 +38,7 @@
       var helpWindow = null; // global variable
       $(function() {
         var sWidth = $(window).width();
-        buildSelect('timezone');
+        buildSelect('time_zone_locale');
         $('#default_save_stateSession').attr('checked', true);
         $('#adm_dbp_confirm').blur(function() {
           if (!validatePass()) {
@@ -141,16 +141,23 @@
                 </select>
               </td>
             </tr>
-            <tr>
+            <!-- tr>
               <td class="label"><label for="default_update_aiml_code"><span class="helpButton" id="hb_default_update_aiml_code"> </span>Store PHP code in DB?</label></td>
               <td class="formw"><input type="checkbox" name="default_update_aiml_code" id="default_update_aiml_code" value="1" checked="checked" /></td>
             </tr>
             <tr>
               <td class="label"><label for="default_use_aiml_code"><span class="helpButton" id="hb_default_use_aiml_code"> </span>Use Stored PHP Code from DB?</label></td>
               <td class="formw"><input type="checkbox" name="default_use_aiml_code" id="default_use_aiml_code" value="1" checked="checked" /></td>
-            </tr>
+            </tr -->
             <tr>
               <td colspan="2" id="notes">[notes]</td>
+            </tr>
+            <tr>
+              <td colspan="2" class="center">
+                <input name="page" value="2" type="hidden">
+                <input name="default_bot_id" value="1" type="hidden">
+                <input name="action" id="action" type="submit" value="Save">
+              </td>
             </tr>
           </table>
         </td>
@@ -180,9 +187,9 @@
               <td class="formw"><input name="dbp" id="dbp" value="" /></td>
             </tr>
             <tr>
-              <td class="label"><label for="timezone"><span class="helpButton" id="hb_timezone"> </span>DB Timezone</label></td>
+              <td class="label"><label for="time_zone_locale"><span class="helpButton" id="hb_timezone"> </span>DB Timezone</label></td>
               <td class="formw">
-                <select name="timezone" id="timezone">
+                <select name="time_zone_locale" id="time_zone_locale">
                 </select>
               </td>
             </tr>
@@ -198,9 +205,9 @@
               <td class="label"><label for="adm_dbp_confirm"><span class="helpButton" id="hb_adm_dbp"> </span>Confirm Admin Area Password</label></td>
               <td class="formw"><input name="adm_dbp_confirm" id="adm_dbp_confirm" type="password" /></td>
             </tr>
-            <tr>
+            <!-- tr>
               <td class="bold center underline" colspan="2">Debugging Options:</td>
-            </tr>
+            </tr -->
             <tr>
               <td class="label"><label for="default_debug_level"><span class="helpButton" id="hb_default_debug_level"> </span>Debug Level</label></td>
               <td class="formw">
@@ -234,13 +241,6 @@
               </td>
             </tr>
           </table>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2" class="center">
-          <input name="page" value="2" type="hidden">
-          <input name="default_bot_id" value="1" type="hidden">
-          <input name="action" id="action" type="submit" value="Save">
         </td>
       </tr>
     </table>

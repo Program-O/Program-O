@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="[charset]"?>
 
 <!-- Copyright ©[year] [bm_name]                                        -->
 
@@ -23,9 +23,9 @@
 <!--  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR     -->
 <!--  OTHER DEALINGS IN THE SOFTWARE.                                   -->
 
-<!--  Complies with the AIML 1.0.1 Standard                             -->
+<!--  Complies with the AIML 1.0 Standard                               -->
 <!--  as adopted by the ALICE A.I. Foundation.                          -->
 <!--  Last modified [curDate]                                           -->
 <!--  file: [fileName]                                                  -->
 
-<aiml version="1.01">
+<aiml version="1.0">

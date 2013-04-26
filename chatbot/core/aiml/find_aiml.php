@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.4
+  * Version: 2.1.5
   * FILE: chatbot/core/aiml/find_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -726,7 +726,7 @@
 		 (`pattern` like '$lookingfor') OR
 		 ($sql_add) OR
 		 (`pattern` = '$default_aiml_pattern' ))
-		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
+		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` like '%') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
 		AND ((`topic`='') OR (`topic`='" . $storedtopic . "')))";
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);

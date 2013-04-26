@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.4
+  * Version: 2.1.5
   * FILE: CHANGELOG
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -9,6 +9,21 @@
   ***************************************/
 
 Version History:
+
+2.1.5   Bug fixes/merge to "Master" branch
+            1.) Corrected a bug that improperly ordered the collections of words gathered in <pattern> and <that> tags
+            2.) Corrected multiple minor bugs in the Download script that affected the use of said downloaded AIML
+                files with Pandorabots.
+            3.) Adjusted the function that checks GitHub for the current version of the script, based on changes they
+                made to their API. Also added some error handling, in case GitHub can't be reached.
+            4.) Modified some of the debugging output descriptors to avoid unnecessary and potentially confusing
+                message duplication.
+            5.) Corrected a bug in the main SQL query that caused certain valid AIML categories that use the <that> tag
+                to be missed in the main search.
+            6.) Added 'experimental' support for Pandorabots style <date> tags, adding functionality for both LOCALE
+                and TIMEZONE attributes (support for these attributes was mentioned previously, but not added at that
+                time).
+            7.) Other minor cosmetic changes and typo corrections that didn't affect functionality.
 
 2.1.4   Bug fixes & minor styling/feature changes
             1.) Fixed several bugs that arose from the database refactor.

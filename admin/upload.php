@@ -1,7 +1,7 @@
 <?php
 
   //-----------------------------------------------------------------------------------------------
-  //My Program-O Version 2.1.4
+  //My Program-O Version 2.1.5
   //Program-O  chatbot admin area
   //Written by Elizabeth Perreau and Dave Morton
   //Aug 2011
@@ -130,6 +130,7 @@ endScript;
       $xml->loadXML($aimlFile);
       $aiml = new SimpleXMLElement($xml->saveXML());
       $rowCount = 0;
+      $_SESSION['failCount'] = 0;
       if (!empty ($aiml->topic))
       {
         foreach ($aiml->topic as $topicXML)

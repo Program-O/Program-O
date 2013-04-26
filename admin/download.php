@@ -1,7 +1,7 @@
 
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.4
+//My Program-O Version 2.1.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -50,13 +50,16 @@ $get_vars = filter_input_array(INPUT_GET);
 
 $msg = (isset($post_vars['msg'])) ? $post_vars['msg'] : '';
 if((isset($post_vars['action']))&&($post_vars['action']=="AIML")) {
-  $status = getAIMLByFileName($post_vars['getFile']);
+  #$status = getAIMLByFileName($post_vars['getFile']);
+  $msg .= getAIMLByFileName($post_vars['getFile']);
 }
 elseif((isset($post_vars['action']))&&($post_vars['action']=="SQL")) {
-  $status = getSQLByFileName($post_vars['getFile']);
+  #$status = getSQLByFileName($post_vars['getFile']);
+  $msg .= getSQLByFileName($post_vars['getFile']);
 }
 elseif(isset($get_vars['file'])) {
-  $status = serveFile($get_vars['file'], $msg);
+  #$status = serveFile($get_vars['file'], $msg);
+  $msg .= serveFile($get_vars['file'], $msg);
 }
 else {
 }
@@ -90,7 +93,8 @@ else {
   }
 
   function getAIMLByFileName($filename) {
-    global $dbn,$botmaster_name;
+    if ($filename == 'null') return "You need to select a file to download.";
+    global $dbn,$botmaster_name, $default_charset;
     $bmnLen = strlen($botmaster_name) - 2; // The "- 2" accommodates the extra 2 spaces from the year.
     $bmnSearch = str_pad('[bm_name]',$bmnLen);
     $categoryTemplate = '<category><pattern>[pattern]</pattern>[that]<template>[template]</template></category>';
@@ -105,6 +109,7 @@ else {
     chdir($curPath);
     $fileContent = file_get_contents('./AIML_Header.dat');
     $fileContent = str_replace('[year]', date('Y'), $fileContent);
+    $fileContent = str_replace('[charset]', $default_charset, $fileContent);
     $fileContent = str_replace($bmnSearch, $botmaster_name, $fileContent);
     $curDate = date('m-d-Y', time());
     $cdLen = strlen($curDate);

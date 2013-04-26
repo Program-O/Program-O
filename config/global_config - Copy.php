@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.1.4
+* Version: 2.1.5
 * FILE: config/global_config.php
 * AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
 * DATE: MAY 4TH 2011
@@ -61,7 +61,7 @@
     // Define constant for the current version
     //------------------------------------------------------------------------
 
-    define ('VERSION', '2.1.4');
+    define ('VERSION', '2.1.5');
 
     //------------------------------------------------------------------------
     // Error reporting

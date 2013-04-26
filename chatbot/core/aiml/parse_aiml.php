@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.1.4
+  * Version: 2.1.5
   * FILE: chatbot/core/aiml/parse_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -241,7 +241,7 @@
     $that = remove_all_punctuation($that);
     $that = whitespace_clean($that);
     $that = capitalize($that);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Cleaning the that - that: $in cleanthat:$that", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Cleaning the that - that: $in cleanthat: $that", 4);
     return $that;
   }
 
@@ -272,6 +272,12 @@
     $aiml_pattern = $convoArr['aiml']['pattern'];
     $ap = trim($aiml_pattern);
     $ap = str_replace("+", "\+", $ap);
+    $ap = str_replace(" * ", " (\S*) ", $ap);
+    $ap = str_replace(" _ ", " (\S*) ", $ap);
+    $ap = str_replace("* ", "(\S*) ", $ap);
+    $ap = str_replace("_ ", "(\S*) ", $ap);
+    $ap = str_replace(" *", " (.*)", $ap);
+    $ap = str_replace(" _", " (.*)", $ap);
     $ap = str_replace("*", "(.*)", $ap);
     $ap = str_replace("_", "(.*)", $ap);
     // Set pattern wildcards
@@ -307,6 +313,16 @@
     $aiml_thatpattern = $convoArr['aiml']['thatpattern'];
     $tp = trim($aiml_thatpattern);
     $tp = str_replace("+", "\+", $tp);
+/*
+    $tp = str_replace("*", "(.*)", $tp);
+    $tp = str_replace("_", "(.*)", $tp);
+*/
+    $tp = str_replace(" * ", " (\S*) ", $tp);
+    $tp = str_replace(" _ ", " (\S*) ", $tp);
+    $tp = str_replace("* ", "(\S*) ", $tp);
+    $tp = str_replace("_ ", "(\S*) ", $tp);
+    $tp = str_replace(" *", " (.*)", $tp);
+    $tp = str_replace(" _", " (.*)", $tp);
     $tp = str_replace("*", "(.*)", $tp);
     $tp = str_replace("_", "(.*)", $tp);
     $thatpattern_wildcards = str_replace("_", "(.*)?", str_replace("*", "(.*)?", $aiml_thatpattern));
@@ -316,9 +332,10 @@
       $that = $convoArr['that'][1];
       $checkagainst = implode_recursive(' ', $that, __FILE__, __FUNCTION__, __LINE__);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking '$tp' against '$checkagainst'.", 2);
-      if (preg_match_all("~$ap~si", $checkagainst, $matches))
+      if (preg_match_all("~$tp~si", $checkagainst, $matches))
+      #if (preg_match("~$tp~si", $checkagainst, $matches))
       {
-        runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($matches, true), 2);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Current THAT matches:\n" . print_r($matches, true), 2);
         for ($i = 1; $i < count($matches); $i++)
         {
           $curStar = $matches[$i][0];

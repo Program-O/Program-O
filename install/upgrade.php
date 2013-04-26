@@ -2,7 +2,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.4
+  * Version: 2.1.5
   * FILE: upgrade.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -18,13 +18,13 @@
   ini_set('error_log', _LOG_PATH_ . 'upgrade.error.log');
 
 
-	//load shared files
-	include_once(_LIB_PATH_."db_functions.php");
-	include_once(_LIB_PATH_."error_functions.php");
-	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Starting upgrade");
-    $gui = filter_input(INPUT_GET,'returnTo');
-    $gui = (!empty($gui)) ? $gui : 'plain';
+  //load shared files
+  include_once(_LIB_PATH_."db_functions.php");
+  include_once(_LIB_PATH_."error_functions.php");
+
+  runDebug( __FILE__, __FUNCTION__, __LINE__, "Starting upgrade");
+  $gui = filter_input(INPUT_GET,'returnTo');
+  $gui = (!empty($gui)) ? $gui : 'plain';
 
   # process upgrade here
   $con = db_open();
@@ -40,7 +40,7 @@
     $msg = success();
   }
 
-  $msg .= ' <a href="' . _BASE_URL_ .  "gui/$gui" . '">Click here</a> to procede to the chatbot,
+  $msg .= ' <a href="' . _BASE_URL_ . "gui/$gui" . '">Click here</a> to procede to the chatbot,
 or <a href="' . _ADMIN_URL_ . '">here</a> to log into the admin page.
 ';
 

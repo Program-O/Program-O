@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.4
+  * Version: 2.1.5
   * FILE: chatbot/core/aiml/parse_aiml_as_XML.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -185,27 +185,57 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a DATE tag.', 2);
     global $time_zone_locale;
+    $tz_list = array(
+        '-12'=>'Pacific/Kwajalein',
+        '-11'=>'Pacific/Samoa',
+        '-10'=>'Pacific/Honolulu',
+        '-9'=>'America/Juneau',
+        '-8'=>'America/Los_Angeles',
+        '-7'=>'America/Denver',
+        '-6'=>'America/Mexico_City',
+        '-5'=>'America/New_York',
+        '-4'=>'America/Caracas',
+        '-3.5'=>'America/St_Johns',
+        '-3'=>'America/Argentina/Buenos_Aires',
+        '-2'=>'Atlantic/Azores',
+        '-1'=>'Atlantic/Azores',
+        '0'=>'Europe/London',
+        '1'=>'Europe/Paris',
+        '2'=>'Europe/Helsinki',
+        '3'=>'Europe/Moscow',
+        '3.5'=>'Asia/Tehran',
+        '4'=>'Asia/Baku',
+        '4.5'=>'Asia/Kabul',
+        '5'=>'Asia/Karachi',
+        '5.5'=>'Asia/Calcutta',
+        '6'=>'Asia/Colombo',
+        '7'=>'Asia/Bangkok',
+        '8'=>'Asia/Singapore',
+        '9'=>'Asia/Tokyo',
+        '9.5'=>'Australia/Darwin',
+        '10'=>'Pacific/Guam',
+        '11'=>'Asia/Magadan',
+        '12'=>'Asia/Kamchatka'
+    );
     $isWindows = (DIRECTORY_SEPARATOR == '/') ? false : true;
-    $now = time();
+    $cur_timezone = date_default_timezone_get();
+    $cur_locale = setlocale(LC_ALL, '');
+    #$cur_locale = setlocale(LC_ALL, 'en_US');
     $format = $element->attributes()->format;
     $locale = $element->attributes()->locale;
     $tz = $element->attributes()->timezone;
     $format = (string) $format;
-    $locale = (string) $locale;
+    $format = (!empty($format)) ? $format : '%c';
+    $locale = (string)$locale . '.UTF8';
+    if (!empty($locale)) setlocale(LC_ALL, $locale);
     $tz = (string) $tz;
-    $tz = (empty ($tz)) ? $time_zone_locale : $tz;
-    $hereNow = new DateTimeZone($tz);
-    $ts = new DateTime("now", $hereNow);
-    //exit("ts = " . print_r($ts->getTimestamp(), true));
-    if (empty ($format))
-    {
-      $response = date($ts->getTimestamp());
-    }
-    else
-    {
-      if ($isWindows) $format = str_replace('%l', '%#I', $format);
-      $response = strftime($format, $ts->getTimestamp());
-    }
+    $tz = (!empty($tz)) ? $tz : $cur_timezone;
+    $tz = (!is_numeric($tz)) ? $tz : $tz_list[$tz];
+    date_default_timezone_set($tz);
+    #$response = "$tz - " . strftime($format);
+    #$response = strftime($format);
+    $response = $cur_locale;
+    date_default_timezone_set($cur_timezone);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Date tag parsed. Returning $response", 4);
     return $response;
   }

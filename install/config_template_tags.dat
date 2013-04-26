@@ -24,7 +24,7 @@
 [dbu]
 [dbp]
 [localhost]
-[tzLocale]
+[time_zone_locale]
 [quickdebug]
 [remotehost]
 [rsTZ]

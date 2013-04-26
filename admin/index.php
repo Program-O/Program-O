@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.1.4
+//My Program-O Version 2.1.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -56,6 +56,7 @@
   $leftLinks = makeLeftLinks();
   $topLinks = makeTopLinks();
   $githubVersion = getCurrentVersion();
+  if (!$githubVersion) $githubVersion = VERSION;
   $version = ($githubVersion == VERSION) ? 'Program O version ' . VERSION : 'Program O ' . $githubVersion . ' is now available. <a href="https://github.com/Dave-Morton/Program-O/archive/master.zip">Click here</a> to download it.';
 # set template section defaults
 
@@ -493,12 +494,15 @@ endFooter;
       curl_setopt($ch, CURLOPT_URL, $url);
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_USERAGENT, 'Program O Admin: ' . $_SERVER['HTTP_USER_AGENT']);
       $out = curl_exec($ch);
       if (false === $out) trigger_error('Not sure what it is, but there\'s a problem with checking the current version on GitHub. Maybe this will help: "' . curl_error($ch) . '"');
       curl_close($ch);
       $repoArray = json_decode($out, true);
+      save_file(_LOG_PATH_ . 'repoArray.txt', print_r($repoArray, true));
       $versionB64 = $repoArray['content'];
       $version = base64_decode($versionB64);
+      save_file(_DEBUG_PATH_ . 'version.txt', "out = " . print_r($out, true) . "\r\nVersion = $versionB64 = $version");
       $out = $version;
     }
     return $out;
