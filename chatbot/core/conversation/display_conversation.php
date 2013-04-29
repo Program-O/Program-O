@@ -2,9 +2,9 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O 
-* Version: 2.0.9
+* Version: 2.1.5
 * FILE: chatbot/core/conversation/display_conversation.php
-* AUTHOR: ELIZABETH PERREAU
+* AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
 * DETAILS: this file contains the functions to handle the return of the conversation lines back to the user
 ***************************************/
@@ -17,15 +17,18 @@
 **/
 function get_conversation_to_display($convoArr)
 {
-	global $con,$dbn, $bot_name;
+	global $con,$dbn, $bot_name, $unknown_user;
   $user_id = $convoArr['conversation']['user_id'];
   $bot_id = $convoArr['conversation']['bot_id'];
-  $sql = "select `name` from `users` where `id` = $user_id limit 1;";
+  $user_name = $convoArr['conversation']['user_name'];
+/*
+  $sql = "select `user_name` from `users` where `id` = $user_id limit 1;";
   $result = db_query($sql,$con);
   $row = mysql_fetch_assoc($result);
   $user_name = $row['name'];
-  $user_name = (!empty($user_name)) ? $user_name : 'User';
-  $convoArr['conversation']['user_name'] = $user_name;
+*/
+  $user_name = (!empty($user_name)) ? $user_name : $unknown_user;
+  //$convoArr['conversation']['user_name'] = $user_name;
   $convoArr['conversation']['bot_name'] = $bot_name;
 	if (empty($bot_name)) {
 	  $sql = "select `bot_name` from `bots` where `bot_id` = $bot_id limit 1;";
@@ -41,10 +44,10 @@ function get_conversation_to_display($convoArr)
 	
 	$sql = "SELECT * FROM `$dbn`.`conversation_log`
 		WHERE 
-		`userid` = '".$convoArr['conversation']['user_id']."'
+		`user_id` = '".$convoArr['conversation']['user_id']."'
 		AND `bot_id` = '".$convoArr['conversation']['bot_id']."'
+		AND `convo_id` = '".$convoArr['conversation']['convo_id']."'
 		ORDER BY id DESC $limit ";
-		#$x = save_file('conversationLogSQL.txt', "SQL = \r\n$sql");
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql",3);
 		
 		$result = db_query($sql,$con);
@@ -57,7 +60,7 @@ function get_conversation_to_display($convoArr)
 		}
 		else 
 		{
-			$orderedRows =array('id'=>NULL, 'input'=>"", 'response'=>"", 'userid'=>$convoArr['conversation']['user_id'], 'bot_id'=>$convoArr['conversation']['bot_id'], 'timestamp'=>"");
+			$orderedRows =array('id'=>NULL, 'input'=>"", 'response'=>"", 'user_id'=>$convoArr['conversation']['user_id'], 'bot_id'=>$convoArr['conversation']['bot_id'], 'timestamp'=>"");
 			
 		}
 	
@@ -107,15 +110,11 @@ function get_html($convoArr,$conversation)
 	$show= "";
 	$user_name = $convoArr['conversation']['user_name'];
 	$bot_name  = $convoArr['conversation']['bot_name'];
-	foreach($conversation as $index => $conversation_subarray){
-		$show .= "<div class=\"usersay\">$user_name: ".stripslashes($conversation_subarray['input'])."</div>";
-		$show .= "<div class=\"botsay\">$bot_name: ".stripslashes($conversation_subarray['response'])."</div>";
-		
-		
-		
-		
+	foreach($conversation as $index => $conversation_subarray)
+    {
+      $show .= "<div class=\"usersay\">$user_name: ".stripslashes($conversation_subarray['input'])."</div>";
+	  $show .= "<div class=\"botsay\">$bot_name: ".stripslashes($conversation_subarray['response'])."</div>";
 	}
-	
 	$convoArr['send_to_user']=$show;
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning HTML",4);
 	return $convoArr;
@@ -131,6 +130,7 @@ function get_html($convoArr,$conversation)
 **/	
 function get_json($convoArr,$conversation)
 {
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Outputting response as JSON', 2);
 	$conversation_lines = $convoArr['conversation']['conversation_lines'];
 	$show_json = array();
 	$i=0;
@@ -150,7 +150,7 @@ function get_json($convoArr,$conversation)
 	
 	
 	$convoArr['send_to_user']= json_encode($show_json);
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning JSON",4);
+	runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning JSON string: " . $convoArr['send_to_user'] ,4);
 	return $convoArr;	
 }	
 
@@ -184,5 +184,34 @@ function get_xml($convoArr,$conversation)
 		$convoArr['send_to_user']=$convo_xml;
 		runDebug( __FILE__, __FUNCTION__, __LINE__, "Returning XML",4);
 	return $convoArr;
-}	
+}
+
+  /**
+  * function display_conversation()
+  * Displays the output of the conversation if the current format is XML or JSON
+  * @param (array) $convoArr
+  * @return (void) [return value]
+  **/
+
+  function display_conversation($display, $format)
+  {
+    switch ($format)
+    {
+      case 'json':
+      case 'xml':
+        echo $display;
+        break;
+      default:
+    }
+  }
+
+
+
+
+
+
+
+
+
+
 ?>

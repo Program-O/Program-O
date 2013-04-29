@@ -37,34 +37,35 @@ CREATE TABLE IF NOT EXISTS `aiml_userdefined` (
   aiml text NOT NULL,
   pattern text NOT NULL,
   template text NOT NULL,
-  userid int(11) NOT NULL,
-  botid int(11) NOT NULL,
+  user_id int(11) NOT NULL,
+  bot_id int(11) NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
 CREATE TABLE IF NOT EXISTS `botpersonality` (
   id int(11) NOT NULL AUTO_INCREMENT,
-  bot tinyint(4) NOT NULL DEFAULT '0',
+  bot_id tinyint(4) NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL DEFAULT '',
   `value` text NOT NULL,
   PRIMARY KEY (id),
-  KEY botname (bot,`name`));
+  KEY botname (bot_id,`name`));
 CREATE TABLE IF NOT EXISTS `conversation_log` (
   id int(11) NOT NULL AUTO_INCREMENT,
   input text NOT NULL,
   response text NOT NULL,
-  userid int(11) NOT NULL,
+  user_id int(11) NOT NULL,
+  convo_id text NOT NULL,
   bot_id int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id));
 CREATE TABLE IF NOT EXISTS `myprogramo` (
   id int(11) NOT NULL AUTO_INCREMENT,
-  uname varchar(10) NOT NULL,
-  pword varchar(255) NOT NULL,
-  lastip varchar(25) NOT NULL,
-  lastlogin timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  user_name varchar(10) NOT NULL,
+  password varchar(255) NOT NULL,
+  last_ip varchar(25) NOT NULL,
+  last_login timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY uname (uname));
+  UNIQUE KEY user_name (user_name));
 CREATE TABLE IF NOT EXISTS `spellcheck` (
   id int(11) NOT NULL AUTO_INCREMENT,
   missspelling varchar(100) NOT NULL,
@@ -175,51 +176,52 @@ INSERT IGNORE INTO spellcheck (id, missspelling, correction) VALUES
 
 CREATE TABLE IF NOT EXISTS `undefined_defaults` (
   id int(11) NOT NULL AUTO_INCREMENT,
-  bot int(11) NOT NULL,
-  pattern varchar(255) NOT NULL,
-  replacement varchar(255) NOT NULL,
+  bot_id int(11) NOT NULL,
+  user_id int(11) NOT NULL default 0,
+  pattern text NOT NULL,
+  template varchar(255) NOT NULL,
   PRIMARY KEY (id));
-INSERT IGNORE INTO undefined_defaults (id, bot, pattern, replacement) VALUES
-(1, 1, 'your name', 'my friend'),
-(2, 1, 'your it', 'it'),
-(3, 1, 'your location', 'your town'),
-(4, 1, 'your does', 'it'),
-(5, 1, 'your genus', 'human'),
-(6, 1, 'your he', 'him'),
-(7, 1, 'your she', 'her'),
-(8, 1, 'your them', 'those'),
-(9, 1, 'your memory', 'that'),
-(10, 1, 'your they', 'those'),
-(11, 1, 'your gender', 'woman'),
-(12, 1, 'your has', 'that'),
-(13, 1, 'your we', 'you and me'),
-(14, 1, 'your x', 'x'),
-(15, 1, 'your personality', 'chatty'),
-(16, 1, 'etype', 'great and witty'),
-(17, 1, 'your top', 'om'),
-(18, 1, 'your second', 'om'),
-(19, 1, 'your third', 'om'),
-(20, 1, 'your fourth', 'om'),
-(21, 1, 'your fifth', 'om'),
-(22, 1, 'your sixth', 'om'),
-(23, 1, 'your seventh', 'om'),
-(24, 1, 'your last', 'om'),
-(25, 1, 'your want', 'it'),
-(26, 1, 'your is', 'it'),
-(27, 1, 'you dealerhand', 'The dealers hand'),
-(28, 1, 'your playerhand', 'Your hand'),
-(29, 1, 'your dealerace', 'dealer total'),
-(30, 1, 'your playerace', 'your total');
+INSERT IGNORE INTO undefined_defaults (id, bot_id, user_id, pattern, template) VALUES
+(1, 1, 0, 'your name', 'my friend'),
+(2, 1, 0, 'your it', 'it'),
+(3, 1, 0, 'your location', 'your town'),
+(4, 1, 0, 'your does', 'it'),
+(5, 1, 0, 'your genus', 'human'),
+(6, 1, 0, 'your he', 'him'),
+(7, 1, 0, 'your she', 'her'),
+(8, 1, 0, 'your them', 'those'),
+(9, 1, 0, 'your memory', 'that'),
+(10, 1, 0, 'your they', 'those'),
+(11, 1, 0, 'your gender', 'woman'),
+(12, 1, 0, 'your has', 'that'),
+(13, 1, 0, 'your we', 'you and me'),
+(14, 1, 0, 'your x', 'x'),
+(15, 1, 0, 'your personality', 'chatty'),
+(16, 1, 0, 'etype', 'great and witty'),
+(17, 1, 0, 'your top', 'om'),
+(18, 1, 0, 'your second', 'om'),
+(19, 1, 0, 'your third', 'om'),
+(20, 1, 0, 'your fourth', 'om'),
+(21, 1, 0, 'your fifth', 'om'),
+(22, 1, 0, 'your sixth', 'om'),
+(23, 1, 0, 'your seventh', 'om'),
+(24, 1, 0, 'your last', 'om'),
+(25, 1, 0, 'your want', 'it'),
+(26, 1, 0, 'your is', 'it'),
+(27, 1, 0, 'you dealerhand', 'The dealers hand'),
+(28, 1, 0, 'your playerhand', 'Your hand'),
+(29, 1, 0, 'your dealerace', 'dealer total'),
+(30, 1, 0, 'your playerace', 'your total');
 
 CREATE TABLE IF NOT EXISTS `unknown_inputs` (
   id int(11) NOT NULL AUTO_INCREMENT,
   input text NOT NULL,
-  userid int(11) NOT NULL,
+  user_id int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id));
 CREATE TABLE IF NOT EXISTS `users` (
   id int(11) NOT NULL AUTO_INCREMENT,
-  name text not null,
+  user_name text not null,
   session_id varchar(255) NOT NULL,
   bot_id int(11) NOT NULL,
   chatlines int(11) NOT NULL,
@@ -238,4 +240,12 @@ CREATE TABLE IF NOT EXISTS `wordcensor` (
   PRIMARY KEY (censor_id));
 INSERT IGNORE INTO wordcensor (censor_id, word_to_censor, replace_with, bot_exclude) VALUES
 (1, 'shit', 's***', ''),
-(2, 'fuck', 'f***', '')
+(2, 'fuck', 'f***', '');
+CREATE TABLE IF NOT EXISTS `client_properties` (
+`id` INT NOT NULL ,
+`user_id` INT NOT NULL ,
+`bot_id` INT NOT NULL ,
+`name` TEXT NOT NULL ,
+`value` TEXT NOT NULL ,
+PRIMARY KEY ( `id` )
+)

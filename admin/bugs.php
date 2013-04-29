@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.9
+//My Program-O Version 2.1.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -44,10 +44,11 @@ $upperScripts = <<<endScript
 //-->
       </script>
 endScript;
-  foreach ($_POST as $key => $value) {
+  $post_vars = filter_input_array(INPUT_POST);
+  foreach ($post_vars as $key => $value) {
     $$key = mysql_real_escape_string($value);
   }
-  $func = (isset($_POST['func'])) ? $_POST['func'] : 'showBugForm';
+  $func = (isset($post_vars['func'])) ? $post_vars['func'] : 'showBugForm';
 # Build page sections
 # ordered here in the order that the page is constructed
 # Only the variables that are different from the
@@ -73,7 +74,7 @@ endScript;
 
   function showBugForm() {
     return <<<endForm
-      <form method="POST" action="./?page=bugs" name="contactForm">
+      <form method="POST" action="index.php?page=bugs" name="contactForm">
         <input name="func" value="sendMail" type="hidden">
         <input name="contactMe" value="true" type="hidden">
         <table border="1" width="100%">
@@ -179,29 +180,23 @@ endOops;
   }
 
   function checkBadAddress ($address) {
-    global $content;
     $out = 0;
 	$excluded = array("namecheap2.ehost-services150.com", "rxciales.info", "mail.ru", "rxcilliss.info", "PaulkyLyday@gmail.com");
 	foreach ($excluded as $check) {
       $isPresent =  strpos($address, $check);
-      $content .= "<!-- google address = $address : check = $check : isPresent = |$isPresent| -->\n";
       if ($isPresent !== false) $out = 1;
 	}
-      $content .= "<!-- giggle out = $out -->\n";
 	return $out;
   }
 
   function checkBadIP () {
-    global $content;
     $IP = $_SERVER['REMOTE_ADDR'];
     $out = 0;
 	$excluded = array("89.28.114", "85.140.66.54");
 	foreach ($excluded as $check) {
       $isPresent =  strpos($IP, $check);
-      $content .= "<!-- google IP address = $IP : check = $check : isPresent = |$isPresent| -->\n";
       if ($isPresent !== false) $out = 1;
 	}
-      $content .= "<!-- giggle out = $out -->\n";
 	return $out;
   }
 ?>

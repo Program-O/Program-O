@@ -7,26 +7,26 @@ xmlns CDATA #IMPLIED>
 <!ATTLIST topic name CDATA #REQUIRED>
 <!ELEMENT category (pattern,(that)?,template)>
 <!ELEMENT pattern (#PCDATA|bot|eval)*>
-<!ELEMENT template (#PCDATA|set|think|br|get|random|li|srai|star|a|person|ul|p|bot|that|condition|topic|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|em|date|get_likes|topicstar|thastar|size)*>
-<!ELEMENT set (#PCDATA|thatstar|topicstar|get|set|person|bot|srai|star|that|input|response|request)*>
+<!ELEMENT template (#PCDATA|set|think|br|get|random|li|srai|star|a|person|person2|ul|p|bot|that|condition|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|date|topicstar|thastar|size|battery|em)*>
+<!ELEMENT set (#PCDATA|set|think|br|get|random|li|srai|star|a|person|person2|ul|p|bot|that|condition|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|date|topicstar|thastar|size|battery|em)*>
 <!ATTLIST set name CDATA #REQUIRED>
-<!ELEMENT think (#PCDATA|set|input|condition|srai)*>
+<!ELEMENT think (#PCDATA|set|think|br|get|random|li|srai|star|a|person|person2|ul|p|bot|that|condition|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|date|topicstar|thastar|size|battery|em)*>
 <!ELEMENT br EMPTY>
 <!ELEMENT get EMPTY>
 <!ATTLIST get name CDATA #REQUIRED>
 <!ELEMENT random (li)+>
-<!ELEMENT li (#PCDATA|set|think|br|get|random|li|srai|star|a|person|ul|p|bot|that|condition|topic|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|em|date|get_likes|topicstar|thastar|size)*>
+<!ELEMENT li (#PCDATA|set|think|br|get|random|li|srai|star|a|person|person2|ul|p|bot|that|condition|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|date|topicstar|thastar|size|battery|em)*>
 <!ATTLIST li
 name CDATA #IMPLIED
 value CDATA #IMPLIED>
-<!ELEMENT srai (#PCDATA|topicstar|that|thatstar|star|bot|get|set|srai|eval|person|person2)*>
+<!ELEMENT srai (#PCDATA|set|think|br|get|random|li|srai|star|a|person|person2|ul|p|bot|that|condition|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|date|topicstar|thastar|size|battery|em)*>
 <!ELEMENT star EMPTY>
 <!ATTLIST star index CDATA #IMPLIED>
-<!ELEMENT a (#PCDATA)>
+<!ELEMENT a (#PCDATA|set|think|br|get|random|li|srai|star|a|person|person2|ul|p|bot|that|condition|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|date|topicstar|thastar|size|battery|em)*>
 <!ATTLIST a href CDATA #REQUIRED target CDATA #IMPLIED>
-<!ELEMENT person (#PCDATA|thatstar|star|input)*>
+<!ELEMENT person (#PCDATA|set|think|br|get|random|li|srai|star|a|person|person2|ul|p|bot|that|condition|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|date|topicstar|thastar|size|battery|em)*>
 <!ATTLIST person index CDATA #IMPLIED>
-<!ELEMENT person2 (#PCDATA|star|input)*>
+<!ELEMENT person2 (#PCDATA|set|think|br|get|random|li|srai|star|a|person|person2|ul|p|bot|that|condition|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|date|topicstar|thastar|size|battery|em)*>
 <!ATTLIST person2 index CDATA #IMPLIED>
 <!ELEMENT ul (li)+>
 <!ELEMENT p (#PCDATA)>
@@ -41,7 +41,7 @@ value CDATA #IMPLIED>
 <!ELEMENT dial (#PCDATA|srai)*>
 <!ELEMENT dialcontact (#PCDATA|star|get)*>
 <!ELEMENT learn (#PCDATA|category)*>
-<!ELEMENT eval (#PCDATA|thatstar|get|star|person|person2|uppercase|lowercase)*>
+<!ELEMENT eval (#PCDATA|set|think|br|get|random|li|srai|star|a|person|person2|ul|p|bot|that|condition|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|date|topicstar|thastar|size|battery|em)*>
 <!ELEMENT thatstar EMPTY>
 <!ATTLIST thatstar index CDATA #IMPLIED>
 <!ELEMENT map (#PCDATA|star)*>
@@ -58,7 +58,7 @@ value CDATA #IMPLIED>
 <!ATTLIST response index  CDATA #IMPLIED>
 <!ELEMENT request (#PCDATA)>
 <!ATTLIST request index  CDATA #IMPLIED>
-<!ELEMENT uppercase (#PCDATA|get|bot)*>
+<!ELEMENT uppercase (#PCDATA|set|think|br|get|random|li|srai|star|a|person|person2|ul|p|bot|that|condition|sr|oob|dial|dialcontact|learn|eval|thatstar|map|search|sms|recipient|message|input|img|id|response|request|uppercase|date|topicstar|thastar|size|battery|em)*>
 <!ELEMENT date EMPTY>
 <!ATTLIST date
 format CDATA #IMPLIED

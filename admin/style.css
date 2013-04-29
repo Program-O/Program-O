@@ -1,5 +1,5 @@
 /*
-My Program-O Version 2.0.9
+My Program-O Version 2.1.5
 Program-O  chatbot admin area
 Written by Elizabeth Perreau and Dave Morton
 Aug 2011
@@ -47,6 +47,7 @@ div.row span.formxw input, div.row span.formxw textarea { width: 80%; margin: 0;
 div.row span.formw select { width: 155px; margin: 0; }
 div.row span.formxw select { width: 42%; margin: 0; }
 div.row span.formw input.wide { width: 99.1%; margin: 0; }
+div.row span.formw textarea.wide { width: 99.1%; margin: 0; }
 div.row span.formw input[type=checkbox], div.row span.formw input[type=radio] { width: 15px; margin: 0; }
 div.row span.formxw input[type=checkbox], div.row span.formxw input[type=radio] { width: 15px; margin: 0; text-align: left; margin-left: 6px; }
 .leftHalf { width: 49%; float: left; }
@@ -60,6 +61,7 @@ div.row span.formxw input[type=checkbox], div.row span.formxw input[type=radio] 
 .fullWidth { width: 100%;}
 .eightyPercent { width: 80%; }
 span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
+span.eightyPercent textarea.wide { width: 67%; min-height: 150px; margin: 0; float: right; }
 .twentyPercent { width: 20%; }
 .noBorder { border: none; }
 .testBorder { border: 1px solid red; }
@@ -447,10 +449,11 @@ span.eightyPercent input.wide { width: 67%; margin: 0; float: right; }
   position: absolute;
   left: 0;
   right: 0;
-  top: 35px;
+  top: 45px;
   bottom: 0;
   overflow: auto;
   padding: 5px;
+  border-top: 1px solid #000;
 }
 
 #col1 {
@@ -752,3 +755,23 @@ select#bot_id { width: auto; min-width: 30%; }
 
 #script_version{position: absolute;top: 5px;left: 5px;}
 
+dl.codebox {
+  border: 1px solid #FFDAB9;
+  padding: 5px;
+  width: 80%;
+  height: auto;
+  margin-left: 25px;
+  background-color: #FFFFF0;
+}
+dl.codebox dd span {padding-left: 7px;}
+
+.syntaxdefault {color: #00B;}
+.syntaxkeyword {color: #060;}
+.syntaxstring {color: #D00;}
+
+blockquote.uncited {
+  background: #EEE url(http://forum.program-o.com/styles/prosilver/theme/images/quote.gif) no-repeat top left;
+  padding: 12px;
+  border: 1px solid #ccc;
+  width: auto;
+}

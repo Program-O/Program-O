@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.9
+//My Program-O Version 2.1.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -40,15 +40,14 @@ $upperScripts = <<<endScript
 //-->
     </script>
 endScript;
+  $post_vars = filter_input_array(INPUT_POST);
 
   $msg = '';
-  if((isset($_POST['action']))&&($_POST['action']=="teach")) {
+  if((isset($post_vars['action']))&&($post_vars['action']=="teach")) {
     $msg = insertAIML();
   }
   $teachContent = $template->getSection('TeachBotForm');
   $showHelp = $template->getSection('TeachShowHelp');
-  #$teachContent = '';
-  #$showHelp = '';
 
     $topNav        = $template->getSection('TopNav');
     $leftNav       = $template->getSection('LeftNav');
@@ -65,7 +64,6 @@ endScript;
     $headerTitle   = 'Actions:';
     $pageTitle     = 'My-Program O - Teaching Interface';
     $mainContent   = $template->getSection('TeachMain');
-    #die ("main content = <pre>|$mainContent|</pre><br />\n");
     #$mainContent   = 'Hello!';
     $mainTitle     = "Chatbot Teaching Interface for $bot_name [helpLink]";
 
@@ -77,23 +75,23 @@ endScript;
 
 function insertAIML() {
   //db globals
-  global $template, $msg;
-  $dbconn = db_open();
+  global $template, $msg, $post_vars;
+  $dbConn = db_open();
   $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
-  $aimltemplate = mysql_real_escape_string(trim($_POST['template']));
-  $pattern = strtoupper(mysql_real_escape_string(trim($_POST['pattern'])));
-  $thatpattern = strtoupper(mysql_real_escape_string(trim($_POST['thatpattern'])));
+  $aimltemplate = mysql_real_escape_string(trim($post_vars['template']));
+  $pattern = strtoupper(mysql_real_escape_string(trim($post_vars['pattern'])));
+  $thatpattern = strtoupper(mysql_real_escape_string(trim($post_vars['thatpattern'])));
   $aiml = str_replace('[pattern]', $pattern, $aiml);
   $aiml = (empty($thatpattern)) ? str_replace('[thatpattern]', "<that>$thatpattern</that>", $aiml) : $aiml;
   $aiml = str_replace('[template]', $aimltemplate, $aiml);
-  $topic = strtoupper(mysql_real_escape_string(trim($_POST['topic'])));
+  $topic = strtoupper(mysql_real_escape_string(trim($post_vars['topic'])));
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
   if(($pattern=="") || ($template=="")) {
     $msg = 'You must enter a user input and bot response.';
   }
   else {
     $sql = "INSERT INTO `aiml` (`id`,`bot_id`, `aiml`, `pattern`,`thatpattern`,`template`,`topic`,`filename`, `php_code`) VALUES (NULL,'$bot_id', '$aiml','$pattern','$thatpattern','$aimltemplate','$topic','admin_added.aiml', '')";
-    $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
 
     if($result) {
       $msg = "AIML added.";
@@ -102,7 +100,7 @@ function insertAIML() {
       $msg = "There was a problem adding the AIML - no changes made.";
     }
   }
-  mysql_close($dbconn);
+  mysql_close($dbConn);
 
   return $msg;
 }

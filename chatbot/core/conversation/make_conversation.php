@@ -2,9 +2,9 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.9
+* Version: 2.1.5
 * FILE: chatbot/core/conversation/make_conversation.php
-* AUTHOR: ELIZABETH PERREAU
+* AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
 * DETAILS: this file contains the functions control the creation of the conversation 
 ***************************************/
@@ -18,10 +18,9 @@
 function make_conversation($convoArr){
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Making conversation",4);
-	global $offset;
 	//get the user input and clean it
 	//$convoArr = clean_for_aiml_match('user_say','lookingfor',$convoArr);
-	$convoArr['aiml']['lookingfor'] =  clean_for_aiml_match($convoArr['user_say'][$offset]);
+	$convoArr['aiml']['lookingfor'] =  clean_for_aiml_match($convoArr['user_say'][1]);
 	//find an aiml match in the db
 	$convoArr = get_aiml_to_parse($convoArr);
 	$convoArr = parse_matched_aiml($convoArr,'normal');
@@ -48,7 +47,7 @@ function add_aiml_to_php($convoArr){
 	$evalthis = mysql_real_escape_string($convoArr['aiml']['aiml_to_php']);
 	$sql = "UPDATE `$dbn`.`aiml` SET `php_code` = \"$evalthis\" WHERE `id` = '".$convoArr['aiml']['aiml_id']."' LIMIT 1";
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Adding new PHP to aiml table SQL: $sql",3);
-	$result = db_query($sql,$con);
+	//$result = db_query($sql,$con);
 	return $convoArr;
 }
 
@@ -91,8 +90,7 @@ function eval_aiml_to_php_code($convoArr,$evalthis){
 function run_aiml_to_php($convoArr,$evalthis){
 	
 	runDebug( __FILE__, __FUNCTION__, __LINE__, "Evaluating Stored PHP Code from the Database",4);
-	global $botsay;
-	global $error_response;
+	global $botsay, $error_response;
 
 	//this must be NULL if it is FALSE then its failed but  if its NULL its a success
 	$error_flag = eval($evalthis);
@@ -106,4 +104,22 @@ function run_aiml_to_php($convoArr,$evalthis){
 	
 	return $result;
 }
+
+/**
+ * function buildNounList()
+ * @param array $convoArr
+ * @param int $person
+ * @param string $in
+ * @return the tranformed string
+**/
+
+  function buildNounList($convoArr)
+  {
+    $fileName = _CONF_PATH_ . 'nounList.dat';
+    $nounList = file($fileName,FILE_IGNORE_NEW_LINES);
+    $convoArr['nounList'] = $nounList;
+    return $convoArr;
+  }
+
+
 ?>

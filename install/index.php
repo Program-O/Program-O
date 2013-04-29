@@ -1,112 +1,71 @@
 <?PHP
-//-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.9
-//Program-O  chatbot admin area
-//Written by Elizabeth Perreau and Dave Morton
-//May 2011
-//for more information and support please visit www.program-o.com
-//-----------------------------------------------------------------------------------------------
-ini_set('display_errors', 1);
-session_start();
-if (!defined('SCRIPT_INSTALLED')) header('location: install_programo.php');
 
-if((isset($_POST['uname']))&&(isset($_POST['pw'])))
-{
-
-	$uname = mysql_real_escape_string(strip_tags(trim($_POST['uname'])));
-	$pw = mysql_real_escape_string(strip_tags(trim($_POST['pw'])));
-	$dbconn = db_open();
-	$sql = "SELECT * FROM `$dbn`.`myprogramo` WHERE uname = '".$uname."' AND pword = '".MD5($pw)."'";
-
-	$result = mysql_query($sql,$dbconn)or die(mysql_error());
-	$count = mysql_num_rows($result);
-	$msg ="";
-	
-	if($count>0)
-	{
-		$row=mysql_fetch_array($result);
-		$_SESSION['poadmin']['uid']=$row['id'];
-		$_SESSION['poadmin']['name']=$row['uname'];
-		$_SESSION['poadmin']['lip']=$row['lastip'];
-		$_SESSION['poadmin']['llastlogin']=date('l jS \of F Y h:i:s A', strtotime($row['lastlogin']));
-
-
-		if(!empty($_SERVER['HTTP_CLIENT_IP']))   //check ip from share internet
-		{
-			$ip=$_SERVER['HTTP_CLIENT_IP'];
-		}
-		elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR']))   //to check ip is pass from proxy
-		{
-		  	$ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
-		}
-		else
-		{
-		  	$ip=$_SERVER['REMOTE_ADDR'];
-		}
-		
-		$sqlupdate = "UPDATE `$dbn`.`myprogramo` SET `lastip` = '$ip', `lastlogin` = CURRENT_TIMESTAMP WHERE uname = '".$uname."' limit 1";
-		//echo $sql;
-		mysql_query($sqlupdate,$dbconn)or die(mysql_error());
-		
-		$_SESSION['poadmin']['ip']=$ip;
-		$_SESSION['poadmin']['lastlogin']=date('l jS \of F Y h:i:s A');
-	}
-	else
-	{
-		$msg = "incorrect username/password";
-	}
-	
-	mysql_close($dbconn);
-	
-	if($msg == "")
-	{
-		header("location: pages/index.php");
-	}
-}
-elseif(isset($_GET['msg']))
-{
-	$msg = htmlentities($_GET['msg']);
-}
-else
-{
-	$msg = "";
-}
+  /***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.1.5
+  * FILE: index.php
+  * AUTHOR: Elizabeth Perreau and Dave Morton
+  * DATE: 02-13-2013
+  * DETAILS: Switchboard for the install folder
+  ***************************************/
+  $thisFile = __FILE__;
+  if (!file_exists('../config/global_config.php'))
+    header('location: install_programo.php');
+  require_once ('../config/global_config.php');
+  if (!defined('SCRIPT_INSTALLED')) header('location: install_programo.php');
+  //header('Location: ' . _ADMIN_URL_);
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>My Program-O</title> 
-<link rel="stylesheet" type="text/css" href="pages/inc/style.css" /> 
-</head>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $default_charset ?>" />
+    <title>My-Program O</title>
+    <link rel="stylesheet" href="<?php echo _ADMIN_URL_ ?>style.css" media="screen" type="text/css" />
+    <style type="text/css">
+      #main {left: 25px;}
+      #main {right: 25px;}
+      .errMsg {display: none;}
+      .center {text-align: center; text-indent: 0;}
 
-<body>
-<div id="container"><p>&nbsp;</p><div align=center><h1><span class="orange">My</span> Program-O</h1></div>
-  <p><?php echo "<div id=\"errMsg\">$msg</div>";?></p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table width="38%" border="0" align="center" cellpadding="5" cellspacing="0">
-    <tr>
-      <td bgcolor="#FFFFFF">  <fieldset> 
-    <legend>Login </legend> 
-  <form id="fm-form" method="post" action="index.php" > 
 
-    <div class="fm-req"> 
-      <label for="uname">Username:</label> 
-      <input name="uname" id="uname" type="text" maxlength="20" size="15"/> 
-    </div> 
-    <div class="fm-req"> 
-      <label for="pw">Password:</label> 
-      <input name="pw" id="pw" type="password" maxlength="20" size="15"/> 
-    </div> 
-    
-    <div id="fm-submit" class="fm-req"> 
-      <input name="Submit" value="Submit" type="submit" /> 
-    </div> 
-  </form></fieldset></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
- </div>
-</body>
+    </style>
+  </head>
+  <body>
+    <div id="version">
+    </div>
+    <div id="wrapper">
+      <div id="logo"></div>
+      <div id="main">
+        <div class="ul"></div>
+        <div class="ll"></div>
+        <div class="ur"></div>
+        <div class="lr"></div>
+        <div id="main_title">
+         My Program O
+        </div>
+        <div id="main_content" class="center">
+          It appears that Program O is already installed. If you wish to run the install script again,
+          <a href="install_programo.php">ckick here</a>. Otherwise, you can go to the
+          <a href="<?php echo _ADMIN_URL_ ?>">admin page</a>, or check out your chatbot, <a href="<?php echo _BASE_URL_ ?>">here</a>.
+        </div>
+      </div>
+      <div id="footer">
+        <div class="ul"></div>
+        <div class="ll"></div>
+        <div class="ur"></div>
+        <div class="lr"></div>
+        <div class="validXHTML">
+          <a href="http://validator.w3.org/check?uri=referer"><img src="images/valid-xhtml10.png" title="Valid XHTML 1.0 Strict" alt="Valid XHTML 1.0 Strict" height="31" width="88" style="border: none" /></a>
+        </div>
+        <div id="footer_content">
+          <p>&#169; 2011-2013 My Program-O<br />
+          <a href="http://www.program-o.com">www.program-o.com</a></p>
+        </div>
+        <div class="validCSS">
+          <a href="http://jigsaw.w3.org/css-validator/check/referer"><img style="border:0;width:88px;height:31px" src="images/vcss.gif" alt="Valid CSS!" title="Valid CSS!" /></a>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

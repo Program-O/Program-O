@@ -2,9 +2,9 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.0.9
+* Version: 2.1.5
 * FILE: word_censor/word_censor.php
-* AUTHOR: ELIZABETH PERREAU
+* AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
 * DETAILS: this file contains the addon library to censor output before they are output to user
 * 			the swear words are encoded in the session array to protect little eyes

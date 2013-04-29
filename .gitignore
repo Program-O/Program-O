@@ -2,18 +2,24 @@
 ## Program O
 #################
 
-*.log
-admin/error.log
+admin/*.log
 admin/skins
-admin/downloads
+!admin/downloads
+admin/downloads/*
+!admin/downloads/bot_test.aiml
+!admin/downloads/index.html
 config/global_config.php
-config/error.log
-config/*.txt
 config/uploads/*
 chatbot/debug/*.txt
-test
+gui/jquery/gui.php
 logs/*.log
 logs/*.txt
+
+#################
+## WeBuilder/ Rapid PHP
+#################
+
+*.flist
 
 #################
 ## Eclipse
@@ -45,6 +51,16 @@ local.properties
 # PDT-specific
 .buildpath
 
+#################
+## IntelliJ
+#################
+
+## Ignore intellij files
+
+# User-specific files
+*.idea
+.idea
+.idea/*
 
 #################
 ## Visual Studio

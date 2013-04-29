@@ -1,11 +1,13 @@
 <?PHP
-//-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.9
-//Program-O chatbot admin area
-//Written by Elizabeth Perreau and Dave Morton
-//May 2011
-//for more information and support please visit www.program-o.com
-//-----------------------------------------------------------------------------------------------
+  /***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.1.5
+  * FILE: install_programo.php
+  * AUTHOR: Elizabeth Perreau and Dave Morton
+  * DATE: 02-13-2013
+  * DETAILS: Program O's Automatic install script
+  ***************************************/
 
 $thisFile = __FILE__;
 # Test for PHP version 5+
@@ -22,14 +24,12 @@ define ('SECTION_END', '<!-- Section [section] End -->'); # search params for st
 define ('PHP_SELF', $_SERVER['SCRIPT_NAME']); # This is more secure than $_SERVER['PHP_SELF'], and returns more or less the same thing
 ini_set("display_errors", 0);
 ini_set("log_errors", true);
-ini_set("error_log", _BASE_DIR_ . "install-error.log");
-if (!file_exists(_BASE_DIR_ . "install-error.log")) file_put_contents(_BASE_DIR_ . "install-error.log", '');
+ini_set("error_log", _BASE_DIR_ . "install.error.log");
+if (!file_exists(_BASE_DIR_ . "install.error.log")) file_put_contents(_BASE_DIR_ . "install.error.log", '');
 $myHost = $_SERVER['SERVER_NAME'];
 chdir(dirname( realpath( __FILE__ )));
 $page_template = file_get_contents('install.tpl.htm');
 $page = (isset($_REQUEST['page'])) ? $_REQUEST['page'] : 1;
-#if (!empty($_POST)) die("<pre>POST vars:\n\n".print_r($_POST, true)."\n\n</pre>\n");
-#die ("page = $page");
 $action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 if (!empty($action)) $message = $action($page);
 $pageTemplate = 'Container';
@@ -51,6 +51,7 @@ $content = str_replace('[cr6]', "\n ", $content);
 $content = str_replace('[cr4]', "\n ", $content);
 $content = str_replace("\r\n", "\n", $content);
 $content = str_replace("\n\n", "\n", $content);
+$content = str_replace('[admin_url]', _ADMIN_URL_, $content);
 $content .= <<<endPage
 
 </body>
@@ -88,28 +89,26 @@ function Save() {
   // First off, write the config file
   $myPostVars = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
   ksort($myPostVars);
-  $configContents = file_get_contents(_CONF_PATH_ . 'global_config.tpl');
+  $configContents = file_get_contents(_CONF_PATH_ . 'config.template.php');
   foreach ($myPostVars as $key => $value) {
     $tagSearch[] = "[$key]";
     $varReplace[] = $value;
   }
   $configContents = str_replace($tagSearch, $varReplace, $configContents);
   $saveFile = file_put_contents(_CONF_PATH_ . 'global_config.php', $configContents);
-  #die("<pre>Executing function Save - Config file saved as config.php.test\n\n</pre>\n");
-
   // Now, update the data to the database, starting with making sure the tables are installed
   $sql = "show tables;";
   $conn = mysql_connect($myPostVars['dbh'], $myPostVars['dbu'], $myPostVars['dbp']) or install_error('Could not connect to the database!',mysql_error(), $sql);
   $dbn = $myPostVars['dbn'];
   $db = mysql_select_db($dbn,$conn) or install_error("Can't select the database $dbn!", mysql_error(), "use $dbn");
   $result = mysql_query($sql,$conn) or install_error('Unknown database error!',mysql_error(), $sql);
-  $out = mysql_fetch_assoc($result);
-  if (empty($out)) {
+  $row = mysql_fetch_assoc($result);
+  if (empty($row)) {
     $sql = file_get_contents('new.sql');
     $queries = preg_split("/;/", $sql);
     foreach ($queries as $query){
       if (strlen(trim($query)) > 0) {
-        $result = mysql_query($query,$conn) or install_error('Error creating new tables for DB!',mysql_error(), $sql);
+        $result = mysql_query($query,$conn) or install_error('Error creating new tables for DB!',mysql_error(), $query);
         $success = mysql_affected_rows();
       }
     }
@@ -118,12 +117,11 @@ function Save() {
   $result = mysql_query($sql,$conn) or upgrade($conn);
   $sql = 'select `php_code` from `aiml` where 1 limit 1';
   $result = mysql_query($sql,$conn) or upgrade($conn);
-  //  $default_pattern, $default_remember_up_to, $default_conversation_lines, $default_error_response
   $sql_template = "
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
 VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[use_aiml_code]', '[update_aiml_code]', '[save_state]', 
 '$default_conversation_lines', '$default_remember_up_to', '[debugemail]', '[debugshow]', '[debugmode]', '$default_error_response', '$default_pattern');";
-  
+
   require_once (_LIB_PATH_ . 'error_functions.php');
   require_once (_LIB_PATH_ . 'db_functions.php');
   $bot_id = 1;
@@ -141,24 +139,29 @@ VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]',
   $sql = str_replace('[update_aiml_code]',$myPostVars["default_update_aiml_code"], $sql);
   $sql = str_replace('[save_state]',$myPostVars["default_save_state"], $sql);
   $sql = str_replace('[conversation_lines]',$default_conversation_lines, $sql);
-  $sql = str_replace('[remember_up_to]',$default_remember_up_to, $sql);
+  $sql = str_replace('[default_remember_up_to]',$default_remember_up_to, $sql);
   $sql = str_replace('[debugemail]',$myPostVars["default_debugemail"], $sql);
-  $sql = str_replace('[debugshow]',$myPostVars["default_debugshow"], $sql);
-  $sql = str_replace('[debugmode]',$myPostVars["default_debugmode"], $sql);
+  $sql = str_replace('[debugshow]',$myPostVars["default_debug_level"], $sql);
+  $sql = str_replace('[debugmode]',$myPostVars["default_debug_mode"], $sql);
   $sql = str_replace('[error_response]',$default_error_response, $sql);
   $sql = str_replace('[default_aiml_pattern]',$default_pattern, $sql);
-  $save = file_put_contents(_CONF_PATH_ . 'sql.txt', $sql);
+  #$save = file_put_contents(_CONF_PATH_ . 'sql.txt', $sql); // For debugging purposes only
   $x = db_query($sql, $conn) or install_error('Could not enter bot info for bot #' . $bot_id . '!', mysql_error(), $sql);
   $encrypted_adm_dbp = md5($myPostVars["adm_dbp"]);
   $adm_dbu = $myPostVars["adm_dbu"];
   $cur_ip = $_SERVER['REMOTE_ADDR'];
-  $adminSQL = "insert ignore into `myprogramo` (`id`, `uname`, `pword`, `lastip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
-  $result = db_query($adminSQL, $conn) or install_error('Could not add admin credentials! Check line #' . __LINE__, mysql_error(), $sql);
+  $adminSQL = "insert ignore into `myprogramo` (`id`, `user_name`, `password`, `last_ip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
+  $result = db_query($adminSQL, $conn) or install_error('Could not add admin credentials! Check line #' . __LINE__, mysql_error(), $adminSQL);
 
   mysql_close($conn);
 
-  return ($result and empty($_SESSION['errorMessage'])) ? getSection('InstallComplete', $page_template) : getSection('InstallError', $page_template);
-
+  if ($result and empty($_SESSION['errorMessage']))
+  {
+    $out = getSection('InstallComplete', $page_template);
+    if (file_exists(_INSTALL_PATH_ . 'upgrade.php')) unlink(_INSTALL_PATH_ . 'upgrade.php');
+  }
+  else $out = getSection('InstallError', $page_template);
+  return $out;
 }
 
 function install_error($msg, $err, $sql) {
@@ -174,12 +177,12 @@ endError;
 }
 
 function upgrade($conn) {
-  $upgradeSQL = file_get_contents('upgrade_bots_table.sql');
+  $upgradeSQL = file_get_contents('upgrade_2.0_2.1.sql');
   $queries = explode(';',$upgradeSQL);
-  foreach ($queries as $sql) {
+  foreach ($queries as $line => $sql) {
     $sql = trim($sql);
     if (!empty($sql)) {
-      $result = mysql_query($sql, $conn) or install_error('Error upgrading the database! check line #' . __LINE_, mysql_error(), $sql);
+      $result = mysql_query($sql, $conn) or install_error('Error upgrading the database! check line #' . $line + 1 . ' of the SQL file. Error:', mysql_error() . "\nSQL: $sql\n", $sql);
       $success = mysql_affected_rows();
     }
   }

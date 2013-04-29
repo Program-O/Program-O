@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
     <title>Program O Installation</title>
-    <link rel="stylesheet" href="../admin/style.css" type="text/css" />
+    <link rel="stylesheet" href="[admin_url]style.css" type="text/css" />
   </head>
   <body>
     <div id="logo">&nbsp;</div>
@@ -38,7 +38,7 @@
       var helpWindow = null; // global variable
       $(function() {
         var sWidth = $(window).width();
-        buildSelect('timezone');
+        buildSelect('time_zone_locale');
         $('#default_save_stateSession').attr('checked', true);
         $('#adm_dbp_confirm').blur(function() {
           if (!validatePass()) {
@@ -141,16 +141,23 @@
                 </select>
               </td>
             </tr>
-            <tr>
+            <!-- tr>
               <td class="label"><label for="default_update_aiml_code"><span class="helpButton" id="hb_default_update_aiml_code"> </span>Store PHP code in DB?</label></td>
               <td class="formw"><input type="checkbox" name="default_update_aiml_code" id="default_update_aiml_code" value="1" checked="checked" /></td>
             </tr>
             <tr>
               <td class="label"><label for="default_use_aiml_code"><span class="helpButton" id="hb_default_use_aiml_code"> </span>Use Stored PHP Code from DB?</label></td>
               <td class="formw"><input type="checkbox" name="default_use_aiml_code" id="default_use_aiml_code" value="1" checked="checked" /></td>
+            </tr -->
+            <tr>
+              <td colspan="2" id="notes">[notes]</td>
             </tr>
             <tr>
-              <td colspan="2" rowspan="4" id="notes">[notes]</td>
+              <td colspan="2" class="center">
+                <input name="page" value="2" type="hidden">
+                <input name="default_bot_id" value="1" type="hidden">
+                <input name="action" id="action" type="submit" value="Save">
+              </td>
             </tr>
           </table>
         </td>
@@ -180,9 +187,9 @@
               <td class="formw"><input name="dbp" id="dbp" value="" /></td>
             </tr>
             <tr>
-              <td class="label"><label for="timezone"><span class="helpButton" id="hb_timezone"> </span>DB Timezone</label></td>
+              <td class="label"><label for="time_zone_locale"><span class="helpButton" id="hb_timezone"> </span>DB Timezone</label></td>
               <td class="formw">
-                <select name="timezone" id="timezone">
+                <select name="time_zone_locale" id="time_zone_locale">
                 </select>
               </td>
             </tr>
@@ -198,13 +205,13 @@
               <td class="label"><label for="adm_dbp_confirm"><span class="helpButton" id="hb_adm_dbp"> </span>Confirm Admin Area Password</label></td>
               <td class="formw"><input name="adm_dbp_confirm" id="adm_dbp_confirm" type="password" /></td>
             </tr>
-            <tr>
+            <!-- tr>
               <td class="bold center underline" colspan="2">Debugging Options:</td>
-            </tr>
+            </tr -->
             <tr>
-              <td class="label"><label for="default_debugshow"><span class="helpButton" id="hb_default_debugshow"> </span>Debug Level</label></td>
+              <td class="label"><label for="default_debug_level"><span class="helpButton" id="hb_default_debug_level"> </span>Debug Level</label></td>
               <td class="formw">
-                  <select name="default_debugshow" id="default_debugshow" size="1">
+                  <select name="default_debug_level" id="default_debug_level" size="1">
                     <option value="0">Show no debugging</option>
                     <option value="1">errors only</option>
                     <option value="2" selected="selected">general + errors</option>
@@ -214,9 +221,9 @@
               </td>
             </tr>
             <tr>
-              <td class="label"><label for="default_debugmode"><span class="helpButton" id="hb_default_debugmode"> </span>Debug Mode</label></td>
+              <td class="label"><label for="default_debug_mode"><span class="helpButton" id="hb_default_debug_mode"> </span>Debug Mode</label></td>
               <td class="formw">
-                <select name="default_debugmode" id="default_debugmode" size="1">
+                <select name="default_debug_mode" id="default_debug_mode" size="1">
                   <option value="0">Show in Source</option>
                   <option value="1" selected="selected">File (default)</option>
                   <option value="2">Display</option>
@@ -234,13 +241,6 @@
               </td>
             </tr>
           </table>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2" class="center">
-          <input name="page" value="2" type="hidden">
-          <input name="default_bot_id" value="1" type="hidden">
-          <input name="action" id="action" type="submit" value="Save">
         </td>
       </tr>
     </table>
@@ -268,12 +268,12 @@
 <!-- Section DBCreationError End -->
 <!-- Section Page 1 Notes Start -->
             <p>
-              Please note that all fields are required, but many are already filled out with generic, default
+              Please note that all fields are required, but some are already filled out with generic, default
               values.
             </p>
             <p>
               For more detailed information with this page, please see the <a href="help.php" target="_blank">Help Page</a>, or
-              click the help icon <img src="../admin/images/help_small.png" width="16" height="16" alt="" /> for an individual field.
+              click the help icon <img src="[admin_url]images/help_small.png" width="16" height="16" alt="" /> for an individual field.
             </p>
             &nbsp;
 <!-- Section Page 1 Notes End -->
@@ -281,7 +281,7 @@
             <div class="row">
               &nbsp; The configuration for both the bot and the database are complete,
               but you now need to upload your bot's AIML categories. Please log into the
-              <a href="../admin/">Admin Page</a> to complete the process.
+              <a href="[admin_url]">Admin Page</a> to complete the process.
             </div>
             <div class="row"><!-- spacer div --></div>
             <div class="row">

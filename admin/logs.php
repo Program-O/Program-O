@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.9
+//My Program-O Version 2.1.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -8,10 +8,11 @@
 //-----------------------------------------------------------------------------------------------
 // logs.php
 
-$show = (isset($_GET['showing'])) ? $_GET['showing'] : "last 20";//showThis($show)
+$get_vars = filter_input_array(INPUT_GET);
+$show = (isset($get_vars['showing'])) ? $get_vars['showing'] : "last 20";//showThis($show)
 $show_this = showThis($show);
-$convo = (isset($_GET['id'])) ? getuserConvo($_GET['id'],$show) : "Please select a conversation from the side bar.";
-$user_list = (isset($_GET['id'])) ? getuserList($_GET['id'],$show) : getuserList($_SESSION['poadmin']['bot_id'],$show);
+$convo = (isset($get_vars['id'])) ? getuserConvo($get_vars['id'],$show) : "Please select a conversation from the side bar.";
+$user_list = (isset($get_vars['id'])) ? getuserList($get_vars['id'],$show) : getuserList($_SESSION['poadmin']['bot_id'],$show);
 $bot_name = (isset($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'unknown';
 $upperScripts = <<<endScript
 
@@ -66,27 +67,26 @@ endScript;
     $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
 
 function getUserNames() {
-  $dbconn = db_open();
-  $sql = "select `id`, `name` from `users` where 1;";
-  $result = mysql_query($sql,$dbconn);
+  $dbConn = db_open();
+  $sql = "select `id`, `user_name` from `users` where 1;";
+  $result = mysql_query($sql,$dbConn);
   $nameList = array();
   while ($row = mysql_fetch_assoc($result)) {
-    $nameList[$row['id']] = $row['name'];
+    $nameList[$row['id']] = $row['user_name'];
   }
-  mysql_close($dbconn);
+  mysql_close($dbConn);
   return $nameList;
 }
 
 function getuserList($showing) {
   //db globals
-  global $template;
+  global $template, $get_vars;
   $nameList = getUserNames();
-  $curUserid = (isset($_GET['id'])) ? $_GET['id'] : -1;
-  #die ("user names:<br />\n" . print_r($nameList, true) . "\n<br />\n");
-  $dbconn = db_open();
+  $curUserid = (isset($get_vars['id'])) ? $get_vars['id'] : -1;
+  $dbConn = db_open();
   $bot_id = $_SESSION['poadmin']['bot_id'];
   $linkTag = $template->getSection('NavLink');
-  $sql = "SELECT DISTINCT(`userid`),COUNT(`userid`) AS TOT FROM `conversation_log`  WHERE bot_id = '$bot_id' AND DATE(`timestamp`) = '[repl_date]' GROUP BY `userid` ORDER BY ABS(`userid`) ASC";
+  $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = '$bot_id' AND DATE(`timestamp`) = '[repl_date]' GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC";
   $showarray = array("last 20","previous week","previous 2 weeks","previous month","last 6 months","this year","previous year","all years");
   switch ($showing) {
     case "today":
@@ -108,11 +108,11 @@ function getuserList($showing) {
       $repl_date = strtotime("-1 year");
       break;
     case "all time":
-      $sql = "SELECT DISTINCT(`userid`),COUNT(`userid`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `userid` ORDER BY ABS(`userid`) ASC";
+      $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC";
       $repl_date = time();
       break;
     default:
-      $sql = "SELECT DISTINCT(`userid`),COUNT(`userid`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `userid` ORDER BY ABS(`userid`) ASC";
+      $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC";
       $repl_date = time();
   }
   $sql = str_replace('[repl_date]', $repl_date, $sql);
@@ -122,23 +122,24 @@ function getuserList($showing) {
         <ul>
 
 endList;
-  $result = mysql_query($sql,$dbconn) or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+  if (($result = mysql_query($sql,$dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+  if (mysql_num_rows($result) == 0) $list .= '          <li>No log entries found</li>';
   while($row = mysql_fetch_array($result)) {
-    $userid = $row['userid'];
-    $linkClass = ($userid == $curUserid) ? 'selected' : 'noClass';
-    $userName = @$nameList[$userid];
+    $user_id = $row['user_id'];
+    $linkClass = ($user_id == $curUserid) ? 'selected' : 'noClass';
+    $userName = @$nameList[$user_id];
     $TOT = $row['TOT'];
     $tmpLink = str_replace('[linkClass]'," class=\"$linkClass\"", $linkTag);
     $tmpLink = str_replace('[linkOnclick]','', $tmpLink);
-    $tmpLink = str_replace('[linkHref]',"href=\"./?page=logs&showing=$showing&id=$userid#$userid\" name=\"$userid\"", $tmpLink);
+    $tmpLink = str_replace('[linkHref]',"href=\"index.php?page=logs&showing=$showing&id=$user_id#$user_id\" name=\"$user_id\"", $tmpLink);
     $tmpLink = str_replace('[linkTitle]'," title=\"Show entries for user $userName\"", $tmpLink);
     $tmpLink = str_replace('[linkLabel]',"USER:$userName($TOT)", $tmpLink);
-    $anchor = "            <a name=\"$userid\" />\n";
+    $anchor = "            <a name=\"$user_id\" />\n";
     $anchor = '';
     $list .= "$tmpLink\n$anchor";
   }
   $list .="\n       </div>\n";
-  mysql_close($dbconn);
+  mysql_close($dbConn);
   return $list;
 }
 
@@ -156,7 +157,7 @@ function showThis($showing="last 20") {
   }
 
   $form = <<<endForm
-        <form name="showthis" method="post" action="./?page=logs">
+        <form name="showthis" method="post" action="index.php?page=logs">
           <select name="showing" id="showing">
 $options
           </select>
@@ -211,12 +212,12 @@ function getuserConvo($id, $showing) {
   }
   $lasttimestamp = "";
   $i = 1;
-  $dbconn = db_open();
+  $dbConn = db_open();
   //get undefined defaults from the db
-  $sql = "SELECT *  FROM `conversation_log` WHERE `bot_id` = '$bot_id' AND `userid` = $id $sqladd ORDER BY `id` ASC";
+  $sql = "SELECT *  FROM `conversation_log` WHERE `bot_id` = '$bot_id' AND `user_id` = $id $sqladd ORDER BY `id` ASC";
   $list = "<hr><br/><h4>$title conversations for user: $id</h4>";
   $list .="<div class=\"convolist\">";
-  $result = mysql_query($sql,$dbconn)or die('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql\n");
+  if (($result = mysql_query($sql,$dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql\n");
   while($row = mysql_fetch_array($result)) {
     $thisdate = date("Y-m-d",strtotime($row['timestamp']));
     if($thisdate!=$lasttimestamp) {
@@ -234,7 +235,7 @@ function getuserConvo($id, $showing) {
     $lasttimestamp = $thisdate;
   }
   $list .="</div>";
-  mysql_close($dbconn);
+  mysql_close($dbConn);
   $list = str_ireplace('<script', '&lt;script', $list);
   return $list;
 }

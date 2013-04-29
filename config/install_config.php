@@ -2,9 +2,9 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.0.9
+* Version: 2.1.5
 * FILE: config/install_config.php
-* AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
+* AUTHOR: Elizabeth Perreau and Dave Morton AND DAVE MORTON
 * DATE: MAY 4TH 2011
 * DETAILS: this file is a stripped down, "install" version of the config file,
 * and as such, only has the most minimal settings within it. The install script
@@ -34,9 +34,7 @@
 
     define("_INC_PATH_",_BASE_DIR_.$path_separator);
     define("_ADMIN_PATH_",_BASE_DIR_."admin".$path_separator);
-    define("_GLOBAL_PATH_",_BASE_DIR_."global".$path_separator);
-    define("_BOTCORE_PATH_",_BASE_DIR_."chatbot".$path_separator."core".$path_separator);
-    define("_AIMLPHP_PATH_",_BASE_DIR_."chatbot".$path_separator."aiml_to_php".$path_separator);
+    define('_ADMIN_URL_',_BASE_URL_.'admin/');
     define("_LIB_PATH_",_BASE_DIR_."library".$path_separator);
     define("_ADDONS_PATH_",_BASE_DIR_."chatbot".$path_separator."addons".$path_separator);
     define("_CONF_PATH_",_BASE_DIR_."config".$path_separator);
@@ -51,7 +49,7 @@
     $e_all = defined('E_DEPRECATED') ? E_ALL ^ E_DEPRECATED : E_ALL;
     error_reporting($e_all);
     ini_set('log_errors', true);
-    ini_set('error_log', _LOG_PATH_ . 'install-error.log');
+    ini_set('error_log', _LOG_PATH_ . 'install.-error.log');
     ini_set('html_errors', false);
     ini_set('display_errors', false);
 

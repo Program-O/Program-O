@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.9
+//My Program-O Version 2.1.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -43,13 +43,14 @@ $content ="";
 //-->
     </script>
 endScript;
+$post_vars = filter_input_array(INPUT_POST);
 
 
-if((isset($_POST['action']))&&($_POST['action']=="clear")) {
+if((isset($post_vars['action']))&&($post_vars['action']=="clear")) {
   $content .= clearAIML();
 }
-elseif((isset($_POST['clearFile']))&&($_POST['clearFile'] != "null")) {
-  $content .= clearAIMLByFileName($_POST['clearFile']);
+elseif((isset($post_vars['clearFile']))&&($post_vars['clearFile'] != "null")) {
+  $content .= clearAIMLByFileName($post_vars['clearFile']);
 }
 else {
 }
@@ -82,24 +83,24 @@ else {
 
   function clearAIML() {
     global $dbn, $bot_id, $bot_name;
-    $dbconn = db_open();
+    $dbConn = db_open();
 
     $sql = "DELETE FROM `aiml` WHERE `bot_id` = $bot_id;";
     #return "SQL = $sql";
-    $result = mysql_query($sql,$dbconn) or die(mysql_error());
-    mysql_close($dbconn);
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
+    mysql_close($dbConn);
     $msg = "<strong>All AIML categories cleared for $bot_name!</strong><br />";
     return $msg;
   }
 
   function clearAIMLByFileName($filename) {
     global $dbn, $bot_id;
-    $dbconn = db_open();
-    $cleanedFilename = mysql_real_escape_string($filename, $dbconn);
+    $dbConn = db_open();
+    $cleanedFilename = mysql_real_escape_string($filename, $dbConn);
     $sql = "delete from `aiml` where `filename` like '$cleanedFilename' and `bot_id` = $bot_id;";
     #return "SQL = $sql";
-    $result = mysql_query($sql,$dbconn) or die(mysql_error());
-    mysql_close($dbconn);
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
+    mysql_close($dbConn);
     $msg = "<br/><strong>AIML categories cleared for file $filename!</strong><br />";
     return $msg;
   }
@@ -107,11 +108,11 @@ else {
   function getSelOpts() {
     global $dbn, $bot_id, $msg;
     $out = "                  <!-- Start Selectbox Options -->\n";
-    $dbconn = db_open();
+    $dbConn = db_open();
     $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     #return "SQL = $sql";
-    $result = mysql_query($sql,$dbconn) or die(mysql_error());
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
     if (mysql_num_rows($result) == 0) $msg = "This bot has no AIML categories to clear.";
     while ($row = mysql_fetch_assoc($result)) {
       if (empty($row['filename'])) {
@@ -120,7 +121,7 @@ else {
       else $curOption = str_replace('[val]', $row['filename'], $optionTemplate);
       $out .= $curOption;
     }
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     $out .= "                  <!-- End Selectbox Options -->\n";
     return $out;
   }
@@ -131,7 +132,7 @@ else {
           Deleting AIML categories from the database is <strong>permanent</strong>!
           This action <strong>CANNOT</strong> be undone!<br />
           <div id="clearForm">
-          <form name="clearForm" action="./?page=clear" method="POST" onsubmit="return verify()">
+          <form name="clearForm" action="index.php?page=clear" method="POST" onsubmit="return verify()">
           <table class="formTable">
             <tr>
               <td>

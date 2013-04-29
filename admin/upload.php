@@ -1,7 +1,7 @@
 <?php
 
   //-----------------------------------------------------------------------------------------------
-  //My Program-O Version 2.0.9
+  //My Program-O Version 2.1.5
   //Program-O  chatbot admin area
   //Written by Elizabeth Perreau and Dave Morton
   //Aug 2011
@@ -12,7 +12,6 @@
   ini_set('max_execution_time', '0');
   ini_set('display_errors', false);
   ini_set('log_errors', true);
-  ini_set('error_log', _ADMIN_PATH_ . 'upload.error.log');
   libxml_use_internal_errors(true);
   $msg = (array_key_exists('aimlfile', $_FILES)) ? processUpload() : '';
   $upperScripts = <<<endScript
@@ -48,6 +47,7 @@
 //-->
     </script>
 endScript;
+  $post_vars = filter_input_array(INPUT_POST);
 
   $XmlEntities = array('&amp;' => '&', '&lt;' => '<', '&gt;' => '>', '&apos;' => '\'', '&quot;' => '"',);
   $g_tagName = null;
@@ -89,21 +89,21 @@ endScript;
   $mainTitle = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
   $mainTitle = str_replace('[errMsg]', $msg, $mainTitle);
 
-  function parseAIML($fn,$aimlContent)
+  function parseAIML($fn,$aimlContent, $from_zip = false)
   {
-    if (empty ($aimlContent))
-      return "File $fn was empty!";
+    global $post_vars;
+    if (empty ($aimlContent)) return "File $fn was empty!";
     global $debugmode, $bot_id, $default_charset;
     $fileName = basename($fn);
     $success = false;
-    $dbconn = db_open();
+    $dbConn = db_open();
     #Clear the database of the old entries
     $sql = "DELETE FROM `aiml`  WHERE `filename` = '$fileName' AND bot_id = '$bot_id'";
-    if (isset ($_POST['clearDB']))
+    if (isset ($post_vars['clearDB']))
     {
       $x = updateDB($sql);
     }
-    $myBot_id = (isset ($_POST['bot_id'])) ? $_POST['bot_id'] : $bot_id;
+    $myBot_id = (isset ($post_vars['bot_id'])) ? $post_vars['bot_id'] : $bot_id;
     # Read new file into the XML parser
     $sql_start = "insert into `aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`, `php_code`) values\n";
     $sql = $sql_start;
@@ -123,15 +123,14 @@ endScript;
     $aimlTagStart = stripos($aimlContent, '<aiml', 0);
     $aimlTagEnd = strpos($aimlContent, '>', $aimlTagStart) + 1;
     $aimlFile = $validAIMLHeader . substr($aimlContent, $aimlTagEnd);
-    //die('<pre>' . htmlentities("File contents:<br />\n$aimlFile"));
     try
     {
       libxml_use_internal_errors(true);
       $xml = new DOMDocument();
       $xml->loadXML($aimlFile);
-      //$xml->validate();
       $aiml = new SimpleXMLElement($xml->saveXML());
       $rowCount = 0;
+      $_SESSION['failCount'] = 0;
       if (!empty ($aiml->topic))
       {
         foreach ($aiml->topic as $topicXML)
@@ -205,12 +204,15 @@ endScript;
         $sql = rtrim($sql, ",\n") . ';';
         $success = (updateDB($sql) >= 0) ? true : false;
       }
-      $msg = "Successfully added $fileName to the database.<br />\n";
+      $msg = ($from_zip === true) ? '' : "Successfully added $fileName to the database.<br />\n";
     }
     catch (Exception $e)
     {
+      $trace = print_r($e->getTrace(), true);
+      file_put_contents(_LOG_PATH_ . 'error.trace.log', $trace . "\nEnd Trace\n\n", FILE_APPEND);
       $success = false;
-      $msg = "There was a problem adding file $fileName to the database. Please validate the file and try again.<br >\n";
+      $_SESSION['failCount']++;
+      $msg = "There was a problem adding file $fileName to the database. Please refer to the message below to correct the problem and try again.";
       $msg = libxml_display_errors($msg);
     }
     return $msg;
@@ -218,9 +220,9 @@ endScript;
 
   function updateDB($sql)
   {
-    $dbconn = db_open();
-    $result = mysql_query($sql, $dbconn) or die('You have a SQL error on line ' . __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>" . htmlentities($sql) . "</pre><br />\n");
-    $commit = mysql_affected_rows($dbconn);
+    $dbConn = db_open();
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line ' . __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>" . htmlentities($sql) . "</pre><br />\n");
+    $commit = mysql_affected_rows($dbConn);
     return $commit;
   }
 
@@ -251,7 +253,8 @@ endScript;
         $file = './uploads/' . $_FILES['aimlfile']['name'];
         if (move_uploaded_file($_FILES['aimlfile']['tmp_name'], $file))
         {
-          if ($_FILES['aimlfile']['type'] == 'application/zip') return processZip($file);
+          #file_put_contents(_LOG_PATH_ . 'upload.type.txt', 'Type = ' . $_FILES['aimlfile']['type']);
+          if ($_FILES['aimlfile']['type'] == 'application/zip' or $_FILES['aimlfile']['type'] == 'application/x-zip-compressed') return processZip($file);
           else return parseAIML($file,file_get_contents($file));
         }
         else
@@ -259,7 +262,6 @@ endScript;
           $msg = 'There was an error moving the file.';
         }
     }
-    //die($msg);
     $_SESSION['errorMessage'] = $msg;
   }
 
@@ -267,9 +269,9 @@ endScript;
   {
     global $dbn, $bot_id;
     $out = "                  <!-- Start List of Currently Stored AIML files -->\n";
-    $dbconn = db_open();
+    $dbConn = db_open();
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
-    $result = mysql_query($sql, $dbconn) or die(mysql_error());
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
     while ($row = mysql_fetch_assoc($result))
     {
       if (empty ($row['filename']))
@@ -279,7 +281,7 @@ endScript;
       else
         $out .= $row['filename'] . "<br />\n";
     }
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     $out .= "                  <!-- End List of Currently Stored AIML files -->\n";
     return $out;
   }
@@ -288,9 +290,9 @@ endScript;
   {
     global $dbn, $bot_id;
     $botOptions = '';
-    $dbconn = db_open();
+    $dbConn = db_open();
     $sql = 'SELECT `bot_name`, `bot_id` FROM `bots` order by `bot_id`;';
-    $result = mysql_query($sql, $dbconn) or die(mysql_error());
+    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
     while ($row = mysql_fetch_assoc($result))
     {
       $bn = $row['bot_name'];
@@ -298,14 +300,13 @@ endScript;
       $sel = ($bot_id == $bi) ? ' selected="selected"' : '';
       $botOptions .= "                    <option$sel value=\"$bi\">$bn</option>\n";
     }
-    mysql_close($dbconn);
+    mysql_close($dbConn);
     return $botOptions;
   }
 
   function libxml_display_errors($msg)
   {
     $errors = libxml_get_errors();
-    //die ('Errors = ' . print_r($errors));
     foreach ($errors as $error)
     {
       $msg .= libxml_display_error($error) . "<br />\n";
@@ -341,6 +342,7 @@ endScript;
   function processZip($fileName)
   {
     $out = '';
+    $_SESSION['failCount'] = 0;
     $zipName = basename($fileName);
     $zip = new ZipArchive;
     $res = $zip->open($fileName);
@@ -368,17 +370,13 @@ endScript;
             $curText .= fread($fp, 8192);
           }
           fclose($fp);
-          $out .= "Processing file $curName<br />\n";
-          if (!stristr($curName, '.aiml'))
-          {
-            $out .= "file $curName is not an AIML file - Ignoring.<br />\n";
-            continue;
-          }
-          $out .= parseAIML($curName, $curText);
+          if (!stristr($curName, '.aiml')) continue;
+          $out .= parseAIML($curName, $curText, true);
         }
       }
       $zip->close();
-      $out .= "Upload complete. $numFiles files were processed.<br />\n";
+      $failCount = $_SESSION['failCount'];
+      $out .= "<br />\nUpload complete. $numFiles files were processed, and $failCount files encountered errors.<br />\n";
     }
     else
     {

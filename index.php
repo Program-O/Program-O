@@ -1,9 +1,19 @@
 <?php
 
-  if (!file_exists("config/global_config.php"))
+  /***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.1.5
+  * FILE: index.php
+  * AUTHOR: Elizabeth Perreau and Dave Morton
+  * DATE: 02-13-2013
+  * DETAILS: Program O's starting point
+  ***************************************/
+
+  if (!file_exists('config/global_config.php'))
   {
   # No config exists we will run install
-    header("location: install");
+    header('location: install/install_programo.php');
   }
   else
   {
@@ -22,7 +32,9 @@
       default:
       $gui = 'plain';
     }
-    header("location: gui/$gui");
+    if (!defined('SCRIPT_INSTALLED')) header('location: ' . _INSTALL_URL_ . 'install_programo.php');
+    elseif (file_exists(_INSTALL_PATH_ . 'upgrade.php')) header('Location: ' . _INSTALL_URL_ . 'upgrade.php?returnTo=' . $gui);
+    else header("location: gui/$gui");
   }
 
 ?>

@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.0.9
+//My Program-O Version 2.1.5
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //May 2011
@@ -20,7 +20,7 @@ $content = getSection('HelpPage', $template, false);
 $helpContent = getSection('HelpMain',$template);
 $content = str_replace('[helpContent]', $helpContent, $content);
 
-die($content);
+echo($content);
 
 
 function getSection($sectionName, $page_template, $notFoundReturn = true) {

@@ -8,7 +8,7 @@
   #session_name("programo"); // Optional - Change or delete as needed.
   ini_set('log_errors', 1);
   ini_set('display_errors', 0);
-  ini_set('error_log', './error.log');
+  ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
   session_start();
 /*
 captcha.php comments/help
@@ -148,7 +148,6 @@ match should allow the user access, while failure should be handled accordingly.
       break;
   }
   $capString = str_replace('[objectWord]',$objectWord, $capString);
-  #die ("capKey = $capKey.<br />\ncapString = $capString.<br />\nfilename = $fn.<br />\n");
 
   // Set up the image
   $image = imagecreatetruecolor($X, $Y);
