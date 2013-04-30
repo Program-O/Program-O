@@ -486,7 +486,7 @@ endFooter;
 
   function getCurrentVersion()
   {
-    $url = 'https://api.github.com/repos/Dave-Morton/Program-O/contents/version.txt';
+    $url = 'https://api.github.com/repos/Program-O/Program-O/contents/version.txt';
     $out = false;
     if (function_exists('curl_init'))
     {
