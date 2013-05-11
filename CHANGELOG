@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2
+  * Version: 2.2.0
   * FILE: CHANGELOG
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 11-05-2013
@@ -9,9 +9,9 @@
   ***************************************/
 
 Version History:
-2.2	Foreign Langague Support
+2.2.0   Foreign Langague Support
             1.) Program O now support foreign languages! YEEHAAAA
-            2.) Tested against, russian, arabic, turkish, french, thai, greek, chinese		
+            2.) Tested against, Russian, Arabic, Turkish, French, Thai, Greek, Chinese
             3.) Converted all character coding both internal and external to UTF-8
             4.) Added the correct XML header to the display conversation functions for xml requests
             5.) Updated the XML example gui to use simpleXML to send requests to the bot

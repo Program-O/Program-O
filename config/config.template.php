@@ -50,7 +50,7 @@
     // Define constants for the current version of Program O, and for the OS name and version
     //------------------------------------------------------------------------
 
-    define ('VERSION', '2.1.5'); # Program O version
+    define ('VERSION', '2.2.0'); # Program O version
 
     $os  = php_uname('s');
     $osv = php_uname('v');
