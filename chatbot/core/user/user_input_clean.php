@@ -52,7 +52,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Im stripping out all punctuation if you dont mind', 2);
     $otext = $text;
-    $text = preg_replace('/[^a-zA-Z0-9|+|-|\*|Š|š|Ž|ž|À||Â|Ã|Ä|Å|Æ|Ç|È|É|Ê|Ë|Ì||Î||Ñ|Ò|Ó|Ô|Õ|Ö|Ø|Ù|Ú|Û|Ü||Þ|ß|à|á|â|ã|ä|å|æ|ç|è|é|ê|ë|ì|í|î|ï|ð|ñ|ò|ó|ô|õ|ö|ø|ù|ú|û|ý|þ|ÿ]/is', ' ', $text);
+    $text = mb_ereg_replace('/[^a-zA-Z0-9|+|-|\*|_]/is', ' ', $text);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text", 4);
     return $text;
   }
@@ -67,7 +67,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'LET\'S JUST CAPITALIZE EVERYTHING, SHALL WE?', 2);
     $otext = $text;
-    $text = strtoupper($text);
+    $text = mb_strtoupper($text);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text", 4);
     return $text;
   }

@@ -9,6 +9,13 @@
   * DATE: 19 JUNE 2012
   * DETAILS: this file is the landing page for all calls to access the bots
   ***************************************/
+ 	$encode = 'UTF-8';
+ 	ini_set('default_charset', $encode);
+	mb_internal_encoding($encode);
+	mb_http_input($encode);
+	mb_http_output($encode);
+	mb_detect_order($encode);
+	mb_regex_encoding($encode);
 
   $time_start = microtime(true);
   $last_timestamp = $time_start;
@@ -17,6 +24,7 @@
   //load shared files
   include_once (_LIB_PATH_ . "db_functions.php");
   include_once (_LIB_PATH_ . "error_functions.php");
+
   //leave this first debug call in as it wipes any existing file for this session
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Starting", 0);
   //load all the chatbot functions
@@ -41,8 +49,10 @@
   $old_convo_id = false;
   $say = '';
   $display = "";
+
   $form_vars_post = filter_input_array(INPUT_POST);
   $form_vars_get = filter_input_array(INPUT_GET);
+
   $form_vars = ($form_vars_get !== null and $form_vars_post !== null)
     ? array_merge($form_vars_get, $form_vars_post)
     : ($form_vars_get !== null) ? $form_vars_get
@@ -114,6 +124,8 @@
       $say = "Hello";
     }
     //add any pre-processing addons
+
+
     $say = run_pre_input_addons($convoArr, $say);
     $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $default_bot_id;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $bot_id . "\nFormat: " . $form_vars['format'], 2);
@@ -164,7 +176,7 @@
     $time_end = microtime(true);
     $time = round(($time_end - $time_start) * 1000,4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "FINAL CONVO ARRAY", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "FINAL CONVO ARRAY",4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($convoArr,true), 4);
     unset($convoArr['nounList']);
   }

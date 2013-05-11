@@ -343,6 +343,7 @@
       $fileMode = ($append === true) ? 'a' : 'w';
       if (($fh = fopen($file, $fileMode)) === false) throw new Exception('Can\'t open the file!');
       $cLen = strlen($content);
+
       fwrite($fh, $content, $cLen);
       fclose($fh);
     }

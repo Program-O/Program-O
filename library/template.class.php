@@ -2,7 +2,7 @@
      /***************************************************/
     /*             PHP Class TemplateMaker             */
    /*     Creates HTML output from template files     */
-  /*            ©2011 Geek Cave Creations            */
+  /*        Copyright:2011 Geek Cave Creations       */
  /*              Coded by Dave Morton               */
 /***************************************************/
 

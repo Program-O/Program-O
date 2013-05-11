@@ -169,7 +169,7 @@ function get_xml($convoArr,$conversation)
 	$bot_name  = $convoArr['conversation']['bot_name'];
 
 	$conversation_lines = $convoArr['conversation']['conversation_lines'];
-	$convo_xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n  <conversation convo_id=\"".$convoArr['conversation']['convo_id']."\">\n";
+	$convo_xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n  <conversation convo_id=\"".$convoArr['conversation']['convo_id']."\">\n";
 	$convo_xml .= "    <bot_name>$bot_name</bot_name>\n";
 	$convo_xml .= "    <user_name>$user_name</user_name>\n";
 	$convo_xml .= "    <user_id value='$user_id' />\n";
@@ -198,7 +198,10 @@ function get_xml($convoArr,$conversation)
     switch ($format)
     {
       case 'json':
+       echo $display;
+        break;
       case 'xml':
+      	header("Content-type: text/xml; charset=utf-8");
         echo $display;
         break;
       default:

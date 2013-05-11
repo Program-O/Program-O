@@ -149,15 +149,9 @@
           $tmp_rows[$i]['track_score'] .= "e";
         }
         //try to match the returned aiml pattern with the user input (lookingfor) and with the that's and topic's
+        preg_match($aiml_pattern_matchme, $lookingfor, $matches);
 
-        /*echo "<br/>--------------";
-        echo "<br/>found ".$aiml_pattern_matchme;
-        echo "<br/>want  ".$lookingfor;
-        echo "<br/>res   ".$matches;
-        echo "<br/>that  ".$that_match;
-        echo "<br/>topic ".$topic_match;
-        */
-        if ((preg_match($aiml_pattern_matchme, $lookingfor, $matches)))
+        if (count($matches)>0)
         {
         //echo "<br/>TRUE1";
           if ($that_match)
@@ -195,14 +189,13 @@
   **/
   function match_wildcard_rows($item)
   {
-  //runDebug( __FILE__, __FUNCTION__, __LINE__, '');
     $item = trim($item);
     $item = str_replace("*", ")(.*)(", $item);
     $item = str_replace("_", ")(.*)(", $item);
     $item = str_replace("+", "\+", $item);
     $item = "(" . str_replace(" ", "\s", $item) . ")";
     $item = str_replace("()", '', $item);
-    $matchme = "/\b^" . $item . "$\b/i";
+    $matchme = "/^" . $item . "$/ui";
     return $matchme;
   }
 

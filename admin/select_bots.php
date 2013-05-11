@@ -248,7 +248,7 @@ function updateBotSelection() {
 
   $format = filter_input(INPUT_POST,'format');
 
-  if (strtoupper($format) !== strtoupper($default_format))
+  if (mb_strtoupper($format) !== mb_strtoupper($default_format))
   {
     $format = strtoupper($format);
     $cfn = _CONF_PATH_ . 'global_config.php';

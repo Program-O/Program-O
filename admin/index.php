@@ -7,6 +7,13 @@
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // index.php
+ 	$encode = 'utf-8';
+	mb_internal_encoding($encode);
+	mb_http_input($encode);
+	mb_http_output($encode);
+	mb_detect_order($encode);
+	mb_regex_encoding($encode);
+
 
   $thisFile = __FILE__;
   if (!file_exists('../config/global_config.php')) header('location: ../install/install_programo.php');
@@ -50,6 +57,15 @@
   require_once(_LIB_PATH_ . 'db_functions.php');
   require_once(_LIB_PATH_ . 'error_functions.php');
   require_once(_LIB_PATH_ . 'template.class.php');
+
+?>
+    <!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+   
+    <meta charset="utf-8">
+<?
+
   # Load the template file
   $thisPath = dirname(__FILE__);
   $template = new Template("$thisPath/default.page.htm");
@@ -158,6 +174,7 @@
   $upperScripts .= ($hide_logo == 'HideLogoCSS') ? $template->getSection('HideLogoCSS') : '';
 
   # Build page content from the template
+
   $content  = $template->getSection('Header');
   #$content .= "hide_logo = $hide_logo";
   $content .= $template->getSection('PageBody');
@@ -212,6 +229,7 @@
   $content = str_replace('[divDecoration]', $divDecoration, $content);
   $content = str_replace('[blank]', '', $content);
   if(function_exists('replaceTags')) replaceTags($content); // Handle any extra replacement tags, as needed.
+
   exit($content);
 
   function makeLinks($section, $linkArray, $spaces = 2) {

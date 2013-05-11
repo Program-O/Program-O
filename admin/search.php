@@ -182,9 +182,9 @@ endRow;
     $dbConn = db_open();
     $template = mysql_real_escape_string(trim($post_vars['template']));
     $filename = mysql_real_escape_string(trim($post_vars['filename']));
-    $pattern = strtoupper(mysql_real_escape_string(trim($post_vars['pattern'])));
-    $thatpattern = strtoupper(mysql_real_escape_string(trim($post_vars['thatpattern'])));
-    $topic = strtoupper(mysql_real_escape_string(trim($post_vars['topic'])));
+    $pattern = mb_strtoupper(mysql_real_escape_string(trim($post_vars['pattern'])));
+    $thatpattern = mb_strtoupper(mysql_real_escape_string(trim($post_vars['thatpattern'])));
+    $topic = mb_strtoupper(mysql_real_escape_string(trim($post_vars['topic'])));
     $id = trim($post_vars['id']);
     if(($template == "")||($pattern== "")||($id=="")) {
       $msg =  'Please make sure you have entered a user input and bot response ';

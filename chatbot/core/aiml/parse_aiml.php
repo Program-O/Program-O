@@ -43,16 +43,16 @@
     }
     // Search and replacement templates - grouped in pairs/triplets
     // first to second/third
-    $firstPersonSearchTemplate = '/\bi [word]\b/i';
+    $firstPersonSearchTemplate = '/\bi [word]\b/ui';
     $secondPersonKeyedReplaceTemplate = 'y ou [word]';
     $thirdPersonReplaceTemplate = "$g3 [word]";
     //second to first
-    $secondPersonSearchTemplate = '/\byou [word]\b/i';
+    $secondPersonSearchTemplate = '/\byou [word]\b/ui';
     $firstPersonReplaceTemplate = 'I [word]';
     //second (reversed) to first
-    $secondPersonSearchTemplateReversed = '/\b[word] you\b/i';
+    $secondPersonSearchTemplateReversed = '/\b[word] you\b/ui';
     $firstPersonReplaceTemplateReversed = '[word] @II';
-    $secondPersonKeyedSearchTemplate = '/\by ou [word]\b/i';
+    $secondPersonKeyedSearchTemplate = '/\by ou [word]\b/ui';
     $secondPersonReplaceTemplate = 'you [word]';
     //the list of verbs is stored in the config folder
     $file = _CONF_PATH_ . "verbList.dat";
@@ -141,18 +141,18 @@
         $g3 = "they";
     }
     // the "simple" transform arrays - more for exceptions to the above rules than for anything "simple" :)
-    $simpleFirstPersonPatterns = array('/(\bi am\b)/i', '/(\bam i\b)/i', '/(\bi\b)/i', '/(\bmy\b)/i', '/(\bmine\b)/i', '/(\bmyself\b)/i', '/(\bcan i\b)/i');
+    $simpleFirstPersonPatterns = array('/(\bi am\b)/ui', '/(\bam i\b)/ui', '/(\bi\b)/ui', '/(\bmy\b)/ui', '/(\bmine\b)/ui', '/(\bmyself\b)/ui', '/(\bcan i\b)/ui');
     $simpleSecondPersonKeyedReplacements = array('you are', 'are you', 'you', 'your', 'yours', 'yourself', 'can you');
-    $simpleFirstToThirdPersonPatterns = array('/(\bi am\b)/i', '/(\bam i\b)/i', '/(\bi\b)/i', '/(\bmy\b)/i', '/(\bmine\b)/i', '/(\bmyself\b)/i', '/(\bwill i\b)/i', '/(\bshall i\b)/i', '/(\bmay i\b)/i', '/(\bmight i\b)/i', '/(\bcan i\b)/i', '/(\bcould i\b)/i', '/(\bmust i\b)/i', '/(\bshould i\b)/i', '/(\bwould i\b)/i', '/(\bneed i\b)/i', '/(\bam i\b)/i', '/(\bwas i\b)/i',);
+    $simpleFirstToThirdPersonPatterns = array('/(\bi am\b)/ui', '/(\bam i\b)/ui', '/(\bi\b)/ui', '/(\bmy\b)/ui', '/(\bmine\b)/ui', '/(\bmyself\b)/ui', '/(\bwill i\b)/ui', '/(\bshall i\b)/ui', '/(\bmay i\b)/ui', '/(\bmight i\b)/ui', '/(\bcan i\b)/ui', '/(\bcould i\b)/ui', '/(\bmust i\b)/ui', '/(\bshould i\b)/ui', '/(\bwould i\b)/ui', '/(\bneed i\b)/ui', '/(\bam i\b)/ui', '/(\bwas i\b)/ui',);
     $simpleThirdPersonReplacements = array("$g3 is", "is $g3", "$g3", "$g1", "$g1", "$g2" . 'self', 'will ' . $g3, 'shall ' . $g3, 'may ' . $g3, 'might ' . $g3, 'can ' . $g3, 'could ' . $g3, 'must ' . $g3, 'should ' . $g3, 'would ' . $g3, 'need ' . $g3, 'is ' . $g3, 'was ' . $g3,);
-    $simpleSecondPersonPatterns = array('/(\bhelp you\b)/i', '/(\bwill you\b)/i', '/(\bshall you\b)/i', '/(\bmay you\b)/i', '/(\bmight you\b)/i', '/(\bcan you\b)/i', '/(\bcould you\b)/i', '/(\bmust you\b)/i', '/(\bshould you\b)/i', '/(\bwould you\b)/i', '/(\bneed you\b)/i', '/(\bare you\b)/i', '/(\bwere you\b)/i', '/(\byour\b)/i', '/(\byours\b)/i', '/(\byourself\b)/i', '/(\bthy\b)/i');
+    $simpleSecondPersonPatterns = array('/(\bhelp you\b)/ui', '/(\bwill you\b)/ui', '/(\bshall you\b)/ui', '/(\bmay you\b)/ui', '/(\bmight you\b)/ui', '/(\bcan you\b)/ui', '/(\bcould you\b)/ui', '/(\bmust you\b)/ui', '/(\bshould you\b)/ui', '/(\bwould you\b)/ui', '/(\bneed you\b)/ui', '/(\bare you\b)/ui', '/(\bwere you\b)/ui', '/(\byour\b)/ui', '/(\byours\b)/ui', '/(\byourself\b)/ui', '/(\bthy\b)/ui');
     # will, shall, may, might, can, could, must, should, would, need
     $simpleFirstPersonReplacements = array('help m e', 'will @II', 'shall @II', 'may @II', 'might @II', 'can @II', 'could @II', 'must @II', 'should @II', 'would @II', 'need @II', 'am @II', 'was @II', 'my', 'mine', 'myself', 'my');
     if ($person == 2)
     {
-      $tmp = preg_replace('/\bare you\b/i', 'am @II', $tmp);
+      $tmp = preg_replace('/\bare you\b/ui', 'am @II', $tmp);
       // simple second to first transform
-      $tmp = preg_replace('/\byou and i\b/i', 'y ou and @II', $tmp);
+      $tmp = preg_replace('/\byou and i\b/ui', 'y ou and @II', $tmp);
       // fix the "Me and you" glitch
       $tmp = preg_replace($simpleSecondPersonPatterns, $simpleFirstPersonReplacements, $tmp);
       // "simple" second to keyed first transform
@@ -160,10 +160,10 @@
       // simple first to keyed second transform
       $tmp = preg_replace($_SESSION['transform_list']['secondPersonPatterns'], $_SESSION['transform_list']['firstPersonReplacements'], $tmp);
       // second to first transform
-      $tmp = preg_replace('/\bme\b/i', 'you', $tmp);
+      $tmp = preg_replace('/\bme\b/ui', 'you', $tmp);
       // simple second to first transform (me)
-      #$tmp = preg_replace('/\bi\b/i', 'y ou', $tmp);                                              // simple second to first transform (I)
-      $tmp = preg_replace('/\byou\b/i', 'me', $tmp);
+      #$tmp = preg_replace('/\bi\b/ui', 'y ou', $tmp);                                              // simple second to first transform (I)
+      $tmp = preg_replace('/\byou\b/ui', 'me', $tmp);
       // simple second to first transform
       $tmp = str_replace('you', 'you', $tmp);
       // replace second person key (y ou) with non-keyed value (you)
@@ -189,12 +189,12 @@
     }
     elseif ($person == 3)
     {
-      $tmp = preg_replace($_SESSION['transform_list']['firstPersonPatterns'], $_SESSION['transform_list']['thirdPersonReplacements'], $tmp);
+      $tmp = mb_ereg_replace($_SESSION['transform_list']['firstPersonPatterns'], $_SESSION['transform_list']['thirdPersonReplacements'], $tmp);
       // first to third transform, but only when specifically needed
-      $tmp = preg_replace('/(\byour gender\b)/i', $g3, $tmp);
-      $tmp = preg_replace('/(\bthey\b)/i', $g3, $tmp);
-      $tmp = preg_replace('/(\bi\b)/i', $g3, $tmp);
-      $tmp = preg_replace('/(\bme\b)/i', $g3, $tmp);
+      $tmp = preg_replace('/(\byour gender\b)/ui', $g3, $tmp);
+      $tmp = preg_replace('/(\bthey\b)/ui', $g3, $tmp);
+      $tmp = preg_replace('/(\bi\b)/ui', $g3, $tmp);
+      $tmp = preg_replace('/(\bme\b)/ui', $g3, $tmp);
     }
     //debug
     // if (RUN_DEBUG) runDebug(4, __FILE__, __FUNCTION__, __LINE__,"<br>\nTransformation complete. was: $in, is: $tmp");
