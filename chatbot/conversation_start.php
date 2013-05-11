@@ -164,6 +164,8 @@
     $time_end = microtime(true);
     $time = round(($time_end - $time_start) * 1000,4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "FINAL CONVO ARRAY", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($convoArr,true), 4);
     unset($convoArr['nounList']);
   }
   else
