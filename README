@@ -1,10 +1,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.5
+  * Version: 2.2.0
   * FILE: README
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 02-13-2013
+  * DATE: 11-05-2013
   * DETAILS: Gives an overview of the script, along with basic instructions on installation and use.
   ***************************************/
 
@@ -25,12 +25,16 @@ Using the bot
 After installation you can chat to Program O in one of 3 ways:
 -HTML form (example in /gui/plain/index.php)
 -HTML form using AJAX (example in /gui/jquery/index.php)
--send XML using CURL (return response in XML or JSON) (example in /gui/xml/index.php)
+-send XML using simpleXML (example in /gui/xml/index.php)
 
 For advanced botmasters and programmers, it is also possible to use the XML/JSON
 interfaces to access a chatbot from stand-alone applications through HTTP requests.
 for information on how to create and/or use such a stand-alone application, please
 visit the Program O Support Forums at http://www.program-o.com
+
+Foreign Language Support
+---------------------------------------------------------
+v2.2.0 has support for foreign languages including and not limited to chinese, greek, french, arabic, turkish, thai
 
 Upgrade
 ---------------------------------------------------------
