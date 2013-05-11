@@ -61,6 +61,7 @@ local.properties
 *.idea
 .idea
 .idea/*
+*.iml
 
 #################
 ## Visual Studio
