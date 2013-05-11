@@ -242,7 +242,7 @@ INSERT IGNORE INTO wordcensor (censor_id, word_to_censor, replace_with, bot_excl
 (1, 'shit', 's***', ''),
 (2, 'fuck', 'f***', '');
 CREATE TABLE IF NOT EXISTS `client_properties` (
-`id` INT NOT NULL ,
+`id` INT NOT NULL  AUTO_INCREMENT,
 `user_id` INT NOT NULL ,
 `bot_id` INT NOT NULL ,
 `name` TEXT NOT NULL ,
