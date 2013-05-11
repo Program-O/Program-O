@@ -1,4 +1,7 @@
-
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="[charset]">
     <title>[pageTitle]</title>
     <link rel="stylesheet" href="[styleSheet]"[mediaType] type="text/css" />
     [noLeftNav][noRightNav][upperScripts][errMsgStyle]
@@ -557,7 +560,7 @@ between the start and end section tags are the only parts of the template that a
         //var ts = document.getElementById('title');
         //ts.style.top = '125px';
         var topNav = document.getElementById('top_nav');
-        topNav.style.top = '130px';
+        if (topNav) topNav.style.top = '130px';
         var leftNav = document.getElementById('left_nav');
         if (leftNav) leftNav.style.top = '160px';
         var main = document.getElementById('main');

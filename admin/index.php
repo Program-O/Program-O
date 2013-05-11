@@ -1,25 +1,24 @@
 <?PHP
-//-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.2.0
-//Program-O  chatbot admin area
-//Written by Elizabeth Perreau and Dave Morton
-//Aug 2011
-//for more information and support please visit www.program-o.com
-//-----------------------------------------------------------------------------------------------
-// index.php
- 	$encode = 'utf-8';
-	mb_internal_encoding($encode);
-	mb_http_input($encode);
-	mb_http_output($encode);
-	mb_detect_order($encode);
-	mb_regex_encoding($encode);
+/***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.2.0
+  * FILE: index.php
+  * AUTHOR: Elizabeth Perreau and Dave Morton
+  * DATE: 05-11-2013
+  * DETAILS: Gateway to the admin functions for the script
+  ***************************************/
 
 
   $thisFile = __FILE__;
   if (!file_exists('../config/global_config.php')) header('location: ../install/install_programo.php');
   require_once('../config/global_config.php');
 
-  //if (file_exists(_INSTALL_PATH_ . 'upgrade.php')) require_once(_INSTALL_PATH_ . 'upgrade.php');
+  mb_internal_encoding($default_charset);
+  mb_http_input($default_charset);
+  mb_http_output($default_charset);
+  mb_detect_order($default_charset);
+  mb_regex_encoding($default_charset);
 
   error_reporting(E_ALL);
   ini_set('log_errors', true);
@@ -58,13 +57,6 @@
   require_once(_LIB_PATH_ . 'error_functions.php');
   require_once(_LIB_PATH_ . 'template.class.php');
 
-?>
-    <!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-   
-    <meta charset="utf-8">
-<?
 
   # Load the template file
   $thisPath = dirname(__FILE__);
@@ -78,6 +70,7 @@
 
 # Build page sections
 # ordered here in the order that the page is constructed
+  $page_head     = $template->getSection('Logo');
   $logo          = $template->getSection('Logo');
   $titleSpan     = $template->getSection('TitleSpan');
   $main          = $template->getSection('Main');
@@ -189,6 +182,7 @@
    $content variable directly, rather than change it and then return it.
 */
   $searches = array(
+                    '[charset]'       => $default_charset,
                     '[myPage]'        => $curPage,
                     '[pageTitle]'     => $pageTitle,
                     '[styleSheet]'    => $styleSheet,

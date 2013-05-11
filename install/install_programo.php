@@ -24,8 +24,8 @@ define ('SECTION_END', '<!-- Section [section] End -->'); # search params for st
 define ('PHP_SELF', $_SERVER['SCRIPT_NAME']); # This is more secure than $_SERVER['PHP_SELF'], and returns more or less the same thing
 ini_set("display_errors", 0);
 ini_set("log_errors", true);
-ini_set("error_log", _BASE_DIR_ . "install.error.log");
-if (!file_exists(_BASE_DIR_ . "install.error.log")) file_put_contents(_BASE_DIR_ . "install.error.log", '');
+ini_set("error_log", _LOG_PATH_ . "install.error.log");
+if (!file_exists(_LOG_PATH_ . "install.error.log")) file_put_contents(_LOG_PATH_ . "install.error.log", '');
 $myHost = $_SERVER['SERVER_NAME'];
 chdir(dirname( realpath( __FILE__ )));
 $page_template = file_get_contents('install.tpl.htm');

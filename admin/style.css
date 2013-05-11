@@ -673,7 +673,7 @@ div#AIML_List {
   padding: 12px;
   text-align: left;
   text-indent: 0;
-  width: auto%;
+  width: auto;
   max-height: 300px;
   overflow: auto;
 }
