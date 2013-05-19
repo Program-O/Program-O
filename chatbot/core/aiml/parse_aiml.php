@@ -117,7 +117,7 @@
   //2 = swap first with second poerson (e.g. I with you) // otherwise swap with third person
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Person:$person In:$in", 4);
     $name = $convoArr['client_properties']['name'];
-    $gender = $convoArr['client_properties']['gender'];
+    $gender = (isset($convoArr['client_properties']['gender'])) ? $convoArr['client_properties']['gender'] : 'unknown';
     $tmp = trim($in);
     if ((!isset ($_SESSION['transform_list'])) || ($_SESSION['transform_list'] == NULL))
     {
@@ -189,7 +189,7 @@
     }
     elseif ($person == 3)
     {
-      $tmp = mb_ereg_replace($_SESSION['transform_list']['firstPersonPatterns'], $_SESSION['transform_list']['thirdPersonReplacements'], $tmp);
+      $tmp = preg_replace($_SESSION['transform_list']['firstPersonPatterns'], $_SESSION['transform_list']['thirdPersonReplacements'], $tmp);
       // first to third transform, but only when specifically needed
       $tmp = preg_replace('/(\byour gender\b)/ui', $g3, $tmp);
       $tmp = preg_replace('/(\bthey\b)/ui', $g3, $tmp);
@@ -280,6 +280,8 @@
     $ap = str_replace(" _", " (.*)", $ap);
     $ap = str_replace("*", "(.*)", $ap);
     $ap = str_replace("_", "(.*)", $ap);
+    $ap = str_replace("(\S(.*))", "(.*)", $ap);
+    $ap = str_replace("(.(.*))", "(.*)", $ap);
     // Set pattern wildcards
     $pattern_wildcards = str_replace("_", "(.*)?", str_replace("*", "(.*)?", $aiml_pattern));
     if ($pattern_wildcards != $aiml_pattern)

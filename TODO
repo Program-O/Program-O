@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.1.5
+  * Version: 2.2.0
   * FILE: TODO
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-18-2013
@@ -29,4 +29,7 @@
 
   7.) Add row count for AIML files in the admin/download page
       "select count(*) from aiml where filename = '$fileName'"
+
+  8.) Create/modify some bot-level configurable default values so that botmasters can use their own
+      values, based on their chatbot's "native language".
 

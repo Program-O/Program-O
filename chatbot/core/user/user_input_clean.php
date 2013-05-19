@@ -35,7 +35,7 @@
   **/
   function whitespace_clean($text)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Wiping out all whitespace!', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Wiping out all extra whitespace!', 2);
     $otext = $text;
     $text = preg_replace('/\s\s+/', ' ', $text);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text", 4);
@@ -52,7 +52,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Im stripping out all punctuation if you dont mind', 2);
     $otext = $text;
-    $text = mb_ereg_replace('/[^a-zA-Z0-9|+|-|\*|_]/is', ' ', $text);
+    $text = preg_replace('/[[:punct:]]/uis', ' ', $text);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text", 4);
     return $text;
   }

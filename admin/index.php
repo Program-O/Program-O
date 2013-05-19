@@ -511,7 +511,7 @@ endFooter;
       if (false === $out) trigger_error('Not sure what it is, but there\'s a problem with checking the current version on GitHub. Maybe this will help: "' . curl_error($ch) . '"');
       curl_close($ch);
       $repoArray = json_decode($out, true);
-      save_file(_LOG_PATH_ . 'repoArray.txt', print_r($repoArray, true));
+      //save_file(_LOG_PATH_ . 'repoArray.txt', print_r($repoArray, true));
       $versionB64 = $repoArray['content'];
       $version = base64_decode($versionB64);
       save_file(_DEBUG_PATH_ . 'version.txt', "out = " . print_r($out, true) . "\r\nVersion = $versionB64 = $version");
