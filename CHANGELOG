@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.0
+  * Version: 2.2.1
   * FILE: CHANGELOG
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 11-05-2013
@@ -9,6 +9,12 @@
   ***************************************/
 
 Version History:
+2.2.1   Major bug fixes
+            1.) Fixed a bug that was mangling Unicode characters while removing punctuation
+            2.) Fixed a bug where the chatbot's debug level wasn't being used
+            3.) re-wrote several functions to be more efficient
+
+
 2.2.0   Foreign Langague Support
             1.) Program O now support foreign languages! YEEHAAAA
             2.) Tested against, Russian, Arabic, Turkish, French, Thai, Greek, Chinese

@@ -2,7 +2,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.0
+  * Version: 2.2.1
   * FILE: install_programo.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -80,10 +80,10 @@ function getSection($sectionName, $page_template, $notFoundReturn = true) {
 
 function Save() {
   global $page_template;
-  $default_pattern = "RANDOM PICKUP LINE";
-  $default_error_response = "No AIML category found. This is a Default Response.";
-  $default_conversation_lines = '1';
-  $default_remember_up_to = '10';
+  $pattern = "RANDOM PICKUP LINE";
+  $error_response = "No AIML category found. This is a Default Response.";
+  $conversation_lines = '1';
+  $remember_up_to = '10';
   $_SESSION['errorMessage'] = '';
 
   // First off, write the config file
@@ -120,7 +120,7 @@ function Save() {
   $sql_template = "
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
 VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[use_aiml_code]', '[update_aiml_code]', '[save_state]', 
-'$default_conversation_lines', '$default_remember_up_to', '[debugemail]', '[debugshow]', '[debugmode]', '$default_error_response', '$default_pattern');";
+'$conversation_lines', '$remember_up_to', '[debugemail]', '[debugshow]', '[debugmode]', '$error_response', '$pattern');";
 
   require_once (_LIB_PATH_ . 'error_functions.php');
   require_once (_LIB_PATH_ . 'db_functions.php');
@@ -138,13 +138,13 @@ VALUES ([bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]',
   if (!isset($myPostVars["default_update_aiml_code"])) $myPostVars["default_update_aiml_code"] = 0;
   $sql = str_replace('[update_aiml_code]',$myPostVars["default_update_aiml_code"], $sql);
   $sql = str_replace('[save_state]',$myPostVars["default_save_state"], $sql);
-  $sql = str_replace('[conversation_lines]',$default_conversation_lines, $sql);
-  $sql = str_replace('[default_remember_up_to]',$default_remember_up_to, $sql);
+  $sql = str_replace('[conversation_lines]',$conversation_lines, $sql);
+  $sql = str_replace('[default_remember_up_to]',$remember_up_to, $sql);
   $sql = str_replace('[debugemail]',$myPostVars["default_debugemail"], $sql);
   $sql = str_replace('[debugshow]',$myPostVars["default_debug_level"], $sql);
   $sql = str_replace('[debugmode]',$myPostVars["default_debug_mode"], $sql);
-  $sql = str_replace('[error_response]',$default_error_response, $sql);
-  $sql = str_replace('[default_aiml_pattern]',$default_pattern, $sql);
+  $sql = str_replace('[error_response]',$error_response, $sql);
+  $sql = str_replace('[default_aiml_pattern]',$pattern, $sql);
   #$save = file_put_contents(_CONF_PATH_ . 'sql.txt', $sql); // For debugging purposes only
   $x = db_query($sql, $conn) or install_error('Could not enter bot info for bot #' . $bot_id . '!', mysql_error(), $sql);
   $encrypted_adm_dbp = md5($myPostVars["adm_dbp"]);

@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.0
+  * Version: 2.2.1
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -19,7 +19,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $default_charset ?>" />
+    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset ?>" />
     <title>My-Program O</title>
     <link rel="stylesheet" href="<?php echo _ADMIN_URL_ ?>style.css" media="screen" type="text/css" />
     <style type="text/css">

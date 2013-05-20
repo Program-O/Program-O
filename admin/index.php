@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.0
+  * Version: 2.2.1
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-11-2013
@@ -14,11 +14,11 @@
   if (!file_exists('../config/global_config.php')) header('location: ../install/install_programo.php');
   require_once('../config/global_config.php');
 
-  mb_internal_encoding($default_charset);
-  mb_http_input($default_charset);
-  mb_http_output($default_charset);
-  mb_detect_order($default_charset);
-  mb_regex_encoding($default_charset);
+  mb_internal_encoding($charset);
+  mb_http_input($charset);
+  mb_http_output($charset);
+  mb_detect_order($charset);
+  mb_regex_encoding($charset);
 
   error_reporting(E_ALL);
   ini_set('log_errors', true);
@@ -182,7 +182,7 @@
    $content variable directly, rather than change it and then return it.
 */
   $searches = array(
-                    '[charset]'       => $default_charset,
+                    '[charset]'       => $charset,
                     '[myPage]'        => $curPage,
                     '[pageTitle]'     => $pageTitle,
                     '[styleSheet]'    => $styleSheet,
@@ -514,7 +514,7 @@ endFooter;
       //save_file(_LOG_PATH_ . 'repoArray.txt', print_r($repoArray, true));
       $versionB64 = $repoArray['content'];
       $version = base64_decode($versionB64);
-      save_file(_DEBUG_PATH_ . 'version.txt', "out = " . print_r($out, true) . "\r\nVersion = $versionB64 = $version");
+      #save_file(_DEBUG_PATH_ . 'version.txt', "out = " . print_r($out, true) . "\r\nVersion = $versionB64 = $version");
       $out = $version;
     }
     return $out;

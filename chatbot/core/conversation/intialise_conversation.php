@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.2.0
+  * Version: 2.2.1
   * FILE: chatbot/core/conversation/intialise_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -50,10 +50,10 @@
   **/
   function load_blank_convoArray($arrayIndex, $defaultValue, $convoArr)
   {
-    global $default_remember_up_to;
+    global $remember_up_to;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Loading blank $arrayIndex array", 4);
     //set in global config file
-    $remember_up_to = (isset($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $default_remember_up_to;
+    $remember_up_to = (isset($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $remember_up_to;
     for ($i = 1; $i <= ($remember_up_to + 1); $i++)
     {
       $convoArr[$arrayIndex][$i] = $defaultValue;
@@ -72,16 +72,16 @@
   function load_blank_stack($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Loading blank stack", 4);
-    global $default_stack_value;
+    global $stack_value;
     //set in global config file
-    $convoArr['stack']['top'] = $default_stack_value;
-    $convoArr['stack']['second'] = $default_stack_value;
-    $convoArr['stack']['third'] = $default_stack_value;
-    $convoArr['stack']['fourth'] = $default_stack_value;
-    $convoArr['stack']['fifth'] = $default_stack_value;
-    $convoArr['stack']['sixth'] = $default_stack_value;
-    $convoArr['stack']['seventh'] = $default_stack_value;
-    $convoArr['stack']['last'] = $default_stack_value;
+    $convoArr['stack']['top'] = $stack_value;
+    $convoArr['stack']['second'] = $stack_value;
+    $convoArr['stack']['third'] = $stack_value;
+    $convoArr['stack']['fourth'] = $stack_value;
+    $convoArr['stack']['fifth'] = $stack_value;
+    $convoArr['stack']['sixth'] = $stack_value;
+    $convoArr['stack']['seventh'] = $stack_value;
+    $convoArr['stack']['last'] = $stack_value;
     return $convoArr;
   }
 
@@ -181,9 +181,9 @@
   **/
   function push_on_front_convoArr($arrayIndex, $value, $convoArr)
   {
-    global $rememLimit, $default_remember_up_to;
+    global $rememLimit, $remember_up_to;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Pushing '$value' to the front of the [$arrayIndex] array", 2);
-    $remember_up_to = (isset($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $default_remember_up_to;
+    $remember_up_to = (isset($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $remember_up_to;
     //these subarray indexes are 2d
     $two_d_arrays = array("that", "that_raw");
     $arrayIndex = trim($arrayIndex);
@@ -293,7 +293,7 @@
   function load_bot_config($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading config data for the current bot.', 2);
-    global $con, $dbn, $default_format, $default_pattern, $default_update_aiml_code, $default_conversation_lines, $default_remember_up_to, $default_debugemail, $default_debug_level, $default_debug_mode, $default_save_state, $error_response;
+    global $con, $dbn, $format, $pattern, $update_aiml_code, $conversation_lines, $remember_up_to, $debugemail, $debug_level, $debug_mode, $save_state, $error_response;
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '" . $convoArr['conversation']['bot_id'] . "'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "load bot config SQL: $sql", 3);
@@ -302,6 +302,7 @@
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading bot details from the database.', 4);
       $row = mysql_fetch_assoc($result);
+      #save_file(_LOG_PATH_ . 'bot_config.txt', print_r($row, true));
       $convoArr['conversation']['conversation_lines'] = $row['conversation_lines'];
       $convoArr['conversation']['remember_up_to'] = $row['remember_up_to'];
       $convoArr['conversation']['debugemail'] = $row['debugemail'];
@@ -315,13 +316,13 @@
     else
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Unable to load bot details from the database. Loading default values.', 4);
-      $convoArr['conversation']['conversation_lines'] = $default_conversation_lines;
-      $convoArr['conversation']['remember_up_to'] = $default_remember_up_to;
-      $convoArr['conversation']['debugemail'] = $default_debugemail;
-      $convoArr['conversation']['debug_level'] = $default_debug_level;
-      $convoArr['conversation']['debugmode'] = $default_debug_mode;
-      $convoArr['conversation']['save_state'] = $default_save_state;
-      $convoArr['conversation']['default_aiml_pattern'] = $default_pattern;
+      $convoArr['conversation']['conversation_lines'] = $conversation_lines;
+      $convoArr['conversation']['remember_up_to'] = $remember_up_to;
+      $convoArr['conversation']['debugemail'] = $debugemail;
+      $convoArr['conversation']['debug_level'] = $debug_level;
+      $convoArr['conversation']['debugmode'] = $debug_mode;
+      $convoArr['conversation']['save_state'] = $save_state;
+      $convoArr['conversation']['default_aiml_pattern'] = $pattern;
       $convoArr['conversation']['bot_parent_id'] = 0;
     }
     //if return format is not html overide the debug type
@@ -438,7 +439,7 @@
   {
     global  $form_vars;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking and/or setting the current bot.', 2);
-    global $con, $dbn, $default_bot_id, $error_response, $default_format;
+    global $con, $dbn, $bot_id, $error_response, $format;
     //check to see if bot_id has been passed if not load default
     if ((isset ($form_vars['bot_id'])) && (trim($form_vars['bot_id']) != ""))
     {
@@ -450,7 +451,7 @@
     }
     else
     {
-      $bot_id = $default_bot_id;
+      $bot_id = $bot_id;
     }
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '$bot_id' and `bot_active`='1'";
@@ -468,7 +469,7 @@
     }
     else
     {
-      $convoArr['conversation']['format'] = $default_format;
+      $convoArr['conversation']['format'] = $format;
       $convoArr['conversation']['bot_id'] = $bot_id;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "ERROR - Cannot find bot id: $bot_id", 1);
     }
@@ -550,25 +551,26 @@
   **/
   function check_set_format($convoArr)
   {
-    global $default_format, $form_vars;
+    global $format, $form_vars;
     $formatsArr = array('html', 'xml', 'json');
-    //at thsi point we can overwrite the conversation format.
     if ((isset ($form_vars['format'])) && (trim($form_vars['format']) != ""))
     {
-      $format = trim($form_vars['format']);
+      $desired_format = strtolower(trim($form_vars['format']));
     }
     else
     {
-      $format = $default_format;
+      $desired_format = $format;
     }
-    $convoArr['conversation']['format'] = strtolower($format);
-    if (!in_array($convoArr['conversation']['format'], $formatsArr))
+    if (!in_array($format, $formatsArr))
     {
+      $convoArr['conversation']['format'] = $format; // default format
       $convoArr['debug']['intialisation_error'] = "Incompatible return type: $format";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "ERROR - bad return type: $format", 1);
     }
     else
     {
+      //at this point we can overwrite the conversation format.
+      $convoArr['conversation']['format'] = $desired_format;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Using format: $format", 4);
     }
     return $convoArr;
@@ -577,8 +579,8 @@
   function load_that($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading the THAT array.', 2);
-    global $con, $dbn, $default_remember_up_to;
-    $remember_up_to = (!empty ($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $default_remember_up_to;
+    global $con, $dbn, $remember_up_to;
+    $remember_up_to = (!empty ($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $remember_up_to;
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
     $limit = $remember_up_to;

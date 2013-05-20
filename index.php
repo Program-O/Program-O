@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.0
+  * Version: 2.2.1
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -20,8 +20,8 @@
     # Config exists we will goto the bot
     $thisFile = __FILE__;
     require_once('config/global_config.php');
-    $default_format = mb_strtoupper($default_format);
-    switch ($default_format)
+    $format = mb_strtoupper($format);
+    switch ($format)
     {
       case 'JSON':
       $gui = 'jquery';

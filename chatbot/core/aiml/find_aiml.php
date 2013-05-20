@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.0
+  * Version: 2.2.1
   * FILE: chatbot/core/aiml/find_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -91,7 +91,7 @@
   * @param string $current_topic - the current topic
   * @return array tmp_rows - the RELEVANT results
   **/
-  function unset_all_bad_pattern_matches($allrows, $lookingfor, $current_thatpattern, $current_topic, $default_aiml_pattern)
+  function unset_all_bad_pattern_matches($allrows, $lookingfor, $current_thatpattern, $current_topic, $aiml_pattern)
   {
     global $error_response;
     $tmp_rows = array();
@@ -113,7 +113,7 @@
       //get the topic
       $aiml_thatpattern = $subrow['thatpattern'];
       //get the that
-      if (strtolower($default_aiml_pattern) == strtolower($aiml_pattern))
+      if (strtolower($aiml_pattern) == strtolower($aiml_pattern))
       {
       //if it is a direct match with our default pattern then add to tmp_rows
         $tmp_rows[$i] = $subrow;
@@ -210,12 +210,12 @@
   * @param string $current_topic - the current topic
   * @return array allrows - the SCORED results
   **/
-  function score_matches($convoArr, $bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $default_aiml_pattern)
+  function score_matches($convoArr, $bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $aiml_pattern)
   {
     global $common_words_array;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Scoring the matches. Topic = $current_topic", 4);
     //set the scores for each type of word or sentence to be used in this function
-    $default_pattern_points = 2;
+    $pattern_points = 2;
     $underscore_points = 100;
     $starscore_points = 1;
     $uncommon_word_points = 6;
@@ -315,9 +315,9 @@
         }
       }
       //if stored result == default pattern increase score
-      if (strtolower($aiml_pattern) == strtolower($default_aiml_pattern))
+      if (strtolower($aiml_pattern) == strtolower($aiml_pattern))
       {
-        $allrows[$all]['score'] += $default_pattern_points;
+        $allrows[$all]['score'] += $pattern_points;
         $allrows[$all]['track_score'] .= "h";
       }
       elseif ($aiml_pattern == "*")
@@ -391,7 +391,7 @@
   function sort2DArray($opName, $thisArr, $sortByItem, $sortAsc = 1, $limit = 10)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName - sorting " . count($thisArr) . " results and getting the top $limit for debugging", 4);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($thisArr, true), 4);
+    //runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($thisArr, true), 4);
     $i = 0;
     $tmpSortArr = array();
     $resArr = array();
@@ -618,7 +618,7 @@
     $raw_that = print_r($convoArr['that'], true);
     $current_thatpattern = (isset($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
     $current_topic = get_topic($convoArr);
-    $default_aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
+    $aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
     $sendConvoArr = $convoArr;
     //check if match in user defined aiml
@@ -629,9 +629,9 @@
     //look for a match in the normal aiml tbl
       $allrows = find_aiml_matches($convoArr);
       //unset all irrelvant matches
-      $allrows = unset_all_bad_pattern_matches($allrows, $lookingfor, $current_thatpattern, $current_topic, $default_aiml_pattern);
+      $allrows = unset_all_bad_pattern_matches($allrows, $lookingfor, $current_thatpattern, $current_topic, $aiml_pattern);
       //score the relevant matches
-      $allrows = score_matches($convoArr, $bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $default_aiml_pattern);
+      $allrows = score_matches($convoArr, $bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $aiml_pattern);
       //get the highest
       $allrows = get_highest_score_rows($allrows, $lookingfor);
     }
@@ -664,7 +664,7 @@
     //TODO convert to get_it
     $bot_id = $convoArr['conversation']['bot_id'];
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
-    $default_aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
+    $aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
     #$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
     $lookingfor = mysql_real_escape_string($convoArr['aiml']['lookingfor']);
     //get the first and last words of the cleaned user input
@@ -704,7 +704,7 @@
     //if there is one word do this
       $sql = "SELECT * FROM `$dbn`.`aiml` WHERE
 		$sql_bot_select AND (
-		((`pattern` = '_') OR (`pattern` = '*') OR (`pattern` = '$lookingfor') OR (`pattern` = '$default_aiml_pattern' ) )
+		((`pattern` = '_') OR (`pattern` = '*') OR (`pattern` = '$lookingfor') OR (`pattern` = '$aiml_pattern' ) )
 		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
 		AND ( (`topic`='') OR (`topic`='" . $storedtopic . "')))";
     }
@@ -718,7 +718,7 @@
 		 (`pattern` = '*') OR
 		 (`pattern` like '$lookingfor') OR
 		 ($sql_add) OR
-		 (`pattern` = '$default_aiml_pattern' ))
+		 (`pattern` = '$aiml_pattern' ))
 		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` like '%') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
 		AND ((`topic`='') OR (`topic`='" . $storedtopic . "')))";
     }

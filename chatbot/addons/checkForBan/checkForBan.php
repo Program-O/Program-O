@@ -23,7 +23,7 @@
   ####################################################
 
   function checkIP($convoArr) {
-    global $default_debugemail;
+    global $debugemail;
     $pathInfo = pathinfo(realpath(__FILE__));
     $thisDir = $pathInfo['dirname'];
     $banList = $thisDir . DIRECTORY_SEPARATOR . 'banList.txt';
@@ -35,7 +35,7 @@
       $convoArr['send_to_user'] = <<<endMessage
 You have been banned from using this chat interface.
 If you feel that this is in error, please contact
-<a href="mailto:$default_debugemail">$default_debugemail</a>.
+<a href="mailto:$debugemail">$debugemail</a>.
 endMessage;
       $convoArr['abort'] = true;
       exit($convoArr['send_to_user']);

@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.0
+  * Version: 2.2.1
   * FILE: chatbot/conversation_start.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 19 JUNE 2012
@@ -57,24 +57,13 @@
     ? array_merge($form_vars_get, $form_vars_post)
     : ($form_vars_get !== null) ? $form_vars_get
     : $form_vars_post;
-/*
-  switch ($_SERVER['REQUEST_METHOD'])
-  {
-    case 'POST':
-      $form_vars = filter_input_array(INPUT_POST);
-      break;
-    case 'GET':
-      $form_vars = filter_input_array(INPUT_GET);
-      break;
-    default:
-      $say = '';
-  }
-*/
-  $format = (isset($form_vars['format'])) ? $form_vars['format'] : $default_format;
+
   $say = (isset($say) and $say !== '') ? $say : trim($form_vars['say']);
   $session_name = 'PGOv2';
   session_name($session_name);
   session_start();
+  #save_file(_LOG_PATH_ . 'session.txt', print_r($_SESSION, true));
+  $debug_level = (isset($_SESSION['programo']['conversation']['debug_level'])) ? $_SESSION['programo']['conversation']['debug_level'] : $debug_level;
   if (isset($form_vars['convo_id'])) session_id($form_vars['convo_id']);
   $convo_id = session_id();
   #file_put_contents(_LOG_PATH_ . 'session_id.txt', session_id());
@@ -127,7 +116,7 @@
 
 
     $say = run_pre_input_addons($convoArr, $say);
-    $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $default_bot_id;
+    $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $bot_id;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $bot_id . "\nFormat: " . $form_vars['format'], 2);
     //get the stored vars
     $convoArr = read_from_session();
@@ -142,17 +131,12 @@
     $convoArr['time_start'] = $time_start;
     $convoArr = load_bot_config($convoArr);
     //if totallines isn't set then this is new user
-    if (isset ($convoArr['conversation']['totallines']))
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"Debug level = $debug_level", 0);
+    $debug_level = $convoArr['conversation']['debug_level'];
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"Debug level = $debug_level", 0);
+    if (!isset ($convoArr['conversation']['totallines']))
     {
-    //reset the debug level here
-      $debug_level = $convoArr['conversation']['debug_level'];
-    }
-    else
-    {
-    //load the chatbot configuration
-      //reset the debug level here
-      $debug_level = $convoArr['conversation']['debug_level'];
-      //insita
+    //load the chatbot configuration for a new user
       $convoArr = intialise_convoArray($convoArr);
       //add the bot_id dependant vars
       $convoArr = add_firstturn_conversation_vars($convoArr);
@@ -177,7 +161,9 @@
     $time = round(($time_end - $time_start) * 1000,4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "FINAL CONVO ARRAY",4);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($convoArr,true), 4);
+    $final_convoArr = $convoArr;
+    unset($final_convoArr['nounList']);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($final_convoArr,true), 4);
     unset($convoArr['nounList']);
   }
   else

@@ -1,7 +1,7 @@
 <?php
 
   //-----------------------------------------------------------------------------------------------
-  //My Program-O Version 2.2.0
+  //My Program-O Version 2.2.1
   //Program-O  chatbot admin area
   //Written by Elizabeth Perreau and Dave Morton
   //Aug 2011
@@ -93,7 +93,7 @@ endScript;
   {
     global $post_vars;
     if (empty ($aimlContent)) return "File $fn was empty!";
-    global $debugmode, $bot_id, $default_charset;
+    global $debugmode, $bot_id, $charset;
     $fileName = basename($fn);
     $success = false;
     $dbConn = db_open();
@@ -119,7 +119,7 @@ endScript;
     $validAIMLHeader = '<?xml version="1.0" encoding="[charset]"?>
 <!DOCTYPE aiml PUBLIC "-//W3C//DTD Specification Version 1.0//EN" "http://www.program-o.com/xml/aiml.dtd">
 <aiml version="1.0.1" xmlns="http://alicebot.org/2001/AIML-1.0.1">';
-    $validAIMLHeader = str_replace('[charset]', $default_charset, $validAIMLHeader);
+    $validAIMLHeader = str_replace('[charset]', $charset, $validAIMLHeader);
     $aimlTagStart = stripos($aimlContent, '<aiml', 0);
     $aimlTagEnd = strpos($aimlContent, '>', $aimlTagStart) + 1;
     $aimlFile = $validAIMLHeader . substr($aimlContent, $aimlTagEnd);

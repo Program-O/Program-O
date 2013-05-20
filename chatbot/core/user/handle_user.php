@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.2.0
+* Version: 2.2.1
 * FILE: chatbot/core/user/handle_user.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 4TH 2011
@@ -78,7 +78,7 @@ function intisaliseUser($convoArr)
 {
   runDebug(__FILE__, __FUNCTION__, __LINE__, 'Initializing user.', 2);
   //db globals
-  global $con,$dbn, $default_bot_id, $unknown_user;
+  global $con,$dbn, $bot_id, $unknown_user;
   $convo_id = $convoArr['conversation']['convo_id'];
   $sr = "";
   $sa = "";
@@ -97,7 +97,7 @@ function intisaliseUser($convoArr)
   }
 
   $sql = "INSERT INTO `$dbn`.`users` (`id`, `user_name`, `session_id`, `bot_id`, `chatlines` ,`ip` ,`referer` ,`browser` ,`date_logged_on` ,`last_update`, `state`)
-  VALUES ( NULL , '$unknown_user', '$convo_id', $default_bot_id, '0', '$sa', '$sr', '$sb', CURRENT_TIMESTAMP , '0000-00-00 00:00:00', '')";
+  VALUES ( NULL , '$unknown_user', '$convo_id', $bot_id, '0', '$sa', '$sr', '$sb', CURRENT_TIMESTAMP , '0000-00-00 00:00:00', '')";
 
   mysql_query($sql,$con) or trigger_error('Error trying to add user. Error = ' . mysql_error());
   $user_id = mysql_insert_id($con);

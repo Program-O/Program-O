@@ -50,7 +50,7 @@
     // Define constants for the current version of Program O, and for the OS name and version
     //------------------------------------------------------------------------
 
-    define ('VERSION', '2.2.0'); # Program O version
+    define ('VERSION', '2.2.1'); # Program O version
 
     $os  = php_uname('s');
     $osv = php_uname('v');
@@ -103,37 +103,37 @@
     //------------------------------------------------------------------------
 
     //Used to populate the stack when first initialized
-    $default_stack_value = 'om';
+    $stack_value = 'om';
     //Default conversation id will be set to current session
-    $default_convo_id = session_id();
+    $convo_id = session_id();
 
     //default bot config - this is the default bot most of this will be overwriten by the bot configuration in the db
-    $default_bot_id = 1;
-    $default_format = '[default_format]';
-    $default_pattern = 'RANDOM PICKUP LINE';
-    $default_error_response = 'No AIML category found. This is a Default Response.';
-    $default_conversation_lines = '1';
-    $default_remember_up_to = 10;
-    $default_debugemail = '[default_debugemail]';
+    $bot_id = 1;
+    $format = '[default_format]';
+    $pattern = 'RANDOM PICKUP LINE';
+    $error_response = 'No AIML category found. This is a Default Response.';
+    $conversation_lines = '1';
+    $remember_up_to = 10;
+    $debugemail = '[default_debugemail]';
     /*
-     * $default_debug_level - The level of messages to show the user
+     * $debug_level - The level of messages to show the user
      * 0=none,
      * 1=errors only
      * 1=error+general,
      * 2=error+general+sql,
      * 3=everything
      */
-    $default_debug_level = '[default_debug_level]';
+    $debug_level = '[default_debug_level]';
 
     /*
-     * $default_debug_mode - How to show the debug data
+     * $debug_mode - How to show the debug data
      * 0 = source code view - show debugging in source code
      * 1 = file log - log debugging to a file
      * 2 = page view - display debugging on the webpage
      * 3 = email each conversation line (not recommended)
      */
-     $default_debug_mode = '[default_debug_mode]';
-     $default_save_state = '[default_save_state]';
+     $debug_mode = '[default_debug_mode]';
+     $save_state = '[default_save_state]';
      $error_response = '[error_response]';
      $unknown_user = 'Seeker';
 
@@ -146,7 +146,7 @@
     error_reporting($e_all);
 
     //initially set here but overwriten by bot configuration in the admin panel
-    $debug_level = $default_debug_level;
+    $debug_level = $debug_level;
 
     //for quick debug to override the bot config debug options
     //0 - Do not show anything
@@ -162,15 +162,15 @@
 
     //debug folders where txt files are stored
     $debugfolder = _DEBUG_PATH_;
-    $debugfile = "$debugfolder$default_convo_id.txt";
+    $debugfile = "$debugfolder$convo_id.txt";
 
     //------------------------------------------------------------------------
     // Set Misc Data
     //------------------------------------------------------------------------
 
     $botmaster_name = '[botmaster_name]';
-    $default_charset = 'ISO-8859-1';
-    $default_charset = 'UTF-8';
+    $charset = 'ISO-8859-1';
+    $charset = 'UTF-8';
 
     //------------------------------------------------------------------------
     // Set Program O Website URLs

@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.2.0
+* Version: 2.2.1
 * FILE: config/install_config.php
 * AUTHOR: Elizabeth Perreau and Dave Morton AND DAVE MORTON
 * DATE: MAY 4TH 2011
@@ -57,10 +57,10 @@
     // Default chatbot values
     //------------------------------------------------------------------------
 
-    $default_pattern = "RANDOM PICKUP LINE";
-    $default_error_response = "No AIML category found. This is a Default Response.";
-    $default_conversation_lines = '1';
-    $default_remember_up_to = '10';
+    $pattern = "RANDOM PICKUP LINE";
+    $error_response = "No AIML category found. This is a Default Response.";
+    $conversation_lines = '1';
+    $remember_up_to = '10';
 
 
 ?>

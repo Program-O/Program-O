@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.2.0
+//My Program-O Version 2.2.1
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -74,11 +74,11 @@ function getBotParentList($current_parent,$dbConn) {
 
 
 function getSelectedBot() {
-  global $template, $default_pattern, $default_remember_up_to, $default_conversation_lines, $default_error_response;
-  $bot_conversation_lines = $default_conversation_lines;
-  $remember_up_to = $default_remember_up_to;
-  $bot_default_aiml_pattern = $default_pattern;
-  $bot_error_response = $default_error_response;
+  global $template, $pattern, $remember_up_to, $conversation_lines, $error_response;
+  $bot_conversation_lines = $conversation_lines;
+  $remember_up_to = $remember_up_to;
+  $bot_default_aiml_pattern = $pattern;
+  $bot_error_response = $error_response;
   $dbConn = db_open();
   $inputs="";
   $form = $template->getSection('SelectBotForm');
@@ -198,10 +198,10 @@ function getSelectedBot() {
     $bot_format = "";
     $bot_use_aiml_code = "";
     $bot_update_aiml_code = "";
-    $bot_conversation_lines = $default_conversation_lines;
-    $remember_up_to = $default_remember_up_to;
-    $bot_default_aiml_pattern = $default_pattern;
-    $bot_error_response = $default_error_response;
+    $bot_conversation_lines = $conversation_lines;
+    $remember_up_to = $remember_up_to;
+    $bot_default_aiml_pattern = $pattern;
+    $bot_error_response = $error_response;
     $bot_debugemail = "";
     $debugemail = "";
     $bot_debugshow = "";
@@ -226,7 +226,7 @@ function getSelectedBot() {
 
 function updateBotSelection() {
   //db globals
-  global $msg, $default_format, $post_vars;
+  global $msg, $format, $post_vars;
   $logFile = _LOG_URL_ . 'admin.error.log';
   $dbConn = db_open();
   $sql = "";
@@ -248,13 +248,13 @@ function updateBotSelection() {
 
   $format = filter_input(INPUT_POST,'format');
 
-  if (mb_strtoupper($format) !== mb_strtoupper($default_format))
+  if (mb_strtoupper($format) !== mb_strtoupper($format))
   {
     $format = strtoupper($format);
     $cfn = _CONF_PATH_ . 'global_config.php';
     $configFile = file(_CONF_PATH_ . 'global_config.php',FILE_IGNORE_NEW_LINES);
-    $search = '    $default_format = \'' . $default_format . '\';';
-    $replace = '    $default_format = \'' . $format . '\';';
+    $search = '    $format = \'' . $format . '\';';
+    $replace = '    $format = \'' . $format . '\';';
     $index = array_search($search, $configFile);
     if (false === $index)
     {
@@ -288,7 +288,7 @@ function addBot() {
   $dbConn = db_open();
   $sql = <<<endSQL
 INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `use_aiml_code`, `update_aiml_code`, `error_response`)
-VALUES (NULL,'$bot_name','$bot_desc','$bot_active','$bot_parent_id','$format','$save_state','$conversation_lines','$remember_up_to','$debugemail','$debugshow','$debugmode','$default_aiml_pattern','$use_aiml_code','$update_aiml_code', '$error_response');
+VALUES (NULL,'$bot_name','$bot_desc','$bot_active','$bot_parent_id','$format','$save_state','$conversation_lines','$remember_up_to','$debugemail','$debugshow','$debugmode','$aiml_pattern','$use_aiml_code','$update_aiml_code', '$error_response');
 endSQL;
   if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
 

@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.0
+  * Version: 2.2.1
   * FILE: library/error_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -74,8 +74,8 @@
   **/
   function runDebug($fileName, $functionName, $line, $info, $level = 0)
   {
-    global $debugArr, $srai_iterations, $quickdebug, $writetotemp, $convoArr, $last_timestamp, $default_debug_level;
-    $debug_level = (isset($convoArr['conversation']['debug_level'])) ? $convoArr['conversation']['debug_level'] : $default_debug_level;
+    global $debugArr, $srai_iterations, $quickdebug, $writetotemp, $convoArr, $last_timestamp, $debug_level;
+    $debug_level = (isset($convoArr['conversation']['debug_level'])) ? $convoArr['conversation']['debug_level'] : $debug_level;
     if (empty ($functionName)) $functionName = 'Called outside of function';
     //only log the debug info if the info level is equal to or less than the chosen level
     if (($level <= $debug_level))// && ($level != 0) && ($debug_level != 0)
@@ -123,9 +123,9 @@
   **/
   function handleDebug($convoArr)
   {
-    global $debugArr, $default_debug_level, $default_debug_mode;
-    $debug_level = (isset($convoArr['conversation']['debug_level'])) ? $convoArr['conversation']['debug_level'] : $default_debug_level;
-    $debug_mode = (isset($convoArr['conversation']['debugmode'])) ? $convoArr['conversation']['debugmode'] : $default_debug_mode;
+    global $debugArr, $debug_level, $debug_mode;
+    $debug_level = (isset($convoArr['conversation']['debug_level'])) ? $convoArr['conversation']['debug_level'] : $debug_level;
+    $debug_mode = (isset($convoArr['conversation']['debugmode'])) ? $convoArr['conversation']['debugmode'] : $debug_mode;
     $convoArr['debug'] = $debugArr;
     $log = '';
     foreach ($debugArr as $time => $subArray)
@@ -201,30 +201,33 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Reducing the conversation array.', 0);
     $showConvoArr = array();
-    $showConvoArr['conversation'] = $convoArr['conversation'];
+    $showConvoArr['conversation'] = (isset($convoArr['conversation'])) ? $convoArr['conversation'] : '';
     $showConvoArr['topic'][1] = (isset($convoArr['topic'][1])) ? $convoArr['topic'][1] : '';
     $showConvoArr['that'][1] = (isset($convoArr['that'][1])) ? $convoArr['that'][1] : '';
-    foreach ($convoArr['star'] as $index => $star)
+    if (isset($convoArr['star']))
     {
-      if (!empty ($star))
-        $showConvoArr['star'][$index] = $star;
+      foreach ($convoArr['star'] as $index => $star)
+      {
+        if (!empty ($star))
+          $showConvoArr['star'][$index] = $star;
+      }
     }
-    $showConvoArr['input'][1] = $convoArr['input'][1];
-    $showConvoArr['stack']['top'] = $convoArr['stack']['top'];
-    $showConvoArr['stack']['last'] = $convoArr['stack']['last'];
-    $showConvoArr['client_properties'] = $convoArr['client_properties'];
-    $showConvoArr['aiml']['user_raw'] = $convoArr['aiml']['user_raw'];
-    $showConvoArr['aiml']['lookingfor'] = $convoArr['aiml']['lookingfor'];
-    $showConvoArr['aiml']['pattern'] = $convoArr['aiml']['pattern'];
-    $showConvoArr['aiml']['thatpattern'] = $convoArr['aiml']['thatpattern'];
-    $showConvoArr['aiml']['topic'] = $convoArr['aiml']['topic'];
-    $showConvoArr['aiml']['score'] = $convoArr['aiml']['score'];
-    $showConvoArr['aiml']['aiml_to_php'] = $convoArr['aiml']['aiml_to_php'];
-    $showConvoArr['aiml']['aiml_id'] = $convoArr['aiml']['aiml_id'];
-    $showConvoArr['aiml']['parsed_template'] = $convoArr['aiml']['parsed_template'];
-    $showConvoArr['user_say'][1] = $convoArr['user_say'][1];
-    $showConvoArr['that_raw'][1] = $convoArr['that_raw'][1];
-    $showConvoArr['parsed_template'][1] = $convoArr['parsed_template'][1];
+    $showConvoArr['input'][1] = (isset($convoArr['input'][1])) ? $convoArr['input'][1] : '';
+    $showConvoArr['stack']['top'] = (isset($convoArr['stack']['top'])) ? $convoArr['stack']['top'] : '';
+    $showConvoArr['stack']['last'] = (isset($convoArr['stack']['last'])) ? $convoArr['stack']['last'] : '';
+    $showConvoArr['client_properties'] = (isset($convoArr['client_properties'])) ? $convoArr['client_properties'] : '';
+    $showConvoArr['aiml']['user_raw'] = (isset($convoArr['aiml']['user_raw'])) ? $convoArr['aiml']['user_raw'] : '';
+    $showConvoArr['aiml']['lookingfor'] = (isset($convoArr['aiml']['lookingfor'])) ? $convoArr['aiml']['lookingfor'] : '';
+    $showConvoArr['aiml']['pattern'] = (isset($convoArr['aiml']['pattern'])) ? $convoArr['aiml']['pattern'] : '';
+    $showConvoArr['aiml']['thatpattern'] = (isset($convoArr['aiml']['thatpattern'])) ? $convoArr['aiml']['thatpattern'] : '';
+    $showConvoArr['aiml']['topic'] = (isset($convoArr['aiml']['topic'])) ? $convoArr['aiml']['topic'] : '';
+    $showConvoArr['aiml']['score'] = (isset($convoArr['aiml']['score'])) ? $convoArr['aiml']['score'] : '';
+    $showConvoArr['aiml']['aiml_to_php'] = (isset($convoArr['aiml']['aiml_to_php'])) ? $convoArr['aiml']['aiml_to_php'] : '';
+    $showConvoArr['aiml']['aiml_id'] = (isset($convoArr['aiml']['aiml_id'])) ? $convoArr['aiml']['aiml_id'] : '';
+    $showConvoArr['aiml']['parsed_template'] = (isset($convoArr['aiml']['parsed_template'])) ? $convoArr['aiml']['parsed_template'] : '';
+    $showConvoArr['user_say'][1] = (isset($convoArr['aiml']['parsed_template'])) ? $convoArr['user_say'][1] : '';
+    $showConvoArr['that_raw'][1] = (isset($convoArr['that_raw'][1])) ? $convoArr['that_raw'][1] : '';
+    $showConvoArr['parsed_template'][1] = (isset($convoArr['parsed_template'][1])) ? $convoArr['parsed_template'][1] : '';
     return $showConvoArr;
   }
 
