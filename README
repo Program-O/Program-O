@@ -16,32 +16,38 @@ chatbot information, including the AIML files used to formulate the chatbot's re
 
 Configuration
 ---------------------------------------------------------
-v2.0.1 has support for multiple chatbots. Configuration of the individual bots is done from
-inside the admin area. Bot specific variables are stored in the database. Configuration
+Program O supports the creation of multiple chatbots. The individual bots are configured
+from the admin area. Bot specific variables are stored in the database. Configuration
 of Program O itself is done in /config/global_config.php
 
 Using the bot
 ---------------------------------------------------------
-After installation you can chat to Program O in one of 3 ways:
--HTML form (example in /gui/plain/index.php)
--HTML form using AJAX (example in /gui/jquery/index.php)
--send XML using simpleXML (example in /gui/xml/index.php)
+After installation you can chat with your Program O chatbot using several methods:
+-Through a static HTML page (example in /gui/plain/index.php)
+-Through an AJAX enabled web page (example in /gui/jquery/index.php)
+-Through the Program O API (example in /gui/xml/index.php)
 
-For advanced botmasters and programmers, it is also possible to use the XML/JSON
-interfaces to access a chatbot from stand-alone applications through HTTP requests.
+For advanced botmasters and programmers, it is possible to use the Program O
+API to access a chatbot from stand-alone applications through HTTP requests.
 for information on how to create and/or use such a stand-alone application, please
 visit the Program O Support Forums at http://www.program-o.com
 
 Foreign Language Support
 ---------------------------------------------------------
-v2.2.1 has support for foreign languages including and not limited to chinese, greek, french, arabic, turkish, thai
+v2.2 and higher now supports Unicode characters, allowing chatbots to be created that use
+non-English languages, such as Arabic, Chinese, French, Greek, Russian, Turkish, Thai,
+and many others.
 
 Upgrade
 ---------------------------------------------------------
-Upgrading from version 1 to version 2 is handled through the automatic install script
-that comes with the package. Upgrading "major revisions" from version 2.0.x to 2.1
-and higher is accomplished through an upgrade script, and should be automatic, as well.
-Please note that minor revisions won't use an upgrade script.
+Upgrading from version 1 to version 2 is no longer supported. If you want to "upgrade"
+your chatbot from version 1 to version 2, you will need to save your AIML files from the
+current chatbot, perform a "clean install" of Program O, and then upload the AIML files
+to the new installation. With the release of Program O version 2.2, the differences
+in structure and functionality between version 1 and version 2 became too great to
+continue supporting the transition. If you need assistance with the process of migrating
+from version 1 to version 2.2+ of Program O, please contact us on the Program O forums
+at http://www.program-o.com/forum/
 
 Clean install
 ---------------------------------------------------------
@@ -50,7 +56,7 @@ installation. Simply point your web browser to your freshly uploaded Program O d
 to run the install script. Then follow the instructions on the page. The installer is
 designed to only run once.
 
-Please note that the installer script will NOT  create your database for you, nor will
+Please note that the installer script will NOT create your database for you, nor will
 it install your bot's AIML files. The database, along with the username/password used to
 access it, needs to be created in advance. See the file FRESH_INSTALL_README.txt for more
 information.

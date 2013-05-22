@@ -109,12 +109,12 @@
 
     //default bot config - this is the default bot most of this will be overwriten by the bot configuration in the db
     $bot_id = 1;
-    $format = '[default_format]';
+    $format = '[format]';
     $pattern = 'RANDOM PICKUP LINE';
     $error_response = 'No AIML category found. This is a Default Response.';
     $conversation_lines = '1';
     $remember_up_to = 10;
-    $debugemail = '[default_debugemail]';
+    $debugemail = '[debugemail]';
     /*
      * $debug_level - The level of messages to show the user
      * 0=none,
@@ -123,7 +123,7 @@
      * 2=error+general+sql,
      * 3=everything
      */
-    $debug_level = '[default_debug_level]';
+    $debug_level = '[debug_level]';
 
     /*
      * $debug_mode - How to show the debug data
@@ -132,8 +132,8 @@
      * 2 = page view - display debugging on the webpage
      * 3 = email each conversation line (not recommended)
      */
-     $debug_mode = '[default_debug_mode]';
-     $save_state = '[default_save_state]';
+     $debug_mode = '[debug_mode]';
+     $save_state = '[save_state]';
      $error_response = '[error_response]';
      $unknown_user = 'Seeker';
 

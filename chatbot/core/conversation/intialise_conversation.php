@@ -455,7 +455,7 @@
     }
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '$bot_id' and `bot_active`='1'";
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking bot exists SQL: $sql", 3);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Making sure the bot exists. SQL = $sql", 3);
     $result = db_query($sql, $con);
     if (($result) && (db_res_count($result) > 0))
     {
