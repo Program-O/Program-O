@@ -44,3 +44,24 @@ function parse_php_tag($convoArr, $element, $parentName, $level)
   // do something here
   return $response_string;
 }
+
+function parse_google_tag($convoArr, $element, $parentName, $level)
+{
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing custom GOOGLE tag.', 2);
+  $response = array();
+  $children = $element->children();
+  if (!empty ($children))
+  {
+    $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+  }
+  else
+  {
+    $response[] = (string) $element;
+  }
+  $response_string = implode_recursive(' ', $response);
+  // do something here
+  $googleURL = 'http://www.google.com/search?q=' . urlencode($response_string);
+  $search_response = "Google Search Results: <a target=\"_blank\" href=\"$googleURL\">$response_string</a>";
+  $response_string = $search_response;
+  return $response_string;
+}

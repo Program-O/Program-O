@@ -24,6 +24,7 @@
   //load shared files
   include_once (_LIB_PATH_ . "db_functions.php");
   include_once (_LIB_PATH_ . "error_functions.php");
+  include_once(_LIB_PATH_ . 'misc_functions.php');
 
   //leave this first debug call in as it wipes any existing file for this session
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Starting", 0);

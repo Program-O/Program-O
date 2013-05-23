@@ -91,7 +91,7 @@
   * @param string $current_topic - the current topic
   * @return array tmp_rows - the RELEVANT results
   **/
-  function unset_all_bad_pattern_matches($allrows, $lookingfor, $current_thatpattern, $current_topic, $aiml_pattern)
+  function unset_all_bad_pattern_matches($allrows, $lookingfor, $current_thatpattern, $current_topic, $default_pattern)
   {
     global $error_response;
     $tmp_rows = array();
@@ -113,7 +113,7 @@
       //get the topic
       $aiml_thatpattern = $subrow['thatpattern'];
       //get the that
-      if (strtolower($aiml_pattern) == strtolower($aiml_pattern))
+      if (strtolower($aiml_pattern) == strtolower($default_pattern))
       {
       //if it is a direct match with our default pattern then add to tmp_rows
         $tmp_rows[$i] = $subrow;
@@ -210,21 +210,21 @@
   * @param string $current_topic - the current topic
   * @return array allrows - the SCORED results
   **/
-  function score_matches($convoArr, $bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $aiml_pattern)
+  function score_matches($convoArr, $bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $default_pattern)
   {
     global $common_words_array;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Scoring the matches. Topic = $current_topic", 4);
     //set the scores for each type of word or sentence to be used in this function
-    $pattern_points = 2;
+    $this_bot_match = 500;
     $underscore_points = 100;
-    $starscore_points = 1;
+    $that_pattern_match = 75;
+    $topic_match = 50;
+    $that_pattern_match_general = 9;
     $uncommon_word_points = 6;
     $common_word_points = 3;
+    $pattern_points = 2;
+    $starscore_points = 1;
     $direct_match = 1;
-    $topic_match = 50;
-    $that_pattern_match = 75;
-    $that_pattern_match_general = 9;
-    $this_bot_match = 500;
     //even the worst match from the actual bot is better than the best match from the base bot
     //loop through all relevant results
     foreach ($allrows as $all => $subrow)
@@ -315,7 +315,7 @@
         }
       }
       //if stored result == default pattern increase score
-      if (strtolower($aiml_pattern) == strtolower($aiml_pattern))
+      if (strtolower($aiml_pattern) == strtolower($default_pattern))
       {
         $allrows[$all]['score'] += $pattern_points;
         $allrows[$all]['track_score'] .= "h";
@@ -390,8 +390,10 @@
   **/
   function sort2DArray($opName, $thisArr, $sortByItem, $sortAsc = 1, $limit = 10)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName - sorting " . count($thisArr) . " results and getting the top $limit for debugging", 4);
-    //runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($thisArr, true), 4);
+    $thisCount = count($thisArr);
+    $showLimit = ($thisCount < $limit) ? $thisCount : $limit;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName - sorting $thisCount results by $sortByItem and getting the top $showLimit for debugging.", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($thisArr, true), 4);
     $i = 0;
     $tmpSortArr = array();
     $resArr = array();
@@ -706,7 +708,7 @@
 		$sql_bot_select AND (
 		((`pattern` = '_') OR (`pattern` = '*') OR (`pattern` = '$lookingfor') OR (`pattern` = '$aiml_pattern' ) )
 		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
-		AND ( (`topic`='') OR (`topic`='" . $storedtopic . "')))";
+		AND ( (`topic`='') OR (`topic`='$storedtopic')))";
     }
     else
     {
@@ -720,7 +722,7 @@
 		 ($sql_add) OR
 		 (`pattern` = '$aiml_pattern' ))
 		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` like '%') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
-		AND ((`topic`='') OR (`topic`='" . $storedtopic . "')))";
+		AND ((`topic`='') OR (`topic`='$storedtopic')))";
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);
     $result = db_query($sql, $con);

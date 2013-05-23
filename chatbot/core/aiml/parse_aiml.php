@@ -235,6 +235,7 @@
   **/
   function clean_that($that)
   {
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"Processing the ~THAT~ tag: $that", 4);
     $in = $that;
     $that = str_replace("<br/>", ".", $that);
     $that = strip_tags($that);

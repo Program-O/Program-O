@@ -55,6 +55,7 @@
   //load shared files
   require_once(_LIB_PATH_ . 'db_functions.php');
   require_once(_LIB_PATH_ . 'error_functions.php');
+  require_once(_LIB_PATH_ . 'misc_functions.php');
   require_once(_LIB_PATH_ . 'template.class.php');
 
 
