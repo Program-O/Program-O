@@ -65,3 +65,50 @@ function parse_google_tag($convoArr, $element, $parentName, $level)
   $response_string = $search_response;
   return $response_string;
 }
+
+function parse_wiki_tag($convoArr, $element, $parentName, $level)
+{
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing custom WIKI tag.', 2);
+  $response = array();
+  $children = $element->children();
+  if (!empty ($children))
+  {
+    $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+  }
+  else
+  {
+    $response[] = (string) $element;
+  }
+  $response_string = implode_recursive(' ', $response);
+  // do something here
+
+  $wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&format=xml&limit=1&search=' . urlencode($response_string);
+  $options = array(
+		CURLOPT_HTTPGET => TRUE,
+		CURLOPT_POST => FALSE,
+		CURLOPT_HEADER => false,
+		CURLOPT_NOBODY => FALSE,
+		CURLOPT_VERBOSE => FALSE,
+		CURLOPT_REFERER => "",
+		CURLOPT_SSL_VERIFYPEER => FALSE,
+		CURLOPT_FOLLOWLOCATION => TRUE,
+		CURLOPT_MAXREDIRS => 4
+  );
+  $wikiText = get_cURL($wikiURL, $options);
+  #save_file(_DEBUG_PATH_ . 'wiki_return.txt', $wikiText);
+  $xml = simplexml_load_string($wikiText, 'SimpleXMLElement', LIBXML_NOCDATA);
+  if((string)$xml->Section->Item->Description)
+  {
+    $description = (string)$xml->Section->Item->Description ;
+    $image = (string)$xml->Section->Item->Image->asXML();
+    $image = str_replace('<Image source', '<img src', $image);
+    $linkHref = (string)$xml->Section->Item->Url;
+    $linkText = (string)$xml->Section->Item->Text;
+    $link = "<a href=\"$linkHref\">$linkText</a>";
+    $output = "$link<br/>\n$image<br/>\n$description";
+  }
+  else $output = 'Wikipedia returned no results!';
+  $output = '<![CDATA[' . $output . ']]>';
+  return $output;
+}
+

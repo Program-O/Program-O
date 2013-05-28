@@ -58,7 +58,7 @@
     ? array_merge($form_vars_get, $form_vars_post)
     : ($form_vars_get !== null) ? $form_vars_get
     : $form_vars_post;
-
+  #save_file(_LOG_PATH_ . 'Convo_start_form_vars.txt', print_r($form_vars, true));
   $say = (isset($say) and $say !== '') ? $say : trim($form_vars['say']);
   $session_name = 'PGOv2';
   session_name($session_name);
@@ -171,8 +171,9 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation intialised waiting user", 2);
   }
+  if ($display == '') $display = $convoArr['send_to_user'];
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
   db_close($con);
+    #echo $display;
   $convoArr = handleDebug($convoArr); // Make sure this is the last line in the file, so that all debug entries are captured.
-  display_conversation($display, $format);
-?>
+  display_conversation($display, $convoArr['conversation']['format']);

@@ -11,6 +11,7 @@
   ***************************************/
   $display = "";
   $thisFile = __FILE__;
+  if (!file_exists('../../config/global_config.php')) header('Location: ../../install/install_programo.php');
   require_once ('../../config/global_config.php');
   require_once ('../chatbot/conversation_start.php');
   switch ($_SERVER['REQUEST_METHOD'])

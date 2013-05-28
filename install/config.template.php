@@ -45,13 +45,14 @@
     define('_DEBUG_URL_',_BASE_URL_.'chatbot/debug/');
     define('_INSTALL_PATH_',_BASE_DIR_.$path_separator.'install'.$path_separator);
     define('_INSTALL_URL_',_BASE_URL_.'install/');
+    define('IS_WINDOWS',(DIRECTORY_SEPARATOR == '/') ? false : true);
 
     //------------------------------------------------------------------------
     // Define constants for the current version of Program O, and for the OS name and version
     //------------------------------------------------------------------------
 
     define ('VERSION', '2.2.1'); # Program O version
-
+    
     $os  = php_uname('s');
     $osv = php_uname('v');
     header("x-server-os: $os - $osv");

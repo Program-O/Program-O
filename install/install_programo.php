@@ -24,8 +24,6 @@
   ini_set("display_errors", 0);
   ini_set("log_errors", true);
   ini_set("error_log", _LOG_PATH_ . "install.error.log");
-  if (!file_exists(_LOG_PATH_ . "install.error.log"))
-    file_put_contents(_LOG_PATH_ . "install.error.log", '');
   $myHost = $_SERVER['SERVER_NAME'];
   chdir(dirname(realpath(__FILE__)));
   $page_template = file_get_contents('install.tpl.htm');
@@ -136,31 +134,31 @@ VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_pare
     require_once (_LIB_PATH_ . 'db_functions.php');
     $bot_id = 1;
     $sql = str_replace('[default_bot_id]', $bot_id, $sql_template);
-    $sql = str_replace('[bot_name]', $myPostVars["bot_name"], $sql);
-    $sql = str_replace('[bot_desc]', $myPostVars["bot_desc"], $sql);
-    $sql = str_replace('[bot_active]', $myPostVars["bot_active"], $sql);
+    $sql = str_replace('[bot_name]', $myPostVars['bot_name'], $sql);
+    $sql = str_replace('[bot_desc]', $myPostVars['bot_desc'], $sql);
+    $sql = str_replace('[bot_active]', $myPostVars['bot_active'], $sql);
     $sql = str_replace('[bot_parent_id]', 1, $sql);
-    $sql = str_replace('[format]', $myPostVars["default_format"], $sql);
+    $sql = str_replace('[format]', $myPostVars['format'], $sql);
     // "Use PHP from DB setting
-    if (!isset ($myPostVars["default_use_aiml_code"]))
-      $myPostVars["default_use_aiml_code"] = 0;
-    $sql = str_replace('[use_aiml_code]', $myPostVars["default_use_aiml_code"], $sql);
+    if (!isset ($myPostVars['use_aiml_code']))
+      $myPostVars['use_aiml_code'] = 0;
+    $sql = str_replace('[use_aiml_code]', $myPostVars['use_aiml_code'], $sql);
     // "Update PHP in DB setting
-    if (!isset ($myPostVars["default_update_aiml_code"]))
-      $myPostVars["default_update_aiml_code"] = 0;
-    $sql = str_replace('[update_aiml_code]', $myPostVars["default_update_aiml_code"], $sql);
-    $sql = str_replace('[save_state]', $myPostVars["default_save_state"], $sql);
+    if (!isset ($myPostVars['update_aiml_code']))
+      $myPostVars['update_aiml_code'] = 0;
+    $sql = str_replace('[update_aiml_code]', $myPostVars['update_aiml_code'], $sql);
+    $sql = str_replace('[save_state]', $myPostVars['save_state'], $sql);
     $sql = str_replace('[conversation_lines]', $conversation_lines, $sql);
     $sql = str_replace('[remember_up_to]', $remember_up_to, $sql);
-    $sql = str_replace('[debugemail]', $myPostVars["default_debugemail"], $sql);
-    $sql = str_replace('[debugshow]', $myPostVars["default_debug_level"], $sql);
-    $sql = str_replace('[debugmode]', $myPostVars["default_debug_mode"], $sql);
+    $sql = str_replace('[debugemail]', $myPostVars['debugemail'], $sql);
+    $sql = str_replace('[debugshow]', $myPostVars['debug_level'], $sql);
+    $sql = str_replace('[debugmode]', $myPostVars['debug_mode'], $sql);
     $sql = str_replace('[error_response]', $error_response, $sql);
     $sql = str_replace('[aiml_pattern]', $pattern, $sql);
     #$save = file_put_contents(_CONF_PATH_ . 'sql.txt', $sql); // For debugging purposes only
     $x = db_query($sql, $conn) or install_error('Could not enter bot info for bot #' . $bot_id . '!', mysql_error(), $sql);
-    $encrypted_adm_dbp = md5($myPostVars["adm_dbp"]);
-    $adm_dbu = $myPostVars["adm_dbu"];
+    $encrypted_adm_dbp = md5($myPostVars['adm_dbp']);
+    $adm_dbu = $myPostVars['adm_dbu'];
     $cur_ip = $_SERVER['REMOTE_ADDR'];
     $adminSQL = "insert ignore into `myprogramo` (`id`, `user_name`, `password`, `last_ip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
     $result = db_query($adminSQL, $conn) or install_error('Could not add admin credentials! Check line #' . __LINE__, mysql_error(), $adminSQL);

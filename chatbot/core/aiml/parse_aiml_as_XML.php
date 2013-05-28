@@ -9,6 +9,7 @@
   * DATE: MAY 4TH 2011
   * DETAILS: this file contains the functions generate php code from aiml
   ***************************************/
+
   /**
   * function parse_aiml_as_XML()
   * This function starts the process of recursively parsing the AIML template as XML, converting it to text.
@@ -22,12 +23,12 @@
     $template = add_text_tags($convoArr['aiml']['template']);
     try
     {
-      $aimlTemplate = new SimpleXMLElement($template);
+      $aimlTemplate = new SimpleXMLElement($template, LIBXML_NOCDATA);
     }
     catch (exception $e)
     {
       trigger_error("There was a problem parsing the template as XML. Template value:\n$template", E_USER_WARNING);
-      $aimlTemplate = new SimpleXMLElement("<text>$error_response</text>");
+      $aimlTemplate = new SimpleXMLElement("<text>$error_response</text>", LIBXML_NOCDATA);
     }
     $responseArray = parseTemplateRecursive($convoArr, $aimlTemplate);
     $botsay = trim(implode_recursive(' ', $responseArray, __FILE__, __FUNCTION__, __LINE__));
@@ -41,15 +42,20 @@
   function add_text_tags($in)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Adding some TEXT tags into the template, just because I can...', 2);
-    // Since we're going to parse the template's contents as XML, we need to prepare it first
-    // by transforming it into valid XML
-    // First, wrap the template in TEMPLATE tags, to give the text a "root" element:
+    /*
+      Since we're going to parse the template's contents as XML, we need to prepare it first
+      by transforming it into valid XML
+
+      First, wrap the template in TEMPLATE tags, to give the XML a "root" element:
+    */
     $template = "<template>$in</template>";
-    // SimpleXML can't deal with "mixed" content, so any "loose" text is wrapped in a <text> tag.
-    // The process will sometimes add extra <text> tags, so part of the process below deals with that.
+    /*
+      SimpleXML can't deal with "mixed" content, so any "loose" text is wrapped in a <text> tag.
+      The process will sometimes add extra <text> tags, so part of the process below deals with that.
+    */
     $textTagsToRemove = array('<text></text>' => '', '<text> </text>' => '', '<say>' => '', '</say>' => '',
     );
-    // Remove spaces between the tags
+    // Remove any spaces immediately between the XML tags
     $template = preg_replace('~>\s*?<~', '><', $template);
     $textTagSearch = array_keys($textTagsToRemove);
     $textTagReplace = array_values($textTagsToRemove);
@@ -96,14 +102,15 @@
     $response = array();
     $parentName = strtolower($element->getName());
     $elementCount = count($element);
-    #$children = $element->children();
     $children = ($elementCount > 0) ? $element->children() : $element;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Processing element $parentName at level $level. element XML = " . $element->asXML(), 4);
     $func = 'parse_' . $parentName . '_tag';
-    if (in_array($parentName, $HTML_tags))
+    if (in_array($parentName, $HTML_tags)) {
       $func = 'parse_html_tag';
+    }
     if (function_exists($func))
     {
+      runDebug(__FILE__, __FUNCTION__, __LINE__,"Function $func does exist. Processing now.", 4);
       if (!in_array(strtolower($parentName), $doNotParseChildren))
       {
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Passing element $parentName to the $func function", 4);
@@ -116,6 +123,7 @@
     }
     else
     {
+      runDebug(__FILE__, __FUNCTION__, __LINE__,"function $func does not exist. Parsing tag as text.", 4);
       $retVal = $element;
     }
     $value = trim((string) $retVal);
@@ -217,7 +225,6 @@
         '11'=>'Asia/Magadan',
         '12'=>'Asia/Kamchatka'
     );
-    $isWindows = (DIRECTORY_SEPARATOR == '/') ? false : true;
     $cur_timezone = date_default_timezone_get();
     $cur_locale = setlocale(LC_ALL, '');
     #$cur_locale = setlocale(LC_ALL, 'en_US');

@@ -5,6 +5,7 @@ $bot_id = 1;
 $format = "json";
 $convo_id = session_id();
 
+/*
   $docRoot = $_SERVER['DOCUMENT_ROOT'];
   $docRoot = str_replace('/', DIRECTORY_SEPARATOR, $docRoot);
   $thisFolder = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR;
@@ -13,8 +14,11 @@ $convo_id = session_id();
   $configFile = $baseFolder . 'config' . DIRECTORY_SEPARATOR . 'global_config.php';
   $headerURL = 'http://' . $_SERVER["HTTP_HOST"] . $relPath . 'install/install_programo.php';
 
-
   require_once($configFile);
+*/
+  $thisFile = __FILE__;
+  if (!file_exists('../../config/global_config.php')) header('Location: ../../install/install_programo.php');
+  require_once ('../../config/global_config.php');
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">

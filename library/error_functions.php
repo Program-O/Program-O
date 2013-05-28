@@ -242,7 +242,7 @@
     global $new_convo_id, $old_convo_id;
     $session_id = ($new_convo_id === false) ? session_id() : $new_convo_id;
     $myFile = _DEBUG_PATH_ . $session_id . '.txt';
-    if (DIRECTORY_SEPARATOR == '\\')
+    if (!IS_WINDOWS)
     {
       $log = str_replace("\n", "\r\n", $log);
       $log = str_replace("\r\r", "\r", $log);
