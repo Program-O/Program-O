@@ -20,7 +20,7 @@
     # Config exists we will goto the bot
     $thisFile = __FILE__;
     require_once('config/global_config.php');
-    $format = mb_strtoupper($format);
+    $format = strtoupper($format);
     switch ($format)
     {
       case 'JSON':

@@ -465,17 +465,18 @@
   }
 
   /**
-  * function run_system()
+  * function math_functions()
   * This function runs the system math operations
   * @param char $operator - maths operator
   * @param int $num_1 - the first number
   * @param int $num_2 - the second number
   * @param int $output - the result of the math operation
   **/
-  function run_system($operator, $num_1, $num_2 = "")
+  function math_functions($operator, $num_1, $num_2 = "")
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running system tag math $num_1 $operator $num_2", 4);
-    switch (strtolower($operator))
+    $operator = (IS_MB_ENABLED) ? mb_strtolower($operator) : strtolower($operator);
+    switch ($operator)
     {
       case "add" :
         $output = $num_1 + $num_2;

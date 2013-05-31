@@ -14,11 +14,6 @@
   if (!file_exists('../config/global_config.php')) header('location: ../install/install_programo.php');
   require_once('../config/global_config.php');
 
-  mb_internal_encoding($charset);
-  mb_http_input($charset);
-  mb_http_output($charset);
-  mb_detect_order($charset);
-  mb_regex_encoding($charset);
 
   error_reporting(E_ALL);
   ini_set('log_errors', true);

@@ -320,7 +320,8 @@
       }
     }
     else $convoArr['client_properties'][$var_name] = $var_value;
-    if (strtolower($var_name) == 'topic') $convoArr['topic'][1] = $var_value;
+    $lc_var_name = (IS_MB_ENABLED) ? mb_strtolower($var_name) : strtolower($var_name);
+    if ($lc_var_name == 'topic') $convoArr['topic'][1] = $var_value;
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$sql", 3);
     $result = db_query($sql, $con) or trigger_error('Error looking up DB info in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
@@ -377,7 +378,8 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'PARSING AN UPPERCASE TAG.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    return ltrim(strtoupper($response_string), ' ');
+    $response_string = (IS_MB_ENABLED) ? mb_strtoupper($response_string) : strtoupper($response_string);
+    return ltrim($response_string, ' ');
   }
 
   function parse_lowercase_tag($convoArr, $element, $parentName, $level)
@@ -392,7 +394,8 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SENTENCE tag.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $response = ucfirst(strtolower($response_string));
+    $response_string = (IS_MB_ENABLED) ? mb_strtolower($response_string) : strtolower($response_string);
+    $response = ucfirst($response_string);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 4);
     return $response;
   }
@@ -401,7 +404,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing A Formal Tag.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $response = ucwords(strtolower($response_string));
+    $response = (IS_MB_ENABLED) ? mb_convert_case($response_string, MB_CASE_TITLE, $charset) : ucwords(strtolower($response_string));
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 4);
     return $response;
   }

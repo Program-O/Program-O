@@ -16,7 +16,10 @@
     die("I'm sorry, but Program O requires PHP version 5.0 or greater to function. Please ask your hosting provider to upgrade.");
   session_name('PGO_install');
   session_start();
-  $_SESSION['errorMessage'] = (!empty ($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';
+  $no_unicode_message = '';
+  #$no_unicode_message = "<p class=\"red\">Warning! Unicode Support is not available on this server. Non-English languages will not display properly. Please ask your hosting provider to enable the PHP mbstring extension to correct this.</p>\n";
+  $errorMessage = (!empty ($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';
+  $errorMessage .= $no_unicode_message;
   require_once ('install_config.php');
   define('SECTION_START', '<!-- Section [section] Start -->'); # search params for start and end of sections
   define('SECTION_END', '<!-- Section [section] End -->'); # search params for start and end of sections
@@ -46,7 +49,7 @@
   $content = str_replace('[error_response]', $error_response, $content);
   $content = str_replace('[notes]', $notes, $content);
   $content = str_replace('[PHP_SELF]', PHP_SELF, $content);
-  $content = str_replace('[errorMessage]', $_SESSION['errorMessage'], $content);
+  $content = str_replace('[errorMessage]', $errorMessage, $content);
   $content = str_replace('[cr6]', "\n ", $content);
   $content = str_replace('[cr4]', "\n ", $content);
   $content = str_replace("\r\n", "\n", $content);

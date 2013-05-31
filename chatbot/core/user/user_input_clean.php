@@ -67,7 +67,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'LET\'S JUST CAPITALIZE EVERYTHING, SHALL WE?', 2);
     $otext = $text;
-    $text = mb_strtoupper($text);
+    $text = (IS_MB_ENABLED) ? mb_strtoupper($text) : strtoupper($text);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text", 4);
     return $text;
   }

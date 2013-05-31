@@ -235,8 +235,8 @@ function runWordCensorSearch() {
                 <tbody>';
     while($row=mysql_fetch_array($result)) {
         $i++;
-        $word_to_censor = strtoupper($row['word_to_censor']);
-        $replace_with = strtoupper($row['replace_with']);
+        $word_to_censor = (IS_MB_ENABLED) ? mb_strtoupper($row['word_to_censor']) : strtoupper($row['word_to_censor']);
+        $replace_with = (IS_MB_ENABLED) ? mb_strtoupper($row['replace_with']) : strtoupper($row['replace_with']);
         $id = $row['censor_id'];
         $group = round(($id / 50));
         $action = "<a href=\"index.php?page=wordcensor&amp;action=edit&amp;censor_id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>
@@ -273,9 +273,11 @@ function editWordCensorForm($id) {
   $sql    = "SELECT * FROM `wordcensor` WHERE `censor_id` = '$id' LIMIT 1";
   if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
   $row    = mysql_fetch_array($result);
+  $uc_word_to_censor = (IS_MB_ENABLED) ? mb_strtoupper($row['word_to_censor']) : strtoupper($row['word_to_censor']);
+  $uc_replace_with = (IS_MB_ENABLED) ? mb_strtoupper($row['replace_with']) : strtoupper($row['replace_with']);
   $form   = str_replace('[censor_id]', $row['censor_id'], $form);
-  $form   = str_replace('[word_to_censor]', strtoupper($row['word_to_censor']), $form);
-  $form   = str_replace('[replace_with]', strtoupper($row['replace_with']), $form);
+  $form   = str_replace('[word_to_censor]', $uc_word_to_censor, $form);
+  $form   = str_replace('[replace_with]', $uc_replace_with, $form);
   $form   = str_replace('[group]', $group, $form);
   mysql_close($dbConn);
   return $form;

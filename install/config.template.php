@@ -52,7 +52,7 @@
     //------------------------------------------------------------------------
 
     define ('VERSION', '2.2.1'); # Program O version
-    
+
     $os  = php_uname('s');
     $osv = php_uname('v');
     header("x-server-os: $os - $osv");
@@ -231,6 +231,20 @@
     define('PARSE_BBCODE', true);
     define('USE_WORD_CENSOR', true);
     define('USE_CUSTOM_TAGS', true);
+
+    //------------------------------------------------------------------------
+    // Configure mbstring parameters
+    //------------------------------------------------------------------------
+
+    define('IS_MB_ENABLED', (function_exists('mb_internal_encoding')) ? true : false);
+    if(IS_MB_ENABLED)
+    {
+      mb_internal_encoding($charset);
+      mb_http_input($charset);
+      mb_http_output($charset);
+      mb_detect_order($charset);
+      mb_regex_encoding($charset);
+    }
 
     //------------------------------------------------------------------------
     // Set Script Installation as completed

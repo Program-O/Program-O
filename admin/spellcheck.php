@@ -274,9 +274,11 @@ function editSpellForm($id) {
   $sql    = "SELECT * FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
   if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
   $row    = mysql_fetch_array($result);
+  $uc_missspelling = (IS_MB_ENABLED) ? mb_strtoupper($row['missspelling']) : strtoupper($row['missspelling']);
+  $uc_correction = (IS_MB_ENABLED) ? mb_strtoupper($row['correction']) : strtoupper($row['correction']);
   $form   = str_replace('[id]', $row['id'], $form);
-  $form   = str_replace('[missspelling]', strtoupper($row['missspelling']), $form);
-  $form   = str_replace('[correction]', strtoupper($row['correction']), $form);
+  $form   = str_replace('[missspelling]', $uc_missspelling, $form);
+  $form   = str_replace('[correction]', $uc_correction, $form);
   $form   = str_replace('[group]', $group, $form);
   mysql_close($dbConn);
   return $form;

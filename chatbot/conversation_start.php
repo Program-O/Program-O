@@ -9,13 +9,6 @@
   * DATE: 19 JUNE 2012
   * DETAILS: this file is the landing page for all calls to access the bots
   ***************************************/
- 	$encode = 'UTF-8';
- 	ini_set('default_charset', $encode);
-	mb_internal_encoding($encode);
-	mb_http_input($encode);
-	mb_http_output($encode);
-	mb_detect_order($encode);
-	mb_regex_encoding($encode);
 
   $time_start = microtime(true);
   $last_timestamp = $time_start;
@@ -25,6 +18,7 @@
   include_once (_LIB_PATH_ . "db_functions.php");
   include_once (_LIB_PATH_ . "error_functions.php");
   include_once(_LIB_PATH_ . 'misc_functions.php');
+  ini_set('default_charset', $charset);
 
   //leave this first debug call in as it wipes any existing file for this session
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Starting", 0);
@@ -72,7 +66,8 @@
   if (!empty($say))
   {
     // Chect to see if the user is clearing properties
-    if (strtolower($say) == 'clear properties')
+    $lc_say = (IS_MB_ENABLED) ? mb_strtolower($say) : strtolower($say);
+    if ($lc_say == 'clear properties')
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Clearing client properties and starting over.", 4);
       $convoArr = read_from_session();

@@ -128,7 +128,7 @@ else {
       $fileContent .= "\r\n\r\n<!-- SQL = $sql -->\r\n\r\n";
       $result = mysql_query($sql,$dbConn) or trigger_error('Cannot obtain the AIML categories from the DB. Error = ' . mysql_error());
       while ($row = mysql_fetch_assoc($result)) {
-        $pattern = mb_strtoupper($row['pattern']);
+        $pattern = (IS_MB_ENABLED) ? mb_strtoupper($row['pattern']) : strtoupper($row['pattern']);
         $template = str_replace("\r\n",'',$row['template']);
         $template = str_replace("\n",'',$row['template']);
         $newLine = str_replace('[pattern]',$pattern, $categoryTemplate);

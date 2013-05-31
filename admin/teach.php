@@ -79,12 +79,15 @@ function insertAIML() {
   $dbConn = db_open();
   $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
   $aimltemplate = mysql_real_escape_string(trim($post_vars['template']));
-  $pattern = strtoupper(mysql_real_escape_string(trim($post_vars['pattern'])));
-  $thatpattern = strtoupper(mysql_real_escape_string(trim($post_vars['thatpattern'])));
+  $pattern = mysql_real_escape_string(trim($post_vars['pattern']));
+  $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
+  $thatpattern = mysql_real_escape_string(trim($post_vars['thatpattern']));
+  $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper($thatpattern) : strtoupper($thatpattern);
   $aiml = str_replace('[pattern]', $pattern, $aiml);
   $aiml = (empty($thatpattern)) ? str_replace('[thatpattern]', "<that>$thatpattern</that>", $aiml) : $aiml;
   $aiml = str_replace('[template]', $aimltemplate, $aiml);
-  $topic = strtoupper(mysql_real_escape_string(trim($post_vars['topic'])));
+  $topic = mysql_real_escape_string(trim($post_vars['topic']));
+  $topic = (IS_MB_ENABLED) ? mb_strtoupper($topic) : strtoupper($topic);
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
   if(($pattern=="") || ($template=="")) {
     $msg = 'You must enter a user input and bot response.';

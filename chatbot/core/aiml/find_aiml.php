@@ -113,7 +113,9 @@
       //get the topic
       $aiml_thatpattern = $subrow['thatpattern'];
       //get the that
-      if (strtolower($aiml_pattern) == strtolower($default_pattern))
+      $aiml_pattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_pattern) : strtolower($aiml_pattern);
+      $default_pattern = (IS_MB_ENABLED) ? mb_strtolower($default_pattern) : strtolower($default_pattern);
+      if ($aiml_pattern == $default_pattern)
       {
       //if it is a direct match with our default pattern then add to tmp_rows
         $tmp_rows[$i] = $subrow;
@@ -315,7 +317,9 @@
         }
       }
       //if stored result == default pattern increase score
-      if (strtolower($aiml_pattern) == strtolower($default_pattern))
+      $aiml_pattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_pattern) : strtolower($aiml_pattern);
+      $default_pattern = (IS_MB_ENABLED) ? mb_strtolower($default_pattern) : strtolower($default_pattern);
+      if ($aiml_pattern == $default_pattern)
       {
         $allrows[$all]['score'] += $pattern_points;
         $allrows[$all]['track_score'] .= "h";
@@ -338,7 +342,8 @@
         $wordsArr = explode(" ", $aiml_pattern);
         foreach ($wordsArr as $index => $word)
         {
-          $word = strtolower(trim($word));
+          $word = (IS_MB_ENABLED) ? mb_strtolower($word) : strtolower($word);
+          $word = trim($word);
           if (in_Array($word, $common_words_array))
           {
           // if it is a commonword increase with (lower) score

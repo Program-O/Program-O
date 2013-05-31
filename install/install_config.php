@@ -68,5 +68,10 @@
     $conversation_lines = '1';
     $remember_up_to = '10';
 
+    //------------------------------------------------------------------------
+    // Configure mbstring parameters
+    //------------------------------------------------------------------------
 
-?>
+    define('IS_MB_ENABLED', (function_exists('mb_internal_encoding')) ? true : false);
+    if(!IS_MB_ENABLED) $no_unicode_message = "<p class=\"red\">Warning! Unicode Support is not available on this server. Non-English languages will not display properly. Please ask your hosting provider to enable the PHP mbstring extension to correct this.</p>\n";
+
