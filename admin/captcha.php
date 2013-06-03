@@ -2,13 +2,21 @@
      /*******************************************************/
     /*                     CAPTCHA.php                     */
    /* Creates a simple security image, for bot prevention */
-  /*           ©2009-2011 Geek Cave Creations            */
+  /*           Â©2009-2011 Geek Cave Creations            */
  /*                Coded by Dave Morton                 */
 /*******************************************************/
   #session_name("programo"); // Optional - Change or delete as needed.
+  chdir( dirname ( __FILE__ ) );
+  $thisFolder = dirname( realpath( __FILE__ ) ) . DIRECTORY_SEPARATOR;
+  $log_path = str_replace('admin' . DIRECTORY_SEPARATOR, 'logs' . DIRECTORY_SEPARATOR, $thisFolder);
+  define('LOG_PATH', $log_path);
+  $captcha_path = $thisFolder . 'captcha-images' . DIRECTORY_SEPARATOR;
+  define('CAPTCHA_PATH', $captcha_path);
+
+  error_reporting(E_ALL);
   ini_set('log_errors', 1);
   ini_set('display_errors', 0);
-  ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
+  ini_set('error_log', LOG_PATH . 'CAPTCHA.error.log');
   session_start();
 /*
 captcha.php comments/help
@@ -153,11 +161,11 @@ match should allow the user access, while failure should be handled accordingly.
   $image = imagecreatetruecolor($X, $Y);
   $white = imagecolorallocate ($image, 255, 255, 255);
   $black = imagecolorallocate ($image, 0, 0, 0);
+
+  // If black is the chosen background, lighten the current "black" to a medium grey
   $black = ($b) ? imagecolorallocate ($image, 128, 128, 128) : $black;
   $bkg = ($b) ? $black : $white;
   $fgc = ($b) ? $white : $black;
-
-  // If black is the chosen background, lighten the current "black" to a medium grey
 
   // Fill the image with the desired background (the gradient will be handled later)
   imagefill ($image, 0, 0, $bkg);
@@ -179,7 +187,7 @@ match should allow the user access, while failure should be handled accordingly.
   // get the description image
   $fn = str_replace('[capKey]', $capKey, $fn);
   $fn = str_replace('[objectWord]', $objectWord, $fn);
-  $overlay = imagecreatefrompng("./captcha-images/$fn.png");
+  $overlay = imagecreatefrompng(CAPTCHA_PATH . "$fn.png");
   $trans = imagecolorallocatealpha($overlay,0,0,0,127);
   imagecopy($image,$overlay,$X-64,$Y-64,0,0,64,64);
 
@@ -189,8 +197,8 @@ match should allow the user access, while failure should be handled accordingly.
   imagestring($image,2,3,3,$capString,$fgc);
   $_SESSION["capKey"] = sha1(strtolower($capKey));
   header ("Content-type: image/jpeg");
-  imagejpeg($image,"",100);
+  imagejpeg($image,null,100);
   imagedestroy($image);
   // Debug
-  #file_put_contents('./capKey.txt', "$capKey\r\n",FILE_APPEND);
+  #file_put_contents(_LOG_PATH_ . 'capKey.txt', "$capKey\r\n",FILE_APPEND);
 ?>

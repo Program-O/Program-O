@@ -45,8 +45,11 @@ $upperScripts = <<<endScript
       </script>
 endScript;
   $post_vars = filter_input_array(INPUT_POST);
-  foreach ($post_vars as $key => $value) {
-    $$key = mysql_real_escape_string($value);
+  if (count($post_vars) > 0)
+  {
+    foreach ($post_vars as $key => $value) {
+      $$key = mysql_real_escape_string($value);
+    }
   }
   $func = (isset($post_vars['func'])) ? $post_vars['func'] : 'showBugForm';
 # Build page sections
@@ -73,6 +76,7 @@ endScript;
 
 
   function showBugForm() {
+    global $debugemail;
     return <<<endForm
       <form method="POST" action="index.php?page=bugs" name="contactForm">
         <input name="func" value="sendMail" type="hidden">
@@ -85,7 +89,7 @@ endScript;
             </td>
             <td align="center">
               Your Email Address:<br />
-              <input name="email" value="" type="text">
+              <input name="email" value="$debugemail" type="text">
             </td>
             <td align="center" width="33%">
               Subject:<br />
@@ -95,7 +99,7 @@ endScript;
           <tr>
             <td colspan="3" align="center">
               Message:<br />
-              <textarea rows="7" cols="70" name="message" onfocus="clearElement(this)">Your Message Here...</textarea>
+              <textarea rows="7" id="report_message" name="message" onfocus="clearElement(this)">Your Message Here...</textarea>
             </td>
           </tr>
           <tr>
@@ -107,7 +111,7 @@ endScript;
               </p>
             </td>
             <td align="center">
-              <img id="capImg" src="captcha.php" title="Captcha script ©2009-2011 Geek Cave Creations"><br />
+              <img id="capImg" src="captcha.php" title="Captcha script Â©2009-2011 Geek Cave Creations"><br />
               <input onclick="renewImage(); return false" value="Refresh" type="button">
             </td>
             <td>
@@ -120,7 +124,7 @@ endScript;
           </tr>
           <tr>
             <td colspan="4" align="center">
-              <input name="Post" value="Send Mail" type="submit">
+              <input name="Post" id="report_submit" value="Submit Bug Report" type="submit">
             </td>
           </tr>
         </table>

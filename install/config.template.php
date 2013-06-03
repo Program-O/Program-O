@@ -33,6 +33,7 @@
     define('_INC_PATH_',_BASE_DIR_.$path_separator);
     define('_ADMIN_PATH_',_BASE_DIR_.'admin'.$path_separator);
     define('_ADMIN_URL_',_BASE_URL_.'admin/');
+    define('_CAPTCHA_PATH_',_ADMIN_DIR_.'captcha-images'.$path_separator);
     define('_BOTCORE_PATH_',_BASE_DIR_.'chatbot'.$path_separator.'core'.$path_separator);
     define('_LIB_PATH_',_BASE_DIR_.'library'.$path_separator);
     define('_LIB_URL_',_BASE_URL_.'library/');

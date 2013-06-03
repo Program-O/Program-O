@@ -775,3 +775,11 @@ blockquote.uncited {
   border: 1px solid #ccc;
   width: auto;
 }
+
+#report_message {
+  width: 99%;
+}
+
+#report_submit {
+  width: auto;
+}
