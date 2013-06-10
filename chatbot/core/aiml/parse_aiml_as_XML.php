@@ -580,7 +580,7 @@
     $element = $element->that;
     $index = $element['index'];
 */
-    save_file(_DEBUG_PATH_ . 'that_tag.txt', $element->asXML());
+    #save_file(_DEBUG_PATH_ . 'that_tag.txt', $element->asXML());
     #$index = $element->attributes()->index;
     $index = (string)$element['index'];
     $index = (!empty ($index)) ? $index : 1;
@@ -588,7 +588,7 @@
     {
       $index .= ',1';
     }
-    save_file(_DEBUG_PATH_ . 'that_tag_index.txt', $index);
+    #save_file(_DEBUG_PATH_ . 'that_tag_index.txt', $index);
     if (strstr($index, ',') !== false)
     {
       list($index1, $index2) = explode(',', $index, 2);
