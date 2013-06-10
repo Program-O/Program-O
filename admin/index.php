@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.1
+  * Version 2.2.2
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-11-2013
@@ -82,12 +82,11 @@
   $rightNavLinks = '';
   $lowerScripts  = $template->getSection('LogoLinkScript');
   $pageTitleInfo = '';
-  #$topNavLinks   = makeLinks('top', $topLinks, 12);
   $topNavLinks   = '';
   $leftNavLinks  = '';
   $mediaType     = ' media="screen"';
   $mainTitle     = 'Program O Login';
-  $FooterInfo    = '<p>&copy; 2011-2012 My Program-O<br /><a href="http://www.program-o.com">www.program-o.com</a></p>';
+  $FooterInfo    = '<p>&copy; 2011-2013 My Program-O<br /><a href="http://www.program-o.com">www.program-o.com</a></p>';
   $headerTitle   = '';
   $pageTitle     = 'My-Program O - Login';
   $upperScripts  = '';
@@ -438,6 +437,14 @@ endFooter;
                        '[linkAlt]' => ' alt="Toggle the Logo"',
                        '[linkTitle]' => ' title="Toggle the Logo"',
                        '[linkLabel]' => 'Toggle the Logo'
+                 ),
+                 array(
+                       '[linkClass]' => '',
+                       '[linkHref]' => ' href="' . _BASE_URL_ . '"',
+                       '[linkOnclick]' => ' target="_blank"',
+                       '[linkAlt]' => ' alt="open the page for [curBot] in a new tab/window"',
+                       '[linkTitle]' => ' title="open the page for [curBot] in a new tab/window"',
+                       '[linkLabel]' => 'Talk to [curBot]'
                  )
     );
     return $out;

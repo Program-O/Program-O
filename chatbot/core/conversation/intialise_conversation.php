@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.2.1
+  * Version 2.2.2
   * FILE: chatbot/core/conversation/intialise_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -26,13 +26,13 @@
     //set the initial convoArr values
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Intialising conversation", 4);
     //load blank topics
-    $convoArr = load_blank_convoArray('topic', "", $convoArr);
+    $convoArr = load_blank_array_element('topic', "", $convoArr);
     //load blank thats
-    $convoArr = load_blank_convoArray('that', "", $convoArr);
+    $convoArr = load_blank_array_element('that', "", $convoArr);
     //load blank stars
-    $convoArr = load_blank_convoArray('star', "", $convoArr);
+    $convoArr = load_blank_array_element('star', "", $convoArr);
     //load blank stars
-    $convoArr = load_blank_convoArray('input', "", $convoArr);
+    $convoArr = load_blank_array_element('input', "", $convoArr);
     //load blank stack
     $convoArr = load_blank_stack($convoArr);
     //load the new client defaults
@@ -41,14 +41,14 @@
   }
 
   /**
-  * function load_blank_convoArray()
+  * function load_blank_array_element()
   * A function to intialise the conversation array values
   * @param  string $arrayIndex - the array element we are going to intialise
   * @param  string $defaultValue - the value which will be used to set the element
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
   **/
-  function load_blank_convoArray($arrayIndex, $defaultValue, $convoArr)
+  function load_blank_array_element($arrayIndex, $defaultValue, $convoArr)
   {
     global $remember_up_to;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Loading blank $arrayIndex array", 4);
@@ -195,8 +195,9 @@
     if (!isset ($convoArr[$arrayIndex][1]))
     {
       $convoArr[$arrayIndex] = array();
-      $convoArr = load_blank_convoArray($arrayIndex, "", $convoArr);
+      $convoArr = load_blank_array_element($arrayIndex, "", $convoArr);
     }
+    #save_file(_DEBUG_PATH_ . "$arrayIndex.txt", print_r($convoArr[$arrayIndex], true) . PHP_EOL, true);
     //if the subarray is itself an array check it here
     if (in_array($arrayIndex, $two_d_arrays))
     {
@@ -220,7 +221,7 @@
         {
           if ($arrayIndex == "that")
           {
-            $t = clean_that($value);
+            $t =($value != '') ? clean_that($value, __FILE__, __FUNCTION__, __LINE__) : '';
             if ($t != "")
             {
               $tmp_sentence[] = $t;
@@ -240,7 +241,7 @@
         $sentences = array();
         if ($arrayIndex == "that")
         {
-          $sentences[0] = clean_that($value);
+          $sentences[0] = clean_that($value, __FILE__, __FUNCTION__, __LINE__);
         }
         else
         {
@@ -608,7 +609,7 @@
       foreach ($tmpThat as $index => $value)
       {
         $value = implode_recursive(' ', $value, __FILE__, __FUNCTION__, __LINE__);
-        $value = clean_that($value);
+        $value = clean_that($value, __FILE__, __FUNCTION__, __LINE__);
         $convoArr = push_on_front_convoArr('that', $value, $convoArr);
       }
     }

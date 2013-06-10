@@ -215,10 +215,12 @@ INSERT IGNORE INTO undefined_defaults (id, bot_id, user_id, pattern, template) V
 
 CREATE TABLE IF NOT EXISTS `unknown_inputs` (
   id int(11) NOT NULL AUTO_INCREMENT,
+  bot_id int not null,
   input text NOT NULL,
   user_id int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id));
+
 CREATE TABLE IF NOT EXISTS `users` (
   id int(11) NOT NULL AUTO_INCREMENT,
   user_name text not null,

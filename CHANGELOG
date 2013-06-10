@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.1
+  * Version 2.2.2
   * FILE: CHANGELOG
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 11-05-2013
@@ -9,6 +9,12 @@
   ***************************************/
 
 Version History:
+2.2.2   Bug Fixes/versioning refactor
+            1.) Fixed a bug that prevented proper implementation of template-side <that> tags
+            2.) updated and corrected the script version in all files that contain version information
+            3.) implemented functionality that sets the scripts internal version based on the contents
+                of version.txt, rather than hard-coding it
+
 2.2.1   Major bug fixes
             1.) Fixed a bug that was mangling Unicode characters while removing punctuation
             2.) Fixed a bug where the chatbot's debug level wasn't being used

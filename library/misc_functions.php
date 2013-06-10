@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.1
+  * Version 2.2.2
   * FILE: misc_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-22-2013
@@ -44,6 +44,23 @@
     }
     else return $failed;
   }
+
+  /**
+    * function normalize_text
+    * Transforms text to uppercase, removes all punctuation, and strips extra whitespace
+    * @param (string) $text - The text to perform the transformations on
+    * @return (string) $normalized_text - The completely transformed text
+    **/
+    function normalize_text($text)
+    {
+      runDebug(__FILE__, __FUNCTION__, __LINE__,"Begin normalization - text = '$text'", 4);
+      $normalized_text = preg_replace('/[[:punct:]]/uis', ' ', $text);
+      $normalized_text = preg_replace('/\s\s+/', ' ', $normalized_text);
+      $normalized_text = (IS_MB_ENABLED) ? mb_strtoupper($normalized_text) : strtoupper($normalized_text);
+      $normalized_text = trim($normalized_text);
+      runDebug(__FILE__, __FUNCTION__, __LINE__,"Normalization complete. Text = '$normalized_text'", 4);
+      return $normalized_text;
+    }
 
 
 ?>

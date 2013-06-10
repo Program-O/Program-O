@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.1
+  * Version 2.2.2
   * FILE: chatbot/core/aiml/parse_aiml_as_XML.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -39,7 +39,7 @@
     return $convoArr;
   }
 
-  function add_text_tags($in)
+  function add_text_tags($input)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Adding some TEXT tags into the template, just because I can...', 2);
     /*
@@ -48,7 +48,7 @@
 
       First, wrap the template in TEMPLATE tags, to give the XML a "root" element:
     */
-    $template = "<template>$in</template>";
+    $template = "<template>$input</template>";
     /*
       SimpleXML can't deal with "mixed" content, so any "loose" text is wrapped in a <text> tag.
       The process will sometimes add extra <text> tags, so part of the process below deals with that.
@@ -71,25 +71,25 @@
     return $template;
   }
 
-  function implode_recursive($glue, $in, $file = 'unknown', $function = 'unknown', $line = 'unknown')
+  function implode_recursive($glue, $input, $file = 'unknown', $function = 'unknown', $line = 'unknown')
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Imploding an array into a string. (recursively, if necessary)', 2);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "This function was called from $file, function $function at line $line.", 4);
-    if (!is_array($in))
+    #runDebug(__FILE__, __FUNCTION__, __LINE__, "This function was called from $file, function $function at line $line.", 4);
+    if (!is_array($input) and !is_string($input))
     {
-      trigger_error("Input not array! Error originated in $file, function $function, line $line. Input = " . print_r($in, true));
-      return $in;
+      trigger_error("Input not array! Error originated in $file, function $function, line $line. Input = " . print_r($input, true));
+      return $input;
     }
-    foreach ($in as $index => $element)
+    foreach ($input as $index => $element)
     {
       if (empty ($element))
         continue;
       if (is_array($element))
       {
-        $in[$index] = implode_recursive($glue, $element, __FILE__, __FUNCTION__, __LINE__);
+        $input[$index] = implode_recursive($glue, $element, __FILE__, __FUNCTION__, __LINE__);
       }
     }
-    $out = (is_array($in)) ? implode($glue, $in) : $in;
+    $out = (is_array($input)) ? implode($glue, $input) : $input;
     if ($function != 'implode_recursive') runDebug(__FILE__, __FUNCTION__, __LINE__, "Imploding complete. Returning '$out'", 4);
     return ltrim($out);
   }
@@ -575,21 +575,27 @@
 
   function parse_that_tag($convoArr, $element, $parentName, $level)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THAT tag. That\s cool.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THAT tag. That\'s cool.', 2);
+/*
     $element = $element->that;
     $index = $element['index'];
+*/
+    save_file(_DEBUG_PATH_ . 'that_tag.txt', $element->asXML());
+    #$index = $element->attributes()->index;
+    $index = (string)$element['index'];
     $index = (!empty ($index)) ? $index : 1;
-    if (!is_numeric($index))
+    if (is_numeric($index))
     {
-      if (strstr($index, ',') !== false)
-      {
-        list($index1, $index2) = explode(',', $index, 2);
-        $index2 = ltrim($index2);
-        $response = $convoArr['that'][$index1][$index2];
-      }
+      $index .= ',1';
     }
-    else
-      $response = $convoArr['that'][$index];
+    save_file(_DEBUG_PATH_ . 'that_tag_index.txt', $index);
+    if (strstr($index, ',') !== false)
+    {
+      list($index1, $index2) = explode(',', $index, 2);
+      $index2 = ltrim($index2);
+      $response = $convoArr['that'][$index1][$index2];
+    }
+    else $response = $convoArr['that'][1];
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     return $response_string;
   }

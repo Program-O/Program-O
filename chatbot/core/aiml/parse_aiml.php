@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.2.1
+  * Version 2.2.2
   * FILE: chatbot/core/aiml/parse_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -109,16 +109,16 @@
   * function swapPerson()
   * @param array $convoArr
   * @param int $person
-  * @param string $in
+  * @param string $input
   * @return the tranformed string
   **/
-  function swapPerson($convoArr, $person = 2, $in)
+  function swapPerson($convoArr, $person = 2, $input)
   {
   //2 = swap first with second poerson (e.g. I with you) // otherwise swap with third person
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Person:$person In:$in", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Person:$person In:$input", 4);
     $name = $convoArr['client_properties']['name'];
     $gender = (isset($convoArr['client_properties']['gender'])) ? $convoArr['client_properties']['gender'] : 'unknown';
-    $tmp = trim($in);
+    $tmp = trim($input);
     if ((!isset ($_SESSION['transform_list'])) || ($_SESSION['transform_list'] == NULL))
     {
       buildVerbList($name, $gender);
@@ -197,7 +197,7 @@
       $tmp = preg_replace('/(\bme\b)/ui', $g3, $tmp);
     }
     //debug
-    // if (RUN_DEBUG) runDebug(4, __FILE__, __FUNCTION__, __LINE__,"<br>\nTransformation complete. was: $in, is: $tmp");
+    // if (RUN_DEBUG) runDebug(4, __FILE__, __FUNCTION__, __LINE__,"<br>\nTransformation complete. was: $input, is: $tmp");
     return $tmp;
     //return
   }
@@ -233,16 +233,15 @@
   * @param string $that - the string to clean
   * @return string $that - the cleaned string
   **/
-  function clean_that($that)
+  function clean_that($that, $file, $function, $line)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__,"Processing the ~THAT~ tag: $that", 4);
-    $in = $that;
+    #runDebug(__FILE__, __FUNCTION__, __LINE__,"This was called from $file, function $function, line $line", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"Cleaning up the ~THAT~ tag: '$that'", 4);
+    $original_that = $that;
     $that = str_replace("<br/>", ".", $that);
     $that = strip_tags($that);
-    $that = remove_all_punctuation($that);
-    $that = whitespace_clean($that);
-    $that = capitalize($that);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Cleaning the that - that: $in cleanthat: $that", 4);
+    $that = normalize_text($that);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Cleaning Complete. output = '$that'", 4);
     return $that;
   }
 
@@ -302,8 +301,8 @@
         runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($matches, true), 2);
         for ($i = 1; $i < count($matches); $i++)
         {
-          $curStar = $matches[$i][0];
-          $curStar = trim(remove_all_punctuation($curStar));
+          $curStar = trim($matches[$i][0]);
+          $curStar = preg_replace('/[[:punct:]]/uis', ' ',$curStar);
           $curIndex = $i;
           runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding $curStar to the star stack.", 2);
           $convoArr['star'][$i] = $curStar;
@@ -341,8 +340,8 @@
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Current THAT matches:\n" . print_r($matches, true), 2);
         for ($i = 1; $i < count($matches); $i++)
         {
-          $curStar = $matches[$i][0];
-          $curStar = trim(remove_all_punctuation($curStar));
+          $curStar = trim($matches[$i][0]);
+          $curStar = preg_replace('/[[:punct:]]/uis', ' ',$curStar);
           $curIndex = $i;
           runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding $curStar to the that_star stack.", 2);
           $convoArr['that_star'][$i] = $curStar;

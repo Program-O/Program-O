@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.0.7
+* Version 2.2.2
 * FILE: config/global_config.php
 * AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
 * DATE: January 16th, 2013
@@ -52,7 +52,7 @@
     // Define constants for the current version of Program O, and for the OS name and version
     //------------------------------------------------------------------------
 
-    define ('VERSION', '2.2.1'); # Program O version
+    define ('VERSION', trim(file_get_contents(_BASE_DIR_ . 'version.txt'))); # Program O version
 
     $os  = php_uname('s');
     $osv = php_uname('v');
@@ -179,7 +179,7 @@
     //------------------------------------------------------------------------
 
     define('FAQ_URL', 'http://www.program-o.com/ns/faq/');
-    define('NEWS_URL', 'http://www.program-o.com/ns/feed/news/'); #This needs to be altered to reflect the correct URL
+    define('NEWS_URL', 'http://blog.program-o.com/'); #This needs to be altered to reflect the correct URL
     define('RSS_URL', 'http://blog.program-o.com/feed/');
     define('SUP_URL', 'http://forum.program-o.com/syndication.php');
     define('FORUM_URL', 'http://forum.program-o.com/');

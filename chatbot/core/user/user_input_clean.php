@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.2.1
+  * Version 2.2.2
   * FILE: chatbot/core/user/user_input_clean.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -19,10 +19,13 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Oh, my! how dirty! I just HAVE to clean this up!', 2);
     $otext = $text;
+    $text = normalize_text($text);
+/*
     $text = remove_all_punctuation($text);
     //was not all before
     $text = whitespace_clean($text);
     $text = capitalize($text);
+*/
     runDebug(__FILE__, __FUNCTION__, __LINE__, "In: $otext Out:$text", 4);
     return $text;
   }

@@ -1,6 +1,6 @@
 /*
  * Formation - jQuery Plugin
- * version: 1.1.0 (01/12/2011)
+ * Version 2.2.2
  * Created by: Matt Null
  * Examples and documentation at: http://mattnull.com/formation
  * c) 2010 Matt Null - www.mattnull.com

@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.2.1
+  * Version 2.2.2
   * FILE: spell_checker/spell_checker.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -31,14 +31,13 @@
   **/
   function run_spell_checker_say($say)
   {
-    global $bot_id, $bot_id;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Not to be a nudge, but I want to check your spelling.', 2);
+    global $bot_id;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
     $sentence = '';
-    $bid = (!empty ($bot_id)) ? $bot_id : $bot_id;
     $wordArr = explode(' ', $say);
     foreach ($wordArr as $index => $word)
     {
-      $sentence .= spell_check($word, $bid) . " ";
+      $sentence .= spell_check($word, $bot_id) . " ";
     }
     return trim($sentence);
   }

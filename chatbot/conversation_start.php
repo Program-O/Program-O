@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.2.1
+  * Version 2.2.2
   * FILE: chatbot/conversation_start.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 19 JUNE 2012
@@ -54,7 +54,7 @@
     : $form_vars_post;
   #save_file(_LOG_PATH_ . 'Convo_start_form_vars.txt', print_r($form_vars, true));
   $say = (isset($say) and $say !== '') ? $say : trim($form_vars['say']);
-  $session_name = 'PGOv2';
+  $session_name = 'PGOv' . VERSION;
   session_name($session_name);
   session_start();
   #save_file(_LOG_PATH_ . 'session.txt', print_r($_SESSION, true));
@@ -130,6 +130,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Debug level = $debug_level", 0);
     $debug_level = $convoArr['conversation']['debug_level'];
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Debug level = $debug_level", 0);
+/*
     if (!isset ($convoArr['conversation']['totallines']))
     {
     //load the chatbot configuration for a new user
@@ -139,6 +140,7 @@
       $convoArr['conversation']['totallines'] = 0;
       $convoArr = get_user_id($convoArr);
     }
+*/
     $convoArr['aiml'] = array();
     //add the latest thing the user said
     $convoArr = add_new_conversation_vars($say, $convoArr);
@@ -166,7 +168,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation intialised waiting user", 2);
   }
-  if ($display == '') $display = $convoArr['send_to_user'];
+  #if ($display == '') $display = $convoArr['send_to_user'];
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
   db_close($con);
     #echo $display;

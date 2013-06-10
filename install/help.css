@@ -1,10 +1,12 @@
-/*
-My Program-O Version 2.2.1
-Program-O  chatbot admin area
-Written by Elizabeth Perreau and Dave Morton
-Aug 2011
-for more information and support please visit www.program-o.com
-*/
+/***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.2.2
+  * FILE: help.css
+  * AUTHOR: Elizabeth Perreau and Dave Morton
+  * DATE: 06-10-2013
+  * DETAILS: Provides style and presentation settings for the help page
+  ***************************************/
 html, body  {
 	height: 100%;
 }
