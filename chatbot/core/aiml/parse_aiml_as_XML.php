@@ -575,20 +575,13 @@
 
   function parse_that_tag($convoArr, $element, $parentName, $level)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THAT tag. That\'s cool.', 2);
-/*
-    $element = $element->that;
-    $index = $element['index'];
-*/
-    #save_file(_DEBUG_PATH_ . 'that_tag.txt', $element->asXML());
-    #$index = $element->attributes()->index;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THAT tag. How awesome is that?.', 2);
     $index = (string)$element['index'];
     $index = (!empty ($index)) ? $index : 1;
     if (is_numeric($index))
     {
       $index .= ',1';
     }
-    #save_file(_DEBUG_PATH_ . 'that_tag_index.txt', $index);
     if (strstr($index, ',') !== false)
     {
       list($index1, $index2) = explode(',', $index, 2);

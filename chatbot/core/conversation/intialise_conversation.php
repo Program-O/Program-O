@@ -23,6 +23,7 @@
   **/
   function intialise_convoArray($convoArr)
   {
+    (!isset($convoArr['conversation'])) ? $convoArr['conversation'] = array() : '';
     //set the initial convoArr values
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Intialising conversation", 4);
     //load blank topics

@@ -125,7 +125,7 @@ else {
     foreach ($topicArray as $topic) {
       if (!empty($topic)) $fileContent .= "<topic name=\"$topic\">\n";
       $sql = "select pattern, thatpattern, template from aiml where topic like '$topic' and filename like '$cleanedFilename';";
-      $fileContent .= "\r\n\r\n<!-- SQL = $sql -->\r\n\r\n";
+      #$fileContent .= "\r\n\r\n<!-- SQL = $sql -->\r\n\r\n";
       $result = mysql_query($sql,$dbConn) or trigger_error('Cannot obtain the AIML categories from the DB. Error = ' . mysql_error());
       while ($row = mysql_fetch_assoc($result)) {
         $pattern = (IS_MB_ENABLED) ? mb_strtoupper($row['pattern']) : strtoupper($row['pattern']);
@@ -141,6 +141,9 @@ else {
     }
     $fileContent .= "\r\n</aiml>\r\n";
     $outFile = ltrim($fileContent, "\n\r\n");
+    #$outFile = iconv("ISO-8859-1", "UTF-8//TRANSLIT", $outFile);
+    //$outFile = utf8_encode($outFile);
+    $outFile = mb_convert_encoding($outFile, 'UTF-8');
     $x = file_put_contents("./downloads/$cleanedFilename", trim($outFile));
 
     mysql_close($dbConn);
@@ -259,7 +262,7 @@ endForm;
   }
 
   function serveFile($req_file, &$msg = '') {
-    global $get_vars;
+    global $get_vars, $charset;
     $fileserver_path = dirname(__FILE__) . '/downloads';  // change this to the directory your files reside
     $whoami			 = basename(__FILE__);  // you are free to rename this file
     $myMsg = urlencode($msg);
@@ -283,7 +286,7 @@ if (empty($get_vars['send_file'])) {
 }
 else {
   header('Content-Description: File Transfer');
-  header('Content-Type: application/force-download');
+  header('Content-Type: application/force-download; charset="' . $charset . '"');
   header('Content-Length: ' . filesize("$fileserver_path/$req_file"));
   header('Content-Disposition: attachment; filename=' . $req_file);
   #readfile("$fileserver_path/$req_file");
