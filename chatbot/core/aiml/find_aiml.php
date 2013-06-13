@@ -61,8 +61,15 @@
     $count_words = count($words) - 1;
     $first_word = $words[0];
     $last_word = $words[$count_words];
+    $tmpLike = '';
+    $sql_like_pattern .= " `$field` like '%$first_word %' OR";
+    foreach ($words as $word)
+    {
+      if ($word == $first_word or $word == $last_word) continue;
+      $sql_like_pattern .= " `$field` like '% $word %' OR";
+    }
 
-    $sql_like_pattern .= " `$field` like '%$first_word %' OR  `$field` like '% $last_word%' OR  `$field` like '$first_word % $last_word'";
+    $sql_like_pattern .= " `$field` like '% $last_word%' OR  `$field` like '$first_word % $last_word'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "returning like pattern:\n$sql_like_pattern", 4);
     //return
     return $sql_like_pattern;
@@ -592,7 +599,7 @@
     //build sql
     $sql = "SELECT * FROM `$dbn`.`aiml_userdefined` WHERE
 		`bot_id` = '$bot_id' AND
-		(`user_id` = '$user_id' OR `user_id` = '-1') AND
+		`user_id` = '$user_id' OR `user_id` = '-1' AND
 		`pattern` = '$lookingfor'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined SQL: $sql", 3);
     $result = db_query($sql, $con);
