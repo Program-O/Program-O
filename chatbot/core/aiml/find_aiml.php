@@ -349,7 +349,7 @@
         //if stored result == none of the above BREAK INTO WORDS AND SCORE INDIVIDUAL WORDS
         $lc_lookingFor = (IS_MB_ENABLED) ? mb_strtolower($convoArr['user_say'][1]) : strtolower($convoArr['user_say'][1]);
         $lookingforArray = explode(' ', trim($lc_lookingFor));
-        save_file(_DEBUG_PATH_ . 'lfa.txt', print_r($lookingforArray, true));
+        //save_file(_DEBUG_PATH_ . 'lfa.txt', print_r($lookingforArray, true));
         $wordsArr = explode(" ", $aiml_pattern);
         foreach ($wordsArr as $index => $word)
         {
