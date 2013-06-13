@@ -62,14 +62,14 @@
     $first_word = $words[0];
     $last_word = $words[$count_words];
     $tmpLike = '';
-    $sql_like_pattern .= " `$field` like '%$first_word %' OR";
+    $sql_like_pattern .= " `$field` like '$first_word %' OR";
     foreach ($words as $word)
     {
       if ($word == $first_word or $word == $last_word) continue;
       $sql_like_pattern .= " `$field` like '% $word %' OR";
     }
 
-    $sql_like_pattern .= " `$field` like '% $last_word%' OR  `$field` like '$first_word % $last_word'";
+    $sql_like_pattern .= " `$field` like '% $last_word%' OR  `$field` like '$first_word % $last_word' OR `$field` like '$last_word'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "returning like pattern:\n$sql_like_pattern", 4);
     //return
     return $sql_like_pattern;
@@ -229,8 +229,9 @@
     $that_pattern_match = 75;
     $topic_match = 50;
     $that_pattern_match_general = 9;
-    $uncommon_word_points = 6;
-    $common_word_points = 3;
+    $uncommon_word_points = 8;
+    $common_word_points = 1;
+    $direct_word_match_points = 1;
     $pattern_points = 2;
     $starscore_points = 1;
     $direct_match = 1;
@@ -345,12 +346,21 @@
       }
       else
       {
-      //if stored result == none of the above BREAK INTO WORDS AND SCORE INDIVIDUAL WORDS
+        //if stored result == none of the above BREAK INTO WORDS AND SCORE INDIVIDUAL WORDS
+        $lc_lookingFor = (IS_MB_ENABLED) ? mb_strtolower($convoArr['user_say'][1]) : strtolower($convoArr['user_say'][1]);
+        $lookingforArray = explode(' ', trim($lc_lookingFor));
+        save_file(_DEBUG_PATH_ . 'lfa.txt', print_r($lookingforArray, true));
         $wordsArr = explode(" ", $aiml_pattern);
         foreach ($wordsArr as $index => $word)
         {
           $word = (IS_MB_ENABLED) ? mb_strtolower($word) : strtolower($word);
           $word = trim($word);
+          if (in_Array($word, $lookingforArray))
+          {
+          // if it is a direct word match increase with (lower) score
+            $allrows[$all]['score'] += $direct_word_match_points;
+            $allrows[$all]['track_score'] .= "x";
+          }
           if (in_Array($word, $common_words_array))
           {
           // if it is a commonword increase with (lower) score
