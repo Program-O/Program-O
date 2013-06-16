@@ -50,7 +50,7 @@
   $consumersecret="";
   $accesstoken="";
   $accesstokensecret="";
-  $path_to_bot = "http://www.yoursite.com/chatbot/";
+  $path_to_bot = "http://www.yoursite.com/chatbot/conversation_start.php";
   $cron_every_x_minutes = 5;
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -96,11 +96,11 @@
    function getReply($convo_id,$usersay){
      global $path_to_bot;
      $botsay = '';
-     $request_url = $path_to_bot."conversation_start.php?say=".urlencode($usersay)."&convo_id=".$convo_id."&bot_id=6&format=xml";
+     $request_url = $path_to_bot."?say=".urlencode($usersay)."&convo_id=".$convo_id."&bot_id=6&format=xml";
      $conversation = @simplexml_load_file($request_url,"SimpleXmlElement",LIBXML_NOERROR+LIBXML_ERR_FATAL+LIBXML_ERR_NONE);
 
      if((@$conversation)&&(count(@$conversation)>0)){
-       $botsay = (string)$conversation->botsay;
+       $botsay = (string)$conversation->chat->line[0]->response;
        $botsay = str_replace("undefined","...",$botsay);
 
     }
