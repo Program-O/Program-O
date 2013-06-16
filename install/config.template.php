@@ -252,9 +252,9 @@
     //------------------------------------------------------------------------
 
     $sys_mem_limit = ini_get('memory_limit');
-    $quantifier = preg_match('~\D~', $raw_mem_limit,$matches);
+    $quantifier = preg_match('~\D~', $sys_mem_limit,$matches);
     $quantifier = strtolower($matches[0]);
-    $mem_limit = str_replace($quantifier, '', $raw_mem_limit);
+    $mem_limit = str_replace($quantifier, '', $sys_mem_limit);
     switch ($quantifier)
     {
       case 'g':

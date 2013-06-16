@@ -9,7 +9,6 @@
   * DATE: MAY 4TH 2011
   * DETAILS: this file contains the includes to load all user function files
   ***************************************/
-  include_once ("user_input_clean.php");
   include_once ("handle_user.php");
   runDebug(__FILE__, __FUNCTION__, __LINE__, "userfunctions include files loaded", 4);
 ?>
