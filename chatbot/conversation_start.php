@@ -118,6 +118,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $bot_id . "\nFormat: " . $form_vars['format'], 2);
     //get the stored vars
     $convoArr = read_from_session();
+    $convoArr = load_default_bot_values($convoArr);
     //now overwrite with the recieved data
     $convoArr = check_set_convo_id($convoArr);
     $convoArr = check_set_bot($convoArr);
@@ -132,7 +133,6 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Debug level = $debug_level", 0);
     $debug_level = $convoArr['conversation']['debug_level'];
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Debug level = $debug_level", 0);
-/*
     if (!isset ($convoArr['conversation']['totallines']))
     {
     //load the chatbot configuration for a new user
@@ -142,10 +142,10 @@
       $convoArr['conversation']['totallines'] = 0;
       $convoArr = get_user_id($convoArr);
     }
-*/
     $convoArr['aiml'] = array();
     //add the latest thing the user said
     $convoArr = add_new_conversation_vars($say, $convoArr);
+
     //parse the aiml
     $convoArr = make_conversation($convoArr);
     $convoArr = run_mid_level_addons($convoArr);

@@ -101,7 +101,7 @@
     if ($result) {
       $count = mysql_num_rows($result);
       if($count > 0) {
-        $row=mysql_fetch_array($result);
+        $row=mysql_fetch_assoc($result);
         $_SESSION['poadmin']['uid']=$row['id'];
         $_SESSION['poadmin']['name']=$row['user_name'];
         $_SESSION['poadmin']['lip']=$row['last_ip'];
@@ -124,7 +124,7 @@
         $result = mysql_query($sql,$dbConn);
         $count = mysql_num_rows($result);
         if($count > 0) {
-          $row=mysql_fetch_array($result);
+          $row=mysql_fetch_assoc($result);
           $_SESSION['poadmin']['bot_id']=$row['bot_id'];
           $_SESSION['poadmin']['bot_name']=$row['bot_name'];
         }

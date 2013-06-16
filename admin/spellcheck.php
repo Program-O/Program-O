@@ -102,7 +102,7 @@ endScript;
     $dbConn = db_open();
     $sql = "select count(*) from `spellcheck` where 1";
     if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-    $row = mysql_fetch_array($result);
+    $row = mysql_fetch_assoc($result);
     $rowCount = $row[0];
     mysql_close($dbConn);
     $lastPage = intval($rowCount / 50);
@@ -234,7 +234,7 @@ function runSpellSearch() {
                     </tr>
                   </thead>
                 <tbody>';
-    while($row=mysql_fetch_array($result)) {
+    while($row=mysql_fetch_assoc($result)) {
         $i++;
         $misspell = strtoupper($row['missspelling']);
         $correction = strtoupper($row['correction']);
@@ -273,7 +273,7 @@ function editSpellForm($id) {
   $dbConn = db_open();
   $sql    = "SELECT * FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
   if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-  $row    = mysql_fetch_array($result);
+  $row    = mysql_fetch_assoc($result);
   $uc_missspelling = (IS_MB_ENABLED) ? mb_strtoupper($row['missspelling']) : strtoupper($row['missspelling']);
   $uc_correction = (IS_MB_ENABLED) ? mb_strtoupper($row['correction']) : strtoupper($row['correction']);
   $form   = str_replace('[id]', $row['id'], $form);

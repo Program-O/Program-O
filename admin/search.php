@@ -104,7 +104,7 @@
             </thead>
             <tbody>
 endtHead;
-      while($row=mysql_fetch_array($result)) {
+      while($row=mysql_fetch_assoc($result)) {
         $i++;
         $topic = $row['topic'];
         $pattern = $row['pattern'];
@@ -159,7 +159,7 @@ endRow;
     $dbConn = db_open();
     $sql = "SELECT * FROM `aiml` WHERE `id` = '$id' LIMIT 1";
     if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-    $row=mysql_fetch_array($result);
+    $row=mysql_fetch_assoc($result);
     $topic = $row['topic'];
     $pattern = $row['pattern'];
     $thatpattern = $row['thatpattern'];

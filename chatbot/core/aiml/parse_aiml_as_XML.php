@@ -282,7 +282,7 @@
       $result = db_query($sql, $con);
       if (($result) and (mysql_num_rows($result) > 0))
       {
-        $row = mysql_fetch_array($result);
+        $row = mysql_fetch_assoc($result);
         $response = $row['value'];
       }
       else
@@ -362,6 +362,7 @@
 
   function parse_bot_tag($convoArr, $element)
   {
+    global $remember_up_to;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a BOT tag.', 2);
     $attributeName = (string)$element->attributes()->name;
     $attributeName = ($attributeName == '*') ? $convoArr['star'][1] : $attributeName;

@@ -36,6 +36,8 @@
     $convoArr = load_blank_array_element('input', "", $convoArr);
     //load blank stack
     $convoArr = load_blank_stack($convoArr);
+    //load bot properties
+    $convoArr = load_default_bot_values($convoArr);
     //load the new client defaults
     $convoArr = load_new_client_defaults($convoArr);
     return $convoArr;
@@ -95,12 +97,12 @@
   function load_default_bot_values($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Loading db bot personality properties", 4);
-    global $con, $dbn;
+    global $con, $dbn, $bot_id;
     //set in global config file
-    $sql = "SELECT * FROM `$dbn`.`botpersonality` WHERE `bot_id` = '" . $convoArr['conversation']['bot_id'] . "'";
+    $sql = "SELECT * FROM `$dbn`.`botpersonality` WHERE `bot_id` = '" . $bot_id . "'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "load db bot personality values SQL: $sql", 3);
     $result = db_query($sql, $con);
-    while ($row = mysql_fetch_array($result))
+    while ($row = mysql_fetch_assoc($result))
     {
       $convoArr['bot_properties'][$row['name']] = $row['value'];
     }
@@ -198,7 +200,6 @@
       $convoArr[$arrayIndex] = array();
       $convoArr = load_blank_array_element($arrayIndex, "", $convoArr);
     }
-    #save_file(_DEBUG_PATH_ . "$arrayIndex.txt", print_r($convoArr[$arrayIndex], true) . PHP_EOL, true);
     //if the subarray is itself an array check it here
     if (in_array($arrayIndex, $two_d_arrays))
     {
@@ -304,7 +305,6 @@
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading bot details from the database.', 4);
       $row = mysql_fetch_assoc($result);
-      #save_file(_LOG_PATH_ . 'bot_config.txt', print_r($row, true));
       $convoArr['conversation']['conversation_lines'] = $row['conversation_lines'];
       $convoArr['conversation']['remember_up_to'] = $row['remember_up_to'];
       $convoArr['conversation']['debugemail'] = $row['debugemail'];

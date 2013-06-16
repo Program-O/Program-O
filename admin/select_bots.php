@@ -57,7 +57,7 @@ function getBotParentList($current_parent,$dbConn) {
 
   $options = '                  <option value="0"[noBot]>No Parent Bot</option>';
 
-  while($row = mysql_fetch_array($result)) {
+  while($row = mysql_fetch_assoc($result)) {
     if ($row['bot_id'] == 0) $options = str_replace('[noBot]', 'selected="selected"', $options);
     if($current_parent==$row['bot_id']) {
       $sel = "selected=\"selected\"";
@@ -391,7 +391,7 @@ function changeBot() {
     if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
     $count = mysql_num_rows($result);
     if($count>0) {
-      $row=mysql_fetch_array($result);
+      $row=mysql_fetch_assoc($result);
       $_SESSION['poadmin']['bot_id']=$row['bot_id'];
       $_SESSION['poadmin']['bot_name']=$row['bot_name'];
     }
@@ -418,7 +418,7 @@ function getChangeList() {
   $sql = "SELECT * FROM `bots` ORDER BY bot_name";
   if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
   $options = '<option value="new" selected="selected">Add New Bot</option>' . "\n";
-  while($row = mysql_fetch_array($result)) {
+  while($row = mysql_fetch_assoc($result)) {
     if($bot_id == $row['bot_id']) {
       $sel = ' selected="selected"';
     }

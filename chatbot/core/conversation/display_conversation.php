@@ -48,7 +48,7 @@
     $result = db_query($sql, $con);
     if (db_res_count($result) > 0)
     {
-      while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+      while ($row = mysql_fetch_assoc($result, MYSQL_ASSOC))
       {
         $allrows[] = $row;
       }
@@ -230,7 +230,7 @@
     $dom->formatOutput = true;
     $send_to_user = $dom->ownerDocument->saveXML();
     $convoArr['send_to_user'] = $send_to_user;
-    save_file(_DEBUG_PATH_ . 'sendToUser.txt', $send_to_user);
+    #save_file(_DEBUG_PATH_ . 'sendToUser.txt', $send_to_user);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning XML", 4);
     return $convoArr;
   }

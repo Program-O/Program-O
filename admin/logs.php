@@ -124,7 +124,7 @@ function getuserList($showing) {
 endList;
   if (($result = mysql_query($sql,$dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
   if (mysql_num_rows($result) == 0) $list .= '          <li>No log entries found</li>';
-  while($row = mysql_fetch_array($result)) {
+  while($row = mysql_fetch_assoc($result)) {
     $user_id = $row['user_id'];
     $linkClass = ($user_id == $curUserid) ? 'selected' : 'noClass';
     $userName = @$nameList[$user_id];
@@ -218,7 +218,7 @@ function getuserConvo($id, $showing) {
   $list = "<hr><br/><h4>$title conversations for user: $id</h4>";
   $list .="<div class=\"convolist\">";
   if (($result = mysql_query($sql,$dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql\n");
-  while($row = mysql_fetch_array($result)) {
+  while($row = mysql_fetch_assoc($result)) {
     $thisdate = date("Y-m-d",strtotime($row['timestamp']));
     if($thisdate!=$lasttimestamp) {
       if($i>1) {

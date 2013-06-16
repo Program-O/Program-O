@@ -48,7 +48,7 @@ function initialise_censor($bot_id)
 	
 	
 	
-	while($row=mysql_fetch_array($result)){
+	while($row=mysql_fetch_assoc($result)){
 		$_SESSION['programo_bigArray']['censor'][base64_encode("/\b".$row['word_to_censor']."\b/i")]=base64_encode("/\b".$row['replace_with']."\b/i");
 	}
 }

@@ -100,7 +100,7 @@ endScript;
     $dbConn = db_open();
     $sql = "select count(*) from `wordcensor` where 1";
     if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-    $row = mysql_fetch_array($result);
+    $row = mysql_fetch_assoc($result);
     $rowCount = $row[0];
     mysql_close($dbConn);
     $lastPage = intval($rowCount / 50);
@@ -233,7 +233,7 @@ function runWordCensorSearch() {
                     </tr>
                   </thead>
                 <tbody>';
-    while($row=mysql_fetch_array($result)) {
+    while($row=mysql_fetch_assoc($result)) {
         $i++;
         $word_to_censor = (IS_MB_ENABLED) ? mb_strtoupper($row['word_to_censor']) : strtoupper($row['word_to_censor']);
         $replace_with = (IS_MB_ENABLED) ? mb_strtoupper($row['replace_with']) : strtoupper($row['replace_with']);
@@ -272,7 +272,7 @@ function editWordCensorForm($id) {
   $dbConn = db_open();
   $sql    = "SELECT * FROM `wordcensor` WHERE `censor_id` = '$id' LIMIT 1";
   if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-  $row    = mysql_fetch_array($result);
+  $row    = mysql_fetch_assoc($result);
   $uc_word_to_censor = (IS_MB_ENABLED) ? mb_strtoupper($row['word_to_censor']) : strtoupper($row['word_to_censor']);
   $uc_replace_with = (IS_MB_ENABLED) ? mb_strtoupper($row['replace_with']) : strtoupper($row['replace_with']);
   $form   = str_replace('[censor_id]', $row['censor_id'], $form);
