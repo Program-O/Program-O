@@ -21,7 +21,7 @@
   ini_set('default_charset', $charset);
 
   //leave this first debug call in as it wipes any existing file for this session
-  runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Starting", 0);
+  runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Starting. Program O version " . VERSION, 0);
   //load all the chatbot functions
   include_once (_BOTCORE_PATH_ . "aiml" . $path_separator . "load_aimlfunctions.php");
   //load all the user functions
@@ -36,6 +36,7 @@
   //------------------------------------------------------------------------
   // set to the user defined error handler
   set_error_handler("myErrorHandler");
+  $say = '';
   //open db connection
   $con = db_open();
   //initialise globals
@@ -54,7 +55,7 @@
     : ($form_vars_get !== null) ? $form_vars_get
     : $form_vars_post;
   #save_file(_LOG_PATH_ . 'Convo_start_form_vars.txt', print_r($form_vars, true));
-  $say = (isset($say) and $say !== '') ? $say : trim($form_vars['say']);
+  $say = ($say !== '') ? $say : trim($form_vars['say']);
   $session_name = 'PGOv' . VERSION;
   session_name($session_name);
   session_start();

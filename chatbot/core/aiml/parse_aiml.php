@@ -449,7 +449,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making learn", 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Pattern:  $pattern", 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Template: $template", 2);
-    $pattern = clean_for_aiml_match($pattern);
+    $pattern = normalize_text($pattern);
     $aiml = "<learn> <category> <pattern> <eval>$pattern</eval> </pattern> <template> <eval>$template</eval> </template> </category> </learn>";
     $aiml = mysql_real_escape_string($aiml);
     $pattern = mysql_real_escape_string($pattern . " ");

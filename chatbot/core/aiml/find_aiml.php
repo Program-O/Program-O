@@ -765,6 +765,12 @@
         $allrows[$i]['topic'] = $row['topic'];
         $allrows[$i]['aiml_to_php'] = $row['php_code'];
         $i++;
+        $mu =memory_get_usage(true);
+        if ($mu >= MEM_TRIGGER)
+        {
+          runDebug(__FILE__, __FUNCTION__, __LINE__,'Current operation exceeds memory threshold. Aborting data retrieval.', 0);
+          break;
+        }
       }
     }
     else

@@ -27,22 +27,30 @@
     $say = urlencode($_REQUEST['say']);
     //make an xml request...
     #$request_url = "http://YOURSITE.COM/chatbot/conversation_start.php?say=$say&convo_id=$convo_id&bot_id=$bot_id&format=xml";
-    $request_url = 'http://dmorton/Program-O/chatbot/conversation_start.php';
+    $request_url ='http://localhost/Program-O/Program-O/chatbot/conversation_start.php';
     $options = array(
                CURLOPT_USERAGENT => 'Program O XML API',
     );
     $form_vars_post = filter_input_array(INPUT_POST);
     $convo_xml = get_cURL($request_url, $options, $form_vars_post); //
-    $conversation = simplexml_load_string($convo_xml, 'SimpleXMLElement', LIBXML_NOCDATA);
-    if (($conversation) && (count($conversation) > 0))
+    $program_o = simplexml_load_string($convo_xml, 'SimpleXMLElement', LIBXML_NOCDATA);
+    if (($program_o) && (count($program_o) > 0))
     {
-      $botname = (string) $conversation->bot_name;
-      $username = (string) $conversation->user_name;
-      $botsay = (string) $conversation->botsay;
-      $usersay = (string) $conversation->usersay;
-      $response .= "<div id=\"user\"><b>$username:</b>$usersay</div>";
-      $response .= "<div id=\"bot\"><b>$botname:</b>$botsay</div>";
-      $response = str_ireplace('<![CDATA[', '', $response);
+      $botname = (string) $program_o->bot_name;
+      $username = (string) $program_o->user_name;
+      $chat = $program_o->chat;
+      foreach ($chat as $line)
+      {
+        $usersay = $line->input;
+        $botsay = $line->response;
+        $response .= "<div id=\"user\"><b>$username:</b>$usersay</div>";
+        $response .= "<div id=\"bot\"><b>$botname:</b>$botsay</div>";
+      }
+/*
+      $botsay = (string) $program_o->botsay;
+      $usersay = (string) $program_o->usersay;
+*/
+      $response = str_replace('<![CDATA[', '', $response);
       $response = str_replace(']]>', '', $response);
     }
   }

@@ -144,20 +144,93 @@
   **/
   function get_xml($convoArr, $conversation)
   {
+/*
     $user_name = $convoArr['conversation']['user_name'];
     $user_id = $convoArr['conversation']['user_id'];
+    $bot_id = $convoArr['conversation']['bot_id'];
     $bot_name = $convoArr['conversation']['bot_name'];
     $conversation_lines = $convoArr['conversation']['conversation_lines'];
-    $convo_xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n  <conversation convo_id=\"" . $convoArr['conversation']['convo_id'] . "\">\n";
-    $convo_xml .= "    <bot_name>$bot_name</bot_name>\n";
-    $convo_xml .= "    <user_name>$user_name</user_name>\n";
-    $convo_xml .= "    <user_id value='$user_id' />\n";
+    $timestamp = $convoArr['time_start'];
+    $topic = $convoArr['aiml']['topic'];
+    $emotion = ''; // Future use provision
+
+    $output_template = '
+<program_o>
+  <status>[status]</status>
+  <version>[version]</version>
+  <timestamp>[timestamp]</timestamp>
+  <conversation>
+     <topic>[topic]</topic>
+     <emotion>[emotion]</emotion>
+     <bot>
+       <id>[bot_id]</id>
+       <name>[bot_name]</name>
+     </bot>
+     <user>
+       <id>[user_id]</id>
+       <name>[user_name]</name>
+     </user>
+     <chat>
+[chat_lines]
+     </chat>
+  </conversation>
+</program_o>
+';
+    $volley_template = '       <line>
+         <input>[input]</input>
+         <response>[response]</response>
+       </line>';
+    $chatLines = ''; // [version][timestamp][topic][emotion][bot_id][bot_name][user_id][user_name]
     foreach ($conversation as $index => $conversation_subarray)
     {
-      $convo_xml .= "      <usersay>" . stripslashes($conversation_subarray['input']) . "</usersay>\n      <botsay>" . stripslashes($conversation_subarray['response']) . "</botsay>\n";
+      $usersay = stripslashes($conversation_subarray['input']);
+      $botsay = stripslashes($conversation_subarray['response']);
+      $chatline = str_replace('[input]', $usersay, $volley_template);
+      $chatline = str_replace('[response]', $botsay, $chatline);
+      $chat_lines .= $chatline;
     }
-    $convo_xml .= "  </conversation>\n";
-    $convoArr['send_to_user'] = $convo_xml;
+    $status = (!empty($chat_lines)) ? 'success' : '<message>Something went wrong. See the logs for details.</message>';
+    $status = (!empty($chat_lines)) ? '<message>success</message>' : '<message>Something went wrong. See the logs for details.</message>';
+    #$status = '<message>Something went wrong. See the logs for details.</message>';
+    $send_to_user = str_replace('[version]',    VERSION, $output_template);
+    $send_to_user = str_replace('[status]',    $status, $send_to_user);
+    $send_to_user = str_replace('[timestamp]',  $timestamp, $send_to_user);
+    $send_to_user = str_replace('[topic]',      $topic, $send_to_user);
+    $send_to_user = str_replace('[emotion]',    $emotion, $send_to_user);
+    $send_to_user = str_replace('[bot_id]',     $bot_id, $send_to_user);
+    $send_to_user = str_replace('[bot_name]',   $bot_name, $send_to_user);
+    $send_to_user = str_replace('[user_id]',    $user_id, $send_to_user);
+    $send_to_user = str_replace('[user_name]',  $user_name, $send_to_user);
+    $send_to_user = str_replace('[chat_lines]', $chat_lines, $send_to_user);
+    $convoArr['send_to_user'] = $send_to_user;
+*/
+    $addTags = array('bot_id','bot_name','user_id','user_name');
+    $program_o = new SimpleXMLElement('<program_o/>');
+    $program_o->addChild('version',VERSION);
+    $program_o->addChild('status');
+    $status = $program_o->status;
+    $status->addChild('success', true);
+    foreach ($addTags as $tag_name)
+    {
+      $tmpVal = $convoArr['conversation'][$tag_name];
+      $program_o->addChild($tag_name, $tmpVal);
+    }
+    $program_o->addChild('chat');
+    $chat = $program_o->chat;
+    file_put_contents(_DEBUG_PATH_ . 'convo_sub_array.txt', print_r($conversation, true));
+    foreach ($conversation as $index => $conversation_subarray)
+    {
+      if (empty($conversation_subarray)) continue;
+      $line = $chat->addChild('line');
+      $line->addChild('input', $conversation_subarray['input']);
+      $line->addChild('response', $conversation_subarray['response']);
+    }
+    $dom = dom_import_simplexml($program_o);
+    $dom->preserveWhiteSpace = false;
+    $dom->formatOutput = true;
+    $send_to_user = $dom->ownerDocument->saveXML();
+    $convoArr['send_to_user'] = $send_to_user;
+    save_file(_DEBUG_PATH_ . 'sendToUser.txt', $send_to_user);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning XML", 4);
     return $convoArr;
   }
