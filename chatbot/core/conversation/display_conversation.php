@@ -48,7 +48,7 @@
     $result = db_query($sql, $con);
     if (db_res_count($result) > 0)
     {
-      while ($row = mysql_fetch_assoc($result, MYSQL_ASSOC))
+      while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
       {
         $allrows[] = $row;
       }
