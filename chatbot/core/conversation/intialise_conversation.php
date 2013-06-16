@@ -524,7 +524,7 @@
     $bot_id = $convoArr['conversation']['bot_id'];
     $ip = $_SERVER['REMOTE_ADDR'];
     $convoArr['client_properties']['ip_address'] = $ip;
-    $sql = "select `user_name`, `id` from `users` where `session_id` = '$convo_id' limit 1;";
+    $sql = "select `user_name`, `id`, `chatlines` from `users` where `session_id` = '$convo_id' limit 1;";
     $result = mysql_query($sql, $con) or $msg = SQL_error(mysql_errno(), __FILE__, __FUNCTION__, __LINE__);
     $numRows = mysql_num_rows($result);
     if ($numRows == 0)
@@ -538,10 +538,12 @@
       $user_id = (!empty ($row['id'])) ? $row['id'] : 0;
       $user_name = (!empty ($row['user_name'])) ? $row['user_name'] : $unknown_user;
     }
+    $chatlines = (!empty ($row['chatlines'])) ? $row['chatlines'] : 0;
     $user_name = (!empty ($user_name)) ? $user_name : $unknown_user;
     $convoArr['conversation']['user_name'] = $user_name;
     $convoArr['conversation']['user_id'] = $user_id;
     $convoArr['client_properties']['name'] = $user_name;
+    $convoArr['conversation']['totallines'] = $chatlines;
     return $convoArr;
   }
 

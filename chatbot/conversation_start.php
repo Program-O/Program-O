@@ -175,4 +175,4 @@
   db_close($con);
     #echo $display;
   $convoArr = handleDebug($convoArr); // Make sure this is the last line in the file, so that all debug entries are captured.
-  display_conversation($display, $convoArr['conversation']['format']);
+  if (isset($convoArr['conversation']['format'])) display_conversation($display, $convoArr['conversation']['format']);

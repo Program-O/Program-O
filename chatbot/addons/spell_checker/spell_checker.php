@@ -52,6 +52,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Preforming a spel chek on $word.", 2);
     global $con, $dbn, $spellcheck_common_words;
+    if (strstr($word, "'")) $word = str_replace("'", ' ', $word);
     $test_word = (IS_MB_ENABLED) ? mb_strtolower($word) : strtolower($word);
     if (!isset($_SESSION['spellcheck'])) load_spelling_list();
     if (in_array($test_word, $spellcheck_common_words))

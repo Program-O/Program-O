@@ -269,6 +269,10 @@
     $user_id = $convoArr['conversation']['user_id'];
     $var_name = $element->attributes()->name;
     $var_name = ($var_name == '*') ? $convoArr['star'][1] : $var_name;
+    for ($n = 2; $n <= $remember_up_to; $n++) # index multiple star values
+    {
+      $var_name = ($var_name == "*$n") ? $convoArr['star'][$n] : $var_name;
+    }
     if (empty ($var_name))
       $response = 'undefined';
     if (empty ($response))
@@ -291,12 +295,16 @@
   function parse_set_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing the SET tag.', 2);
-    global $con, $dbn, $user_name;
+    global $con, $dbn, $user_name, $remember_up_to;
     $var_value = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $var_name = (string)$element->attributes()->name;
     $var_name = ($var_name == '*') ? $convoArr['star'][1] : $var_name;
+    for ($n = 2; $n <= $remember_up_to; $n++) # index multiple star values
+    {
+      $var_name = ($var_name == "*$n") ? $convoArr['star'][$n] : $var_name;
+    }
     $vn_type = gettype($var_name);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "var_name = $var_name and is type: $vn_type", 4);
     if ($var_name == 'name')
@@ -357,6 +365,10 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a BOT tag.', 2);
     $attributeName = (string)$element->attributes()->name;
     $attributeName = ($attributeName == '*') ? $convoArr['star'][1] : $attributeName;
+    for ($n = 2; $n <= $remember_up_to; $n++) # index multiple star values
+    {
+      $attributeName = ($attributeName == "*$n") ? $convoArr['star'][$n] : $attributeName;
+    }
     $response = (!empty ($convoArr['bot_properties'][$attributeName])) ? $convoArr['bot_properties'][$attributeName] : 'undefined';
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning bot property $attributeName. Value = $response", 4);
     return $response;
@@ -394,14 +406,19 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SENTENCE tag.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $response_string = (IS_MB_ENABLED) ? mb_strtolower($response_string) : strtolower($response_string);
-    $response = ucfirst($response_string);
+    if (IS_MB_ENABLED)
+    {
+      $response_string = mb_strtolower($response_string);
+      $response = mb_strtoupper(mb_substr($response_string, 0, 1)) . mb_substr($response_string, 1);
+    }
+    else $response = ucfirst(strtolower($response_string));
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 4);
     return $response;
   }
 
   function parse_formal_tag($convoArr, $element, $parentName, $level)
   {
+    global $charset;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing A Formal Tag.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $response = (IS_MB_ENABLED) ? mb_convert_case($response_string, MB_CASE_TITLE, $charset) : ucwords(strtolower($response_string));

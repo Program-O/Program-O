@@ -377,6 +377,12 @@
     }
     $tmp_convoArr = array();
     $tmp_convoArr = $convoArr;
+    if (!isset($tmp_convoArr['stack'])) $tmp_convoArr = load_blank_stack($tmp_convoArr);
+    if (!isset($tmp_convoArr['topic']))
+    {
+      $tmp_convoArr['topic'] = array();
+      $tmp_convoArr['topic'][1] = '';
+    }
     $tmp_convoArr['aiml'] = array();
     $tmp_convoArr['that'][1][1] = "";
     //added

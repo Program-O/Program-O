@@ -6,7 +6,6 @@ admin/*.log
 admin/skins
 !admin/downloads
 admin/downloads/*
-!admin/downloads/bot_test.aiml
 !admin/downloads/index.html
 config/global_config.php
 config/uploads/*

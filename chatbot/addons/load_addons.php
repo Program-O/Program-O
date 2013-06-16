@@ -22,7 +22,7 @@ function run_pre_input_addons(&$convoArr, $say) {
   global $format;
   $say = (USE_SPELL_CHECKER) ? run_spell_checker_say($say) : $say;
   //$convoArr = checkIP($convoArr);
-  if ($format == 'html') $say =  parseInput($say);
+  #if ($format == 'html') $say =  parseInput($say);
   return $say;
 }
 

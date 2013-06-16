@@ -102,6 +102,7 @@ function intisaliseUser($convoArr)
   mysql_query($sql,$con) or trigger_error('Error trying to add user. Error = ' . mysql_error());
   $user_id = mysql_insert_id($con);
   $convoArr['conversation']['user_id'] = $user_id;
+  $convoArr['conversation']['totallines'] = 0;
   runDebug( __FILE__, __FUNCTION__, __LINE__, "intisaliseUser #$user_id SQL: $sql",3);
   
   return $convoArr;

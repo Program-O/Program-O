@@ -641,7 +641,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running all functions to get the correct aiml from the DB", 4);
     $lookingfor = $convoArr['aiml']['lookingfor'];
-    $raw_that = print_r($convoArr['that'], true);
+    $raw_that = (isset($convoArr['that'])) ? print_r($convoArr['that'], true) : '';
     $current_thatpattern = (isset($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
     $current_topic = get_topic($convoArr);
     $aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
@@ -697,7 +697,7 @@
     $lastInputWord = get_last_word($lookingfor);
     $firstInputWord = get_first_word($lookingfor);
     //get the stored topic
-    $storedtopic = mysql_real_escape_string($convoArr['topic'][1]);
+    $storedtopic = (isset($convoArr['topic'][1])) ? mysql_real_escape_string($convoArr['topic'][1]) : '';
     if ($storedtopic == '') $storedtopic = get_topic($convoArr);
     //get the cleaned user input
     $lastthat =  (isset($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
