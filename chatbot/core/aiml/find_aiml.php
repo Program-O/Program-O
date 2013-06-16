@@ -660,6 +660,9 @@
       $allrows = score_matches($convoArr, $bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $aiml_pattern);
       //get the highest
       $allrows = get_highest_score_rows($allrows, $lookingfor);
+      //READY FOR v2.5 do not uncomment will not work
+      //check if this is an unknown input and place in the unknown_inputs tbl if true
+      //check_and_add_unknown_inputs($allrows,$convoArr);
     }
     //Now we have the results put into the conversation array
     $convoArr['aiml']['pattern'] = $allrows['pattern'];
@@ -675,6 +678,33 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Will be parsing id:" . $allrows['aiml_id'] . " (" . $allrows['pattern'] . ")", 4);
     return $convoArr;
   }
+
+
+  /**
+  * function check_and_add_unknown_inputs()
+  * READY FOR v2.5 
+  * This function adds inputs without a response to the unknown_inputs table
+  * @param array $allrows - the highest scoring return rows
+  * @param array $convoArr - conversation array
+  * @return void
+  **/
+  function check_and_add_unknown_inputs($allrows,$convoArr){
+    if($allrows['pattern']==$convoArr['conversation']['default_aiml_pattern']){
+        global $con, $dbn;
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding unknown input", 2);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Pattern: ".$convoArr['aiml']['lookingfor'], 2);
+        $pattern = trim(normalize_text($convoArr['aiml']['lookingfor']));
+        $pattern = mysql_real_escape_string($pattern . " ");
+        $u_id = $convoArr['conversation']['user_id'];
+        $bot_id = $convoArr['conversation']['bot_id'];
+        $sql = "INSERT INTO `$dbn`.`unknown_inputs`
+            VALUES
+            (NULL, '".mysql_real_escape_string($pattern)."','$bot_id','$u_id',NOW())";
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Unknown Input SQL: $sql", 3);
+        $res = mysql_query($sql, $con);
+    }
+  }
+
 
   /**
   * function find_aiml_matches()
