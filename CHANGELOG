@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version 2.2.2
+  * Version: 2.3.0
   * FILE: CHANGELOG
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 11-05-2013
@@ -9,6 +9,17 @@
   ***************************************/
 
 Version History:
+2.3.0   Minor DB refactor, in preparation for version 2.5
+            1.) removed the last of the PHP code columns from the database
+            2.) added an unknown_user field to the bots table, allowing per-bot settings for what the
+                will call someone they don't know
+            3.) Altered the chatbot general config page in the admin to reflect the above changes
+            4.) added a bot_id field and dropped a user_id field in the unknown_inputs table
+            5.) dropped the user_id field from the undefined_defaults table, as it was not used
+            6.) added a "memory bailout" feature to the function that returns potential AIML categories
+                to prevent memory overflow errors
+            7.) other miscellaneous minor bug fixes
+
 2.2.2   Bug Fixes/versioning refactor
             1.) Fixed a bug that prevented proper implementation of template-side <that> tags
             2.) updated and corrected the script version in all files that contain version information

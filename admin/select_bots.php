@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.2.2
+//My Program-O Version: 2.3.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
@@ -8,7 +8,7 @@
 //-----------------------------------------------------------------------------------------------
 // select_bots.php
 
-$selectBot ="";
+$selectBot ='';
 $post_vars = filter_input_array(INPUT_POST);
 
 if((isset($post_vars['action']))&&($post_vars['action']=="update")) {
@@ -63,7 +63,7 @@ function getBotParentList($current_parent,$dbConn) {
       $sel = "selected=\"selected\"";
     }
     else {
-      $sel = "";
+      $sel = '';
     }
     $options .= '                  <option value="'.$row['bot_id'].'" '.$sel.'>'.$row['bot_name'].'</option>';
   }
@@ -79,30 +79,31 @@ function getSelectedBot() {
   $remember_up_to = $remember_up_to;
   $bot_default_aiml_pattern = $pattern;
   $bot_error_response = $error_response;
+  $unknown_user = 'test';
   $dbConn = db_open();
-  $inputs="";
+  $inputs='';
   $form = $template->getSection('SelectBotForm');
-  $sel_session = "";
-  $sel_db = "";
-  $sel_html = "";
-  $sel_xml = "";
-  $sel_json = "";
-  $sel_yes = "";
-  $sel_no = "";
-  $sel_fyes = "";
-  $sel_fno = "";
-  $sel_fuyes = "";
-  $sel_funo = "";
-  $ds_ = "";
-  $ds_i = "";
-  $ds_ii = "";
-  $ds_iii = "";
-  $ds_iv = "";
-  $dm_ = "";
-  $dm_i = "";
-  $dm_ii = "";
-  $dm_iii = "";
-  $dm_iv = "";
+  $sel_session = '';
+  $sel_db = '';
+  $sel_html = '';
+  $sel_xml = '';
+  $sel_json = '';
+  $sel_yes = '';
+  $sel_no = '';
+  $sel_fyes = '';
+  $sel_fno = '';
+  $sel_fuyes = '';
+  $sel_funo = '';
+  $ds_ = '';
+  $ds_i = '';
+  $ds_ii = '';
+  $ds_iii = '';
+  $ds_iv = '';
+  $dm_ = '';
+  $dm_i = '';
+  $dm_ii = '';
+  $dm_iii = '';
+  $dm_iv = '';
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 'new';
   if($bot_id != "new")
   {
@@ -111,6 +112,7 @@ function getSelectedBot() {
     $sql = "SELECT * FROM `bots` where bot_id = '$bot_id';";
     if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
     while($row = mysql_fetch_assoc($result)) {
+      save_file(_LOG_PATH_ . 'bot_row.txt', print_r($row, true));
       foreach ($row as $key => $value) {
         if (strstr($key,'bot_') != false){
           $tmp = '';
@@ -141,18 +143,6 @@ function getSelectedBot() {
       }
       elseif($bot_format=="json") {
         $sel_json = ' selected="selected"';
-      }
-      if($bot_use_aiml_code=="1") {
-        $sel_fuyes = ' selected="selected"';
-      }
-      elseif($bot_use_aiml_code=="0") {
-        $sel_funo = ' selected="selected"';
-      }
-      if($bot_update_aiml_code=="1") {
-        $sel_fyes = ' selected="selected"';
-      }
-      elseif($bot_update_aiml_code=="0") {
-        $sel_fno = ' selected="selected"';
       }
       if($bot_debugshow=="0") {
         $ds_ = ' selected="selected"';
@@ -189,32 +179,32 @@ function getSelectedBot() {
     mysql_close($dbConn);
   }
   else {
-    $bot_id = "";
+    $bot_id = '';
     $bot_parent_id = 0;
-    $bot_name = "";
-    $bot_desc = "";
-    $bot_active = "";
+    $bot_name = '';
+    $bot_desc = '';
+    $bot_active = '';
     $action = "add";
-    $bot_format = "";
-    $bot_use_aiml_code = "";
-    $bot_update_aiml_code = "";
+    $bot_format = '';
+    $bot_use_aiml_code = '';
+    $bot_update_aiml_code = '';
     $bot_conversation_lines = $conversation_lines;
     $remember_up_to = $remember_up_to;
     $bot_default_aiml_pattern = $pattern;
     $bot_error_response = $error_response;
-    $bot_debugemail = "";
-    $debugemail = "";
-    $bot_debugshow = "";
-    $bot_debugmode = "";
-
+    $bot_debugemail = '';
+    $debugemail = '';
+    $bot_debugshow = '';
+    $bot_debugmode = '';
   }
+  $unknown_user = $bot_unknown_user;
   $parent_options = getBotParentList($bot_parent_id,$dbConn);
   $searches = array(
     '[bot_id]','[bot_name]','[bot_desc]','[parent_options]','[sel_yes]','[sel_no]',
     '[sel_html]','[sel_xml]','[sel_json]','[sel_session]','[sel_db]','[sel_fyes]',
     '[sel_fno]','[sel_fuyes]','[sel_funo]','[bot_conversation_lines]','[remember_up_to]',
     '[bot_debugemail]','[dm_]','[dm_i]','[dm_ii]','[dm_iii]','[ds_]','[ds_i]','[ds_ii]',
-    '[ds_iii]','[ds_iv]','[action]', '[bot_default_aiml_pattern]', '[bot_error_response]',
+    '[ds_iii]','[ds_iv]','[action]', '[bot_default_aiml_pattern]', '[bot_error_response]', '[unknown_user]',
   );
   foreach ($searches as $search) {
     $replace = str_replace('[', '', $search);
@@ -229,12 +219,12 @@ function updateBotSelection() {
   global $msg, $format, $post_vars;
   $logFile = _LOG_URL_ . 'admin.error.log';
   $dbConn = db_open();
-  $sql = "";
-  $msg = "";
+  $sql = '';
+  $msg = '';
   foreach($post_vars as $key => $value) {
     if(($key!="bot_id")||($key!="action")) {
       $value = mysql_real_escape_string(trim(stripslashes($value)));
-      if(($key != "bot_id")&&($key != "action")&&($value!="")) {
+      if(($key != "bot_id")&&($key != "action")&&($value!='')) {
         $sql = "UPDATE `bots` SET `$key` ='$value' where `bot_id` = '".$post_vars['bot_id']."' limit 1; ";
         if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
         if(!$result) {
@@ -268,7 +258,7 @@ function updateBotSelection() {
       $x = file_put_contents(_CONF_PATH_ . 'global_config.php', $configContent);
     }
   }
-  if($msg == "") {
+  if($msg == '') {
     $msg = 'Bot details updated.';
   }
 
@@ -397,11 +387,11 @@ function changeBot() {
     }
     else {
       $_SESSION['poadmin']['bot_id']="new";
-      $_SESSION['poadmin']['bot_name']="";
+      $_SESSION['poadmin']['bot_name']='';
     }
   }
   else {
-      $_SESSION['poadmin']['bot_name']="";
+      $_SESSION['poadmin']['bot_name']='';
       $_SESSION['poadmin']['bot_id']="new";
     }
   mysql_close($dbConn);
@@ -413,7 +403,7 @@ function getChangeList() {
   global $template;
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
   $dbConn = db_open();
-  $inputs="";
+  $inputs='';
   //get bot names from the db
   $sql = "SELECT * FROM `bots` ORDER BY bot_name";
   if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
@@ -423,7 +413,7 @@ function getChangeList() {
       $sel = ' selected="selected"';
     }
     else {
-      $sel= "";
+      $sel= '';
     }
     $bot_id = $row['bot_id'];
     $bot_name = $row['bot_name'];

@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version 2.2.2
+  * Version: 2.3.0
   * FILE: chatbot/core/conversation/display_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -48,7 +48,7 @@
     $result = db_query($sql, $con);
     if (db_res_count($result) > 0)
     {
-      while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+      while ($row = mysql_fetch_assoc($result))
       {
         $allrows[] = $row;
       }

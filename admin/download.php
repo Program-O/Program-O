@@ -1,7 +1,7 @@
 
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version 2.2.2
+//My Program-O Version: 2.3.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //Aug 2011
