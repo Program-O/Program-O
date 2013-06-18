@@ -33,37 +33,6 @@ function make_conversation($convoArr){
 	return $convoArr;
 }
 
-
-
-
-
-
-
-
-/**
- * function run_aiml_to_php()
- * @param  array $convoArr - the current state of the conversation array
- * @param  string $evalthis - string to make safe
- * @return string $result (-botsay)
-**/	
-function run_aiml_to_php($convoArr,$evalthis){
-	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Evaluating Stored PHP Code from the Database",4);
-	global $botsay, $error_response;
-
-	//this must be NULL if it is FALSE then its failed but  if its NULL its a success
-	$error_flag = eval($evalthis);
-	if($error_flag===NULL){ //success
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "EVALUATED: $evalthis ",4);
-		$result = $botsay;
-	} else { //error
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "ERROR TRYING TO EVAL: $evalthis ",1);
-		runDebug( __FILE__, __FUNCTION__, __LINE__, "ERROR TRYING TO EVAL: ".print_r($convoArr['aiml'],true),1);
-		$result = $error_response;}
-	
-	return $result;
-}
-
 /**
  * function buildNounList()
  * @param array $convoArr
