@@ -34,19 +34,9 @@ function make_conversation($convoArr){
 }
 
 
-/**
- * function eval_aiml_to_php_code()
- * @param  array $convoArr - the current state of the conversation array
- * @param  string $evalthis - string to make safe
- * @return string $botsay
-**/	
-function eval_aiml_to_php_code($convoArr,$evalthis){
-	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "",4);
-	$botsay = @run_aiml_to_php($convoArr,$evalthis);
-	//if run correctly $botsay should be re valued
-	return $botsay;
-}
+
+
+
 
 
 
