@@ -92,6 +92,7 @@
   /**
   * function get_html()
   * This function formats the response as html
+  * @link http://blog.program-o.com/?p=1227
   * @param  array $convoArr - the conversation array
   * @param  array $conversation - the conversation lines to format
   * @return array $convoArr
@@ -121,7 +122,6 @@
   function get_json($convoArr, $conversation)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Outputting response as JSON', 2);
-    $conversation_lines = $convoArr['conversation']['conversation_lines'];
     $show_json = array();
     $i = 0;
     foreach ($conversation as $index => $conversation_subarray)
