@@ -283,7 +283,7 @@ endFooter;
                                ),
                          array(
                                '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="'.FAQ_URL.'"',
+                               '[linkHref]' => ' href="'.DOCS_URL.'"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="The Program O User\'s Guide"',
                                '[linkTitle]' => ' title="The Program O User\'s Guide"',

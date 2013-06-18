@@ -178,7 +178,7 @@
     // Set Program O Website URLs
     //------------------------------------------------------------------------
 
-    define('FAQ_URL', 'http://www.program-o.com/ns/faq/');
+    define('DOCS_URL', 'http://www.program-o.com/ns/faq/');
     define('NEWS_URL', 'http://blog.program-o.com/'); #This needs to be altered to reflect the correct URL
     define('RSS_URL', 'http://blog.program-o.com/feed/');
     define('SUP_URL', 'http://forum.program-o.com/syndication.php');
