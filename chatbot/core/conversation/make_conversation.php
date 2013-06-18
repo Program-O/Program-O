@@ -33,22 +33,6 @@ function make_conversation($convoArr){
 	return $convoArr;
 }
 
-/**
- * function add_aiml_to_php()
- * A controller function to add/update the php code stored in the aiml table
- * @param  array $convoArr - the current state of the conversation array
- * @return $convoArr (updated)
-**/	
-function add_aiml_to_php($convoArr){
-	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Adding PHP to table",4);
-	global $dbn,$con;
-	$evalthis = mysql_real_escape_string($convoArr['aiml']['aiml_to_php']);
-	$sql = "UPDATE `$dbn`.`aiml` SET `php_code` = \"$evalthis\" WHERE `id` = '".$convoArr['aiml']['aiml_id']."' LIMIT 1";
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Adding new PHP to aiml table SQL: $sql",3);
-	//$result = db_query($sql,$con);
-	return $convoArr;
-}
 
 /**
  * function make_safe_to_eval()
