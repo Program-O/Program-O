@@ -35,20 +35,6 @@ function make_conversation($convoArr){
 
 
 /**
- * function make_safe_to_eval()
- * A function to escape the dollarsigns in the php code so it can be evaluated
- * @param  string $evalthis - string to make safe
- * @return string $evalthis
-**/	
-function make_safe_to_eval($evalthis){
-	
-	runDebug( __FILE__, __FUNCTION__, __LINE__, "Making it safe to eval",4);
-	$evalthis = str_replace('"','\"',$evalthis);
-	$evalthis = str_replace('$','\$',$evalthis);
-	return $evalthis;
-}
-
-/**
  * function eval_aiml_to_php_code()
  * @param  array $convoArr - the current state of the conversation array
  * @param  string $evalthis - string to make safe
