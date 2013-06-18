@@ -15,11 +15,9 @@
   * function intialise_convoArray()
   * A function to intialise the conversation array
   * This is the array that is built throught the conversation
-  * @param  string $convo_id - unique session id
-  * @param  int $bot_id - the id of the bot
-  * @param  string $format - the return format of the response (html,json,xml)
+  * @link http://blog.program-o.com/?p=1242
   * @param  array $convoArr - the current state of the conversation array
-  * @return $convoArr (updated)
+  * @return array $convoArr (updated)
   **/
   function intialise_convoArray($convoArr)
   {
@@ -46,6 +44,7 @@
   /**
   * function load_blank_array_element()
   * A function to intialise the conversation array values
+  * @link http://blog.program-o.com/?p=1244
   * @param  string $arrayIndex - the array element we are going to intialise
   * @param  string $defaultValue - the value which will be used to set the element
   * @param  array $convoArr - the current state of the conversation array
@@ -67,6 +66,7 @@
   /**
   * function load_blank_stack()
   * A function to intialise the conversation stack values
+  * @link http://blog.program-o.com/?p=1246
   * @param  string $arrayIndex - the array element we are going to intialise
   * @param  string $defaultValue - the value which will be used to set the element
   * @param  array $convoArr - the current state of the conversation array
