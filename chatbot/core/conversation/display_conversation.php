@@ -12,6 +12,7 @@
   /**
   * function get_conversation_to_display()
   * This function gets the conversation from the db to display/return to the user
+  * @link http://blog.program-o.com/?p=1223
   * @param  array $convoArr - the conversation array
   * @return array $orderedRows - a list of conversation line
   **/
@@ -65,6 +66,7 @@
   /**
   * function get_conversation()
   * This function gets the conversation format
+  * @link http://blog.program-o.com/?p=1225
   * @param  array $convoArr - the conversation array
   * @return array $convoArr
   **/
