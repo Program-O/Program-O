@@ -140,7 +140,7 @@
   /**
   * function get_xml()
   * This function formats the response as xml
-  * @link http://blog.program-o.com/?p=1233
+  * @link http://blog.program-o.com/?p=1238
   * @param  array $convoArr - the conversation array
   * @param  array $conversation - the conversation lines to format
   * @return array $convoArr
@@ -173,7 +173,6 @@
     $dom->formatOutput = true;
     $send_to_user = $dom->ownerDocument->saveXML();
     $convoArr['send_to_user'] = $send_to_user;
-    #save_file(_DEBUG_PATH_ . 'sendToUser.txt', $send_to_user);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning XML", 4);
     return $convoArr;
   }
