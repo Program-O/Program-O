@@ -140,6 +140,7 @@
   /**
   * function get_xml()
   * This function formats the response as xml
+  * @link http://blog.program-o.com/?p=1233
   * @param  array $convoArr - the conversation array
   * @param  array $conversation - the conversation lines to format
   * @return array $convoArr
