@@ -12,6 +12,7 @@
 /**
  * function make_conversation()
  * A controller function to run the instructions to make the conversation
+ * @link http://blog.program-o.com/?p=1209
  * @param  array $convoArr - the current state of the conversation array
  * @return $convoArr (updated)
 **/	
@@ -35,6 +36,8 @@ function make_conversation($convoArr){
 
 /**
  * function buildNounList()
+ * loads a nounlist from file and inserts it into the convo array
+ * @link http://blog.program-o.com/?p=1212
  * @param array $convoArr
  * @param int $person
  * @param string $in
