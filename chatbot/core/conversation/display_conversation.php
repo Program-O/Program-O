@@ -115,6 +115,7 @@
   /**
   * function get_json()
   * This function formats the response as json
+  * @link http://blog.program-o.com/?p=1229
   * @param  array $convoArr - the conversation array
   * @param  array $conversation - the conversation lines to format
   * @return array $convoArr
