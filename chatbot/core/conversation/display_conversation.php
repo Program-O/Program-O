@@ -98,7 +98,6 @@
   **/
   function get_html($convoArr, $conversation)
   {
-    $conversation_lines = $convoArr['conversation']['conversation_lines'];
     $show = "";
     $user_name = $convoArr['conversation']['user_name'];
     $bot_name = $convoArr['conversation']['bot_name'];
