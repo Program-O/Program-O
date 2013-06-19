@@ -11,6 +11,7 @@
   /**
   * function db_open()
   * Connect to the database
+   * @link http://blog.program-o.com/?p=1340
   * @param  string $host -  db host
   * @param  string $user - db user
   * @param  string $password - db password
@@ -32,6 +33,7 @@
   /**
   * function db_close()
   * Close the connection to the database
+  * @link http://blog.program-o.com/?p=1343
   * @param resource $con - the open connection
   **/
   function db_close($con)
@@ -43,6 +45,7 @@
   /**
   * function db_query()
   * Run a query on the db
+  * @link http://blog.program-o.com/?p=1345
   * @param resource $con - the open connection
   * @param string $sql - the sql query to run
   * @return resource $result - the result resource
@@ -64,6 +67,7 @@
   /**
   * function db_res_count()
   * Makes a str safe to insert in the db
+  * @link http://blog.program-o.com/?p=1347
   * @param resource $result - the result resource
   * @return int $res - the number of results
   **/
