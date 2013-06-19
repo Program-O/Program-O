@@ -531,7 +531,7 @@
     $convoArr['conversation']['convo_id'] = $convo_id;
     $ip = $_SERVER['REMOTE_ADDR'];
     $convoArr['client_properties']['ip_address'] = $ip;
-    $sql = "select `user_name`, `id`, `chatlines` from `users` where `session_id` = '$convo_id' limit 1;";
+    $sql = "select `user_name`, `id`, `chatlines` from `$dbn`.`users` where `session_id` = '$convo_id' limit 1;";
     $result = mysql_query($sql, $con) or $msg = SQL_error(mysql_errno(), __FILE__, __FUNCTION__, __LINE__);
     $numRows = mysql_num_rows($result);
     if ($numRows == 0)
@@ -556,7 +556,8 @@
 
   /**
   * function check_set_format(()
-  * A function to check and set the conversation return type
+  * A function to check and set the conversation output type
+  * @link http://blog.program-o.com/?p=1281
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
   **/
@@ -587,6 +588,14 @@
     return $convoArr;
   }
 
+
+  /**
+   * function load_that(()
+   * A function to load the previous bot responses into the convoArr['that'] array
+   * @link http://blog.program-o.com/?p=1283
+   * @param  array $convoArr - the current state of the conversation array
+   * @return $convoArr (updated)
+   **/
   function load_that($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading the THAT array.', 2);
