@@ -91,6 +91,7 @@
   /**
   * function load_default_bot_values()
   * A function to intialise the chatbot properties
+  * @link http://blog.program-o.com/?p=1248
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
   **/
@@ -112,6 +113,7 @@
   /**
   * function write_to_session()
   * A function to save the current conversation state to session for the next turn
+  * @link http://blog.program-o.com/?p=1250
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr
   **/
@@ -126,6 +128,7 @@
   /**
   * function read_from_session()
   * A function to read the current conversation state from session for this turn
+  * @link http://blog.program-o.com/?p=1252
   * @return $convoArr
   **/
   function read_from_session()
@@ -143,6 +146,7 @@
   /**
   * function add_new_conversation_vars()
   * A function add the new values from the user input into the conversation state
+  * @link http://blog.program-o.com/?p=1254
   * @param  string $say - the user input
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
@@ -160,6 +164,7 @@
   /**
   * function add_firstturn_conversation_vars()
   * A function add the bot values to the conversation state if this is the first turn
+  * @link http://blog.program-o.com/?p=1256
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
   **/
@@ -176,8 +181,9 @@
   /**
   * function push_on_front_convoArr()
   * A function to push items on the front of a subarray in convoArr
-  * @param  array $arrayIndex - the subarray index to push to
-  * @param  array $value - the value to push on teh subarray
+  * @link http://blog.program-o.com/?p=1258
+  * @param  string $arrayIndex - the subarray index to push to
+  * @param  string $value - the value to push on teh subarray
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
   * TODO BETTER COMMENTING
@@ -338,6 +344,7 @@
   /**
   * function log_conversation(()
   * A function to log the conversation
+  * @link http://blog.program-o.com/?p=1262
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
   **/
@@ -377,7 +384,8 @@
 
   /**
   * function log_conversation_state(()
-  * A function to log the conversation
+  * A function to log the conversation state
+  * @link http://blog.program-o.com/?p=1264
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
   **/
@@ -390,7 +398,6 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "user name = $user_name. Stored user name = " . $convoArr['conversation']['user_name'], 4);
     $serialise_convo = mysql_real_escape_string(serialize(reduceConvoArr($convoArr)));
     $user_id = $convoArr['conversation']['user_id'];
-    $bot_id = $convoArr['conversation']['bot_id'];
     $sql_addon = (!empty ($user_name)) ? "`user_name` = '" . mysql_real_escape_string($user_name) . "', " : '';
     $sql = "UPDATE `$dbn`.`users`
                 SET
@@ -401,13 +408,13 @@
                 WHERE `id` = '$user_id' LIMIT 1";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "updating conversation state SQL: $sql", 3);
     db_query($sql, $con);
-    $confirm = mysql_affected_rows($con);
     return $convoArr;
   }
 
   /**
   * function get_conversation_state(()
-  * A function to log the conversation
+  * A function to get the conversation state from the db
+  * @link http://blog.program-o.com/?p=1266
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
   **/
@@ -415,8 +422,6 @@
   {
     global $con, $dbn;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "getting state", 4);
-    //get converstation state from the db
-    $serialise_convo = mysql_real_escape_string(serialize($convoArr));
     $user_id = $convoArr['conversation']['user_id'];
     $sql = "SELECT * FROM `$dbn`.`users` WHERE `id` = '$user_id' LIMIT 1";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation state SQL: $sql", 3);
@@ -433,7 +438,8 @@
 
   /**
   * function check_set_bot(()
-  * A function to check and set the bot id
+  * A function to check and set the bot id, name and default format for bot
+  * @link http://blog.program-o.com/?p=1269
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
   **/
@@ -481,6 +487,7 @@
   /**
   * function check_set_convo_id(()
   * A function to check and set the convo id
+  * @link http://blog.program-o.com/?p=1276
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
   **/
@@ -510,6 +517,7 @@
   /**
   * function check_set_user(()
   * A function to check and set the user's information
+  * @link http://blog.program-o.com/?p=1278
   * @param  array $convoArr - the current state of the conversation array
   * @return $convoArr (updated)
   **/
@@ -520,8 +528,7 @@
     //check to see if user_name has been set if not set as default
     $convo_id = (isset ($convoArr['conversation']['convo_id'])) ? $convoArr['conversation']['convo_id'] : session_id();
     if (!isset ($convoArr['conversation']['convo_id']))
-      $convoArr['conversation']['convo_id'] = $convo_id;
-    $bot_id = $convoArr['conversation']['bot_id'];
+    $convoArr['conversation']['convo_id'] = $convo_id;
     $ip = $_SERVER['REMOTE_ADDR'];
     $convoArr['client_properties']['ip_address'] = $ip;
     $sql = "select `user_name`, `id`, `chatlines` from `users` where `session_id` = '$convo_id' limit 1;";

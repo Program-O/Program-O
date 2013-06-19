@@ -179,7 +179,7 @@
 
   /**
   * function display_conversation()
-  * Displays the output of the conversation if the current format is XML or JSON
+  * Displays the output of the conversation if the current format is XML or JSON and updated referenced $display if html
   * @link http://blog.program-o.com/?p=1233
   * @param (array) $convoArr
   * @return (void) [return value]
@@ -187,17 +187,17 @@
   function display_conversation(& $display, $format)
   {
     $format = trim(strtolower($format));
-    switch ($format)
-    {
+    switch ($format) {
+      case 'html' :
+        $display = str_ireplace('<![CDATA[', '', $display);
+        $display = str_replace(']]>', '', $display);
+        break;
       case 'xml' :
         header("Content-type: text/xml; charset=utf-8");
       case 'json' :
         echo $display;
         break;
       default :
-        $display = str_ireplace('<![CDATA[', '', $display);
-        $display = str_replace(']]>', '', $display);
-        break;
     }
   }
 
