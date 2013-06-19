@@ -22,7 +22,6 @@ function load_new_client_defaults($convoArr)
   //to do could put this in an array
   //todo check this out
   runDebug( __FILE__, __FUNCTION__, __LINE__, 'Loading client defaults', 2);
-  $sql = "";
   $convoArr['client_properties']['name'] = $unknown_user;
   $convoArr['client_properties']['id'] = session_id();
   runDebug(__FILE__, __FUNCTION__, __LINE__, 'Conversation element = ' . print_r($convoArr['conversation'], true), 4);
@@ -50,7 +49,6 @@ function get_user_id($convoArr)
     $row = mysql_fetch_assoc($result);
     $convoArr['conversation']['user_id'] = $row['id'];
     // add user name, if set
-    #$convoArr['conversation']['user_name'] = (!empty($row['name'])) ? $row['name'] : (!empty($convoArr['client_properties']['name'])) ? $convoArr['client_properties']['name'] : $unknown_user;
     $convoArr['conversation']['user_name'] = (!empty($convoArr['client_properties']['name'])) ? $convoArr['client_properties']['name'] : (!empty($row['user_name'])) ? $row['user_name'] : $unknown_user;
     $convoArr['client_properties']['name'] = $convoArr['conversation']['user_name'];
     $msg = "existing";
@@ -58,7 +56,6 @@ function get_user_id($convoArr)
   else
   {
     $convoArr = intisaliseUser($convoArr);
-    #$convoArr['conversation']['user_id'] = intisaliseUser($convoArr['conversation']['convo_id']);
     $msg = "new";
   }
   
