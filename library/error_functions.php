@@ -119,7 +119,6 @@
   * Handle the debug array at the end of the process
   * @param  array $convoArr - conversation arrau
   * @return array $convoArr;
-  * TODO THIS MUST BE IMPLMENTED
   **/
   function handleDebug($convoArr)
   {
