@@ -107,6 +107,7 @@
     {
       $convoArr['bot_properties'][$row['name']] = $row['value'];
     }
+    mysql_free_result($result);
     return $convoArr;
   }
 
@@ -333,6 +334,7 @@
       $convoArr['conversation']['default_aiml_pattern'] = $pattern;
       $convoArr['conversation']['bot_parent_id'] = 0;
     }
+    mysql_free_result($result);
     //if return format is not html overide the debug type
     if ($convoArr['conversation']['format'] != "html")
     {
@@ -433,6 +435,7 @@
       $convoArr['conversation']['user_name'] = $row['user_name'];
       $convoArr['client_properties']['name'] = $row['user_name'];
     }
+    mysql_free_result($result);
     return $convoArr;
   }
 
@@ -481,6 +484,7 @@
       $convoArr['conversation']['bot_id'] = $bot_id;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "ERROR - Cannot find bot id: $bot_id", 1);
     }
+    mysql_free_result($result);
     return $convoArr;
   }
 
@@ -545,6 +549,7 @@
       $user_id = (!empty ($row['id'])) ? $row['id'] : 0;
       $user_name = (!empty ($row['user_name'])) ? $row['user_name'] : $unknown_user;
     }
+    mysql_free_result($result);
     $chatlines = (!empty ($row['chatlines'])) ? $row['chatlines'] : 0;
     $user_name = (!empty ($user_name)) ? $user_name : $unknown_user;
     $convoArr['conversation']['user_name'] = $user_name;
@@ -632,6 +637,7 @@
         $convoArr = push_on_front_convoArr('that', $value, $convoArr);
       }
     }
+    mysql_free_result($result);
     return $convoArr;
   }
 

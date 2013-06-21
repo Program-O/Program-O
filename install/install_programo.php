@@ -127,8 +127,7 @@ endPage;
     }
     $sql = 'select `error_response` from `bots` where 1 limit 1';
     $result = mysql_query($sql, $conn) or upgrade($conn);
-    $sql = 'select `php_code` from `aiml` where 1 limit 1';
-    $result = mysql_query($sql, $conn) or upgrade($conn);
+    mysql_free_result($result);
     $sql_template = "
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
 VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[save_state]',

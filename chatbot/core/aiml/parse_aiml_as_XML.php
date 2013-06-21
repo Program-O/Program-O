@@ -285,8 +285,8 @@
         $row = mysql_fetch_assoc($result);
         $response = $row['value'];
       }
-      else
-        $response = 'undefined';
+      else $response = 'undefined';
+      mysql_free_result($result);
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for $var_name is $response.", 4);
     return $response;
@@ -326,6 +326,7 @@
         $tmp_name = $row['user_name'];
         runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for the user's name is $tmp_name.", 4);
       }
+      mysql_free_result($result);
     }
     else $convoArr['client_properties'][$var_name] = $var_value;
     $lc_var_name = (IS_MB_ENABLED) ? mb_strtolower($var_name) : strtolower($var_name);

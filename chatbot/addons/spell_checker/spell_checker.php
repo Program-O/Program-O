@@ -96,7 +96,7 @@
         $_SESSION['spellcheck'][$missspelling] = $correction;
       }
     }
-
+    mysql_free_result($result);
   }
 
 ?>

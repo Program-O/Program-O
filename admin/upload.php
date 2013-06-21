@@ -281,6 +281,7 @@ endScript;
       else
         $out .= $row['filename'] . "<br />\n";
     }
+    mysql_free_result($result);
     mysql_close($dbConn);
     $out .= "                  <!-- End List of Currently Stored AIML files -->\n";
     return $out;
@@ -300,6 +301,7 @@ endScript;
       $sel = ($bot_id == $bi) ? ' selected="selected"' : '';
       $botOptions .= "                    <option$sel value=\"$bi\">$bn</option>\n";
     }
+    mysql_free_result($result);
     mysql_close($dbConn);
     return $botOptions;
   }

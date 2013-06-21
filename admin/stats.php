@@ -68,6 +68,7 @@ function getStats($interval) {
 	$sql = "SELECT count(distinct(`user_id`)) AS TOT FROM `conversation_log` WHERE bot_id = '$bot_id' $sqladd";
 	if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
 	$row = mysql_fetch_assoc($result);
+    mysql_free_result($result);
 	$res = $row['TOT'];
 	return $res;
 }
@@ -91,6 +92,7 @@ endSQL;
 	//get undefined defaults from the db
 	if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
 	$row = mysql_fetch_assoc($result);
+    mysql_free_result($result);
 	$res = $row['TOT'];
 	return $res;
 }

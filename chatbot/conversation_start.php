@@ -108,6 +108,7 @@
         $sql = "delete from `$dbn`.`client_properties` where `user_id` = $user_id;";
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Clear client properties from the DB - SQL:\n$sql", 4);
       }
+      mysql_free_result($result);
       $say = "Hello";
     }
     //add any pre-processing addons

@@ -585,9 +585,9 @@
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Found client property '$name' in the DB. Adding it to the conversation array and returning '$response'", 2);
 
     }
-    else
-      $response = 'undefined';
-      return $response;
+    else $response = 'undefined';
+    mysql_free_result($result);
+    return $response;
     }
 
   /**
@@ -626,6 +626,7 @@
         $i++;
       }
     }
+    mysql_free_result($result);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined rows found: '$i'", 2);
     //return rows
     return $allrows;
@@ -802,6 +803,7 @@
           break;
         }
       }
+      mysql_free_result($result);
     }
     else
     {
@@ -814,6 +816,7 @@
       $allrows[$i]['topic'] = '';
       $allrows[$i]['aiml_to_php'] = "\$botsay=\"$error_response\"";
     }
+    mysql_free_result($result);
     return $allrows;
   }
 
@@ -827,6 +830,7 @@
     $num_rows = mysql_num_rows($result);
     if ($num_rows == 0) return '';
     $row = mysql_fetch_assoc($result);
+    mysql_free_result($result);
     $retval = $row['value'];
     return $retval;
   }

@@ -356,6 +356,7 @@
   {
     $mem_state = number_format(memory_get_usage(true));
     $trace_file = _DEBUG_PATH_ . session_id() . '.mem_trace.txt';
+    if (!file_exists($trace_file)) save_file($trace_file, ini_get('memory_limit'));
     $append = true;
     $content = "$file.$function.$line: Memory used = $mem_state bytes\r\n";
     save_file($trace_file, $content, $append);

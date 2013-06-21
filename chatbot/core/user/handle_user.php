@@ -58,6 +58,7 @@ function get_user_id($convoArr)
     $convoArr = intisaliseUser($convoArr);
     $msg = "new";
   }
+  mysql_free_result($result);
   
   runDebug( __FILE__, __FUNCTION__, __LINE__, "Getting $msg user id:".$convoArr['conversation']['user_id'],4);
   runDebug( __FILE__, __FUNCTION__, __LINE__, "get_user_id SQL: $sql",3);

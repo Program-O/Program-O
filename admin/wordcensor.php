@@ -101,6 +101,7 @@ endScript;
     $sql = "select count(*) from `wordcensor` where 1";
     if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     $row = mysql_fetch_assoc($result);
+    mysql_free_result($result);
     $rowCount = $row[0];
     mysql_close($dbConn);
     $lastPage = intval($rowCount / 50);
@@ -155,6 +156,7 @@ endScript;
       $links .= "$tmpLink\n";
       $count++;
     }
+    mysql_free_result($result);
     $page_count = intval($count / 50);
     $_SESSION['poadmin']['page_count'] = $page_count + (($count / 50) > $page_count) ? 1 : 0;
     $links .= "\n      </div>\n";
@@ -247,6 +249,7 @@ function runWordCensorSearch() {
                             <td align=center>$action</td>
                         </tr>";
     }
+    mysql_free_result($result);
     $htmltbl .= "</tbody></table>";
 
     if($i >= 50) {
@@ -266,12 +269,12 @@ function runWordCensorSearch() {
 
 function editWordCensorForm($id) {
   //global vars
-  global $template, $request_vars;
+  global $template, $request_vars, $con;
   $group = (isset($request_vars['group'])) ? $request_vars['group'] : 1;
   $form   = $template->getSection('EditWordCensorForm');
-  $dbConn = db_open();
+  $con = db_open();
   $sql    = "SELECT * FROM `wordcensor` WHERE `censor_id` = '$id' LIMIT 1";
-  if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+  if (($result = mysql_query($sql, $con)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
   $row    = mysql_fetch_assoc($result);
   $uc_word_to_censor = (IS_MB_ENABLED) ? mb_strtoupper($row['word_to_censor']) : strtoupper($row['word_to_censor']);
   $uc_replace_with = (IS_MB_ENABLED) ? mb_strtoupper($row['replace_with']) : strtoupper($row['replace_with']);
@@ -279,14 +282,14 @@ function editWordCensorForm($id) {
   $form   = str_replace('[word_to_censor]', $uc_word_to_censor, $form);
   $form   = str_replace('[replace_with]', $uc_replace_with, $form);
   $form   = str_replace('[group]', $group, $form);
-  mysql_close($dbConn);
+  mysql_free_result($result);
   return $form;
 }
 
 function updateWordCensor() {
   //global vars
-  global $template, $msg, $request_vars;
-  $dbConn = db_open();
+  global $template, $msg, $request_vars, $con;
+  $con = db_open();
   $word_to_censor = mysql_real_escape_string(trim($request_vars['word_to_censor']));
   $replace_with = mysql_real_escape_string(trim($request_vars['replace_with']));
   $id = trim($request_vars['id']);
@@ -295,7 +298,7 @@ function updateWordCensor() {
   }
   else {
     $sql = "UPDATE `wordcensor` SET `word_to_censor` = '$word_to_censor',`replace_with`='$replace_with' WHERE `censor_id`='$id' LIMIT 1";
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    if (($result = mysql_query($sql, $con)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
     if($result) {
       $msg = '<div id="successMsg">Correction edited.</div>';
     }

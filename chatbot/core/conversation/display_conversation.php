@@ -39,6 +39,7 @@
     {
       $limit = "";
     }
+    mysql_free_result($result);
     $sql = "SELECT * FROM `$dbn`.`conversation_log`
         WHERE
         `user_id` = '" . $convoArr['conversation']['user_id'] . "'
@@ -59,6 +60,7 @@
     {
       $orderedRows = array('id' => NULL, 'input' => "", 'response' => "", 'user_id' => $convoArr['conversation']['user_id'], 'bot_id' => $convoArr['conversation']['bot_id'], 'timestamp' => "");
     }
+    mysql_free_result($result);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Found '" . db_res_count($result) . "' lines of conversation", 2);
     return $orderedRows;
   }

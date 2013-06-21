@@ -56,6 +56,7 @@
       else $iframeURL = _LIB_URL_ . 'accessdenied.htm';
     }
     else echo 'No results found!';
+    mysql_free_result($result);
   }
   if (!isset($_SESSION['isLoggedIn']) or $_SESSION['isLoggedIn'] === false)
   {
