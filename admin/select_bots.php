@@ -186,8 +186,6 @@ function getSelectedBot() {
     $bot_active = '';
     $action = "add";
     $bot_format = '';
-    $bot_use_aiml_code = '';
-    $bot_update_aiml_code = '';
     $bot_conversation_lines = $conversation_lines;
     $remember_up_to = $remember_up_to;
     $bot_default_aiml_pattern = $pattern;
@@ -277,8 +275,8 @@ function addBot() {
   }
   $dbConn = db_open();
   $sql = <<<endSQL
-INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `use_aiml_code`, `update_aiml_code`, `error_response`)
-VALUES (NULL,'$bot_name','$bot_desc','$bot_active','$bot_parent_id','$format','$save_state','$conversation_lines','$remember_up_to','$debugemail','$debugshow','$debugmode','$aiml_pattern','$use_aiml_code','$update_aiml_code', '$error_response');
+INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `error_response`)
+VALUES (NULL,'$bot_name','$bot_desc','$bot_active','$bot_parent_id','$format','$save_state','$conversation_lines','$remember_up_to','$debugemail','$debugshow','$debugmode','$aiml_pattern','$error_response');
 endSQL;
   if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
 

@@ -655,7 +655,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a LEARN tag.', 2);
     global $dbn, $con;
     $bot_id = $convoArr['conversation']['bot_id'];
-    $sqlTemplate = "insert into `$dbn`.`aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`, `php_code`)
+    $sqlTemplate = "insert into `$dbn`.`aiml_userdefined` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`, `php_code`)
 values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '[topic]', '[fileName]', '');";
     $sql = '';
     $failure = false;

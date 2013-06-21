@@ -130,8 +130,8 @@ endPage;
     $sql = 'select `php_code` from `aiml` where 1 limit 1';
     $result = mysql_query($sql, $conn) or upgrade($conn);
     $sql_template = "
-INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `use_aiml_code`, `update_aiml_code`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
-VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[use_aiml_code]', '[update_aiml_code]', '[save_state]',
+INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
+VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[save_state]',
 '$conversation_lines', '$remember_up_to', '[debugemail]', '[debugshow]', '[debugmode]', '$error_response', '$pattern');";
     require_once (_LIB_PATH_ . 'error_functions.php');
     require_once (_LIB_PATH_ . 'db_functions.php');
@@ -143,13 +143,7 @@ VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_pare
     $sql = str_replace('[bot_parent_id]', 1, $sql);
     $sql = str_replace('[format]', $myPostVars['format'], $sql);
     // "Use PHP from DB setting
-    if (!isset ($myPostVars['use_aiml_code']))
-      $myPostVars['use_aiml_code'] = 0;
-    $sql = str_replace('[use_aiml_code]', $myPostVars['use_aiml_code'], $sql);
     // "Update PHP in DB setting
-    if (!isset ($myPostVars['update_aiml_code']))
-      $myPostVars['update_aiml_code'] = 0;
-    $sql = str_replace('[update_aiml_code]', $myPostVars['update_aiml_code'], $sql);
     $sql = str_replace('[save_state]', $myPostVars['save_state'], $sql);
     $sql = str_replace('[conversation_lines]', $conversation_lines, $sql);
     $sql = str_replace('[remember_up_to]', $remember_up_to, $sql);

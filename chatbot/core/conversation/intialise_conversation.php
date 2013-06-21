@@ -302,7 +302,7 @@
   function load_bot_config($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading config data for the current bot.', 2);
-    global $con, $dbn, $format, $pattern, $update_aiml_code, $conversation_lines, $remember_up_to, $debugemail, $debug_level, $debug_mode, $save_state, $error_response;
+    global $con, $dbn, $format, $pattern, $conversation_lines, $remember_up_to, $debugemail, $debug_level, $debug_mode, $save_state, $error_response;
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '" . $convoArr['conversation']['bot_id'] . "'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "load bot config SQL: $sql", 3);
