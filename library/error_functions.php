@@ -221,7 +221,6 @@
     $showConvoArr['aiml']['thatpattern'] = (isset($convoArr['aiml']['thatpattern'])) ? $convoArr['aiml']['thatpattern'] : '';
     $showConvoArr['aiml']['topic'] = (isset($convoArr['aiml']['topic'])) ? $convoArr['aiml']['topic'] : '';
     $showConvoArr['aiml']['score'] = (isset($convoArr['aiml']['score'])) ? $convoArr['aiml']['score'] : '';
-    $showConvoArr['aiml']['aiml_to_php'] = (isset($convoArr['aiml']['aiml_to_php'])) ? $convoArr['aiml']['aiml_to_php'] : '';
     $showConvoArr['aiml']['aiml_id'] = (isset($convoArr['aiml']['aiml_id'])) ? $convoArr['aiml']['aiml_id'] : '';
     $showConvoArr['aiml']['parsed_template'] = (isset($convoArr['aiml']['parsed_template'])) ? $convoArr['aiml']['parsed_template'] : '';
     $showConvoArr['user_say'][1] = (isset($convoArr['aiml']['parsed_template'])) ? $convoArr['user_say'][1] : '';
@@ -354,9 +353,10 @@
 
   function mem_tracer($file, $function, $line)
   {
+    $file = str_replace(_BOTCORE_PATH_ . 'aiml' . DIRECTORY_SEPARATOR, '', $file);
     $mem_state = number_format(memory_get_usage(true));
     $trace_file = _DEBUG_PATH_ . session_id() . '.mem_trace.txt';
-    if (!file_exists($trace_file)) save_file($trace_file, ini_get('memory_limit'));
+    if (!file_exists($trace_file)) save_file($trace_file, 'PHP memory limit = ' . ini_get('memory_limit') . "\nBase folder = " . _BASE_PATH_ . "\n");
     $append = true;
     $content = "$file.$function.$line: Memory used = $mem_state bytes\r\n";
     save_file($trace_file, $content, $append);

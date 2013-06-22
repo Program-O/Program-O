@@ -263,7 +263,7 @@
   function parse_get_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a GET tag. Oh, and getting a sandwich while I\'m at it.', 2);
-    global $con, $dbn;
+    global $con, $dbn, $remember_up_to;
     $response = '';
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
@@ -656,8 +656,8 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a LEARN tag.', 2);
     global $dbn, $con;
     $bot_id = $convoArr['conversation']['bot_id'];
-    $sqlTemplate = "insert into `$dbn`.`aiml_userdefined` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`, `php_code`)
-values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '[topic]', '[fileName]', '');";
+    $sqlTemplate = "insert into `$dbn`.`aiml_userdefined` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`)
+values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '[topic]', '[fileName]');";
     $sql = '';
     $failure = false;
     $remove = array('<text>', '</text>');

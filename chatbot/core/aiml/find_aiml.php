@@ -104,7 +104,7 @@
     $tmp_rows = array();
     $i = 0;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Searching through " . count($allrows) . " rows to unset bad matches", 4);
-    if (($allrows[0]['pattern'] == "no results") && ($allrows[0]['template'] == "<say>$error_response</say>") && (count($allrows) == 1))
+    if (($allrows[0]['pattern'] == "no results") and (count($allrows) == 1))
     {
       $tmp_rows[0] = $allrows[0];
       $tmp_rows[0]['score'] = 1;
@@ -471,7 +471,6 @@
   function get_highest_score_rows($allrows, $lookingfor)
   {
     $bestResponse = array();
-    $bestResponseArr = array();
     $last_high_score = 0;
     $tmpArr = array();
     //loop through the results
@@ -494,13 +493,39 @@
       }
     }
     //there may be any number of results with the same score so pick any random one
-    $bestResponseArr = (count($tmpArr) > 0) ? $tmpArr[array_rand($tmpArr)] : false;
+    $bestResponse = (count($tmpArr) > 0) ? $tmpArr[array_rand($tmpArr)] : false;
+    if (false !== $bestResponse) $bestResponse['template'] = get_winning_category($bestResponse['aiml_id']);
     $cRes = count($tmpArr);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Best Responses: " . print_r($tmpArr, true), 4);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Will use randomly picked best response chosen out of $cRes responses with same score: " . $bestResponseArr['aiml_id'] . " - " . $bestResponseArr['pattern'], 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Will use randomly picked best response chosen out of $cRes responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'], 2);
     //return the best response
-    return $bestResponseArr;
+    return $bestResponse;
   }
+
+  /**
+    * function get_winning_category
+    * Retrieves the AIML template from the selected DB entry
+    * @param array  $id - the id number of the AIML category to get
+    * @return string $template - the value of the `template` field from the chosen DB entry
+    **/
+    function get_winning_category($id)
+    {
+      runDebug(__FILE__, __FUNCTION__, __LINE__,"And the winner is... $id!", 2);
+      global $con, $dbn, $error_response;
+      $sql = "SELECT `template` from `$dbn`.`aiml` where `id` = $id limit 1;";
+      $result = mysql_query($sql, $con) or trigger_error('Houston, we have a problem! Error: ' . mysql_error());
+      if ($row = mysql_fetch_assoc($result))
+      {
+        $template = $row['template'];
+      }
+      else
+      {
+        $template = $error_response;
+      }
+      runDebug(__FILE__, __FUNCTION__, __LINE__,"Returning the AIML template for id# $id. Value:\n'$template'", 4);
+      return $template;
+    }
+
 
   /**
   * function get_convo_var()
@@ -669,11 +694,9 @@
     $convoArr['aiml']['pattern'] = $allrows['pattern'];
     $convoArr['aiml']['thatpattern'] = $allrows['thatpattern'];
     $convoArr['aiml']['template'] = $allrows['template'];
-    //$convoArr['aiml']['html_template']=htmlentities($allrows['template']);
     $convoArr['aiml']['html_template'] = '';
     $convoArr['aiml']['topic'] = $allrows['topic'];
     $convoArr['aiml']['score'] = $allrows['score'];
-    $convoArr['aiml']['aiml_to_php'] = $allrows['aiml_to_php'];
     $convoArr['aiml']['aiml_id'] = $allrows['aiml_id'];
     //return
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Will be parsing id:" . $allrows['aiml_id'] . " (" . $allrows['pattern'] . ")", 4);
@@ -759,7 +782,7 @@
     if ($word_count == 1)
     {
     //if there is one word do this
-      $sql = "SELECT * FROM `$dbn`.`aiml` WHERE
+      $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
 		$sql_bot_select AND (
 		((`pattern` = '_') OR (`pattern` = '*') OR (`pattern` = '$lookingfor') OR (`pattern` = '$aiml_pattern' ) )
 		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
@@ -769,7 +792,7 @@
     {
     //otherwise do this
       $sql_add = make_like_pattern($lookingfor, 'pattern');
-      $sql = "SELECT * FROM `$dbn`.`aiml` WHERE
+      $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
 		$sql_bot_select AND (
 		((`pattern` = '_') OR
 		 (`pattern` = '*') OR
@@ -792,9 +815,7 @@
         $allrows[$i]['bot_id'] = $row['bot_id'];
         $allrows[$i]['pattern'] = $row['pattern'];
         $allrows[$i]['thatpattern'] = $row['thatpattern'];
-        $allrows[$i]['template'] = $row['template'];
         $allrows[$i]['topic'] = $row['topic'];
-        $allrows[$i]['aiml_to_php'] = $row['php_code'];
         $i++;
         $mu =memory_get_usage(true);
         if ($mu >= MEM_TRIGGER)
@@ -803,7 +824,6 @@
           break;
         }
       }
-      mysql_free_result($result);
     }
     else
     {
@@ -812,9 +832,7 @@
       $allrows[$i]['bot_id'] = "-1";
       $allrows[$i]['pattern'] = "no results";
       $allrows[$i]['thatpattern'] = '';
-      $allrows[$i]['template'] = "<say>$error_response</say>";
       $allrows[$i]['topic'] = '';
-      $allrows[$i]['aiml_to_php'] = "\$botsay=\"$error_response\"";
     }
     mysql_free_result($result);
     return $allrows;

@@ -48,7 +48,7 @@
         ORDER BY id DESC $limit ";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql", 3);
     $result = db_query($sql, $con);
-    if (db_res_count($result) > 0)
+    if (mysql_num_rows($result) > 0)
     {
       while ($row = mysql_fetch_assoc($result))
       {
@@ -60,8 +60,8 @@
     {
       $orderedRows = array('id' => NULL, 'input' => "", 'response' => "", 'user_id' => $convoArr['conversation']['user_id'], 'bot_id' => $convoArr['conversation']['bot_id'], 'timestamp' => "");
     }
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Found '" . mysql_num_rows($result) . "' lines of conversation", 2);
     mysql_free_result($result);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Found '" . db_res_count($result) . "' lines of conversation", 2);
     return $orderedRows;
   }
 

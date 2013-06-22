@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS `aiml` (
   template text NOT NULL,
   topic varchar(255) NOT NULL,
   filename varchar(255) NOT NULL,
-  php_code text NOT NULL,
   PRIMARY KEY (id),
   KEY topic (topic)
 );

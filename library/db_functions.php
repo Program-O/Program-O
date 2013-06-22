@@ -63,17 +63,4 @@
     return $result;
   }
 
-
-  /**
-  * function db_res_count()
-  * Makes a str safe to insert in the db
-  * @link http://blog.program-o.com/?p=1347
-  * @param resource $result - the result resource
-  * @return int $res - the number of results
-  **/
-  function db_res_count($result)
-  {
-    return mysql_num_rows($result);
-  }
-
 ?>

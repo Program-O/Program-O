@@ -157,7 +157,7 @@ else {
     chdir($curPath);
     $dbFilename = $filename;
     $filename = str_ireplace('.aiml', '.sql', $filename); // change to sql extension for clarity
-    $categoryTemplate = "    ([id],[bot_id],'[aiml]','[pattern]','[thatpattern]','[template]','[topic]','[filename]','[php_code]'),";
+    $categoryTemplate = "    ([id],[bot_id],'[aiml]','[pattern]','[thatpattern]','[template]','[topic]','[filename]'),";
     $dbConn = db_open();
     $phpVer = phpversion();
     $cleanedFilename = mysql_real_escape_string($dbFilename, $dbConn);
@@ -190,7 +190,6 @@ else {
       $newLine = str_replace('[template]',   $template,           $newLine);
       $newLine = str_replace('[topic]',      $row['topic'],       $newLine);
       $newLine = str_replace('[filename]',   $row['filename'],    $newLine);
-      $newLine = str_replace('[php_code]',   $row['php_code'],    $newLine);
       $fileContent .= "$newLine\r\n";
     }
     $fileContent = trim($fileContent,",\r\n"); // remove the comma from the last row

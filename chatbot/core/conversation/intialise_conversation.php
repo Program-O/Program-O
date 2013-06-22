@@ -468,7 +468,7 @@
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '$bot_id' and `bot_active`='1'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making sure the bot exists. SQL = $sql", 3);
     $result = db_query($sql, $con);
-    if (($result) && (db_res_count($result) > 0))
+    if (($result) && (mysql_num_rows($result) > 0))
     {
       $row = mysql_fetch_assoc($result);
       $bot_name = $row['bot_name'];
