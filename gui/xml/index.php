@@ -1,86 +1,81 @@
 <?php
-
-  /***************************************
+/***************************************
   * http://www.program-o.com
   * PROGRAM O
   * Version: 2.3.0
-  * FILE: gui/plain/index.php
+  * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 11th May 2013
-  * DETAILS: simple xml example gui
+  * DATE: 07-23-2013
+  * DETAILS: This is the XML GUI interface for Program O
   ***************************************/
-  $response = '';
-  session_name('programo_XML_API');
-  session_start();
-  $convo_id = session_id();
-  if (isset ($_REQUEST['bot_id']))
-  {
-    $bot_id = $_REQUEST['bot_id'];
-  }
-  else
-  {
-    $bot_id = 1;
-  }
-  $format = "xml";
-  if ((isset ($_REQUEST['say'])) && ($_REQUEST['say'] != ''))
-  {
-    $say = urlencode($_REQUEST['say']);
-    //make an xml request...
-    #$request_url = "http://YOURSITE.COM/chatbot/conversation_start.php?say=$say&convo_id=$convo_id&bot_id=$bot_id&format=xml";
-    $request_url ='http://localhost/Program-O/Program-O/chatbot/conversation_start.php';
-    $options = array(
-               CURLOPT_USERAGENT => 'Program O XML API',
-    );
-    $form_vars_post = filter_input_array(INPUT_POST);
-    $convo_xml = get_cURL($request_url, $options, $form_vars_post); //
-    $program_o = simplexml_load_string($convo_xml, 'SimpleXMLElement', LIBXML_NOCDATA);
-    if (($program_o) && (count($program_o) > 0))
-    {
-      $botname = (string) $program_o->bot_name;
-      $username = (string) $program_o->user_name;
-      $chat = $program_o->chat;
-      foreach ($chat as $line)
-      {
-        $usersay = $line->input;
-        $botsay = $line->response;
-        $response .= "<div id=\"user\"><b>$username:</b>$usersay</div>";
-        $response .= "<div id=\"bot\"><b>$botname:</b>$botsay</div>";
-      }
-/*
-      $botsay = (string) $program_o->botsay;
-      $usersay = (string) $program_o->usersay;
-*/
-      $response = str_replace('<![CDATA[', '', $response);
-      $response = str_replace(']]>', '', $response);
-    }
-  }
 
-  function get_cURL($url, $options = array(), $params = array())
+  $display = 'Make sure that you edit this file to change the value of $url below to reflect the correct address, and to remove this message.';
+  $url = 'http://www.example.com/programo/chatbot/conversation_start.php';
+  $display_template = <<<end_display
+      <span class="user_name">[user_name]: </span><span class="user_say">[input]</span><br>
+      <span class="bot_name">[bot_name]: </span><span class="bot_say">[response]</span><br>
+
+end_display;
+
+  $post_vars = (!empty($_POST)) ? filter_input_array(INPUT_POST) : array();
+  $get_vars = (!empty($_GET)) ? filter_input_array(INPUT_GET) : array();
+  $request_vars = array_merge($get_vars, $post_vars);
+  $convo_id = (isset ($request_vars['convo_id'])) ? $request_vars['convo_id'] : get_convo_id();
+  $bot_id = (isset ($request_vars['bot_id'])) ? $request_vars['bot_id'] : 1;
+  if (!empty ($request_vars))
   {
-    $failed = 'Cannot process CURL call.'; // This will need to be changed, at some point.
-    if (function_exists('curl_init'))
+    $options = array(
+      CURLOPT_USERAGENT => 'Program_O_XML_API',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_POST => true,
+      //CURLOPT_CONNECTTIMEOUT => 3,
+    );
+    $ch = curl_init($url);
+    curl_setopt_array($ch, $options);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $request_vars);
+    $data = curl_exec($ch);
+    curl_close($ch);
+    $xml = new SimpleXMLElement($data);
+    $display = '';
+    $success = $xml->status->success;
+    if (isset($xml->status->message))
     {
-      $ch = curl_init($url);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      if (is_array($options) and count($options) > 0)
-      {
-        foreach ($options as $key => $value)
-        {
-          curl_setopt($ch, $key, $value);
-        }
-      }
-      if (is_array($params) and count($params) > 0)
-      {
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-      }
-      $data = curl_exec($ch);
-      curl_close($ch);
-      return $data;
+      $message = (string) $xml->status->message;
+      $display = 'There was an error in the script. Message = ' . $message;
     }
     else
-      return $failed;
+    {
+      $user_name = (string) $xml->user_name;
+      $bot_name = (string) $xml->bot_name;
+      $chat = $xml->chat;
+      $lines = $chat->xpath('line');
+      foreach ($lines as $line)
+      {
+        $input = (string) $line->input;
+        $response = (string) $line->response;
+        $tmp_row = str_replace('[user_name]', $user_name, $display_template);
+        $tmp_row = str_replace('[bot_name]', $bot_name, $tmp_row);
+        $tmp_row = str_replace('[input]', $input, $tmp_row);
+        $tmp_row = str_replace('[response]', $response, $tmp_row);
+        $display .= $tmp_row;
+      }
+    }
+
   }
+
+  function get_convo_id()
+  {
+    if (isset($_COOKIE['Program_O_XML_API'])) $convo_id = $_COOKIE['Program_O_XML_API'];
+    else
+    {
+      session_name('Program O XML GUI');
+      session_start();
+      $convo_id = session_id();
+      session_destroy();
+    }
+    return $convo_id;
+  }
+
 ?>
 <!doctype html>
 <html>
@@ -91,18 +86,31 @@
     <title>Program O AIML Chatbot</title>
     <meta name="Description" content="A Free Open Source AIML PHP MySQL Chatbot called Program-O. Version2" />
     <meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2" />
+    <style type="text/css">
+      h3 {
+        text-align: center;
+      }
+      .user_name {
+        color: rgb(16, 45, 178);
+      }
+      .bot_name {
+        color: rgb(204, 0, 0);
+      }
+    </style>
   </head>
   <body>
-    <p>Don't forget to change the $request_url in this file to connect the bot on your site. And to remove this message!</p>
-    <div id="response"><?php echo $response ?></div>
-    <form accept-charset="utf-8" method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
+    <h3>Program O XML GUI</h3>
+    <form accept-charset="utf-8" method="get" action="<?php echo $_SERVER['PHP_SELF'] ?>">
       <p>
         <input type="text" name="say" id="say" />
         <input id="bot_id" type="hidden" name="bot_id" value="<?php echo $bot_id ?>">
         <input id="convo_id" type="hidden" name="convo_id" value="<?php echo $convo_id ?>">
-        <input id="format" type="hidden" name="format" value="<?php echo $format ?>">
+        <input id="format" type="hidden" name="format" value="xml">
         <input type="submit" value="Chat" />
       </p>
     </form>
+    <div id="response">
+<?php echo $display ?>
+    </div>
   </body>
 </html>

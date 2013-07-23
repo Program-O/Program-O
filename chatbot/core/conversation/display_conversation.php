@@ -162,7 +162,6 @@
     }
     $program_o->addChild('chat');
     $chat = $program_o->chat;
-    file_put_contents(_DEBUG_PATH_ . 'convo_sub_array.txt', print_r($conversation, true));
     foreach ($conversation as $index => $conversation_subarray)
     {
       if (empty($conversation_subarray)) continue;
@@ -170,9 +169,10 @@
       $line->addChild('input', $conversation_subarray['input']);
       $line->addChild('response', $conversation_subarray['response']);
     }
-    $dom = dom_import_simplexml($program_o);
-    $dom->preserveWhiteSpace = false;
+    $dom = new DOMDocument('1.0');
+    $dom->preserveWhiteSpace = true;
     $dom->formatOutput = true;
+    $dom = loadXML($program_o->asXML());
     $send_to_user = $dom->ownerDocument->saveXML();
     $convoArr['send_to_user'] = $send_to_user;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning XML", 4);

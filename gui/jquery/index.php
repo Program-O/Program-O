@@ -1,24 +1,28 @@
 <?php
-$thisFile = __FILE__;
-session_start();
-$bot_id = 1;
-$format = "json";
-$convo_id = session_id();
+/***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.3.0
+  * FILE: index.php
+  * AUTHOR: Elizabeth Perreau and Dave Morton
+  * DATE: 07-23-2013
+  * DETAILS: This is the interface for the Program O JSON API
+  ***************************************/
+  $cookie_name = 'Program_O_JSON_GUI';
+  $convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : get_convo_id();
+  $display = 'Make sure that you edit this file to change the value of $url below to reflect the correct address, and to remove this message.' . PHP_EOL;
+  $url = 'http://www.example.com/programo/chatbot/conversation_start.php';
 
-/*
-  $docRoot = $_SERVER['DOCUMENT_ROOT'];
-  $docRoot = str_replace('/', DIRECTORY_SEPARATOR, $docRoot);
-  $thisFolder = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR;
-  $baseFolder = str_ireplace('gui'.DIRECTORY_SEPARATOR.'jquery'.DIRECTORY_SEPARATOR, '', $thisFolder);
-  $relPath = str_ireplace(array($docRoot, DIRECTORY_SEPARATOR), array('', '/'), $baseFolder);
-  $configFile = $baseFolder . 'config' . DIRECTORY_SEPARATOR . 'global_config.php';
-  $headerURL = 'http://' . $_SERVER["HTTP_HOST"] . $relPath . 'install/install_programo.php';
-
-  require_once($configFile);
-*/
-  $thisFile = __FILE__;
-  if (!file_exists('../../config/global_config.php')) header('Location: ../../install/install_programo.php');
-  require_once ('../../config/global_config.php');
+  function get_convo_id()
+  {
+    global $cookie_name;
+    session_name($cookie_name);
+    session_start();
+    $convo_id = session_id();
+    session_destroy();
+    setcookie($cookie_name, $convo_id);
+    return $convo_id;
+  }
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
@@ -31,8 +35,32 @@ $convo_id = session_id();
     <title>Program O AIML PHP Chatbot</title>
     <meta name="Description" content="A Free Open Source AIML PHP MySQL Chatbot called Program-O. Version2" />
     <meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2" />
+    <meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2" />
+    <style type="text/css">
+      h3 {
+        text-align: center;
+      }
+      hr {
+        width: 80%;
+        color: green;
+        margin-left: 0;
+      }
+
+      .user_name {
+        color: rgb(16, 45, 178);
+      }
+      .bot_name {
+        color: rgb(204, 0, 0);
+      }
+    </style>
   </head>
   <body>
+    <h3>Program O XML GUI</h3>
+    <p>
+      This is a simple example of how to access the Program O chatbot using the JSON API. Feel free to change the HTML
+      code for this page to suit your specific needs. For more advanced uses, please visit the <a href="http://www.forum.program-o.com/">
+      Program O Forums</a> to ask for assistance.
+    </p>
     <div class="centerthis">
       <div class="manspeech"><div  class="triangle-border bottom blue"><div class="botsay">Hey!</div></div></div>
       <div class="dogspeech"><div  class="triangle-border bottom orange"><div class="usersay">&nbsp;</div></div></div>
@@ -48,10 +76,11 @@ $convo_id = session_id();
           <input type="submit" name="submit" id="submit" class="submit"  value="say" />
           <input type="hidden" name="convo_id" id="convo_id" value="<?php echo $convo_id;?>" />
           <input type="hidden" name="bot_id" id="bot_id" value="<?php echo $bot_id;?>" />
-          <input type="hidden" name="format" id="format" value="<?php echo $format;?>" />
+          <input type="hidden" name="format" id="format" value="json" />
         </p>
       </form>
     </div>
+<?php echo $display ?>
     <script type="text/javascript" src="jquery-1.3.min.js"></script>
     <script type="text/javascript" >
      $(document).ready(function() {
@@ -62,7 +91,7 @@ $convo_id = session_id();
           formdata = $("#talkform").serialize();
           $('#say').val('')
           $('#say').focus();
-          $.post('../../chatbot/conversation_start.php', formdata, function(data){
+          $.post('<?php echo $url ?>', formdata, function(data){
             var b = data.botsay;
             $('.botsay').html(b);
           }, 'json');
