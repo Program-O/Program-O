@@ -319,7 +319,7 @@
     print '<br/>----------------------------------------------------';
   }
 
-  function SQL_Error($errNum, $file = 'unknown', $function = 'unknown', $line = 'unknown')
+  function SQL_Error($errNum, $file = 'unknown', $function = 'unknown', $line = 'unknown', $errMsg = '')
   {
     $msg = "There's a problem with your Program O installation. Please run the <a href=\"../install/\">install script</a> to correct the problem.<br>\n";
     switch ($errNum)
@@ -328,7 +328,7 @@
         $msg .= "The database and/or table used in the config file doesn't exist.<br>\n";
         break;
       default :
-        $msg = "Error number $errNum!<br>\n";
+        $msg = "Error number $errNum!<br>\n$errMsg<br>\n";
     }
     return $msg;
   }
