@@ -96,7 +96,7 @@
     $dbConn = db_open();
     $user_name = filter_input(INPUT_POST,'user_name',FILTER_SANITIZE_STRING);
     $pw    = filter_input(INPUT_POST,'pw',FILTER_SANITIZE_STRING);
-    $sql = "SELECT * FROM `myprogramo` WHERE uname = '".$user_name."' AND pword = '".MD5($pw)."'";
+    $sql = "SELECT * FROM `myprogramo` WHERE user_name = '".$user_name."' AND password = '".MD5($pw)."'";
     $result = mysql_query($sql,$dbConn) or $msg .= SQL_Error(mysql_errno(), __FILE__, __FUNCTION__, __LINE__, mysql_error());
     if ($result) {
       $count = mysql_num_rows($result);
