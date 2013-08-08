@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.0
+  * Version: 2.3.1
   * FILE: chatbot/core/aiml/parse_aiml_as_XML.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -656,29 +656,32 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a LEARN tag.', 2);
     global $dbn, $con;
     $bot_id = $convoArr['conversation']['bot_id'];
-    $sqlTemplate = "insert into `$dbn`.`aiml_userdefined` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`)
-values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '[topic]', '[fileName]');";
+    $user_id = $convoArr['conversation']['user_id'];
+    $sqlTemplate = "insert into `$dbn`.`aiml_userdefined` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `user_id`)
+values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id');";
     $sql = '';
     $failure = false;
     $remove = array('<text>', '</text>');
     $fileName = (string) $element['filename'];
     if (empty($fileName)) // enclosed text is the category to add to the DB
     {
-      $fileName = 'add_from_learn_tag.aiml';
-      $topic       = $element->topic;
-      $category    = $element->category;
-      $catXML      = $category->asXML();
-      $pattern     = $category->pattern->asXML();
-      $pattern_eval = $category->template->eval;
+      $category     = $element->category;
+      $catXML       = $category->asXML();
+      $catXML       = str_replace('<text>', '', $catXML);
+      $catXML       = str_replace('</text>', '', $catXML);
+      $pattern      = $category->pattern->asXML();
+      $pattern_eval = $category->pattern->eval;
       if (!empty($pattern_eval))
       {
         $parsed_pattern_eval = parse_eval_tag($convoArr, $template_eval, 'learn_pattern', $level + 1);
         $pattern = preg_replace('~<eval>(.*?)</eval>~i', $parsed_pattern_eval, $pattern);
       }
-
+      $pattern = str_replace('<text>', '', $pattern);
+      $pattern = str_replace('</text>', '', $pattern);
       $thatpattern = (string)$category->that;
-      $topicName = (string)$topic;
       $template    = $category->template->asXML();
+      $template = str_replace('<text>', '', $template);
+      $template = str_replace('</text>', '', $template);
       $template_eval = $category->template->eval;
       if (!empty($template_eval))
       {
@@ -690,9 +693,8 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '[topic]',
       $sqlAdd = str_replace('[pattern]', $pattern, $sqlAdd);
       $sqlAdd = str_replace('[that]', $thatpattern, $sqlAdd);
       $sqlAdd = str_replace('[template]', $template, $sqlAdd);
-      $sqlAdd = str_replace('[topic]', $topicName, $sqlAdd);
-      $sqlAdd = str_replace('[fileName]', $fileName, $sqlAdd);
       $sql .= $sqlAdd;
+      $result = db_query($sql, $con) or trigger_error('Looks like we have a problem adding stuff to the aiml_userdefined table. Error: ' . mysql_error());
     }
     else
     {

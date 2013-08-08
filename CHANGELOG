@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.0
+  * Version: 2.3.1
   * FILE: CHANGELOG
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 11-05-2013
@@ -9,6 +9,12 @@
   ***************************************/
 
 Version History:
+2.3.1   Bug fixes, repaired missing table columns
+            1.) Corrected a bug in the function parse_learn_tag that prevented new data from being
+                inserted into the aiml_userdefined table
+            2.) Added a column in the aiml_userdefined table that was missing, which was also preventing
+                new data from being  added
+
 2.3.0   Minor DB refactor, in preparation for version 2.5
             1.) removed the last of the PHP code columns from the database
             2.) added an unknown_user field to the bots table, allowing per-bot settings for what the

@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.3.0
+* Version: 2.3.1
 * FILE: config/global_config.php
 * AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
 * DATE: January 16th, 2013
@@ -142,10 +142,6 @@
     //------------------------------------------------------------------------
     // Default debug data
     //------------------------------------------------------------------------
-
-    // Report all PHP errors
-    $e_all = defined('E_DEPRECATED') ? E_ALL ^ E_DEPRECATED : E_ALL;
-    error_reporting($e_all);
 
     //initially set here but overwriten by bot configuration in the admin panel
     $debug_level = $debug_level;

@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS `aiml_userdefined` (
   id int(11) NOT NULL AUTO_INCREMENT,
   aiml text NOT NULL,
   pattern text NOT NULL,
+  thatpattern text NOT NULL,
   template text NOT NULL,
   user_id int(11) NOT NULL,
   bot_id int(11) NOT NULL,

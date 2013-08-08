@@ -1,5 +1,6 @@
 <?php
-  error_reporting(E_ALL);
+  $e_all = defined('E_DEPRECATED') ? E_ALL ^ E_DEPRECATED : E_ALL;
+  error_reporting($e_all);
   ini_set('display_errors', 1);
   $thisFile = __FILE__;
   require_once('../config/global_config.php');

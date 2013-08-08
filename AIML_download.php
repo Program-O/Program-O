@@ -3,14 +3,15 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.0
+  * Version: 2.3.1
   * FILE: AIMLdownload.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 07-30-2013
   * DETAILS: extracts all content from a Program O DB's aiml table, converts it into AIML files, adds the files to a zip zrchive and sends it out for download.
   ***************************************/
 
-  error_reporting(E_ALL ^ E_DEPRECATED);
+  $e_all = defined('E_DEPRECATED') ? E_ALL ^ E_DEPRECATED : E_ALL;
+  error_reporting($e_all);
   ini_set('display_errors', 1);
   ini_set('log_errors', 1);
   session_start();

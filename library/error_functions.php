@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.0
+  * Version: 2.3.1
   * FILE: library/error_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -25,6 +25,10 @@
       case E_NOTICE :
       case E_USER_NOTICE :
         $errors = 'Notice';
+        break;
+        case E_DEPRECATED :
+      case E_USER_DEPRECATED :
+        $errors = 'Deprecated';
         break;
       case E_WARNING :
       case E_USER_WARNING :

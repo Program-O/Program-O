@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.0
+  * Version: 2.3.1
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-11-2013
@@ -15,7 +15,6 @@
   require_once('../config/global_config.php');
 
 
-  error_reporting(E_ALL);
   ini_set('log_errors', true);
   ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
   ini_set('html_errors', false);

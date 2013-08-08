@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.0
+  * Version: 2.3.1
   * FILE: chatbot/core/aiml/find_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 4TH 2011
@@ -806,8 +806,11 @@
     $result = db_query($sql, $con);
     if (($result) && (mysql_num_rows($result) > 0))
     {
+      $tmp_rows = number_format(mysql_num_rows($result));
       //$x = file_put_contents(_DEBUG_PATH_ . 'numrows.txt', 'Function: ' . __FUNCTION__ . "\r\nSQL:\r\n$sql\r\nRows found: " . mysql_num_rows($result) . "\r\n", FILE_APPEND);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: '" . mysql_num_rows($result) . "' potential AIML matches", 2);
+      $tmp_content = date('H:i:s') . ": SQL:\n$sql\nRows = $tmp_rows\n\n";
+      save_file(_DEBUG_PATH_ . 'sql.txt', $tmp_content, FILE_APPEND);
       //loop through results
       while ($row = mysql_fetch_assoc($result))
       {
@@ -817,7 +820,7 @@
         $allrows[$i]['thatpattern'] = $row['thatpattern'];
         $allrows[$i]['topic'] = $row['topic'];
         $i++;
-        $mu =memory_get_usage(true);
+        $mu = memory_get_usage(true);
         if ($mu >= MEM_TRIGGER)
         {
           runDebug(__FILE__, __FUNCTION__, __LINE__,'Current operation exceeds memory threshold. Aborting data retrieval.', 0);
