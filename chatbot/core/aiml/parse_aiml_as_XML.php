@@ -678,10 +678,15 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
       }
       $pattern = str_replace('<text>', '', $pattern);
       $pattern = str_replace('</text>', '', $pattern);
+      $pattern = str_replace('<pattern>', '', $pattern);
+      $pattern = str_replace('</pattern>', '', $pattern);
+      $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
       $thatpattern = (string)$category->that;
       $template    = $category->template->asXML();
       $template = str_replace('<text>', '', $template);
       $template = str_replace('</text>', '', $template);
+      $template = str_replace('<template>', '', $template);
+      $template = str_replace('</template>', '', $template);
       $template_eval = $category->template->eval;
       if (!empty($template_eval))
       {
