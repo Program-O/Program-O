@@ -19,6 +19,9 @@ it will notify the botmaster by email (if an email address has been configured).
 
 Please note that minor revision updates will ~NOT~ be affected, and will not include an upgrade script.
 
+However, when upgrading from 2.3.0 to 2.3.1, you **will** need to run the upgrade script upgrade_230_231.php
+manually. This file is also in the install folder.
+
 Also, on new installations of Program O, the installation script will also try to delete upgrade.php
 (since it won't be needed), and will also try to notify the botmaster in case of failure to delete the
 file.

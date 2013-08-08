@@ -13,12 +13,12 @@
   require_once ('../config/global_config.php');
   include_once (_LIB_PATH_ . "db_functions.php");
   include_once (_LIB_PATH_ . "error_functions.php");
-  ini_set('display_errors', true);
+  //ini_set('display_errors', true);
 
   $con = db_open();
   $sql = "alter table `$dbn`.`aiml_userdefined` ADD `thatpattern` TEXT NOT NULL AFTER `pattern`;";
-  $result = db_query($sql, $con) or trigger_error('There was a problem upgrading to version 2.3.1 - please submit a bug report and include the following information: ' . mysql_error());
-  echo ($result) ? 'Upgrade successful!' : "<br>\nUpgrade failed!";
+  $result = db_query($sql, $con) or exit('<pre>There was a problem upgrading to version 2.3.1 - please submit a bug report and include the following information:<br><br><b>'. mysql_error(). 'in '. __FILE__. ', line '. __LINE__. '</b>');
+  echo  'Upgrade successful!';
 
 
 ?>
