@@ -52,7 +52,7 @@
     // Error reporting
     //------------------------------------------------------------------------
 
-    $e_all = defined('E_DEPRECATED') ? E_ALL ^ E_DEPRECATED : E_ALL;
+    $e_all = defined('E_DEPRECATED') ? E_ALL & ~E_DEPRECATED : E_ALL;
     error_reporting($e_all);
     ini_set('log_errors', true);
     ini_set('error_log', _LOG_PATH_ . 'install.-error.log');

@@ -13,7 +13,7 @@
   $captcha_path = $thisFolder . 'captcha-images' . DIRECTORY_SEPARATOR;
   define('CAPTCHA_PATH', $captcha_path);
 
-  $e_all = defined('E_DEPRECATED') ? E_ALL ^ E_DEPRECATED : E_ALL;
+  $e_all = defined('E_DEPRECATED') ? E_ALL & ~E_DEPRECATED : E_ALL;
   error_reporting($e_all);
   ini_set('log_errors', 1);
   ini_set('display_errors', 0);

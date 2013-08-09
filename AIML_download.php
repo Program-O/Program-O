@@ -10,7 +10,7 @@
   * DETAILS: extracts all content from a Program O DB's aiml table, converts it into AIML files, adds the files to a zip zrchive and sends it out for download.
   ***************************************/
 
-  $e_all = defined('E_DEPRECATED') ? E_ALL ^ E_DEPRECATED : E_ALL;
+  $e_all = defined('E_DEPRECATED') ? E_ALL & ~E_DEPRECATED : E_ALL;
   error_reporting($e_all);
   ini_set('display_errors', 1);
   ini_set('log_errors', 1);

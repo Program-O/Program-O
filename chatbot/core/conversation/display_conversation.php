@@ -169,11 +169,13 @@
       $line->addChild('input', $conversation_subarray['input']);
       $line->addChild('response', $conversation_subarray['response']);
     }
+    $responseXML = $program_o->asXML();
+    libxml_use_internal_errors(true);
     $dom = new DOMDocument('1.0');
     $dom->preserveWhiteSpace = true;
     $dom->formatOutput = true;
-    $dom = loadXML($program_o->asXML());
-    $send_to_user = $dom->ownerDocument->saveXML();
+    $dom->loadXML($responseXML);
+    $send_to_user = $dom->saveXML();
     $convoArr['send_to_user'] = $send_to_user;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning XML", 4);
     return $convoArr;

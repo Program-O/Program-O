@@ -112,7 +112,7 @@ function getSelectedBot() {
     $sql = "SELECT * FROM `bots` where bot_id = '$bot_id';";
     if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . '.');
     while($row = mysql_fetch_assoc($result)) {
-      save_file(_LOG_PATH_ . 'bot_row.txt', print_r($row, true));
+      //save_file(_LOG_PATH_ . 'bot_row.txt', print_r($row, true));
       foreach ($row as $key => $value) {
         if (strstr($key,'bot_') != false){
           $tmp = '';
