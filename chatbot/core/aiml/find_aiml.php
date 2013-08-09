@@ -800,17 +800,15 @@
 		 ($sql_add) OR
 		 (`pattern` = '$aiml_pattern' ))
 		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` like '%') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
-		AND ((`topic`='') OR (`topic`='$storedtopic')))";
+		AND ((`topic`='') OR (`topic`='$storedtopic')));";
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);
     $result = db_query($sql, $con);
     if (($result) && (mysql_num_rows($result) > 0))
     {
       $tmp_rows = number_format(mysql_num_rows($result));
-      //$x = file_put_contents(_DEBUG_PATH_ . 'numrows.txt', 'Function: ' . __FUNCTION__ . "\r\nSQL:\r\n$sql\r\nRows found: " . mysql_num_rows($result) . "\r\n", FILE_APPEND);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: '" . mysql_num_rows($result) . "' potential AIML matches", 2);
       $tmp_content = date('H:i:s') . ": SQL:\n$sql\nRows = $tmp_rows\n\n";
-      save_file(_DEBUG_PATH_ . 'sql.txt', $tmp_content, FILE_APPEND);
       //loop through results
       while ($row = mysql_fetch_assoc($result))
       {

@@ -313,6 +313,7 @@
       $convoArr['client_properties']['name'] = $var_value;
       $convoArr['conversation']['user_name'] = $var_value;
       $sql = "UPDATE `$dbn`.`users` set `user_name` = '$var_value' where `id` = $user_id;";
+      $sql = mysql_real_escape_string($sql);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Updating user name in the DB. SQL:\n$sql", 3);
       $result = db_query($sql, $con) or trigger_error('Error setting user name in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
       $numRows = mysql_affected_rows();
