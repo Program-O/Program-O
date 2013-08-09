@@ -673,7 +673,7 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
       $pattern_eval = $category->pattern->eval;
       if (!empty($pattern_eval))
       {
-        $parsed_pattern_eval = parse_eval_tag($convoArr, $template_eval, 'learn_pattern', $level + 1);
+        $parsed_pattern_eval = parse_eval_tag($convoArr, $pattern_eval, 'learn_pattern', $level + 1);
         $pattern = preg_replace('~<eval>(.*?)</eval>~i', $parsed_pattern_eval, $pattern);
       }
       $pattern = str_replace('<text>', '', $pattern);
