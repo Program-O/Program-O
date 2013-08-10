@@ -96,6 +96,17 @@ end_display;
       .bot_name {
         color: rgb(204, 0, 0);
       }
+      #shameless_plug {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        border: 1px solid red;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-shadow: 2px 2px 2px 0 #808080;
+        padding: 5px;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body>
@@ -111,6 +122,9 @@ end_display;
     </form>
     <div id="response">
 <?php echo $display ?>
+    </div>
+    <div id="shameless_plug">
+      To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
     </div>
   </body>
 </html>

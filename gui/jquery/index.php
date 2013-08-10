@@ -54,6 +54,17 @@
       .bot_name {
         color: rgb(204, 0, 0);
       }
+      #shameless_plug {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        border: 1px solid red;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-shadow: 2px 2px 2px 0 #808080;
+        padding: 5px;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body>
@@ -82,7 +93,10 @@
         </p>
       </form>
     </div>
-<?php echo $display ?>
+    <div id="shameless_plug">
+      To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
+    </div>
+    <?php echo $display ?>
     <script type="text/javascript" src="jquery-1.3.min.js"></script>
     <script type="text/javascript" >
      $(document).ready(function() {
