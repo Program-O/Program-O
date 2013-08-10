@@ -10,15 +10,13 @@
   * DETAILS: extracts all content from a Program O DB's aiml table, converts it into AIML files, adds the files to a zip zrchive and sends it out for download.
   ***************************************/
 
-  $e_all = defined('E_DEPRECATED') ? E_ALL & ~E_DEPRECATED : E_ALL;
-  error_reporting($e_all);
-  ini_set('display_errors', 1);
-  ini_set('log_errors', 1);
-  session_start();
   $this_path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
   $this_path = str_replace(DIRECTORY_SEPARATOR, '/', $this_path);
   chdir($this_path);
   define('ROOT_PATH', $this_path);
+  ini_set('session.save_path', ROOT_PATH . 'mySessions');
+  if (isset($_GET['download'])) exit(serveFile());
+  session_start();
   switch (true)
   {
   // Version 1
@@ -46,6 +44,7 @@
       if (empty ($_POST))
       {
         print_form();
+        if (empty($_SESSION)) exit();
         foreach ($_SESSION as $key)
         {
           $_SESSION[$key] = '';
@@ -58,29 +57,33 @@
       else
       {
         $post_vars = filter_input_array(INPUT_POST);
+        extract($post_vars);
         $error = 'All fields are required. Please fill out the missing information.';
         $url = $_SERVER['PHP_SELF'];
+        $fields_list = array('dbh' => 'DB Host', 'dbn' => 'DB Name', 'dbu' => 'DB Username', 'dbp' => 'DB Password');
         foreach ($post_vars as $key => $value)
         {
-          if (empty ($value))
-            continue;
-          $_SESSION[$key] = $value;
+          if (!empty($value))
+          {
+            $_SESSION[$key] = $value;
+          }
+          else
+          {
+             $field_name = $fields_list[$key];
+             $error .= "<br>Field $field_name is empty.\n";
+          }
         }
         if (empty ($dbh) or empty ($dbn) or empty ($dbu) or empty ($dbp))
         {
           $_SESSION['error'] = $error;
           header("Location: $url");
-          #die("Location: $url");
         }
       }
   }
   // define whether mb_string functions are available (just in case it sin't already defined)
-  if (!defined('IS_MB_ENABLED'))
-    define('IS_MB_ENABLED', (function_exists('mb_internal_encoding')) ? true : false);
-  ini_set('display_errors', 1);
-  echo ($msg);
-  $dbh = mysql_connect($dbh, $dbu, $dbp) or die('Cannot open the database. Error: ' . mysql_error());
-  mysql_select_db($dbn, $dbh) or die('Cannot open the database. Error: ' . mysql_error());
+  if (!defined('IS_MB_ENABLED')) define('IS_MB_ENABLED', (function_exists('mb_internal_encoding')) ? true : false);
+  $dbCon = mysql_connect($dbh, $dbu, $dbp) or trigger_error('Cannot open the database. Error: ' . mysql_error(), E_USER_ERROR);
+  mysql_select_db($dbn, $dbCon) or trigger_error('Cannot open the database. Error: ' . mysql_error(), E_USER_ERROR);
   $fileList = get_file_list();
   $zip = new ZipArchive();
   $result = $zip->open(ROOT_PATH . 'AIML_files.zip', ZipArchive :: CREATE);
@@ -90,12 +93,13 @@
     {
     //echo "processing AIML file $file<br>\n";
       $aimlFile = getAIMLByFileName($file);
-      if (!$aimlFile = pretty_print($aimlFile, $file)) continue;
-      //die('<pre>' . htmlentities($aimlFile));
-      $zip->addFromString($file, $aimlFile) or die('Couldn\'t add file!');
+      //if (!$aimlFile = pretty_print($aimlFile, $file)) continue;
+      if ($aimlFile == '' or $file == '') continue;
+      $zip->addFromString($file, $aimlFile) or trigger_error('Couldn\'t add file!');
     }
     $zip->close();
-    echo 'Process complete!';
+    echo "Process complete. Your download is being prepared. If it doesn't appear in 10 seconds, please <a href=\"$url?download\">click here</a>.";
+    echo '<script type="text/javascript">location.replace(location.href + "?download");</script>';
   }
   else
   {
@@ -107,22 +111,23 @@
   function serveFile()
   {
     header('Content-Description: File Transfer');
-    header("Content-type: application/zip");
-    header("Content-Disposition: attachment; filename=AIML_files.zip");
-    header("Pragma: no-cache");
-    header("Expires: 0");
+    header('Content-type: application/zip');
+    header('Content-Disposition: attachment; filename="AIML_files.zip"');
+    header('Pragma: no-cache');
+    header('Expires: 0');
     readfile(ROOT_PATH . 'AIML_files.zip');
+    unlink(ROOT_PATH . 'AIML_files.zip');
     exit;
     return $msg;
   }
 
   function get_file_list()
   {
-    global $dbh;
+    global $dbCon;
     $filenames = array();
     $no_file = 'no_file';
     $sql = 'select distinct filename from aiml;';
-    $result = mysql_query($sql, $dbh) or die('oops? ' . mysql_error());
+    $result = mysql_query($sql, $dbCon) or trigger_error('oops? ' . mysql_error());
     while ($row = mysql_fetch_assoc($result))
     {
       $filenames[] = $row['filename'];
@@ -133,7 +138,7 @@
 
   function getAIMLByFileName($filename)
   {
-    global $dbh;
+    global $dbCon;
     $categoryTemplate = '<category><pattern>[pattern]</pattern>[that]<template>[template]</template></category>';
     $fileNameSearch = '[fileName]';
     $cfnLen = strlen($filename);
@@ -145,8 +150,8 @@
     $fileContent = '<?xml version="1.0" encoding="utf-8"?>
 <aiml>';
     $sql = "select distinct topic from aiml where filename like '$filename';";
-    #return "SQL = $sql";
-    $result = mysql_query($sql, $dbh) or trigger_error('Cannot load the list of topics from the DB. Error = ' . mysql_error());
+    //$sql = mysql_real_escape_string($sql,$dbCon);
+    $result = mysql_query($sql, $dbCon) or trigger_error('Cannot load the list of topics from the DB. Error = ' . mysql_error());
     while ($row = mysql_fetch_assoc($result))
     {
       $topicArray[] = $row['topic'];
@@ -156,7 +161,7 @@
       if (!empty ($topic))
         $fileContent .= "<topic name=\"$topic\">\n";
       $sql = "select pattern, thatpattern, template from aiml where topic like '$topic' and filename like '$filename';";
-      $result = mysql_query($sql, $dbh) or trigger_error('Cannot obtain the AIML categories from the DB. Error = ' . mysql_error());
+      $result = mysql_query($sql, $dbCon) or trigger_error('Cannot obtain the AIML categories from the DB. Error = ' . mysql_error());
       while ($row = mysql_fetch_assoc($result))
       {
         $pattern = (IS_MB_ENABLED) ? mb_strtoupper($row['pattern']) : strtoupper($row['pattern']);
@@ -171,7 +176,7 @@
       if (!empty ($topic))
         $fileContent .= "</topic>\n";
     }
-    $fileContent .= "\r\n</aiml>\r\n";
+    $fileContent .= "\n</aiml>\n";
     $outFile = ltrim($fileContent, "\n\r\n");
     $outFile = mb_convert_encoding($outFile, 'UTF-8');
     return $outFile;
@@ -246,7 +251,7 @@
       and offer them for download as a single Zip archive. All you need to do is provide connection information
       for your chatbot's database.
     </p>
-    <form id="db_info" name="db_info" action="db2aiml.php" method="POST">
+    <form id="db_info" name="db_info" action="AIML_download.php" method="POST">
     <table>
       <tr>
         <td>
@@ -288,7 +293,8 @@
   </body>
 </html>
   <?php
-
+  $_SESSION = null;
+  session_destroy();
   }
 
 ?>
