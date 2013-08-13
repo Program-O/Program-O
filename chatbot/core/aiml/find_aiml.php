@@ -625,6 +625,7 @@
   **/
   function find_userdefined_aiml($convoArr)
   {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Looking for user defined responses', 4);
     global $dbn, $con;
     $i = 0;
     $allrows = array();
