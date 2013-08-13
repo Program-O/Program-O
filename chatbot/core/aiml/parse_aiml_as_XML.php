@@ -667,10 +667,12 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
     if (empty($fileName)) // enclosed text is the category to add to the DB
     {
       $category     = $element->category;
-      $catXML       = $category->asXML();
-      $catXML       = str_replace('<text>', '', $catXML);
-      $catXML       = str_replace('</text>', '', $catXML);
-      $pattern      = $category->pattern->asXML();
+      $catXML       = new SimpleXMLElement('<category/>');
+      //$pattern      = $category->pattern->asXML();
+      $pattern      = parseTemplateRecursive($convoArr, $category->pattern, $level + 1);
+      $pattern = implode_recursive(' ', $pattern, __FILE__, __FUNCTION__, __LINE__);
+      save_file(_DEBUG_PATH_ . 'pattern.txt', "pattern = " . print_r($pattern, true));
+/*
       $pattern_eval = $category->pattern->eval;
       if (!empty($pattern_eval))
       {
@@ -681,6 +683,7 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
       $pattern = str_replace('</text>', '', $pattern);
       $pattern = str_replace('<pattern>', '', $pattern);
       $pattern = str_replace('</pattern>', '', $pattern);
+*/
       $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
       $thatpattern = (string)$category->that;
       $template    = $category->template->asXML();
@@ -694,8 +697,12 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
         $parsed_template_eval = parse_eval_tag($convoArr, $template_eval, 'learn_template', $level + 1);
         $template = preg_replace('~<eval>(.*?)</eval>~i', $parsed_template_eval, $template);
       }
-
-      $sqlAdd = str_replace('[aiml]', $catXML, $sqlTemplate);
+      $catXML->addChild('pattern', $pattern);
+      if (!empty($thatpattern)) $catXML->addChild('that', $thatpattern);
+      $catXML->addChild('template', $template);
+      $category = $catXML->asXML();
+      $category = trim(str_replace('<?xml version="1.0"?>', '', $category));
+      $sqlAdd = str_replace('[aiml]', $category, $sqlTemplate);
       $sqlAdd = str_replace('[pattern]', $pattern, $sqlAdd);
       $sqlAdd = str_replace('[that]', $thatpattern, $sqlAdd);
       $sqlAdd = str_replace('[template]', $template, $sqlAdd);
