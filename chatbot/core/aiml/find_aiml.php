@@ -120,8 +120,8 @@
       //get the topic
       $aiml_thatpattern = $subrow['thatpattern'];
       //get the that
-      $aiml_pattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_pattern) : strtolower($aiml_pattern);
-      $default_pattern = (IS_MB_ENABLED) ? mb_strtolower($default_pattern) : strtolower($default_pattern);
+      //$aiml_pattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_pattern) : strtolower($aiml_pattern);
+      //$default_pattern = (IS_MB_ENABLED) ? mb_strtolower($default_pattern) : strtolower($default_pattern);
       if ($aiml_pattern == $default_pattern)
       {
       //if it is a direct match with our default pattern then add to tmp_rows
@@ -186,6 +186,7 @@
     //	print_r($tmp_rows);
     //	echo "</pre>";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Found '$i' relevant rows", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($tmp_rows,true), 4);
     return $tmp_rows;
   }
 
@@ -772,7 +773,7 @@
     }
     //get the word count
     $word_count = wordsCount_inSentence($lookingfor);
-    if ($bot_parent_id != 0)
+    if ($bot_parent_id != 0 and $bot_parent_id != $bot_id)
     {
       $sql_bot_select = " (bot_id = '$bot_id' OR bot_id = '$bot_parent_id') ";
     }
@@ -780,6 +781,11 @@
     {
       $sql_bot_select = " bot_id = '$bot_id' ";
     }
+    if ($storedtopic != '')
+    {
+      $topic_select = "(`topic`='') OR (`topic`='$storedtopic')";
+    }
+    else $topic_select = "`topic`=''";
     if ($word_count == 1)
     {
     //if there is one word do this
@@ -801,7 +807,7 @@
 		 ($sql_add) OR
 		 (`pattern` = '$aiml_pattern' ))
 		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` like '%') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
-		AND ((`topic`='') OR (`topic`='$storedtopic')));";
+		AND ($topic_select));";
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);
     $result = db_query($sql, $con);
