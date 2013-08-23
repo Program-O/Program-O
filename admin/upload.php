@@ -177,12 +177,12 @@ endScript;
           $pattern = str_replace("'", ' ', $pattern);
           $that = $category->that;
           $template = $category->template->asXML();
-          $template = str_replace('<template>', '', $template);
-          $template = str_replace('</template>', '', $template);
-          $aiml_add = str_replace("\r\n", '', $fullCategory);
-          # Strip CRLF from category (windows)
-          $aiml_add = str_replace("\n", '', $aiml_add);
-          # Strip LF from category (mac/*nix)
+          $template = ltrim($template,'<template>');
+          $template = ltrim($template,"\r\n ");
+          $template = rtrim($template,'</template>');
+          $template = rtrim($template,"\r\n");
+          # Strip CRLF and LF from category (Windows/mac/*nix)
+          $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
           $sql_add = str_replace('[aiml_add]', mysql_real_escape_string($aiml_add), $sql_template);
           $sql_add = str_replace('[pattern]', $pattern, $sql_add);
           $sql_add = str_replace('[that]', $that, $sql_add);
