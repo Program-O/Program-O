@@ -109,7 +109,7 @@ end_display;
       }
     </style>
   </head>
-  <body>
+  <body onload="document.forms[0].say.focus();">
     <h3>Program O XML GUI</h3>
     <form accept-charset="utf-8" method="get" action="<?php echo $_SERVER['PHP_SELF'] ?>">
       <p>

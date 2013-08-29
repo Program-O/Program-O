@@ -179,6 +179,20 @@
             }
           }
         }
+        else
+        {
+          $tmp_rows[$i] = array(
+            'aiml_id' => -1,
+            'bot_id'  => -1,
+            'pattern' => '',
+            'thatpattern'  => '',
+            'topic'  => '',
+            'score'   => 0,
+            'track_score' => ''
+          );
+/*
+*/
+        }
         //echo "<br/>--------------";
       }
     }
@@ -397,6 +411,7 @@
     print_r($allrows);
     echo "</pre>";
     */
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"Returned array:\n" . print_r($allrows, true), 4);
     return $allrows;
     //return the scored rows
   }
@@ -415,8 +430,8 @@
   {
     $thisCount = count($thisArr);
     $showLimit = ($thisCount < $limit) ? $thisCount : $limit;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName - sorting $thisCount results by $sortByItem and getting the top $showLimit for debugging.", 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($thisArr, true), 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName - sorting $thisCount results by $sortByItem and getting the top $showLimit for debugging.", 4);
     $i = 0;
     $tmpSortArr = array();
     $resArr = array();

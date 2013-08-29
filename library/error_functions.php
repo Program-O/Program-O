@@ -43,8 +43,8 @@
         break;
     }
     $info = "PHP ERROR [$errors] -$errstr in $errfile on Line $errline";
-    //a littl hack to hide the pass by reference errors of which there may be a few
-    if ($errstr != 'Call-time pass-by-reference has been deprecated')
+    //a little hack to hide 'deprecated' errors of which there may be ~MORE~ than a few, depending on PHP version
+    if (!stripos($errstr, 'deprecated'))
     {
       runDebug($errfile, '', $errline, $info, 1);
     }

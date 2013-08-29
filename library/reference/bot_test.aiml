@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!--
- Copyright ©2011/2013 Dave Morton
+ Copyright Â©2011/2013 Dave Morton
 
  Permission is hereby granted, free of charge, to any person
  obtaining a copy of this software and associated documentation
@@ -37,7 +37,7 @@
 <category><pattern>AIML TEST BOT PROPERTY *</pattern><template>The bot property <star /> is <bot name="*" />.</template></category>
 <category><pattern>AIML TEST UPPERCASE *</pattern><template>The following should all be in capital letters: "<uppercase><star /></uppercase>"</template></category>
 <category><pattern>AIML TEST HTML</pattern><template>Testing HTML tag parsing:<br />Link tag: <a href="http://www.geekcavecreations.com" target="_blank">Geek Cave Creations</a><br /><b>BOLD</b><br /><i>italic</i><br /><s>strikethrough</s><br /><u>underline</u><sub>subscript</sub><br /><sup>superscript</sup><br /><big>BIG</big><br /><strong>STRONG</strong><small>small</small><br />Unordered list:<br /><ul>  <li>Item 1</li>  <li>Item 2</li>  <li>Item 3</li></ul><br />Ordered list:<br /><ol>  <li>Item 1</li>  <li>Item 2</li>  <li>Item 3</li></ol><br />Test complete.</template></category>
-<category><pattern>AIML TEST SR *</pattern><template>Running SR test on <star />: <br><sr/></template></category>
+<category><pattern>AIML TEST SR *</pattern><template>Running SR test on <star />: <br/><sr/></template></category>
 <category><pattern>AIML TEST ID</pattern><template>Your user ID is <id />.</template></category>
 <category><pattern>AIML TEST VERSION</pattern><template><version /></template></category>
 <category><pattern>AIML TEST CONDITION *</pattern><template><b>Testing Condition tag with NAME and VALUE attributes:</b><br /><condition name="gender" value="female"> attractive.</condition><condition name="gender" value="male"> handsome.</condition><br /><b>Testing Condition tag with only NAME attribute:</b><br /><condition name="gender"><li value="female"> attractive.</li><li value="male"> handsome.</li></condition><br /><b>Testing Condition tag with no attributes:</b><br /><condition><li name="gender" value="female"> attractive.</li><li name="gender" value="male"> handsome.</li></condition><br />Testing complete.</template></category>

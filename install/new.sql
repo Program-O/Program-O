@@ -1,79 +1,143 @@
+
+DROP TABLE IF EXISTS `aiml`;
 CREATE TABLE IF NOT EXISTS `aiml` (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  bot_id int(11) NOT NULL DEFAULT '1',
-  aiml text NOT NULL,
-  pattern varchar(255) NOT NULL,
-  thatpattern varchar(255) NOT NULL,
-  template text NOT NULL,
-  topic varchar(255) NOT NULL,
-  filename varchar(255) NOT NULL,
-  PRIMARY KEY (id),
-  KEY topic (topic)
-);
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `bot_id` int(11) NOT NULL DEFAULT '1',
+  `aiml` text NOT NULL,
+  `pattern` varchar(255) NOT NULL,
+  `thatpattern` varchar(255) NOT NULL,
+  `template` text NOT NULL,
+  `topic` varchar(255) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `topic` (`topic`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-CREATE TABLE IF NOT EXISTS `bots` (
-  bot_id int(11) NOT NULL AUTO_INCREMENT,
-  bot_name varchar(255) NOT NULL,
-  bot_desc varchar(255) NOT NULL,
-  bot_active int(11) NOT NULL DEFAULT '1',
-  bot_parent_id int(11) NOT NULL DEFAULT '0',
-  format varchar(10) NOT NULL DEFAULT 'html',
-  save_state enum('session','database') NOT NULL DEFAULT 'session',
-  conversation_lines int(11) NOT NULL DEFAULT '7',
-  remember_up_to int(11) NOT NULL DEFAULT '10',
-  debugemail text NOT NULL,
-  debugshow int(11) NOT NULL DEFAULT '1',
-  debugmode int(11) NOT NULL DEFAULT '1',
-  error_response text not null,
-  default_aiml_pattern varchar(255) NOT NULL DEFAULT 'RANDOM PICKUP LINE',
-  unknown_user varchar(255) NOT NULL DEFAULT 'Seeker',
-  PRIMARY KEY (bot_id)
-);
+-- --------------------------------------------------------
 
+--
+-- Table structure for table `aiml_userdefined`
+--
+
+DROP TABLE IF EXISTS `aiml_userdefined`;
 CREATE TABLE IF NOT EXISTS `aiml_userdefined` (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  aiml text NOT NULL,
-  pattern text NOT NULL,
-  thatpattern text NOT NULL,
-  template text NOT NULL,
-  user_id int(11) NOT NULL,
-  bot_id int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `aiml` text NOT NULL,
+  `pattern` text NOT NULL,
+  `thatpattern` text NOT NULL,
+  `template` text NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `bot_id` int(11) NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id)
-);
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `botpersonality`
+--
+
+DROP TABLE IF EXISTS `botpersonality`;
 CREATE TABLE IF NOT EXISTS `botpersonality` (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  bot_id tinyint(4) NOT NULL DEFAULT '0',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `bot_id` tinyint(4) NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL DEFAULT '',
   `value` text NOT NULL,
-  PRIMARY KEY (id),
-  KEY botname (bot_id,`name`));
+  PRIMARY KEY (`id`),
+  KEY `botname` (`bot_id`,`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bots`
+--
+
+DROP TABLE IF EXISTS `bots`;
+CREATE TABLE IF NOT EXISTS `bots` (
+  `bot_id` int(11) NOT NULL AUTO_INCREMENT,
+  `bot_name` varchar(255) NOT NULL,
+  `bot_desc` varchar(255) NOT NULL,
+  `bot_active` int(11) NOT NULL DEFAULT '1',
+  `bot_parent_id` int(11) NOT NULL DEFAULT '0',
+  `format` varchar(10) NOT NULL DEFAULT 'html',
+  `save_state` enum('session','database') NOT NULL DEFAULT 'session',
+  `conversation_lines` int(11) NOT NULL DEFAULT '7',
+  `remember_up_to` int(11) NOT NULL DEFAULT '10',
+  `debugemail` text NOT NULL,
+  `debugshow` int(11) NOT NULL DEFAULT '1',
+  `debugmode` int(11) NOT NULL DEFAULT '1',
+  `error_response` text NOT NULL,
+  `default_aiml_pattern` varchar(255) NOT NULL DEFAULT 'RANDOM PICKUP LINE',
+  `unknown_user` varchar(255) NOT NULL DEFAULT 'Seeker',
+  PRIMARY KEY (`bot_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `client_properties`
+--
+
+DROP TABLE IF EXISTS `client_properties`;
+CREATE TABLE IF NOT EXISTS `client_properties` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `bot_id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `value` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `conversation_log`
+--
+
+DROP TABLE IF EXISTS `conversation_log`;
 CREATE TABLE IF NOT EXISTS `conversation_log` (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  input text NOT NULL,
-  response text NOT NULL,
-  user_id int(11) NOT NULL,
-  convo_id text NOT NULL,
-  bot_id int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `input` text NOT NULL,
+  `response` text NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `convo_id` text NOT NULL,
+  `bot_id` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id));
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `myprogramo`
+--
+
+DROP TABLE IF EXISTS `myprogramo`;
 CREATE TABLE IF NOT EXISTS `myprogramo` (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  user_name varchar(10) NOT NULL,
-  password varchar(255) NOT NULL,
-  last_ip varchar(25) NOT NULL,
-  last_login timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  UNIQUE KEY user_name (user_name));
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_name` varchar(10) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `last_ip` varchar(25) NOT NULL,
+  `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_name` (`user_name`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `spellcheck`
+--
+
+DROP TABLE IF EXISTS `spellcheck`;
 CREATE TABLE IF NOT EXISTS `spellcheck` (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  missspelling varchar(100) NOT NULL,
-  correction varchar(100) NOT NULL,
-  PRIMARY KEY (id));
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `missspelling` varchar(100) NOT NULL,
+  `correction` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 INSERT IGNORE INTO spellcheck (id, missspelling, correction) VALUES
 (1, 'shakespear', 'shakespeare'),
@@ -178,13 +242,21 @@ INSERT IGNORE INTO spellcheck (id, missspelling, correction) VALUES
 (110, 'program-o', 'programo'),
 (111, 'fav', 'favorite');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `undefined_defaults`
+--
+
+DROP TABLE IF EXISTS `undefined_defaults`;
 CREATE TABLE IF NOT EXISTS `undefined_defaults` (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  bot_id int(11) NOT NULL,
-  user_id int(11) NOT NULL default 0,
-  pattern text NOT NULL,
-  template varchar(255) NOT NULL,
-  PRIMARY KEY (id));
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `bot_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `pattern` text NOT NULL,
+  `template` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 INSERT IGNORE INTO undefined_defaults (id, bot_id, pattern, template) VALUES
 (1, 1, 'your name', 'my friend'),
@@ -218,44 +290,59 @@ INSERT IGNORE INTO undefined_defaults (id, bot_id, pattern, template) VALUES
 (29, 1, 'your dealerace', 'dealer total'),
 (30, 1, 'your playerace', 'your total');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `unknown_inputs`
+--
+
+DROP TABLE IF EXISTS `unknown_inputs`;
 CREATE TABLE IF NOT EXISTS `unknown_inputs` (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  bot_id int not null,
-  input text NOT NULL,
-  user_id int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `bot_id` int(11) NOT NULL,
+  `input` text NOT NULL,
+  `user_id` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id));
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  user_name text not null,
-  session_id varchar(255) NOT NULL,
-  bot_id int(11) NOT NULL,
-  chatlines int(11) NOT NULL,
-  ip varchar(100) NOT NULL,
-  referer text NOT NULL,
-  browser text NOT NULL,
-  date_logged_on timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_update timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  state text NOT NULL,
-  PRIMARY KEY (id));
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_name` text NOT NULL,
+  `session_id` varchar(255) NOT NULL,
+  `bot_id` int(11) NOT NULL,
+  `chatlines` int(11) NOT NULL,
+  `ip` varchar(100) NOT NULL,
+  `referer` text NOT NULL,
+  `browser` text NOT NULL,
+  `date_logged_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_update` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `state` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wordcensor`
+--
+
+DROP TABLE IF EXISTS `wordcensor`;
 CREATE TABLE IF NOT EXISTS `wordcensor` (
-  censor_id int(11) NOT NULL AUTO_INCREMENT,
-  word_to_censor varchar(50) NOT NULL,
-  replace_with varchar(50) NOT NULL DEFAULT '****',
-  bot_exclude varchar(255) NOT NULL,
-  PRIMARY KEY (censor_id));
+  `censor_id` int(11) NOT NULL AUTO_INCREMENT,
+  `word_to_censor` varchar(50) NOT NULL,
+  `replace_with` varchar(50) NOT NULL DEFAULT '****',
+  `bot_exclude` varchar(255) NOT NULL,
+  PRIMARY KEY (`censor_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 INSERT IGNORE INTO wordcensor (censor_id, word_to_censor, replace_with, bot_exclude) VALUES
 (1, 'shit', 's***', ''),
 (2, 'fuck', 'f***', '');
-
-CREATE TABLE IF NOT EXISTS `client_properties` (
-`id` INT NOT NULL  AUTO_INCREMENT,
-`user_id` INT NOT NULL ,
-`bot_id` INT NOT NULL ,
-`name` TEXT NOT NULL ,
-`value` TEXT NOT NULL ,
-PRIMARY KEY ( `id` )
-)

@@ -609,21 +609,25 @@
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
     $limit = $remember_up_to;
-    $sql = "select `response` from `$dbn`.`conversation_log` where `user_id` = $user_id and `bot_id` = $bot_id order by `id` asc limit $limit;"; // desc
+    $sql = "select `input`, `response` from `$dbn`.`conversation_log` where `user_id` = $user_id and `bot_id` = $bot_id order by `id` asc limit $limit;"; // desc
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation log entries for the current user. SQL:\n$sql", 3);
     $result = db_query($sql, $con);
     if ($result)
     {
-      $tmpRows = array();
+      $tmpThatRows = array();
+      $tmpInputRows = array();
       $tmpThat = array();
+      $tmpInput = array();
       $puncuation = array(',', '?', ';', '!');
       while ($row = mysql_fetch_assoc($result))
       {
-        $tmpRows[] = $row['response'];
+        $tmpThatRows[] = $row['response'];
+        $tmpInputRows[] = $row['input'];
       }
-      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished loading previous responses into the ~THAT~ array.', 4);
-      array_reverse($tmpRows);
-      foreach ($tmpRows as $row)
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Inputs returned:' . print_r($tmpInputRows, true), 1);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading previous responses into the ~THAT~ array.', 4);
+      array_reverse($tmpThatRows);
+      foreach ($tmpThatRows as $row)
       {
         $row = str_replace($puncuation, '.', $row);
         $tmpThat[] = explode('.', $row);
@@ -636,9 +640,24 @@
         $value = clean_that($value, __FILE__, __FUNCTION__, __LINE__);
         $convoArr = push_on_front_convoArr('that', $value, $convoArr);
       }
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading previous user inputs into the ~INPUT~ array.', 4);
+      array_reverse($tmpInputRows);
+      foreach ($tmpInputRows as $row)
+      {
+        $row = str_replace($puncuation, '.', $row);
+        $tmpInput[] = explode('.', $row);
+      }
+      array_unshift($tmpThat, NULL);
+      unset ($tmpThat[0]);
+      foreach ($tmpInput as $index => $value)
+      {
+        $value = implode_recursive(' ', $value, __FILE__, __FUNCTION__, __LINE__);
+        $value = clean_that($value, __FILE__, __FUNCTION__, __LINE__);
+        $convoArr = push_on_front_convoArr('input', $value, $convoArr);
+      }
     }
+    else runDebug(__FILE__, __FUNCTION__, __LINE__, 'Couldn\'t find any previous inputs or responses.', 4);
     mysql_free_result($result);
     return $convoArr;
   }
-
 ?>

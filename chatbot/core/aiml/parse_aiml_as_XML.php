@@ -617,10 +617,10 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an INPUT tag.', 2);
     $element = $element->input;
-    $index = $element['index'];
-    $index = (!empty ($index)) ? $index : 1;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the INPUT tag. Index = $index.", 4);
-    $response_string = $convoArr['input'][$index];
+    $input_index = (string)$element['index'];
+    $input_index = (!empty ($input_index)) ? $input_index : 1;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the INPUT tag. Index = $input_index.", 4);
+    $response_string = $convoArr['input'][$input_index];
     return $response_string;
   }
 
