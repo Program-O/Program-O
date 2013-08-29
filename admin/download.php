@@ -140,6 +140,12 @@ else {
       if (!empty($topic)) $fileContent .= "</topic>\n";
     }
     $fileContent .= "\r\n</aiml>\r\n";
+    save_file(_DEBUG_PATH_ . 'test.aiml', $fileContent);
+    $dom = new DOMDocument();
+    $dom->preserveWhiteSpace = false;
+    $dom->formatOutput = true;
+    $dom->loadXML(trim($fileContent));
+    $fileContent = $dom->saveXML();
     $outFile = ltrim($fileContent, "\n\r\n");
     #$outFile = iconv("ISO-8859-1", "UTF-8//TRANSLIT", $outFile);
     //$outFile = utf8_encode($outFile);

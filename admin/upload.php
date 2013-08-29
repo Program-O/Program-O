@@ -177,10 +177,9 @@ endScript;
           $pattern = str_replace("'", ' ', $pattern);
           $that = $category->that;
           $template = $category->template->asXML();
-          $template = ltrim($template,'<template>');
-          $template = ltrim($template,"\r\n ");
-          $template = rtrim($template,'</template>');
-          $template = rtrim($template,"\r\n");
+          $template = substr($template,10);
+          $tLen = strlen($template);
+          $template = substr($template,0, $tLen - 11);
           # Strip CRLF and LF from category (Windows/mac/*nix)
           $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
           $sql_add = str_replace('[aiml_add]', mysql_real_escape_string($aiml_add), $sql_template);
