@@ -742,7 +742,8 @@
             VALUES
             (NULL, '".mysql_real_escape_string($pattern)."','$bot_id','$u_id',NOW())";
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Unknown Input SQL: $sql", 3);
-        $res = mysql_query($sql, $con);
+        $result = db_query($sql, $con);
+        $numRows = mysql_affected_rows($result);
     }
   }
 

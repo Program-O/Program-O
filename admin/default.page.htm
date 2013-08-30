@@ -623,6 +623,18 @@ between the start and end section tags are the only parts of the template that a
         <div id="demoChatTitle">Talk to [bot_name] using the [format] interface:</div>
         <div id="demoChatContainer"><iframe id="demoChat" src="[pageSource]"></iframe></div>
 <!-- Section ChatDemo End -->
+<!-- Section DbStats Start -->
+[blank]        <div id="dbStatsTitle">Database Stats for [dbn]</div>
+        <div id="dbStatsContainer">
+          <p>Uptime: [stats_uptime]</p>
+          <p>Threads: [stats_threads]</p>
+          <p>Queries: [stats_query_count]</p>
+          <p>Slow queries: [stats_slow_queries]</p>
+          <p>Flush table count: [stats_flush_count]</p>
+          <p>Tables Opened: [stats_tables_open]</p>
+          <p>Queries per second avg: [stats_qps]</p>
+        </div>
+<!-- Section DbStats End -->
 <!-- Section MembersMain Start -->
 [blank]          <div id="membersForm" class="fullWidth noBorder">
             <p>

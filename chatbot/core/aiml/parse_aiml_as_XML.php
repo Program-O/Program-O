@@ -336,6 +336,8 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$sql", 3);
     $result = db_query($sql, $con) or trigger_error('Error looking up DB info in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
     $rowCount = mysql_num_rows($result);
+    $var_name = mysql_real_escape_string($var_name, $con);
+    $var_value = mysql_real_escape_string($var_value, $con);
     if ($rowCount == 0)
     {
       $sql = "insert into `$dbn`.`client_properties` (`id`, `user_id`, `bot_id`, `name`, `value`)
@@ -673,10 +675,11 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
       $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
       $thatpattern = (string)$category->that;
       $template    = $category->template->asXML();
+      $template = substr($template, 10);
+      $tplLen = strlen($template);
+      $template = substr($template,0,$tplLen - 11);
       $template = str_replace('<text>', '', $template);
       $template = str_replace('</text>', '', $template);
-      $template = str_replace('<template>', '', $template);
-      $template = str_replace('</template>', '', $template);
       $template_eval = $category->template->eval;
       if (!empty($template_eval))
       {
@@ -688,10 +691,10 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
       $catXML->addChild('template', $template);
       $category = $catXML->asXML();
       $category = trim(str_replace('<?xml version="1.0"?>', '', $category));
-      $sqlAdd = str_replace('[aiml]', $category, $sqlTemplate);
-      $sqlAdd = str_replace('[pattern]', $pattern, $sqlAdd);
-      $sqlAdd = str_replace('[that]', $thatpattern, $sqlAdd);
-      $sqlAdd = str_replace('[template]', $template, $sqlAdd);
+      $sqlAdd = str_replace('[aiml]', mysql_real_escape_string($category, $con), $sqlTemplate);
+      $sqlAdd = str_replace('[pattern]', mysql_real_escape_string($pattern, $con), $sqlAdd);
+      $sqlAdd = str_replace('[that]', mysql_real_escape_string($thatpattern, $con), $sqlAdd);
+      $sqlAdd = str_replace('[template]', mysql_real_escape_string($template, $con), $sqlAdd);
       $sql .= $sqlAdd;
       $result = db_query($sql, $con) or trigger_error('Looks like we have a problem adding stuff to the aiml_userdefined table. Error: ' . mysql_error());
     }
@@ -755,7 +758,7 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
   }
 
   /*
-   * function parse_tostring_tag
+   * function tag_to_string
    * Converts the contents of the AIML tag to a string.
    * @param (array) $convoArr
    * @param (SimpleXMLelement) $element

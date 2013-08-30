@@ -466,7 +466,8 @@
         VALUES
         (NULL, '$aiml','$pattern','$template','$u_id','$bot_id',NOW())";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Make learn SQL: $sql", 3);
-    $res = mysql_query($sql, $con);
+    $result = db_query($sql, $con);
+    $numRows = mysql_affected_rows($result);
   }
 
   /**

@@ -439,6 +439,14 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => '',
+                       '[linkHref]' => ' href="index.php?page=db_stats"',
+                       '[linkOnclick]' => '',
+                       '[linkAlt]' => ' alt="DB Stats"',
+                       '[linkTitle]' => ' title="DB Stats"',
+                       '[linkLabel]' => 'DB Stats'
+                 ),
+                 array(
+                       '[linkClass]' => '',
                        '[linkHref]' => ' href="' . _BASE_URL_ . '"',
                        '[linkOnclick]' => ' target="_blank"',
                        '[linkAlt]' => ' alt="open the page for [curBot] in a new tab/window"',

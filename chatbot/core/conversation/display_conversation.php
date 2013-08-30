@@ -188,9 +188,9 @@
   * @param (array) $convoArr
   * @return (void) [return value]
   **/
-  function display_conversation(& $display, $format)
+  function display_conversation($convoArr)
   {
-    $format = trim(strtolower($format));
+    $format =(isset($convoArr['conversation']['format'])) ? strtolower(trim($convoArr['conversation']['format'])) : 'html';
     switch ($format) {
       case 'html' :
         $display = str_ireplace('<![CDATA[', '', $display);
@@ -198,7 +198,10 @@
         break;
       case 'xml' :
         header("Content-type: text/xml; charset=utf-8");
+        echo $display;
+        break;
       case 'json' :
+        header("Content-type: text/plain; charset=utf-8");
         echo $display;
         break;
       default :
