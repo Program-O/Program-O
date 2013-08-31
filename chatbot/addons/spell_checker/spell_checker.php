@@ -62,13 +62,43 @@
     }
     if (in_array($test_word, array_keys($_SESSION['spellcheck'])))
     {
-      $corrected_word = $_SESSION['spellcheck'][$word];
+      $corrected_word = $_SESSION['spellcheck'][$test_word];
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Misspelling found! Replaced $word with $corrected_word.", 4);
     }
     else
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__,'Spelling check passed.', 4);
       $corrected_word = $word;
+    }
+    if (IS_MB_ENABLED)
+    {
+      switch ($word){
+        case mb_strtolower($word):
+        $corrected_word = mb_strtolower($corrected_word);
+        break;
+        case mb_strtoupper($word):
+        $corrected_word = mb_strtoupper($corrected_word);
+        break;
+        case mb_convert_case($word, MB_CASE_TITLE):
+        $corrected_word = mb_convert_case($corrected_word, MB_CASE_TITLE);
+        break;
+        default:
+      }
+    }
+    else
+    {
+      switch ($word){
+        case strtolower($word):
+        $corrected_word = strtolower($corrected_word);
+        break;
+        case strtoupper($word):
+        $corrected_word = strtoupper($corrected_word);
+        break;
+        case ucfirst($word):
+        $corrected_word = ucfirst($corrected_word);
+        break;
+        default:
+      }
     }
   //set in global config file
     return $corrected_word;
