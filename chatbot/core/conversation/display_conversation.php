@@ -190,6 +190,7 @@
   **/
   function display_conversation($convoArr)
   {
+    $display = $convoArr['send_to_user'];
     $format =(isset($convoArr['conversation']['format'])) ? strtolower(trim($convoArr['conversation']['format'])) : 'html';
     switch ($format) {
       case 'html' :

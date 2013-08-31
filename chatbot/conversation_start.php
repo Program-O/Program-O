@@ -175,5 +175,5 @@
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
   db_close($con);
   //save_file(_DEBUG_PATH_ . 'function_list.txt', print_r(get_defined_functions()['user'], true));
+  display_conversation($convoArr);
   $convoArr = handleDebug($convoArr); // Make sure this is the last line in the file, so that all debug entries are captured.
-  display_conversation($display, $convoArr['conversation']['format']);
