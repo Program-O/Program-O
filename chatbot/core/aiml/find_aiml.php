@@ -71,7 +71,6 @@
 
     $sql_like_pattern .= " `$field` like '% $last_word%' OR  `$field` like '$first_word % $last_word' OR `$field` like '$last_word'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "returning like pattern:\n$sql_like_pattern", 4);
-    //return
     return $sql_like_pattern;
   }
 
@@ -114,38 +113,38 @@
     //loop through the results array
     foreach ($allrows as $all => $subrow)
     {
-      $aiml_pattern = $subrow['pattern'];
+      // set the score to zero
+      $tmp_rows[$i]['track_score'] = '';
       //get the pattern
-      $aiml_topic = $subrow['topic'];
+      $aiml_pattern = $subrow['pattern'];
       //get the topic
-      $aiml_thatpattern = $subrow['thatpattern'];
+      $aiml_topic = $subrow['topic'];
       //get the that
-      //$aiml_pattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_pattern) : strtolower($aiml_pattern);
-      //$default_pattern = (IS_MB_ENABLED) ? mb_strtolower($default_pattern) : strtolower($default_pattern);
+      $aiml_thatpattern = $subrow['thatpattern'];
+      //if it is a direct match with our default pattern then add to tmp_rows
       if ($aiml_pattern == $default_pattern)
       {
-      //if it is a direct match with our default pattern then add to tmp_rows
         $tmp_rows[$i] = $subrow;
         $tmp_rows[$i]['score'] = 0;
-        $tmp_rows[$i]['track_score'] = "za";
+        $tmp_rows[$i]['track_score'] .= "za";
         $i++;
       }
+      //build an aiml_pattern with wild cards to check for a match
       else
       {
         $aiml_pattern_matchme = match_wildcard_rows($aiml_pattern);
-        //build an aiml_pattern with wild cards to check for a match
         if ($aiml_thatpattern != '')
         {
-          $aiml_thatpattern_matchme = match_wildcard_rows($aiml_thatpattern);
           //build an aiml_thatpattern with wild cards to check for a match
+          $aiml_thatpattern_matchme = match_wildcard_rows($aiml_thatpattern);
           $that_match = preg_match($aiml_thatpattern_matchme, $current_thatpattern, $matches);
           //see if that patterns match
-          $tmp_rows[$i]['track_score'] = "b";
+          $tmp_rows[$i]['track_score'] .= "b";
         }
         else
         {
           $that_match = "$aiml_thatpattern == ''";
-          $tmp_rows[$i]['track_score'] = "c";
+          $tmp_rows[$i]['track_score'] .= "c";
         }
         if ($aiml_topic != '')
         {
@@ -162,18 +161,15 @@
 
         if (count($matches)>0)
         {
-        //echo "<br/>TRUE1";
           if ($that_match)
           {
-          //echo "<br/>TRUE2";
             if ($topic_match)
             {
               if ((isset ($subrow['pattern'])) && ($subrow['pattern'] != ''))
               {
-              //	echo "<br/>TRUE3";
                 $tmp_rows[$i] = $subrow;
                 $tmp_rows[$i]['score'] = 0;
-                $tmp_rows[$i]['track_score'] = "f";
+                $tmp_rows[$i]['track_score'] .= "f";
                 $i++;
               }
             }
@@ -181,6 +177,8 @@
         }
         else
         {
+          continue;
+/*
           $tmp_rows[$i] = array(
             'aiml_id' => -1,
             'bot_id'  => -1,
@@ -190,7 +188,6 @@
             'score'   => 0,
             'track_score' => ''
           );
-/*
 */
         }
         //echo "<br/>--------------";
@@ -406,11 +403,6 @@
     //send off for debugging
     sort2DArray("show top scoring aiml matches", $allrows, "score", 1, 10);
 
-    /*
-    echo "<pre>";
-    print_r($allrows);
-    echo "</pre>";
-    */
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Returned array:\n" . print_r($allrows, true), 4);
     return $allrows;
     //return the scored rows
@@ -473,7 +465,7 @@
     //get the limited top results
     $outArr = array_slice($resArr, 0, $limit);
     //send to debug
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName " . print_r($outArr, true), 3);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName " . print_r($outArr, true), 4);
   }
 
   /**
@@ -494,6 +486,7 @@
     {
       if (!isset ($subrow['score']))
       {
+        continue;
       }
       elseif ($subrow['score'] > $last_high_score)
       {
