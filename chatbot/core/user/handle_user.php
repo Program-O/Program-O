@@ -24,7 +24,6 @@ function load_new_client_defaults($convoArr)
   runDebug( __FILE__, __FUNCTION__, __LINE__, 'Loading client defaults', 2);
   $convoArr['client_properties']['name'] = $unknown_user;
   $convoArr['client_properties']['id'] = session_id();
-  runDebug(__FILE__, __FUNCTION__, __LINE__, 'Conversation element = ' . print_r($convoArr['conversation'], true), 4);
   return $convoArr;
 }  
 

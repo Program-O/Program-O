@@ -143,18 +143,18 @@
         }
         else
         {
-          $that_match = "$aiml_thatpattern == ''";
+          $that_match = ($aiml_thatpattern == '');
           $tmp_rows[$i]['track_score'] .= "c";
         }
         if ($aiml_topic != '')
         {
-          $topic_match = "$aiml_topic == $current_topic";
+          $topic_match = ($aiml_topic == $current_topic);
           $tmp_rows[$i]['track_score'] .= "d";
         }
         else
         {
-          $topic_match = "$aiml_topic == ''";
-          $tmp_rows[$i]['track_score'] .= "e";
+          $topic_match = ($aiml_topic == '');
+          $tmp_rows[$i]['track_score'] .= "xe";
         }
         //try to match the returned aiml pattern with the user input (lookingfor) and with the that's and topic's
         preg_match($aiml_pattern_matchme, $lookingfor, $matches);
@@ -177,25 +177,11 @@
         }
         else
         {
+          if (!isset($tmp_rows[$i]['pattern'])) unset($tmp_rows[$i]);
           continue;
-/*
-          $tmp_rows[$i] = array(
-            'aiml_id' => -1,
-            'bot_id'  => -1,
-            'pattern' => '',
-            'thatpattern'  => '',
-            'topic'  => '',
-            'score'   => 0,
-            'track_score' => ''
-          );
-*/
         }
-        //echo "<br/>--------------";
       }
     }
-    //	echo "<pre>";
-    //	print_r($tmp_rows);
-    //	echo "</pre>";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Found '$i' relevant rows", 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($tmp_rows,true), 4);
     return $tmp_rows;
@@ -775,10 +761,7 @@
     else
     {
       $thatPattern = '';
-      //$lastThatPattern = '';
-      //$firstThatPattern = '';
       $thatPatternSQL = '';
-      //$storedthatpattern ='';
     }
     //get the word count
     $word_count = wordsCount_inSentence($lookingfor);
@@ -833,6 +816,8 @@
         $allrows[$i]['pattern'] = $row['pattern'];
         $allrows[$i]['thatpattern'] = $row['thatpattern'];
         $allrows[$i]['topic'] = $row['topic'];
+        $allrows[$i]['score'] = 0;
+        $allrows[$i]['track_score'] = '';
         $i++;
         $mu = memory_get_usage(true);
         if ($mu >= MEM_TRIGGER)

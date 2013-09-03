@@ -774,7 +774,10 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
     $children = $element->children();
     if (!empty ($children))
     {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+      foreach ($children as $child)
+      {
+        $response[] = parseTemplateRecursive($convoArr, $child, $level + 1);
+      }
     }
     else
     {
