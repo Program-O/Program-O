@@ -103,6 +103,7 @@
     $tmp_rows = array();
     $i = 0;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Searching through " . count($allrows) . " rows to unset bad matches", 4);
+    $lookingfor = str_replace('  ', ' ', $lookingfor);
     if (($allrows[0]['pattern'] == "no results") and (count($allrows) == 1))
     {
       $tmp_rows[0] = $allrows[0];
@@ -116,7 +117,7 @@
       // set the score to zero
       $tmp_rows[$i]['track_score'] = '';
       //get the pattern
-      $aiml_pattern = $subrow['pattern'];
+      $aiml_pattern = strtoupper($subrow['pattern']);
       //get the topic
       $aiml_topic = $subrow['topic'];
       //get the that
@@ -743,7 +744,8 @@
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
     $aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
     #$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
-    $lookingfor = mysql_real_escape_string($convoArr['aiml']['lookingfor']);
+    $convoArr['aiml']['lookingfor'] = str_replace('  ', ' ', $convoArr['aiml']['lookingfor']);
+    $lookingfor = strtoupper(mysql_real_escape_string($convoArr['aiml']['lookingfor']));
     //get the first and last words of the cleaned user input
     $lastInputWord = get_last_word($lookingfor);
     $firstInputWord = get_first_word($lookingfor);
