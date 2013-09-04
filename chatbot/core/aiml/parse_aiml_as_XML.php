@@ -565,7 +565,12 @@
   function parse_html_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a generic HTML tag.', 2);
-    return (string) $element->asXML();
+    $response_string = $element->asXML();
+    $response_string = str_replace('<text>', '', $response_string);
+    $response_string = str_replace('</text>', '', $response_string);
+    $star = $convoArr['star'][1];
+    $response_string = str_replace('<star/>', $star, $response_string);
+    return $response_string;
   }
 
   function parse_gender_tag($convoArr, $element, $parentName, $level)

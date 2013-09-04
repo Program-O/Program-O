@@ -12,6 +12,8 @@
   $convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : get_convo_id();
   $bot_id = (isset($_COOKIE['bot_id'])) ? $_COOKIE['bot_id'] : 1;
   setcookie('bot_id', $bot_id);
+  $display = '';
+  $url = 'http://localhost/Program-O/Program-O/chatbot/conversation_start.php';
   $display = 'Make sure that you edit this file to change the value of $url below to reflect the correct address, and to remove this message.' . PHP_EOL;
   $url = 'http://www.example.com/programo/chatbot/conversation_start.php';
 
