@@ -422,7 +422,7 @@
   **/
   function get_conversation_state($convoArr)
   {
-    global $con, $dbn;
+    global $con, $dbn,$unknown_user;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "getting state", 4);
     $user_id = $convoArr['conversation']['user_id'];
     $sql = "SELECT * FROM `$dbn`.`users` WHERE `id` = '$user_id' LIMIT 1";
@@ -430,10 +430,11 @@
     $result = db_query($sql, $con);
     if (($result) && (mysql_num_rows($result) > 0))
     {
-      $row = mysql_fetch_assoc($result);
-      $convoArr = unserialize($row['state']);
-      $convoArr['conversation']['user_name'] = $row['user_name'];
-      $convoArr['client_properties']['name'] = $row['user_name'];
+      	$row = mysql_fetch_assoc($result);
+      	$convoArr = unserialize($row['state']);
+    	$user_name = (!empty ($row['user_name'])) ? $row['user_name'] : $unknown_user;
+    	$convoArr['conversation']['user_name'] = $user_name;
+    	$convoArr['client_properties']['name'] = $user_name;
     }
     mysql_free_result($result);
     return $convoArr;
@@ -450,7 +451,7 @@
   {
     global  $form_vars;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking and/or setting the current bot.', 2);
-    global $con, $dbn, $bot_id, $error_response, $format;
+    global $con, $dbn, $bot_id, $error_response, $format,$unknown_user;
     //check to see if bot_id has been passed if not load default
     if ((isset ($form_vars['bot_id'])) && (trim($form_vars['bot_id']) != ""))
     {
@@ -473,9 +474,11 @@
       $row = mysql_fetch_assoc($result);
       $bot_name = $row['bot_name'];
       $error_response = $row['error_response'];
+      $unknown_user = $row['unknown_user'];
       $convoArr['conversation']['bot_name'] = $bot_name;
       $convoArr['conversation']['bot_id'] = $bot_id;
       $convoArr['conversation']['format'] = $row['format'];
+      $convoArr['conversation']['unknown_user'] = $unknown_user;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "BOT ID: $bot_id", 2);
     }
     else

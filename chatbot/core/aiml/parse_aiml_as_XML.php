@@ -277,16 +277,24 @@
       $response = 'undefined';
     if (empty ($response))
     {
-      $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the DB for $var_name - sql:\n$sql", 3);
-      $result = db_query($sql, $con);
-      if (($result) and (mysql_num_rows($result) > 0))
+      
+      if((isset($convoArr['client_properties'][(string)$var_name])) && ($convoArr['client_properties'][(string)$var_name]!=""))
       {
-        $row = mysql_fetch_assoc($result);
-        $response = $row['value'];
-      }
-      else $response = 'undefined';
-      mysql_free_result($result);
+          $response = $convoArr['client_properties'][(string)$var_name];
+      } else {
+      
+	      $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
+	      runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the DB for $var_name - sql:\n$sql", 3);
+	      $result = db_query($sql, $con);
+	      if (($result) and (mysql_num_rows($result) > 0)) {
+	        $row = mysql_fetch_assoc($result);
+	        $response = $row['value'];
+	      }
+	      else {
+	       $response = 'undefined'; 
+	       }
+	      mysql_free_result($result);
+	}
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for $var_name is $response.", 4);
     return $response;
