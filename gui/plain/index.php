@@ -81,7 +81,7 @@
   </head>
   <body onload="document.getElementById('say').focus()">
     <h3>Program O Example GUI Page - HTML</h3>
-    <form method="get" action="index.php">
+    <form method="get" action="index.php#end">
       <div id="input">
         <label for="say">Say:</label>
         <input type="text" name="say" id="say" size="70" />
@@ -92,7 +92,7 @@
       </div>
     </form>
     <div id="responses">
-<?php echo $display;?>
+<?php echo $display . '<a id="end"/>' ?>
     </div>
     <div id="shameless_plug">
       To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
