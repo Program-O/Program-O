@@ -568,8 +568,8 @@
     $response_string = $element->asXML();
     $response_string = str_replace('<text>', '', $response_string);
     $response_string = str_replace('</text>', '', $response_string);
-    $star = $convoArr['star'][1];
-    $response_string = str_replace('<star/>', $star, $response_string);
+    $star = (isset($convoArr['star'][1])) ? $convoArr['star'][1] : '';
+    if ($star != '') $response_string = str_replace('<star/>', $star, $response_string);
     return $response_string;
   }
 

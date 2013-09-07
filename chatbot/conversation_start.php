@@ -160,20 +160,15 @@
     $time_start = $convoArr['time_start'];
     $time_end = microtime(true);
     $time = round(($time_end - $time_start) * 1000,4);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "FINAL CONVO ARRAY",4);
-    $final_convoArr = $convoArr;
-    unset($final_convoArr['nounList']);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($final_convoArr,true), 4);
     unset($convoArr['nounList']);
+    $final_convoArr = $convoArr;
   }
   else
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation intialised waiting user", 2);
   }
-  #if ($display == '') $display = $convoArr['send_to_user'];
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
   db_close($con);
-  //save_file(_DEBUG_PATH_ . 'function_list.txt', print_r(get_defined_functions()['user'], true));
   display_conversation($convoArr);
+  runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
   $convoArr = handleDebug($convoArr); // Make sure this is the last line in the file, so that all debug entries are captured.
