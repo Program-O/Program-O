@@ -94,13 +94,21 @@ function intisaliseUser($convoArr)
   }
 
   $sql = "INSERT INTO `$dbn`.`users` (`id`, `user_name`, `session_id`, `bot_id`, `chatlines` ,`ip` ,`referer` ,`browser` ,`date_logged_on` ,`last_update`, `state`)
-  VALUES ( NULL , '$unknown_user', '$convo_id', $bot_id, '0', '$sa', '$sr', '$sb', CURRENT_TIMESTAMP , '0000-00-00 00:00:00', '')";
+  VALUES ( NULL , '$unknown_user', '$convo_id', $bot_id, '0', '$sa', '$sr', '$sb', CURRENT_TIMESTAMP , CURRENT_TIMESTAMP, '')";
 
   mysql_query($sql,$con) or trigger_error('Error trying to add user. Error = ' . mysql_error());
   $user_id = mysql_insert_id($con);
   $convoArr['conversation']['user_id'] = $user_id;
   $convoArr['conversation']['totallines'] = 0;
   runDebug( __FILE__, __FUNCTION__, __LINE__, "intisaliseUser #$user_id SQL: $sql",3);
+  
+  
+    //add the username to the client properties....
+  $sql = "INSERT INTO `$dbn`.`client_properties` (`id`,`user_id`,`bot_id`,`name`,`value`)
+  VALUES ( NULL , '$user_id', $bot_id, 'name', '$unknown_user')";
+
+  mysql_query($sql, $con) or trigger_error('Error trying to add username to client properties. Error = ' . mysql_error());
+  
   
   return $convoArr;
 }
