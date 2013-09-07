@@ -322,6 +322,17 @@
           $allrows[$all]['score'] += $that_pattern_match_general;
           $allrows[$all]['track_score'] .= "g";
         }
+      } elseif ($aiml_pattern == "*") {
+
+        if (($aiml_thatpattern == $current_thatpattern) && ($aiml_thatpattern != '')) {
+          $allrows[$all]['score'] += $that_pattern_match;
+          $allrows[$all]['track_score'][] = "h";
+
+        } elseif (($aiml_thatpattern_wildcards != '') && ($aiml_thatpattern != '') && (preg_match($aiml_thatpattern_wildcards, $current_thatpattern, $m))) {
+          $allrows[$all]['score'] += $that_pattern_match;
+          $allrows[$all]['track_score'][] = "i";
+        }
+
       }
       //if stored result == default pattern increase score
       $aiml_pattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_pattern) : strtolower($aiml_pattern);
@@ -329,19 +340,19 @@
       if ($aiml_pattern == $default_pattern)
       {
         $allrows[$all]['score'] += $pattern_points;
-        $allrows[$all]['track_score'] .= "h";
+        $allrows[$all]['track_score'] .= "j";
       }
       elseif ($aiml_pattern == "*")
       {
       //if stored result == * increase score
         $allrows[$all]['score'] += $starscore_points;
-        $allrows[$all]['track_score'] .= "i";
+        $allrows[$all]['track_score'] .= "k";
       }
       elseif ($aiml_pattern == "_")
       {
       //if stored result == _ increase score
         $allrows[$all]['score'] += $underscore_points;
-        $allrows[$all]['track_score'] .= "j";
+        $allrows[$all]['track_score'] .= "l";
       }
       else
       {
@@ -358,31 +369,31 @@
           {
           // if it is a direct word match increase with (lower) score
             $allrows[$all]['score'] += $direct_word_match_points;
-            $allrows[$all]['track_score'] .= "x";
+            $allrows[$all]['track_score'] .= "m";
           }
           if (in_Array($word, $common_words_array))
           {
           // if it is a commonword increase with (lower) score
             $allrows[$all]['score'] += $common_word_points;
-            $allrows[$all]['track_score'] .= "k";
+            $allrows[$all]['track_score'] .= "n";
           }
           elseif ($word == "*")
           {
             $allrows[$all]['score'] += $starscore_points;
             //if it is a star wildcard increase score
-            $allrows[$all]['track_score'] .= "l";
+            $allrows[$all]['track_score'] .= "o";
           }
           elseif ($word == "_")
           {
             $allrows[$all]['score'] += $underscore_points;
             //if it is a underscore wildcard increase score
-            $allrows[$all]['track_score'] .= "m";
+            $allrows[$all]['track_score'] .= "p";
           }
           else
           {
             $allrows[$all]['score'] += $uncommon_word_points;
             //else it must be an uncommon word so increase the score
-            $allrows[$all]['track_score'] .= "n";
+            $allrows[$all]['track_score'] .= "q";
           }
         }
       }
