@@ -34,6 +34,9 @@
     $botsay = trim(implode_recursive(' ', $responseArray, __FILE__, __FUNCTION__, __LINE__));
     $botsay = str_replace(' .', '.', $botsay);
     $botsay = str_replace('  ', ' ', $botsay);
+    $botsay = str_replace(' ?', '?', $botsay);
+    $botsay = str_replace(' ,', ',', $botsay);
+    $botsay = str_replace(' s ', 's ', $botsay);
     $convoArr['aiml']['parsed_template'] = $botsay;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Completed parsing the template. The bot will say: $botsay", 4);
     return $convoArr;
