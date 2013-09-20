@@ -19,7 +19,7 @@
   **/
   function run_censor($convoArr)
   {
-    if (!isset ($_SESSION['programo_bigArray']['censor']))
+    if (!isset ($_SESSION['pgo_word_censor']))
     {
       initialise_censor($convoArr['conversation']['bot_id']);
     }
@@ -30,7 +30,6 @@
   /**
   * function intialise_censor()
   * A function to build session array containing the words from the censor list in the db
-
   **/
   function initialise_censor($bot_id)
   {
@@ -39,7 +38,10 @@
     $result = db_query($sql, $con);
     while ($row = mysql_fetch_assoc($result))
     {
-      $_SESSION['programo_bigArray']['censor'][base64_encode("/\b" . $row['word_to_censor'] . "\b/i")] = base64_encode("/\b" . $row['replace_with'] . "\b/i");
+      $index = "/\b{$row['word_to_censor']}\b/i";
+      $index = $row['word_to_censor'];
+      $value = $row['replace_with'];
+      $_SESSION['pgo_word_censor'][$index] = $value;
     }
     mysql_free_result($result);
   }
@@ -52,9 +54,9 @@
   **/
   function censor_words($output)
   {
-    foreach ($_SESSION['programo_bigArray']['censor'] as $find => $replace)
+    foreach ($_SESSION['pgo_word_censor'] as $find => $replace)
     {
-      $output = preg_replace(base64_decode($find), base64_decode($replace), $output);
+      $output = preg_replace("/\b$find\b/i", $replace, $output);
     }
     return $output;
   }

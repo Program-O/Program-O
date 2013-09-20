@@ -44,6 +44,29 @@
             alert('display = ' + display);
         }
       }
+      function checkSize(){
+        var file_upload = document.getElementById('aimlfile');
+        if (!file_upload.files) return false;
+        var fileSize = file_upload.files[0].size;//.fileSize;
+        var fileName = file_upload.files[0].name;//.fileSize;
+        if (fileSize > 2000000){
+          showError("The file " + fileName + " exceeds the file size limit of 2MB. Please choose a different file.")
+          file_upload.value = null;
+        }
+        var fileType = file_upload.files[0].type;//.fileSize;
+        //showError('The file type is ' + file_upload.files[0].type);
+        if (fileType != 'text/aiml' && fileType != 'application/x-zip-compressed') {
+          //showError("The file " + fileName + " is neither an AIML file, nor a zip archive. Please select another file.")
+          //file_upload.value = null;
+        }
+      }
+      function showError(msg){
+        var errorDiv = document.getElementById("errMsg");
+        var closeButton = '<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>';
+          errorDiv.innerHTML = closeButton + msg;
+          errorDiv.style.display = 'block';
+
+      }
 //-->
     </script>
 endScript;
@@ -208,10 +231,10 @@ endScript;
     catch (Exception $e)
     {
       $trace = print_r($e->getTrace(), true);
-      file_put_contents(_LOG_PATH_ . 'error.trace.log', $trace . "\nEnd Trace\n\n", FILE_APPEND);
+      //file_put_contents(_LOG_PATH_ . 'error.trace.log', $trace . "\nEnd Trace\n\n", FILE_APPEND);
       $success = false;
       $_SESSION['failCount']++;
-      $msg = "There was a problem adding file $fileName to the database. Please refer to the message below to correct the problem and try again.";
+      $msg = "There was a problem adding file $fileName to the database. Please refer to the message below to correct the problem and try again.<br>\n" . $e->getMessage();
       $msg = libxml_display_errors($msg);
     }
     return $msg;
@@ -362,6 +385,9 @@ endScript;
         if(!$fp)
         {
           $out .= "Processing for $curName failed.<br />\n";
+          $bad_aiml_files = (!isset($bad_aiml_files)) ? array() : $bad_aiml_files;
+          $bad_aiml_files[] = $curName;
+          $_SESSION['bad_aiml_files'] = $curName;
         }
         else
         {
@@ -378,6 +404,16 @@ endScript;
       $zip->close();
       $failCount = $_SESSION['failCount'];
       $out .= "<br />\nUpload complete. $numFiles files were processed, and $failCount files encountered errors.<br />\n";
+      if (isset($_SESSION['bad_aiml_files']))
+      {
+        $out .= "<br />\nThe following AIML files encountered errors:<br />\n";
+        foreach ($_SESSION['bad_aiml_files'] as $fn)
+        {
+          $out .= "$fn, ";
+        }
+        $out = rtrim($out, ', ') . "<br .>\nPlease test each of these files independently, to locate the errors within.";
+        unset($_SESSION['bad_aiml_files']);
+      }
     }
     else
     {

@@ -528,7 +528,7 @@
       runDebug(__FILE__, __FUNCTION__, __LINE__, "search string = $path", 4);
       $choice = $element->xpath($path);
       $pick = $choice[0];
-      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($choice, true), 4);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($pick, true), 4);
     }
     else // nothing matches
     {
@@ -538,7 +538,11 @@
     $children = (is_object($pick)) ? $pick->children() : null;
     if (!empty ($children))
     {
-      $response = parseTemplateRecursive($convoArr, $children, $level + 1);
+      foreach ($children as $child)
+      {
+        $response[] = parseTemplateRecursive($convoArr, $child, $level + 1);
+      }
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Response = " . print_r($response, true), 4);
     }
     else
     {

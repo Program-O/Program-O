@@ -93,8 +93,16 @@
         outputDebug($fileName, $functionName, $line, $info);
       }
       list($usec, $sec) = explode(' ', microtime());
+      $usecD = $usec / 1000;
+      $usecD = str_replace('0.000', '', $usecD);
       //build timestamp index for the debug array
-      $index = date('d-m-Y H:i:s') . ltrim($usec, '0') . "[$level][$debug_level] - Elapsed: $elapsed_time milliseconds";
+      $index = date('d-m-Y H:i:s.') . $usecD . "[$level][$debug_level] - Elapsed: $elapsed_time milliseconds";
+
+      //If there's already an index in the debug array with the same value, just add a space, to make a new, unique index that is visually identical.
+      while (array_key_exists($index, $debugArr))
+      {
+        $index .= ' ';
+      }
       //mem_tracer($fileName, $functionName, $line); # only uncomment this to trace memory leaks!
       //add to array
       $debugArr[$index]['fileName'] = basename($fileName);
