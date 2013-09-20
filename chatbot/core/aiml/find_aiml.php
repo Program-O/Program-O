@@ -322,18 +322,17 @@
           $allrows[$all]['score'] += $that_pattern_match_general;
           $allrows[$all]['track_score'] .= "g";
         }
-      } elseif ($aiml_pattern == "*") {
+      } elseif (($aiml_pattern == "*")&&($aiml_thatpattern!="")) {
 
-        if (($aiml_thatpattern == $current_thatpattern) && ($aiml_thatpattern != '')) {
-          $allrows[$all]['score'] += $that_pattern_match;
-          $allrows[$all]['track_score'][] = "h";
 
-        } elseif (($aiml_thatpattern_wildcards != '') && ($aiml_thatpattern != '') && (preg_match($aiml_thatpattern_wildcards, $current_thatpattern, $m))) {
+       if (($aiml_thatpattern_wildcards != '') && (preg_match($aiml_thatpattern_wildcards, $current_thatpattern, $m))) {
           $allrows[$all]['score'] += $that_pattern_match;
-          $allrows[$all]['track_score'][] = "i";
+          $allrows[$all]['track_score'][] = "general aiml that pattern match";
         }
 
       }
+      
+      
       //if stored result == default pattern increase score
       $aiml_pattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_pattern) : strtolower($aiml_pattern);
       $default_pattern = (IS_MB_ENABLED) ? mb_strtolower($default_pattern) : strtolower($default_pattern);
