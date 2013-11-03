@@ -109,7 +109,7 @@ endtHead;
         $topic = $row['topic'];
         $pattern = $row['pattern'];
         $thatpattern = $row['thatpattern'];
-        $template = htmlentities($row['template']);
+        $template = htmlentities($row['template'],ENT_COMPAT,'UTF-8');
         $filename = $row['filename'];
         $id = $row['id'];
         $action = <<<endLink
@@ -163,7 +163,7 @@ endRow;
     $topic = $row['topic'];
     $pattern = $row['pattern'];
     $thatpattern = $row['thatpattern'];
-    $row_template = htmlentities($row['template']);
+    $row_template = htmlentities($row['template'],ENT_COMPAT,'UTF-8');
     $filename = $row['filename'];
     $id = $row['id'];
     $form = $template->getSection('EditAIMLForm');
