@@ -83,6 +83,8 @@
       trigger_error("Input not array! Error originated in $file, function $function, line $line. Input = " . print_r($input, true));
       return $input;
     }
+    elseif (is_string($input)) return $input;
+    runDebug(__FILE__, __FUNCTION__, __LINE__,'The variable $input is of type ' . gettype($input), 4);
     foreach ($input as $index => $element)
     {
       if (empty ($element))
@@ -288,15 +290,15 @@
 		$response = $row['value'];
 	}
 	else {
-		$response = 'undefined'; 
+		$response = 'undefined';
 	}
-	mysql_free_result($result);	
+	mysql_free_result($result);
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for $var_name is $response.", 4);
     return $response;
   }
 
-  function parse_set_tag($convoArr, $element, $parentName, $level)
+  function parse_set_tag(&$convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing the SET tag.', 2);
     global $con, $dbn, $user_name, $remember_up_to;
@@ -314,8 +316,8 @@
     if ($var_name == 'name')
     {
       $user_name = $var_value;
-      $sql = "UPDATE `$dbn`.`users` set `user_name` = '$var_value' where `id` = $user_id;";
-      $sql = mysql_real_escape_string($sql);
+      $escaped_var_value = mysql_real_escape_string($var_value);
+      $sql = "UPDATE `$dbn`.`users` set `user_name` = '$escaped_var_value' where `id` = $user_id;";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Updating user name in the DB. SQL:\n$sql", 3);
       $result = db_query($sql, $con) or trigger_error('Error setting user name in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
       $numRows = mysql_affected_rows();
@@ -355,11 +357,12 @@
     $result = db_query($sql, $con) or trigger_error('Error saving to db in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
     $rowCount = mysql_affected_rows();
     $response = $var_value;
+    $convoArr['client_properties'][$var_name] = $var_value;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Value for $var_name has ben set. Returning $var_value.", 4);
     return $response;
   }
 
-  function parse_think_tag($convoArr, $element, $parentName, $level)
+  function parse_think_tag(&$convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'I\'m considering parsing a THINK tag.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
@@ -467,7 +470,6 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag.', 2);
     global $error_response;
     $response = array();
-    $attrName = $element['name'];
     $attributes = (array)$element->attributes();
     $attributesArray = (isset($attributes['@attributes'])) ? $attributes['@attributes'] : array();
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Element attributes:' . print_r($attributesArray, true), 4);
@@ -502,6 +504,7 @@
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with 2 attributes.', 4);
       $condition_name = (string)$element['name'];
       $test_value = get_client_property($convoArr, $condition_name);
+      $test_value = trim($test_value);
       switch (true)
       {
         case (isset($element['value'])):
@@ -521,14 +524,42 @@
     }
     elseif (array_key_exists('name', $attributesArray)) // this ~SHOULD~ just trigger if the NAME value is present, and ~NOT~ NAME and (VALUE|CONTAINS|EXISTS)
     {
-      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with only the NAME attribute.', 4);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with only the NAME attribute', 4);
       $condition_name = (string)$element['name'];
       $test_value = get_client_property($convoArr, $condition_name);
-      $path = "li[@value=\"$test_value\"]|li[not(@*)]";
+      //$path = "li[@name=*][not(@value)]|li[not(@*)]";
+      $path = "li[@name]|li[not(@*)]";
+      //trigger_error("path = $path");
       runDebug(__FILE__, __FUNCTION__, __LINE__, "search string = $path", 4);
       $choice = $element->xpath($path);
-      $pick = $choice[0];
-      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($pick, true), 4);
+      runDebug(__FILE__, __FUNCTION__, __LINE__,'Choices = ' . print_r($choice, true), 4);
+      if (count($choice) != 0)
+      {
+        $test_value = rtrim($test_value);
+        runDebug(__FILE__, __FUNCTION__, __LINE__,'parent XML = ' . $element->asXML(), 4);
+        foreach ($choice as $pick)
+        {
+          $testVarName = (string)$pick['name'];
+          $testVarValue = get_client_property($convoArr, $testVarName);
+          $testVarValue = trim($testVarValue);
+          runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $testVarValue ($testVarName) is equal to $test_value.", 4);
+          if (strtolower($testVarValue) == strtolower($test_value))
+          {
+            runDebug(__FILE__, __FUNCTION__, __LINE__,'Pick XML = ' . $pick->asXML(), 4);
+            break;
+          }
+        }
+        //$pick = $choice[0];
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($pick, true), 4);
+      }
+      else
+      {
+        $path = "li[@value=\"$test_value\"]|li[not(@*)]";
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "search string = $path", 4);
+        $choice = $element->xpath($path);
+        $pick = $choice[0];
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($pick, true), 4);
+      }
     }
     else // nothing matches
     {
@@ -778,7 +809,7 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
    * @return (string) $response_string
    */
 
-  function tag_to_string($convoArr, $element, $parentName, $level, $type = 'element')
+  function tag_to_string(&$convoArr, $element, $parentName, $level, $type = 'element')
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "converting the $parentName tag into text.", 2);
     $response = array();

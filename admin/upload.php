@@ -285,6 +285,7 @@ endScript;
         }
     }
     $_SESSION['errorMessage'] = $msg;
+    return $msg;
   }
 
   function getAIML_List()

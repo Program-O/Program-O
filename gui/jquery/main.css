@@ -2,44 +2,59 @@
 	body{
 		font-family: sans-serif; 
 		font-size:12px;
+        background: white url(CompRule.png) repeat top left;
+        background: white;
 	}
 
 	.man {
 		background:url("small_man.png");
 		height:194px;
 		width:133px;
-		float:right;
+		float:left;
 		}
 
 	.dog {
 		background:url("small_dog.png");
 		height:198px;
 		width:278px;
-		float:left;
-		}	
+		float:right;
+        clear: both;
+		}
 
 	.manspeech {
-		height:200px;
-		width:133px;
-		float:right;
 		position:relative;
 		display:block;
 		min-height:14px;
+        min-width: 150px;
+        max-width: 600px;
+        max-height: 100px;
+        width: auto;
+        height: auto;
+        margin-top: 186px;
 		}
 
 	.dogspeech {
 		height:200px;
-		width:278px;
-		float:left;
+		width:300px;
+		float:right;
 		position:relative;
+		display:block;
 		min-height:14px;
+        min-width: 250px;
+        max-width: 400px;
+        width: auto;
+        height: auto;
+        margin-top: 186px;/**/
+        margin-right: 20px;
 		}
 
 	.botsay{
 	    overflow: auto;
-      	max-height: 150px;
       	color:red;
       	font-weight:bold;
+        height: 100%;
+        width: 100%;
+        max-height: 100px;
 	}
 
 	.usersay{
@@ -68,18 +83,20 @@
 /* THE SPEECH BUBBLE
 ------------------------------------------------------------------------------------------------------------------------------- */
 
-.triangle-border {
+.triangle-border, .triangle-border-right {
 	padding:5px;
 	margin:0.5em 0 1em;
-	border:5px solid #5a8f00;
 	color:#333;
 	background:#fff;
 	/* css3 */
+	border:5px solid #5a8f00;
 	-webkit-border-radius:10px;
 	-moz-border-radius:10px;
 	border-radius:10px;
 	position: absolute; bottom: 0;
-	width:95%;
+	width:100%;
+    height: auto;
+    box-sizing: border-box;
 }
 
 .blue{
@@ -100,14 +117,14 @@
 /* Variant : for right positioned triangle
 ------------------------------------------ */
 
-.triangle-border.right {
+.triangle-border-right {
 	margin-right:3px;
 }
 
 /* THE TRIANGLE
 ------------------------------------------------------------------------------------------------------------------------------- */
 
-.triangle-border:before {
+.triangle-border:before, .triangle-border-right:before {
 	content:"";
 	position:absolute;
 	bottom:-20px; /* value = - border-top-width - border-bottom-width */
@@ -119,6 +136,11 @@
     display:block; 
     width:0;
 }
+.triangle-border-right:before {
+  left: auto;
+  right: 40px;
+}
+
 
 .blue:before {
 	border-color:lightblue transparent;
@@ -131,7 +153,7 @@
 
 
 /* creates the smaller  triangle */
-.triangle-border:after {
+.triangle-border:after, .triangle-border-right:after {
 	content:"";
 	position:absolute;
 	bottom:-13px; /* value = - border-top-width - border-bottom-width */
@@ -142,6 +164,10 @@
     /* reduce the damage in FF3.0 */
     display:block; 
     width:0;
+}
+.triangle-border-right:after {
+  left: auto;
+  right: 47px;
 }
 
 

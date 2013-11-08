@@ -322,16 +322,13 @@
           $allrows[$all]['score'] += $that_pattern_match_general;
           $allrows[$all]['track_score'] .= "g";
         }
-      } elseif (($aiml_pattern == "*")&&($aiml_thatpattern!="")) {
-
-
+      }
+      elseif (($aiml_pattern == "*")&&($aiml_thatpattern!="")) {
        if (($aiml_thatpattern_wildcards != '') && (preg_match($aiml_thatpattern_wildcards, $current_thatpattern, $m))) {
           $allrows[$all]['score'] += $that_pattern_match;
           $allrows[$all]['track_score'][] = "general aiml that pattern match";
         }
-
-      }
-      
+      }      
       
       //if stored result == default pattern increase score
       $aiml_pattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_pattern) : strtolower($aiml_pattern);
@@ -466,14 +463,14 @@
   }
 
   /**
-  * function get_highest_score_rows()
+  * function get_highest_scoring_row()
   * This function takes all the relevant and scored aiml results
   * and saves the highest scoring rows
   * @param array $allrows - all the results
   * @param string $lookingfor - the user input
   * @return array bestResponseArr - best response and its parts (topic etc)
   **/
-  function get_highest_score_rows($allrows, $lookingfor)
+  function get_highest_scoring_row($allrows, $lookingfor)
   {
     $bestResponse = array();
     $last_high_score = 0;
@@ -590,6 +587,16 @@
     return $value;
   }
 
+
+
+  /**
+  * Function: get_client_property()
+  * Summary: Extracts a value from the the client properties subarray within the main conversation array
+  * @param Array $convoArr - the main conversation array
+  * @param String $name - the key of the value to extract from client properties
+  * @return String $response - the value of the client property
+  **/
+
   function get_client_property($convoArr, $name)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Rummaging through the DB and stuff for a client property.', 2);
@@ -692,7 +699,7 @@
       //score the relevant matches
       $allrows = score_matches($convoArr, $bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $aiml_pattern);
       //get the highest
-      $allrows = get_highest_score_rows($allrows, $lookingfor);
+      $allrows = get_highest_scoring_row($allrows, $lookingfor);
       //READY FOR v2.5 do not uncomment will not work
       //check if this is an unknown input and place in the unknown_inputs tbl if true
       //check_and_add_unknown_inputs($allrows,$convoArr);
@@ -755,7 +762,7 @@
     $aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
     #$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
     $convoArr['aiml']['lookingfor'] = str_replace('  ', ' ', $convoArr['aiml']['lookingfor']);
-    $lookingfor = strtoupper(mysql_real_escape_string($convoArr['aiml']['lookingfor']));
+    $lookingfor = trim(strtoupper(mysql_real_escape_string($convoArr['aiml']['lookingfor'])));
     //get the first and last words of the cleaned user input
     $lastInputWord = get_last_word($lookingfor);
     $firstInputWord = get_first_word($lookingfor);
@@ -823,14 +830,11 @@
       //loop through results
       while ($row = mysql_fetch_assoc($result))
       {
-        $allrows[$i]['aiml_id'] = $row['id'];
-        $allrows[$i]['bot_id'] = $row['bot_id'];
-        $allrows[$i]['pattern'] = $row['pattern'];
-        $allrows[$i]['thatpattern'] = $row['thatpattern'];
-        $allrows[$i]['topic'] = $row['topic'];
-        $allrows[$i]['score'] = 0;
-        $allrows[$i]['track_score'] = '';
-        $i++;
+        $row['aiml_id'] = $row['id'];
+        $row['score'] = 0;
+        $row['track_score'] = '';
+        $allrows[] = $row;
+
         $mu = memory_get_usage(true);
         if ($mu >= MEM_TRIGGER)
         {
@@ -852,6 +856,11 @@
     return $allrows;
   }
 
+  /** get_topic()
+  * Extracts the current topic directly from the database
+  * @param Array $convoArr - the conversation array
+  * returns String $retval - the topic
+  **/
   function get_topic($convoArr)
   {
     global $con,$dbn;

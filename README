@@ -66,3 +66,11 @@ your new Program O admin page (e.g. http://www.example.com/ProgramO/admin) and l
 the admin credentials you provided during the install process. Then select "Upload AIML"
 from the navigation link on the left and upload your AIML files. Then sit back and enjoy your
 new bot!
+
+Program O has a WordPress Plugin!
+---------------------------------------------------------
+If you have a WordPress driven website, and wish to incorporate your Program O chatbot into your
+website with a minimum of fuss and hassle, then maybe the Elizaibots plugin is what you need!
+Add an Elizaibots chatbot to your wordpress site using the shortcode to embed the bot and conversation
+on your blog. Keep your readers amused! Check out http://wordpress.org/plugins/elizaibot-chatbots/
+for more details.

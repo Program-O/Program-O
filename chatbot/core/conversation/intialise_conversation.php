@@ -629,7 +629,7 @@
       }
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Inputs returned:' . print_r($tmpInputRows, true), 1);
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading previous responses into the ~THAT~ array.', 4);
-      array_reverse($tmpThatRows);
+      $tmpThatRows = array_reverse($tmpThatRows);
       foreach ($tmpThatRows as $row)
       {
         $row = str_replace($puncuation, '.', $row);
@@ -644,7 +644,7 @@
         $convoArr = push_on_front_convoArr('that', $value, $convoArr);
       }
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading previous user inputs into the ~INPUT~ array.', 4);
-      array_reverse($tmpInputRows);
+      $tmpInputRows = array_reverse($tmpInputRows);
       foreach ($tmpInputRows as $row)
       {
         $row = str_replace($puncuation, '.', $row);

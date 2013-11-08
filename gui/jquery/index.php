@@ -10,12 +10,13 @@
   ***************************************/
   $cookie_name = 'Program_O_JSON_GUI';
   $convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : get_convo_id();
-  $bot_id = (isset($_COOKIE['bot_id'])) ? $_COOKIE['bot_id'] : 1;
+  $bot_id = (isset($_COOKIE['bot_id'])) ? $_COOKIE['bot_id'] : 1; // 1
   setcookie('bot_id', $bot_id);
-  $display = '';
+  $display = 'Please make sure that you edit this file to change the value of the variable $url in this file to reflect the correct URL address of your chatbot, and to remove this message.' . PHP_EOL;
+  #$display = '';
   $url = 'http://localhost/Program-O/Program-O/chatbot/conversation_start.php';
-  $display = 'Make sure that you edit this file to change the value of $url below to reflect the correct address, and to remove this message.' . PHP_EOL;
-  $url = 'http://www.example.com/programo/chatbot/conversation_start.php';
+  $url = 'http://api.program-o.com/v2.3.1/chatbot/';
+  $url = 'chat.php';
 
   function get_convo_id()
   {
@@ -56,7 +57,7 @@
       .bot_name {
         color: rgb(204, 0, 0);
       }
-      #shameless_plug {
+      #shameless_plug, #urlwarning {
         position: absolute;
         right: 10px;
         bottom: 10px;
@@ -67,6 +68,33 @@
         padding: 5px;
         border-radius: 5px;
       }
+      #urlwarning {
+        right: auto;
+        left: 10px;
+        width: 50%;
+        font-size: large;
+        font-weight: bold;
+        background-color: white;
+      }
+      .leftside {
+        text-align: right;
+        float: left;
+        width: 48%;
+      }
+      .rightside {
+        text-align: left;
+        float: right;
+        width: 48%;
+      }
+      .centerthis {
+        width: 90%;
+      }
+      #chatdiv {
+        margin-top: 20px;
+        text-align: center;
+        width: 100%;
+      }
+
     </style>
   </head>
   <body>
@@ -77,28 +105,32 @@
       Program O Forums</a> to ask for assistance.
     </p>
     <div class="centerthis">
+      <div class="rightside">
       <div class="manspeech"><div  class="triangle-border bottom blue"><div class="botsay">Hey!</div></div></div>
-      <div class="dogspeech"><div  class="triangle-border bottom orange"><div class="usersay">&nbsp;</div></div></div>
       <div class="man"></div>
+      </div>
+      <div class="leftside">
+      <div class="dogspeech"><div  class="triangle-border-right bottom orange"><div class="usersay">&nbsp;</div></div></div><br />
       <div class="dog"></div>
+      </div>
     </div>
     <div class="clearthis"></div>
     <div class="centerthis">
       <form method="post" name="talkform" id="talkform" action="index.php">
-        <p>
-          <label>Say:</label>
-          <input type="text" name="say" id="say"/>
+        <div id="chatdiv">
+          <label for="submit">Say:</label>
+          <input type="text" name="say" id="say" size="60"/>
           <input type="submit" name="submit" id="submit" class="submit"  value="say" />
           <input type="hidden" name="convo_id" id="convo_id" value="<?php echo $convo_id;?>" />
           <input type="hidden" name="bot_id" id="bot_id" value="<?php echo $bot_id;?>" />
           <input type="hidden" name="format" id="format" value="json" />
-        </p>
+        </div>
       </form>
     </div>
     <div id="shameless_plug">
       To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
     </div>
-    <?php echo $display ?>
+    <div id="urlwarning"><?php echo $display ?></div>
     <script type="text/javascript" src="jquery-1.3.min.js"></script>
     <script type="text/javascript" >
      $(document).ready(function() {
