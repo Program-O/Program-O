@@ -296,7 +296,7 @@
         $checkagainst = $convoArr['aiml']['user_raw'];
       }
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking '$ap' against '$checkagainst'.", 2);
-      if (preg_match_all("~$ap~si", $checkagainst, $matches))
+      if (preg_match_all("~$ap~siu", $checkagainst, $matches))
       {
         runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($matches, true), 2);
         for ($i = 1; $i < count($matches); $i++)
