@@ -373,7 +373,7 @@ endScript;
     $res = $zip->open($fileName);
     if ($res === TRUE) {
       $numFiles = $zip->numFiles;
-      for ($loop = 0; $loop < $numFiles-1; $loop++)
+      for ($loop = 0; $loop < $numFiles; $loop++)
       {
         $curName = $zip->getNameIndex($loop);
         if (strstr($curName, '/') !== false)
