@@ -140,7 +140,6 @@ else {
       if (!empty($topic)) $fileContent .= "</topic>\n";
     }
     $fileContent .= "\r\n</aiml>\r\n";
-    save_file(_DEBUG_PATH_ . 'test.aiml', $fileContent);
     $dom = new DOMDocument();
     $dom->preserveWhiteSpace = false;
     $dom->formatOutput = true;

@@ -245,8 +245,8 @@
     $tz = (!is_numeric($tz)) ? $tz : $tz_list[$tz];
     date_default_timezone_set($tz);
     #$response = "$tz - " . strftime($format);
-    #$response = strftime($format);
-    $response = $cur_locale;
+    $response = strftime($format);
+    #$response = $cur_locale;
     date_default_timezone_set($cur_timezone);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Date tag parsed. Returning $response", 4);
     return $response;
