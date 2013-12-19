@@ -131,7 +131,7 @@
       To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
     </div>
     <div id="urlwarning"><?php echo $display ?></div>
-    <script type="text/javascript" src="jquery-1.3.min.js"></script>
+    <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
     <script type="text/javascript" >
      $(document).ready(function() {
       // put all your jQuery goodness in here.
@@ -147,7 +147,9 @@
             var usersay = data.usersay;
             if (user != usersay) $('.usersay').text(usersay);
             $('.botsay').html(b);
-          }, 'json');
+          }, 'json').fail(function(xhr, textStatus, errorThrown){
+            $('#urlwarning').html("Something went wrong! Error = " + errorThrown);
+          });
           return false;
         });
       });
