@@ -9,8 +9,21 @@
   * DETAILS: This is the XML GUI interface for Program O
   ***************************************/
 
-  $display = 'Make sure that you edit this file to change the value of $url below to reflect the correct address, and to remove this message.';
-  $url = 'http://www.example.com/programo/chatbot/conversation_start.php';
+  // Experimental code
+  $base_URL  = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
+  $this_path = str_replace(DIRECTORY_SEPARATOR, '/', realpath(dirname(__FILE__)));  // The current location of this file, normalized to use forward slashes
+  $this_path = str_replace($_SERVER['DOCUMENT_ROOT'], $base_URL, $this_path);       // transform it from a file path to a URL
+  $url = str_replace('gui/jquery', 'chatbot/conversation_start.php', $this_path);   // and set it to the correct script location
+/*
+  Example URL's for use with the chatbot API
+  $url = 'http://api.program-o.com/v2.3.1/chatbot/';
+  $url = 'http://localhost/Program-O/Program-O/chatbot/conversation_start.php';
+  $url = 'chat.php';
+*/
+
+  $display = "The URL for the API is currently set as:<br />\n$url.<br />\n";
+  $display .= 'Please make sure that you edit this file to change the value of the variable $url in this file to reflect the correct URL address of your chatbot, and to remove this message.' . PHP_EOL;
+  #$display = '';
   $display_template = <<<end_display
       <span class="user_name">[user_name]: </span><span class="user_say">[input]</span><br>
       <span class="bot_name">[bot_name]: </span><span class="bot_say">[response]</span><br>
@@ -113,7 +126,7 @@ end_display;
     <h3>Program O XML GUI</h3>
     <form accept-charset="utf-8" method="get" action="<?php echo $_SERVER['PHP_SELF'] ?>">
       <p>
-        <input type="text" name="say" id="say" />
+        <input type="text" name="say" id="say" size="70" />
         <input id="bot_id" type="hidden" name="bot_id" value="<?php echo $bot_id ?>">
         <input id="convo_id" type="hidden" name="convo_id" value="<?php echo $convo_id ?>">
         <input id="format" type="hidden" name="format" value="xml">

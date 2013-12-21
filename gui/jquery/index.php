@@ -12,11 +12,21 @@
   $convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : get_convo_id();
   $bot_id = (isset($_COOKIE['bot_id'])) ? $_COOKIE['bot_id'] : 1; // 1
   setcookie('bot_id', $bot_id);
-  $display = 'Please make sure that you edit this file to change the value of the variable $url in this file to reflect the correct URL address of your chatbot, and to remove this message.' . PHP_EOL;
-  #$display = '';
-  $url = 'http://localhost/Program-O/Program-O/chatbot/conversation_start.php';
+  // Experimental code
+  $base_URL  = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
+  $this_path = str_replace(DIRECTORY_SEPARATOR, '/', realpath(dirname(__FILE__)));  // The current location of this file, normalized to use forward slashes
+  $this_path = str_replace($_SERVER['DOCUMENT_ROOT'], $base_URL, $this_path);       // transform it from a file path to a URL
+  $url = str_replace('gui/jquery', 'chatbot/conversation_start.php', $this_path);   // and set it to the correct script location
+/*
+  Example URL's for use with the chatbot API
   $url = 'http://api.program-o.com/v2.3.1/chatbot/';
+  $url = 'http://localhost/Program-O/Program-O/chatbot/conversation_start.php';
   $url = 'chat.php';
+*/
+
+  $display = "The URL for the API is currently set as:<br />\n$url.<br />\n";
+  $display .= 'Please make sure that you edit this file to change the value of the variable $url in this file to reflect the correct URL address of your chatbot, and to remove this message.' . PHP_EOL;
+  #$display = '';
 
   function get_convo_id()
   {
