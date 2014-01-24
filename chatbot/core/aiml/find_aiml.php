@@ -99,6 +99,134 @@
   **/
   function unset_all_bad_pattern_matches($allrows, $lookingfor, $current_thatpattern, $current_topic, $default_pattern)
   {
+    //if default pattern keep
+    //if wildcard pattern matches found aiml keep
+    //if wildcard pattern and wildard thatpattern keep
+    //the end......
+
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "NEW FUNC Searching through " . count($allrows) . " rows to unset bad matches", 4);
+    if (($allrows[0]['pattern'] == "no results") and (count($allrows) == 1)) {
+      $tmp_rows[0] = $allrows[0];
+      $tmp_rows[0]['score'] = 1;
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning error as no results where found", 1);
+      return $tmp_rows;
+    }
+    $i = 0;
+    $j = 0;
+  //loop through the results array
+  foreach ($allrows as $all => $subrow) {
+    $message[$j]['new turn looking for']="$lookingfor";
+    $message[$j]['found pattern'] = $subrow['pattern'];
+    $message[$j]['found thatpattern'] = $subrow['thatpattern'];
+    $message[$j]['found topic'] = $subrow['topic'];
+    $message[$j]['checking against']= implode(",",$subrow);
+    $aiml_pattern = $subrow['pattern'];
+    $aiml_pattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_pattern) : strtolower($aiml_pattern);
+    $aiml_pattern_wildcards = match_wildcard_rows($aiml_pattern);
+    //get the pattern
+    $aiml_thatpattern = $subrow['thatpattern'];
+    $aiml_thatpattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_thatpattern) : strtolower($aiml_thatpattern);
+    preg_match($aiml_pattern_wildcards, $lookingfor, $matches);
+
+    $topicMatch =FALSE;
+    $aiml_topic = trim($subrow['topic']);
+    $aiml_topic = (IS_MB_ENABLED) ? mb_strtolower($aiml_topic) : strtolower($aiml_topic);
+    $current_topic_lc = (IS_MB_ENABLED) ? mb_strtolower($current_topic) : strtolower($current_topic);
+    //runDebug(__FILE__, __FUNCTION__, __LINE__, "TOPICHK '".$aiml_topic."'", 4);
+    if($aiml_topic==''){
+    	//runDebug(__FILE__, __FUNCTION__, __LINE__, "NO TOPIC this is true", 4);
+    	$topicMatch = TRUE;
+    }elseif(($aiml_topic == $current_topic_lc)){
+    	$topicMatch = TRUE;
+    	//runDebug(__FILE__, __FUNCTION__, __LINE__, "TOPIC MATCH this is true", 4);
+    	$message[$j]['topic match'] =  "Found topic match $aiml_topic and $current_topic_lc";
+    }else{
+    	$message[$j]['topic match'] =  "NO topic match $aiml_topic and $current_topic_lc";
+    	$topicMatch = FALSE;
+    }
+
+    $message[$j]['have made the pattern wildcard to do reg exp'] = $aiml_pattern_wildcards;
+
+    if(count($matches)>0){
+      $aiml_patternmatch=TRUE;
+      #$message[$j]['found some matches'] = print_r($matches, true);
+      $message[$j]['found some matches'] = $matches[0];
+      $message[$j]['using'] ="$aiml_pattern_wildcards REGEXPIN $lookingfor";
+    }else{
+      $aiml_patternmatch = FALSE;
+    }
+    $message[$j]['found a match'] = $aiml_patternmatch;
+
+    $message[$j]['what is the current thatpattern'] = $current_thatpattern;
+    $message[$j]['do we have a thatpattern'] = $aiml_patternmatch;
+    if($aiml_thatpattern!=''){
+    $aiml_thatpattern_wildcards = match_wildcard_rows($aiml_thatpattern);
+      preg_match($aiml_thatpattern_wildcards, $current_thatpattern, $thatmatches);
+      if (count($thatmatches)>0) {
+        $aiml_thatpatternmatch = TRUE;
+        $message[$j]['there are thatpattern matches'] = "$aiml_thatpattern_wildcards in $current_thatpattern";
+        $message[$j]['thatpattern matches are'] = print_r($thatmatches, true);
+      } else {
+        $aiml_thatpatternmatch = FALSE;
+        $message[$j]['there arent any thatpattern matches'] = "$aiml_thatpattern_wildcards in $current_thatpattern";
+      }
+
+
+
+
+    } else {
+      $aiml_thatpattern_wildcards = FALSE;
+      $message[$j]['no thatpattern'] =  $aiml_thatpattern;
+    }
+
+
+
+        //if default pattern keep
+        if (($aiml_pattern == $default_pattern) || (strtolower($aiml_pattern) == strtolower($default_pattern)) || (strtoupper($aiml_pattern) == strtoupper($default_pattern))) {
+          //if it is a direct match with our default pattern then add to tmp_rows
+
+          $tmp_rows[$i]['score'] = 0;
+          $tmp_rows[$i]['track_score'] = "default pick up line ($aiml_pattern = $default_pattern) ";
+        } elseif((!$aiml_thatpattern_wildcards)&&($aiml_patternmatch)){ // no thatpattern and a pattern match keep
+
+          $tmp_rows[$i]['score'] = 1;
+          $tmp_rows[$i]['track_score'] = " no thatpattern in result and a pattern match";
+        } elseif (($aiml_thatpattern_wildcards) && ($aiml_thatpatternmatch) && ($aiml_patternmatch)) { //pattern match and a wildcard match on the thatpattern keep
+
+          $tmp_rows[$i]['score'] = 2;
+          $tmp_rows[$i]['track_score'] = " thatpattern match and a pattern match";
+        } else {
+          $tmp_rows[$i]['score'] = -1;
+          $tmp_rows[$i]['track_score']= "dismissing nothing is matched";
+        }
+
+        if($topicMatch === FALSE){
+          $tmp_rows[$i]['score'] = -1;
+          $tmp_rows[$i]['track_score']= "dismissing wrong topic";
+        }
+
+
+        if($tmp_rows[$i]['score']>=0){
+          $relevantRow[]=$subrow;
+        }
+
+    $message[$j]['sore']= $tmp_rows[$i]['score'];
+    $message[$j]['track score'] = $tmp_rows[$i]['track_score'];
+    $i++;
+    $j++;
+  }
+
+    //runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($message, true), 4);
+    sort2DArray("show top scoring aiml matches", $relevantRow, "good matches", 1, 10);
+
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Found ".count($relevantRow)." relevant rows", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($relevantRow, true), 4);
+    return $relevantRow;
+
+  }
+
+  function unset_all_bad_pattern_matches_old($allrows, $lookingfor, $current_thatpattern, $current_topic, $default_pattern)
+  {
     global $error_response;
     $tmp_rows = array();
     $i = 0;
@@ -117,7 +245,7 @@
       // set the score to zero
       $tmp_rows[$i]['track_score'] = '';
       //get the pattern
-      $aiml_pattern = strtoupper($subrow['pattern']);
+      $aiml_pattern = (IS_MB_ENABLED) ? mb_strtoupper($subrow['pattern']) : strtoupper($subrow['pattern']);
       //get the topic
       $aiml_topic = $subrow['topic'];
       //get the that
@@ -147,6 +275,7 @@
           $that_match = ($aiml_thatpattern == '');
           $tmp_rows[$i]['track_score'] .= "c";
         }
+
         if ($aiml_topic != '')
         {
           $topic_match = ($aiml_topic == $current_topic);
@@ -162,17 +291,14 @@
 
         if (count($matches)>0)
         {
-          if ($that_match)
+          if ((isset ($subrow['pattern'])) && ($subrow['pattern'] != ''))
           {
-            if ($topic_match)
+            if (($topic_match) || ($that_match))
             {
-              if ((isset ($subrow['pattern'])) && ($subrow['pattern'] != ''))
-              {
                 $tmp_rows[$i] = $subrow;
                 $tmp_rows[$i]['score'] = 0;
                 $tmp_rows[$i]['track_score'] .= "f";
                 $i++;
-              }
             }
           }
         }
@@ -292,7 +418,7 @@
         $allrows[$all]['track_score'] .= "b";
       }
       //if the result topic matches the user stored aiml topic increase score
-      if (($aiml_topic == $current_topic) && ($aiml_topic != ''))
+      if (($aiml_topic == $current_topic) && ($current_topic != ''))
       {
         $allrows[$all]['score'] += $topic_match;
         $allrows[$all]['track_score'] .= "c";
@@ -416,7 +542,7 @@
   {
     $thisCount = count($thisArr);
     $showLimit = ($thisCount < $limit) ? $thisCount : $limit;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($thisArr, true), 4);
+    //runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($thisArr, true), 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName - sorting $thisCount results by $sortByItem and getting the top $showLimit for debugging.", 4);
     $i = 0;
     $tmpSortArr = array();
@@ -459,7 +585,7 @@
     //get the limited top results
     $outArr = array_slice($resArr, 0, $limit);
     //send to debug
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName " . print_r($outArr, true), 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName " . print_r($resArr, true), 4);
   }
 
   /**
@@ -618,7 +744,7 @@
     if ($rowCount != 0)
     {
       $row = mysql_fetch_assoc($result);
-      $response = $row['value'];
+      $response = trim($row['value']);
       $convoArr['client_properties'][$name] = $response;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Found client property '$name' in the DB. Adding it to the conversation array and returning '$response'", 2);
 
@@ -689,11 +815,12 @@
     $sendConvoArr = $convoArr;
     //check if match in user defined aiml
     $allrows = find_userdefined_aiml($convoArr);
-    //if there is no match in the user defined aiml tbl
+    //if there is no match in the user defined aiml table
     if ((!isset ($allrows)) || (count($allrows) <= 0))
     {
     //look for a match in the normal aiml tbl
       $allrows = find_aiml_matches($convoArr);
+      #save_file(_DEBUG_PATH_ . 'allrows.txt', print_r($allrows, true));
       //unset all irrelvant matches
       $allrows = unset_all_bad_pattern_matches($allrows, $lookingfor, $current_thatpattern, $current_topic, $aiml_pattern);
       //score the relevant matches
@@ -701,7 +828,7 @@
       //get the highest
       $allrows = get_highest_scoring_row($allrows, $lookingfor);
       //READY FOR v2.5 do not uncomment will not work
-      //check if this is an unknown input and place in the unknown_inputs tbl if true
+      //check if this is an unknown input and place in the unknown_inputs table if true
       //check_and_add_unknown_inputs($allrows,$convoArr);
     }
     //Now we have the results put into the conversation array
@@ -767,8 +894,8 @@
     $lastInputWord = get_last_word($lookingfor);
     $firstInputWord = get_first_word($lookingfor);
     //get the stored topic
-    $storedtopic = (isset($convoArr['topic'][1])) ? mysql_real_escape_string($convoArr['topic'][1]) : '';
-    if ($storedtopic == '') $storedtopic = get_topic($convoArr);
+    $storedtopic = get_topic($convoArr);
+
     //get the cleaned user input
     $lastthat =  (isset($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
     //build like patterns
@@ -794,17 +921,16 @@
     }
     if ($storedtopic != '')
     {
-      $topic_select = "(`topic`='') OR (`topic`='$storedtopic')";
+      $topic_select = "AND ((`topic`='') OR (`topic`='$storedtopic'))";
     }
-    else $topic_select = "`topic`=''";
+    else $topic_select = '';
     if ($word_count == 1)
     {
     //if there is one word do this
       $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
 		$sql_bot_select AND (
 		((`pattern` = '_') OR (`pattern` = '*') OR (`pattern` = '$lookingfor') OR (`pattern` = '$aiml_pattern' ) )
-		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
-		AND ( (`topic`='') OR (`topic`='$storedtopic')))";
+		$topic_select) order by `topic` desc, `id` desc, `pattern` asc;";
     }
     else
     {
@@ -817,8 +943,7 @@
 		 (`pattern` like '$lookingfor') OR
 		 ($sql_add) OR
 		 (`pattern` = '$aiml_pattern' ))
-		AND	((`thatpattern` = '_') OR (`thatpattern` = '*') OR (`thatpattern` = '') OR (`thatpattern` like '%') OR (`thatpattern` = '$lastthat') $thatPatternSQL )
-		AND ($topic_select));";
+		$topic_select) order by `topic` desc, `id` desc, `pattern` asc;";
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);
     $result = db_query($sql, $con);

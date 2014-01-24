@@ -488,7 +488,7 @@
         if (in_array($choice_name, $exclude)) continue;
         $exclude[] = $choice_name;
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Client properties = ' . print_r($convoArr['client_properties'], true), 4);
-        $choice_value = get_client_property($convoArr, $choice_name);
+        $choice_value = trim(get_client_property($convoArr, $choice_name));
         $condition_xPath .= "li[@name=\"$choice_name\"][@value=\"$choice_value\"]|";
       }
       $condition_xPath .= 'li[not(@*)]';
@@ -503,18 +503,17 @@
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with 2 attributes.', 4);
       $condition_name = (string)$element['name'];
-      $test_value = get_client_property($convoArr, $condition_name);
-      $test_value = trim($test_value);
+      $test_value = trim(get_client_property($convoArr, $condition_name));
       switch (true)
       {
         case (isset($element['value'])):
           $condition_value = (string)$element['value'];
           break;
-        case (isset($element['value'])):
-          $condition_value = (string)$element['value'];
+        case (isset($element['contains'])):
+          $condition_value = (string)$element['contains'];
           break;
         case (isset($element['value'])):
-          $condition_value = (string)$element['value'];
+          $condition_value = (string)$element['exists'];
           break;
         default:
           runDebug(__FILE__, __FUNCTION__, __LINE__, 'Something went wrong with parsing the CONDITION tag. Returning the error response.', 1);
@@ -526,12 +525,12 @@
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with only the NAME attribute', 4);
       $condition_name = (string)$element['name'];
-      $test_value = get_client_property($convoArr, $condition_name);
-      //$path = "li[@name=*][not(@value)]|li[not(@*)]";
-      $path = "li[@name]|li[not(@*)]";
-      //trigger_error("path = $path");
+      $test_value = trim(get_client_property($convoArr, $condition_name));
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Looking for test value '$test_value'", 4);
+      $path = "li[@value]|li[not(@*)]";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "search string = $path", 4);
       $choice = $element->xpath($path);
+      runDebug(__FILE__, __FUNCTION__, __LINE__,'element = ' . print_r($element, true), 4);
       runDebug(__FILE__, __FUNCTION__, __LINE__,'Choices = ' . print_r($choice, true), 4);
       if (count($choice) != 0)
       {
@@ -539,9 +538,9 @@
         runDebug(__FILE__, __FUNCTION__, __LINE__,'parent XML = ' . $element->asXML(), 4);
         foreach ($choice as $pick)
         {
-          $testVarName = (string)$pick['name'];
-          $testVarValue = get_client_property($convoArr, $testVarName);
-          $testVarValue = trim($testVarValue);
+          runDebug(__FILE__, __FUNCTION__, __LINE__,'Pick = ' . print_r($pick, true), 4);
+          $testVarValue = get_client_property($convoArr, $condition_name);
+          //$testVarValue = trim($testVarValue);
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $testVarValue ($testVarName) is equal to $test_value.", 4);
           if (strtolower($testVarValue) == strtolower($test_value))
           {
@@ -549,7 +548,6 @@
             break;
           }
         }
-        //$pick = $choice[0];
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($pick, true), 4);
       }
       else
