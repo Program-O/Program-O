@@ -166,14 +166,14 @@
         });
       });
       function showImg(input) {
-        var regEx = /\[img\](.*?)\[\/img]/;
+        var regEx = /\[img\](.*?)\[\/img\]/;
         var repl = '<br><a href="$1" target="_blank"><img src="$1" alt="$1" width="150" /></a>';
         var out = input.replace(regEx, repl);
         console.log('out = ' + out);
         return out
       }
       function makeLink(input) {
-        var regEx = /\[link=(.*?)\](.*?)\[\/link]/;
+        var regEx = /\[link=(.*?)\](.*?)\[\/link\]/;
         var repl = '<a href="$1" target="_blank">$2</a>';
         var out = input.replace(regEx, repl);
         console.log('out = ' + out);
