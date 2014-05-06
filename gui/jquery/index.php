@@ -40,8 +40,8 @@
   }
 
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+<!DOCTYPE html>
+<html>
   <head>
     <link rel="stylesheet" type="text/css" href="main.css" media="all" />
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
@@ -154,6 +154,8 @@
           $('#say').focus();
           $.post('<?php echo $url ?>', formdata, function(data){
             var b = data.botsay;
+            if (b.indexOf('[img]') >= 0) b = showImg(b);
+            if (b.indexOf('[link') >= 0) b = makeLink(b);
             var usersay = data.usersay;
             if (user != usersay) $('.usersay').text(usersay);
             $('.botsay').html(b);
@@ -163,6 +165,20 @@
           return false;
         });
       });
+      function showImg(input) {
+        var regEx = /\[img\](.*?)\[\/img]/;
+        var repl = '<br><a href="$1" target="_blank"><img src="$1" alt="$1" width="150" /></a>';
+        var out = input.replace(regEx, repl);
+        console.log('out = ' + out);
+        return out
+      }
+      function makeLink(input) {
+        var regEx = /\[link=(.*?)\](.*?)\[\/link]/;
+        var repl = '<a href="$1" target="_blank">$2</a>';
+        var out = input.replace(regEx, repl);
+        console.log('out = ' + out);
+        return out;
+      }
     </script>
   </body>
 </html>
