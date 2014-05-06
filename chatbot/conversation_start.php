@@ -61,6 +61,8 @@
   session_start();
   #save_file(_LOG_PATH_ . 'session.txt', print_r($_SESSION, true));
   $debug_level = (isset($_SESSION['programo']['conversation']['debug_level'])) ? $_SESSION['programo']['conversation']['debug_level'] : $debug_level;
+  $debug_level = (isset($form_vars['debug_level'])) ? $form_vars['debug_level'] : $debug_level;
+  $debug_mode = (isset($form_vars['debug_mode'])) ? $form_vars['debug_mode'] : $debug_mode;
   if (isset($form_vars['convo_id'])) session_id($form_vars['convo_id']);
   $convo_id = session_id();
   #file_put_contents(_LOG_PATH_ . 'session_id.txt', session_id());
