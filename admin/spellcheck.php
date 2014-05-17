@@ -1,9 +1,9 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.3.1
+//My Program-O Version: 2.4.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
-//Aug 2011
+//DATE: MAY 17TH 2014
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // spellcheck.php
@@ -98,13 +98,12 @@ endScript;
     $rightNav    = str_replace('[headerTitle]', paginate(), $rightNav);
 
   function paginate() {
-    global $get_vars;
-    $dbConn = db_open();
+    global $dbConn, $get_vars;
     $sql = "select count(*) from `spellcheck` where 1";
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-    $row = mysql_fetch_assoc($result);
-    $rowCount = $row[0];
-    mysql_close($dbConn);
+    $result = db_query($sql, $dbConn);
+    $row = db_fetch_assoc($result);
+    $rowCount = $row['count(*)'];
+    db_close($dbConn);
     $lastPage = intval($rowCount / 50);
     $remainder = ($rowCount / 50) - $lastPage;
     if ($remainder > 0) $lastPage++;
@@ -129,21 +128,21 @@ endScript;
   }
 
   function getMisspelledWords() {
-    global $template, $get_vars;
+    global $dbConn, $template, $get_vars;
     # pagination variables
     $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
     $_SESSION['poadmin']['group'] = $group;
     $startEntry = ($group - 1) * 50;
     $end = $group + 50;
     $_SESSION['poadmin']['page_start'] = $group;
-    $dbConn = db_open();
+    
     $curID = (isset($get_vars['id'])) ? $get_vars['id'] : -1;
     $sql = "select `id`,`missspelling` from `spellcheck` where 1 order by abs(`id`) asc limit $startEntry, 50;";
     $baseLink = $template->getSection('NavLink');
     $links = '      <div class="userlist">' . "\n";
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    $result = db_query($sql, $dbConn);
     $count = 0;
-    while ($row = mysql_fetch_assoc($result)) {
+    while ($row = db_fetch_assoc($result)) {
       $linkId = $row['id'];
       $linkClass = ($linkId == $curID) ? 'selected' : 'noClass';
       $missspelling = $row['missspelling'];
@@ -171,19 +170,16 @@ function spellCheckForm() {
 }
 
 function insertSpell() {
-    //global vars
-    global $template, $msg, $post_vars;
-    $dbConn = db_open();
-
-    $correction = mysql_real_escape_string(trim($post_vars['correction']));
-    $missspell = mysql_real_escape_string(trim($post_vars['missspell']));
+    global $dbConn, $template, $msg, $post_vars;
+    $correction = db_escape_string(trim($post_vars['correction']));
+    $missspell = db_escape_string(trim($post_vars['missspell']));
 
     if(($correction == "") || ($missspell == "")) {
         $msg = '        <div id="errMsg">You must enter a spelling mistake and the correction.</div>' . "\n";
     }
     else {
         $sql = "INSERT INTO `spellcheck` VALUES (NULL,'$missspell','$correction')";
-        if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+        $result = db_query($sql, $dbConn);
 
         if($result) {
             $msg = '<div id="successMsg">Correction added.</div>';
@@ -192,20 +188,20 @@ function insertSpell() {
             $msg = '<div id="errMsg">There was a problem editing the correction - no changes made.</div>';
         }
     }
-    mysql_close($dbConn);
+    db_close($dbConn);
 
     return $msg;
 }
 
 function delSpell($id) {
-    global $template, $msg;
-    $dbConn = db_open();
+    global $dbConn, $template, $msg;
+    
     if($id=="") {
         $msg = '<div id="errMsg">There was a problem editing the correction - no changes made.</div>';
     }
     else {
         $sql = "DELETE FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
-        if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+        $result = db_query($sql, $dbConn);
         if($result) {
             $msg = '<div id="successMsg">Correction deleted.</div>';
         }
@@ -213,18 +209,17 @@ function delSpell($id) {
             $msg = '<div id="errMsg">There was a problem editing the correction - no changes made.</div>';
         }
     }
-    mysql_close($dbConn);
+    db_close($dbConn);
 }
 
 
 function runSpellSearch() {
-    //global vars
-    global $template, $post_vars;
-    $dbConn = db_open();
+    global $dbConn, $template, $post_vars;
+    
     $i=0;
-    $search = mysql_real_escape_string(trim($post_vars['search']));
+    $search = db_escape_string(trim($post_vars['search']));
     $sql = "SELECT * FROM `spellcheck` WHERE `missspelling` LIKE '%$search%' OR `correction` LIKE '%$search%' LIMIT 50";
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    $result = db_query($sql, $dbConn);
     $htmltbl = '<table>
                   <thead>
                     <tr>
@@ -234,7 +229,7 @@ function runSpellSearch() {
                     </tr>
                   </thead>
                 <tbody>';
-    while($row=mysql_fetch_assoc($result)) {
+    while($row=db_fetch_assoc($result)) {
         $i++;
         $misspell = strtoupper($row['missspelling']);
         $correction = strtoupper($row['correction']);
@@ -261,42 +256,39 @@ function runSpellSearch() {
         $msg = "Found $i results for '<b>$search</b>'";
     }
     $htmlresults = "<div id=\"pTitle\">$msg</div>".$htmltbl;
-    mysql_close($dbConn);
+    db_close($dbConn);
     return $htmlresults;
 }
 
 function editSpellForm($id) {
-  //global vars
-  global $template, $get_vars;
+  global $dbConn, $template, $get_vars;
   $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
   $form   = $template->getSection('EditSpellForm');
-  $dbConn = db_open();
+  
   $sql    = "SELECT * FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
-  if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-  $row    = mysql_fetch_assoc($result);
+  $result = db_query($sql, $dbConn);
+  $row    = db_fetch_assoc($result);
   $uc_missspelling = (IS_MB_ENABLED) ? mb_strtoupper($row['missspelling']) : strtoupper($row['missspelling']);
   $uc_correction = (IS_MB_ENABLED) ? mb_strtoupper($row['correction']) : strtoupper($row['correction']);
   $form   = str_replace('[id]', $row['id'], $form);
   $form   = str_replace('[missspelling]', $uc_missspelling, $form);
   $form   = str_replace('[correction]', $uc_correction, $form);
   $form   = str_replace('[group]', $group, $form);
-  mysql_close($dbConn);
+  db_close($dbConn);
   return $form;
 }
 
 function updateSpell() {
-  //global vars
-  global $template, $msg, $post_vars;
-  $dbConn = db_open();
-  $missspelling = mysql_real_escape_string(trim($post_vars['missspelling']));
-  $correction = mysql_real_escape_string(trim($post_vars['correction']));
+  global $dbConn, $template, $msg, $post_vars;
+  $missspelling = db_escape_string(trim($post_vars['missspelling']));
+  $correction = db_escape_string(trim($post_vars['correction']));
   $id = trim($post_vars['id']);
   if(($id=="")||($missspelling=="")||($correction=="")) {
     $msg = '<div id="errMsg">There was a problem editing the correction - no changes made.</div>';
   }
   else {
     $sql = "UPDATE `spellcheck` SET `missspelling` = '$missspelling',`correction`='$correction' WHERE `id`='$id' LIMIT 1";
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+    $result = db_query($sql, $dbConn);
     if($result) {
       $msg = '<div id="successMsg">Correction edited.</div>';
     }

@@ -2,10 +2,10 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.3.1
+* Version: 2.4.0
 * FILE: chatbot/core/conversation/make_conversation.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
-* DATE: MAY 4TH 2011
+* DATE: MAY 17TH 2014
 * DETAILS: this file contains the functions control the creation of the conversation 
 ***************************************/
 

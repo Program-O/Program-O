@@ -1,9 +1,9 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.3.1
+//My Program-O Version: 2.4.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
-//Aug 2011
+//DATE: MAY 17TH 2014
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // members.php
@@ -100,9 +100,9 @@ endScript;
 
 
   function updateDB($sql) {
-    $dbConn = db_open();
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>$sql</pre><br />\n");
-    $commit = mysql_affected_rows($dbConn);
+    global $dbConn;
+    $result = db_query($sql, $dbConn);
+    $commit = db_affected_rows($dbConn);
     return $commit;
   }
 
@@ -150,44 +150,41 @@ endScript;
 
 
     function getAdminsOpts() {
-    global $dbn;
+    global $dbn, $dbConn;
     $out = "                  <!-- Start List of Current Admin Accounts -->\n";
-    $dbConn = db_open();
     $optionTemplate = "                  <option value=\"[val]\">[key]</option>\n";
     $sql = 'SELECT id, user_name FROM myprogramo order by user_name;';
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
-    while ($row = mysql_fetch_assoc($result)) {
+    $result = db_query($sql, $dbConn);
+    while ($row = db_fetch_assoc($result)) {
       $user_name = $row['user_name'];
       $id = $row['id'];
       $curOption = str_replace('[key]', $row['user_name'], $optionTemplate);
       $curOption = str_replace('[val]', $row['id'], $curOption);
       $out .= $curOption;
     }
-    mysql_close($dbConn);
+    
     $out .= "                  <!-- End List of Current Admin Accounts -->\n";
     return $out;
   }
 
   function getMemberData($id) {
     if ($id <= 0) return false;
-    global $dbn, $user_name, $id;
+    global $dbn, $user_name, $id, $dbConn;
     $sql = "select id, user_name from myprogramo where id = $id limit 1;";
-    $dbConn = db_open();
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
-    $row = mysql_fetch_assoc($result);
+    $result = db_query($sql, $dbConn);
+    $row = db_fetch_assoc($result);
     $user_name = $row['user_name'];
     $id = $row['id'];
-    mysql_close($dbConn);
+    
   }
 
   function getNextID() {
-    global $dbn, $user_name;
+    global $dbn, $user_name, $dbConn;
     $sql = "select id from myprogramo order by id desc limit 1;";
-    $dbConn = db_open();
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
-    $row = mysql_fetch_assoc($result);
+    $result = db_query($sql, $dbConn);
+    $row = db_fetch_assoc($result);
     $id = $row['id'];
-    mysql_close($dbConn);
+    
     return $id + 1;
   }
 

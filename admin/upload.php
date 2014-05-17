@@ -1,10 +1,10 @@
 <?php
 
   //-----------------------------------------------------------------------------------------------
-  //My Program-O Version: 2.3.1
+  //My Program-O Version: 2.4.0
   //Program-O  chatbot admin area
   //Written by Elizabeth Perreau and Dave Morton
-  //Aug 2011
+  //DATE: MAY 17TH 2014
   //for more information and support please visit www.program-o.com
   //-----------------------------------------------------------------------------------------------
   // upload.php
@@ -114,12 +114,12 @@ endScript;
 
   function parseAIML($fn,$aimlContent, $from_zip = false)
   {
-    global $post_vars;
+    global $dbConn, $post_vars;
     if (empty ($aimlContent)) return "File $fn was empty!";
-    global $debugmode, $bot_id, $charset;
+    global $dbConn, $debugmode, $bot_id, $charset;
     $fileName = basename($fn);
     $success = false;
-    $dbConn = db_open();
+    
     #Clear the database of the old entries
     $sql = "DELETE FROM `aiml`  WHERE `filename` = '$fileName' AND bot_id = '$bot_id'";
     if (isset ($post_vars['clearDB']))
@@ -174,10 +174,10 @@ endScript;
             # Strip CRLF from category (windows)
             $aiml_add = str_replace("\n", '', $aiml_add);
             # Strip LF from category (mac/*nix)
-            $sql_add = str_replace('[aiml_add]', mysql_real_escape_string($aiml_add), $sql_template);
+            $sql_add = str_replace('[aiml_add]', db_escape_string($aiml_add), $sql_template);
             $sql_add = str_replace('[pattern]', $pattern, $sql_add);
             $sql_add = str_replace('[that]', $that, $sql_add);
-            $sql_add = str_replace('[template]', mysql_real_escape_string($template), $sql_add);
+            $sql_add = str_replace('[template]', db_escape_string($template), $sql_add);
             $sql_add = str_replace('[topic]', $topic, $sql_add);
             $sql .= "$sql_add";
             $rowCount++;
@@ -205,10 +205,10 @@ endScript;
           $template = substr($template,0, $tLen - 11);
           # Strip CRLF and LF from category (Windows/mac/*nix)
           $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
-          $sql_add = str_replace('[aiml_add]', mysql_real_escape_string($aiml_add), $sql_template);
+          $sql_add = str_replace('[aiml_add]', db_escape_string($aiml_add), $sql_template);
           $sql_add = str_replace('[pattern]', $pattern, $sql_add);
           $sql_add = str_replace('[that]', $that, $sql_add);
-          $sql_add = str_replace('[template]', mysql_real_escape_string($template), $sql_add);
+          $sql_add = str_replace('[template]', db_escape_string($template), $sql_add);
           $sql_add = str_replace('[topic]', '', $sql_add);
           $sql .= "$sql_add";
           $rowCount++;
@@ -242,9 +242,9 @@ endScript;
 
   function updateDB($sql)
   {
-    $dbConn = db_open();
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line ' . __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = <pre>" . htmlentities($sql) . "</pre><br />\n");
-    $commit = mysql_affected_rows($dbConn);
+    
+    $result = db_query($sql, $dbConn);
+    $commit = db_affected_rows($dbConn);
     return $commit;
   }
 
@@ -290,12 +290,12 @@ endScript;
 
   function getAIML_List()
   {
-    global $dbn, $bot_id;
+    global $dbConn, $dbn, $bot_id;
     $out = "                  <!-- Start List of Currently Stored AIML files -->\n";
-    $dbConn = db_open();
+    
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
-    while ($row = mysql_fetch_assoc($result))
+    $result = db_query($sql, $dbConn);
+    while ($row = db_fetch_assoc($result))
     {
       if (empty ($row['filename']))
       {
@@ -304,28 +304,28 @@ endScript;
       else
         $out .= $row['filename'] . "<br />\n";
     }
-    mysql_free_result($result);
-    mysql_close($dbConn);
+    
+    db_close($dbConn);
     $out .= "                  <!-- End List of Currently Stored AIML files -->\n";
     return $out;
   }
 
   function getBotList()
   {
-    global $dbn, $bot_id;
+    global $dbConn, $dbn, $bot_id;
     $botOptions = '';
-    $dbConn = db_open();
+    
     $sql = 'SELECT `bot_name`, `bot_id` FROM `bots` order by `bot_id`;';
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
-    while ($row = mysql_fetch_assoc($result))
+    $result = db_query($sql, $dbConn);
+    while ($row = db_fetch_assoc($result))
     {
       $bn = $row['bot_name'];
       $bi = $row['bot_id'];
       $sel = ($bot_id == $bi) ? ' selected="selected"' : '';
       $botOptions .= "                    <option$sel value=\"$bi\">$bn</option>\n";
     }
-    mysql_free_result($result);
-    mysql_close($dbConn);
+    
+    db_close($dbConn);
     return $botOptions;
   }
 

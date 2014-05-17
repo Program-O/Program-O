@@ -3,10 +3,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: chatbot/conversation_start.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 19 JUNE 2012
+  * DATE: MAY 17TH 2014
   * DETAILS: this file is the landing page for all calls to access the bots
   ***************************************/
 
@@ -38,7 +38,7 @@
   set_error_handler("myErrorHandler");
   $say = '';
   //open db connection
-  $con = db_open();
+  $dbConn = db_open();
   //initialise globals
   //$convoArr = array();
   $convoArr = intialise_convoArray($convoArr);
@@ -78,8 +78,8 @@
       $_SESSION = array();
       $user_id = (isset($convoArr['conversation']['user_id'])) ? $convoArr['conversation']['user_id'] : -1;
       $sql = "delete from `$dbn`.`client_properties` where `user_id` = $user_id;";
-      $result = db_query($sql, $con);
-      $numRows = mysql_affected_rows();
+      $result = db_query($sql, $dbConn);
+      $numRows = db_affected_rows();
       $convoArr['client_properties'] = null;
       $convoArr['conversation'] = null;
       $convoArr['conversation']['user_id'] = $user_id;
@@ -95,14 +95,14 @@
       // Update the users table, and clear out any unused client properties as needed
       $sql = "update `$dbn`.`users` set `session_id` = '$new_convo_id' where `session_id` = '$old_convo_id';";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Update user - SQL:\n$sql", 3);
-      $result = db_query($sql, $con);
-      $confirm = mysql_affected_rows($con);
+      $result = db_query($sql, $dbConn);
+      $confirm = db_affected_rows($dbConn);
       // Get user id, so that we can clear the client properties
       $sql = "select `id` from `$dbn`.`users` where `session_id` = '$new_convo_id' limit 1;";
-      $result = db_query($sql, $con) or trigger_error('Cannot obtain user ID. Error = ' . mysql_error());
+      $result = db_query($sql, $dbConn);
       if ($result !== false)
       {
-        $row = mysql_fetch_assoc($result);
+        $row = db_fetch_assoc($result);
         $user_id = $row['id'];
         $convoArr['conversation']['user_id'] = $user_id;
         $convoArr['conversation']['convo_id'] = $new_convo_id;
@@ -110,7 +110,7 @@
         $sql = "delete from `$dbn`.`client_properties` where `user_id` = $user_id;";
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Clear client properties from the DB - SQL:\n$sql", 4);
       }
-      mysql_free_result($result);
+      
       $say = "Hello";
     }
     //add any pre-processing addons
@@ -168,9 +168,10 @@
   else
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation intialised waiting user", 2);
+    $convoArr['send_to_user'] = '';
   }
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
-  db_close($con);
+  db_close($dbConn);
   display_conversation($convoArr);
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
   $convoArr = handleDebug($convoArr); // Make sure this is the last line in the file, so that all debug entries are captured.

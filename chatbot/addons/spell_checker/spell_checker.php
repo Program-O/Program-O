@@ -3,10 +3,10 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: spell_checker/spell_checker.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 4TH 2011
+  * DATE: MAY 17TH 2014
   * DETAILS: this file contains the addon library to spell check into before its matched in the database
   ***************************************/
 
@@ -51,7 +51,7 @@
   function spell_check($word, $bot_id)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Preforming a spel chek on $word.", 2);
-    global $con, $dbn, $spellcheck_common_words;
+    global $dbConn, $dbn, $spellcheck_common_words;
     if (strstr($word, "'")) $word = str_replace("'", ' ', $word);
     $test_word = (IS_MB_ENABLED) ? mb_strtolower($word) : strtolower($word);
     if (!isset($_SESSION['spellcheck'])) load_spelling_list();
@@ -113,20 +113,20 @@
   function load_spelling_list()
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading the spellcheck list from the DB.', 2);
-    global $con, $dbn;
+    global $dbConn, $dbn;
     $_SESSION['spellcheck'] = array();
     $sql = "SELECT `missspelling`, `correction` FROM `$dbn`.`spellcheck`;";
-    $result = db_query($sql, $con);
-    if (mysql_num_rows($result) > 0)
+    $result = db_query($sql, $dbConn);
+    if (db_num_rows($result) > 0)
     {
-      while($row = mysql_fetch_assoc($result))
+      while($row = db_fetch_assoc($result))
       {
         $missspelling = (IS_MB_ENABLED) ? mb_strtolower($row['missspelling']) : strtolower($row['missspelling']);
         $correction = $row['correction'];
         $_SESSION['spellcheck'][$missspelling] = $correction;
       }
     }
-    mysql_free_result($result);
+    
   }
 
 ?>

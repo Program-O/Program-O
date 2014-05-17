@@ -2,10 +2,10 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.3.1
+* Version: 2.4.0
 * FILE: chatbot/addons/load_addons.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
-* DATE: MAY 4TH 2011
+* DATE: MAY 17TH 2014
 * DETAILS: this file contains the calls to include addon functions
 ***************************************/
 
@@ -37,7 +37,7 @@ function run_post_response_useraddons($convoArr) {
   $curTime = date('H:i:s');
   $response = str_replace('[serverTime]',$curTime, $response);
   if ($convoArr['send_to_user'] != $response) $convoArr['send_to_user'] = $response;
-  $convoArr =  run_censor($convoArr);
+  //$convoArr =  run_censor($convoArr);
   if ($format == 'html') $convoArr =  checkForParsing($convoArr);
   $ip = $convoArr['client_properties']['ip_address'];
   //if ($convoArr['client_properties']['banned'] === true) add_to_ban($ip);

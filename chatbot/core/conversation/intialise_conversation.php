@@ -3,10 +3,10 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: chatbot/core/conversation/intialise_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 4TH 2011
+  * DATE: MAY 17TH 2014
   * DETAILS: this file contains the functions intialise
   *          the conversation
   ***************************************/
@@ -98,16 +98,16 @@
   function load_default_bot_values($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Loading db bot personality properties", 4);
-    global $con, $dbn, $bot_id;
+    global $dbConn, $dbn, $bot_id;
     //set in global config file
     $sql = "SELECT * FROM `$dbn`.`botpersonality` WHERE `bot_id` = '" . $bot_id . "'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "load db bot personality values SQL: $sql", 3);
-    $result = db_query($sql, $con);
-    while ($row = mysql_fetch_assoc($result))
+    $result = db_query($sql, $dbConn);
+    while ($row = db_fetch_assoc($result))
     {
       $convoArr['bot_properties'][$row['name']] = $row['value'];
     }
-    mysql_free_result($result);
+    
     return $convoArr;
   }
 
@@ -303,15 +303,15 @@
   function load_bot_config($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading config data for the current bot.', 2);
-    global $con, $dbn, $format, $pattern, $conversation_lines, $remember_up_to, $debugemail, $debug_level, $debug_mode, $save_state, $error_response;
+    global $dbConn, $dbn, $format, $pattern, $conversation_lines, $remember_up_to, $debugemail, $debug_level, $debug_mode, $save_state, $error_response;
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '" . $convoArr['conversation']['bot_id'] . "'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "load bot config SQL: $sql", 3);
-    if (($result = mysql_query($sql, $con)) === false) throw new Exception('You have a SQL error on line ' . __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-    if (mysql_num_rows($result) > 0)
+    $result = db_query($sql, $dbConn);
+    if (db_num_rows($result) > 0)
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading bot details from the database.', 4);
-      $row = mysql_fetch_assoc($result);
+      $row = db_fetch_assoc($result);
       $convoArr['conversation']['conversation_lines'] = $row['conversation_lines'];
       $convoArr['conversation']['remember_up_to'] = $row['remember_up_to'];
       $convoArr['conversation']['debugemail'] = $row['debugemail'];
@@ -334,7 +334,7 @@
       $convoArr['conversation']['default_aiml_pattern'] = $pattern;
       $convoArr['conversation']['bot_parent_id'] = 0;
     }
-    mysql_free_result($result);
+    
     //if return format is not html overide the debug type
     if ($convoArr['conversation']['format'] != "html")
     {
@@ -353,11 +353,11 @@
   function log_conversation($convoArr)
   {
     //db globals
-    global $con, $dbn;
+    global $dbConn, $dbn;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Saving the conversation to the DB.', 2);
     //clean and set
-    $usersay = mysql_real_escape_string($convoArr['aiml']['user_raw']);
-    $botsay = mysql_real_escape_string($convoArr['aiml']['parsed_template']);
+    $usersay = db_escape_string($convoArr['aiml']['user_raw']);
+    $botsay = db_escape_string($convoArr['aiml']['parsed_template']);
     $user_id = $convoArr['conversation']['user_id'];
     $convo_id = $convoArr['conversation']['convo_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
@@ -380,7 +380,7 @@
       CURRENT_TIMESTAMP
     )";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving conservation SQL: $sql", 3);
-    db_query($sql, $con);
+    db_query($sql, $dbConn);
     return $convoArr;
   }
 
@@ -394,13 +394,13 @@
   function log_conversation_state($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Logging the state of the conversation.', 2);
-    global $con, $dbn, $user_name;
+    global $dbConn, $dbn, $user_name;
     //get undefined defaults from the db
     runDebug(__FILE__, __FUNCTION__, __LINE__, "logging state", 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "user name = $user_name. Stored user name = " . $convoArr['conversation']['user_name'], 4);
-    $serialise_convo = mysql_real_escape_string(serialize(reduceConvoArr($convoArr)));
+    $serialise_convo = db_escape_string(serialize(reduceConvoArr($convoArr)));
     $user_id = $convoArr['conversation']['user_id'];
-    $sql_addon = (!empty ($user_name)) ? "`user_name` = '" . mysql_real_escape_string($user_name) . "', " : '';
+    $sql_addon = (!empty ($user_name)) ? "`user_name` = '" . db_escape_string($user_name) . "', " : '';
     $sql = "UPDATE `$dbn`.`users`
                 SET
                 `state` = '$serialise_convo',
@@ -409,7 +409,7 @@
                 `chatlines` = `chatlines`+1
                 WHERE `id` = '$user_id' LIMIT 1";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "updating conversation state SQL: $sql", 3);
-    db_query($sql, $con);
+    db_query($sql, $dbConn);
     return $convoArr;
   }
 
@@ -422,21 +422,21 @@
   **/
   function get_conversation_state($convoArr)
   {
-    global $con, $dbn,$unknown_user;
+    global $dbConn, $dbn,$unknown_user;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "getting state", 4);
     $user_id = $convoArr['conversation']['user_id'];
     $sql = "SELECT * FROM `$dbn`.`users` WHERE `id` = '$user_id' LIMIT 1";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation state SQL: $sql", 3);
-    $result = db_query($sql, $con);
-    if (($result) && (mysql_num_rows($result) > 0))
+    $result = db_query($sql, $dbConn);
+    if (($result) && (db_num_rows($result) > 0))
     {
-      	$row = mysql_fetch_assoc($result);
+      	$row = db_fetch_assoc($result);
       	$convoArr = unserialize($row['state']);
     	$user_name = (!empty ($row['user_name'])) ? $row['user_name'] : $unknown_user;
     	$convoArr['conversation']['user_name'] = $user_name;
     	$convoArr['client_properties']['name'] = $user_name;
     }
-    mysql_free_result($result);
+    
     return $convoArr;
   }
 
@@ -451,7 +451,7 @@
   {
     global  $form_vars;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking and/or setting the current bot.', 2);
-    global $con, $dbn, $bot_id, $error_response, $format,$unknown_user;
+    global $dbConn, $dbn, $bot_id, $error_response, $format,$unknown_user;
     //check to see if bot_id has been passed if not load default
     if ((isset ($form_vars['bot_id'])) && (trim($form_vars['bot_id']) != ""))
     {
@@ -468,10 +468,10 @@
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '$bot_id' and `bot_active`='1'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making sure the bot exists. SQL = $sql", 3);
-    $result = db_query($sql, $con);
-    if (($result) && (mysql_num_rows($result) > 0))
+    $result = db_query($sql, $dbConn);
+    if (($result) && (db_num_rows($result) > 0))
     {
-      $row = mysql_fetch_assoc($result);
+      $row = db_fetch_assoc($result);
       $bot_name = $row['bot_name'];
       $error_response = $row['error_response'];
       $unknown_user = $row['unknown_user'];
@@ -487,7 +487,7 @@
       $convoArr['conversation']['bot_id'] = $bot_id;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "ERROR - Cannot find bot id: $bot_id", 1);
     }
-    mysql_free_result($result);
+    
     return $convoArr;
   }
 
@@ -530,7 +530,7 @@
   **/
   function check_set_user($convoArr)
   {
-    global $con, $dbn, $unknown_user;
+    global $dbConn, $dbn, $unknown_user;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking and setting the user info, as needed.', 2);
     //check to see if user_name has been set if not set as default
     $convo_id = (isset ($convoArr['conversation']['convo_id'])) ? $convoArr['conversation']['convo_id'] : session_id();
@@ -539,8 +539,8 @@
     $ip = $_SERVER['REMOTE_ADDR'];
     $convoArr['client_properties']['ip_address'] = $ip;
     $sql = "select `user_name`, `id`, `chatlines` from `$dbn`.`users` where `session_id` = '$convo_id' limit 1;";
-    $result = mysql_query($sql, $con) or $msg = SQL_error(mysql_errno(), __FILE__, __FUNCTION__, __LINE__);
-    $numRows = mysql_num_rows($result);
+    $result = db_query($sql, $dbConn);
+    $numRows = db_num_rows($result);
     if ($numRows == 0)
     {
       $convoArr = intisaliseUser($convoArr);
@@ -548,11 +548,11 @@
     }
     else
     {
-      $row = mysql_fetch_assoc($result);
+      $row = db_fetch_assoc($result);
       $user_id = (!empty ($row['id'])) ? $row['id'] : 0;
       $user_name = (!empty ($row['user_name'])) ? $row['user_name'] : $unknown_user;
     }
-    mysql_free_result($result);
+    
     $chatlines = (!empty ($row['chatlines'])) ? $row['chatlines'] : 0;
     $user_name = (!empty ($user_name)) ? $user_name : $unknown_user;
     $convoArr['conversation']['user_name'] = $user_name;
@@ -607,14 +607,14 @@
   function load_that($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading the THAT array.', 2);
-    global $con, $dbn, $remember_up_to;
+    global $dbConn, $dbn, $remember_up_to;
     $remember_up_to = (!empty ($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $remember_up_to;
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
     $limit = $remember_up_to;
     $sql = "select `input`, `response` from `$dbn`.`conversation_log` where `user_id` = $user_id and `bot_id` = $bot_id order by `id` desc limit $limit;"; // desc
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation log entries for the current user. SQL:\n$sql", 3);
-    $result = db_query($sql, $con);
+    $result = db_query($sql, $dbConn);
     if ($result)
     {
       $tmpThatRows = array();
@@ -622,13 +622,14 @@
       $tmpThat = array();
       $tmpInput = array();
       $puncuation = array(',', '?', ';', '!');
-      while ($row = mysql_fetch_assoc($result))
+      while ($row = db_fetch_assoc($result))
       {
         $tmpThatRows[] = $row['response'];
         $tmpInputRows[] = $row['input'];
       }
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Inputs returned:' . print_r($tmpInputRows, true), 1);
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading previous responses into the ~THAT~ array.', 4);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Responses returned:' . print_r($tmpThatRows, true), 1);
       $tmpThatRows = array_reverse($tmpThatRows);
       foreach ($tmpThatRows as $row)
       {
@@ -660,7 +661,7 @@
       }
     }
     else runDebug(__FILE__, __FUNCTION__, __LINE__, 'Couldn\'t find any previous inputs or responses.', 4);
-    mysql_free_result($result);
+    
     return $convoArr;
   }
 ?>

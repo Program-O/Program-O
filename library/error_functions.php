@@ -3,10 +3,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: library/error_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 4TH 2011
+  * DATE: MAY 17TH 2014
   * DETAILS: common library of debugging functions
   ***************************************/
 
@@ -50,22 +50,6 @@
     }
     $current_DateTime = date('m/d/Y H:i:s');
     save_file(_LOG_PATH_ . 'error.log', "$current_DateTime - $info\r\n", true);
-  }
-
-  /**
-  * function sqlErrorHandler()
-  * Process sql errors
-  * @param  string $fileName - the file the error came from
-  * @param  string $functionName - the function that triggered the error
-  * @param  string $line - the line of code
-  * @param  string $sql - the sql query
-  * @param  string $error - the mysql_error
-  * @param  string $erno - the mysql_error
-  **/
-  function sqlErrorHandler($sql, $error, $erno, $file, $function, $line)
-  {
-    $info = "MYSQL ERROR $erno - $error when excuting\n $sql";
-    runDebug($file, $function, $line, $info, 1);
   }
 
   /**

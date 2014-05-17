@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: UPGRADE_README
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -19,7 +19,7 @@ it will notify the botmaster by email (if an email address has been configured).
 
 Please note that minor revision updates will ~NOT~ be affected, and will not include an upgrade script.
 
-However, when upgrading from 2.3.0 to 2.3.1, you **will** need to run the upgrade script upgrade_230_231.php
+However, when upgrading from 2.3.0 to 2.4.0, you **will** need to run the upgrade script upgrade_230_231.php
 manually. This file is also in the install folder.
 
 Also, on new installations of Program O, the installation script will also try to delete upgrade.php

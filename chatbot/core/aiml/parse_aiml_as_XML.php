@@ -3,10 +3,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: chatbot/core/aiml/parse_aiml_as_XML.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 4TH 2011
+  * DATE: MAY 17TH 2014
   * DETAILS: this file contains the functions generate php code from aiml
   ***************************************/
 
@@ -268,7 +268,7 @@
   function parse_get_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a GET tag. Oh, and getting a sandwich while I\'m at it.', 2);
-    global $con, $dbn, $remember_up_to;
+    global $dbConn, $dbn, $remember_up_to;
     $response = '';
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
@@ -284,15 +284,15 @@
     {
      	$sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
 	runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the DB for $var_name - sql:\n$sql", 3);
-	$result = db_query($sql, $con);
-	if (($result) and (mysql_num_rows($result) > 0)) {
-		$row = mysql_fetch_assoc($result);
+	$result = db_query($sql, $dbConn);
+	if (($result) and (db_num_rows($result) > 0)) {
+		$row = db_fetch_assoc($result);
 		$response = $row['value'];
 	}
 	else {
 		$response = 'undefined';
 	}
-	mysql_free_result($result);
+	
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for $var_name is $response.", 4);
     return $response;
@@ -301,7 +301,7 @@
   function parse_set_tag(&$convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing the SET tag.', 2);
-    global $con, $dbn, $user_name, $remember_up_to;
+    global $dbConn, $dbn, $user_name, $remember_up_to;
     $var_value = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
@@ -316,32 +316,32 @@
     if ($var_name == 'name')
     {
       $user_name = $var_value;
-      $escaped_var_value = mysql_real_escape_string($var_value);
+      $escaped_var_value = db_escape_string($var_value);
       $sql = "UPDATE `$dbn`.`users` set `user_name` = '$escaped_var_value' where `id` = $user_id;";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Updating user name in the DB. SQL:\n$sql", 3);
-      $result = db_query($sql, $con) or trigger_error('Error setting user name in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
-      $numRows = mysql_affected_rows();
+      $result = db_query($sql, $dbConn);
+      $numRows = db_affected_rows();
       $sql = "select `user_name` from `$dbn`.`users` where `id` = $user_id;";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the users table to see if the value has changed. - SQL:\n$sql", 3);
-      $result = db_query($sql, $con) or trigger_error('Error looking up DB info in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
-      $rowCount = mysql_num_rows($result);
+      $result = db_query($sql, $dbConn);
+      $rowCount = db_num_rows($result);
       if ($rowCount != 0)
       {
-        $row = mysql_fetch_assoc($result);
+        $row = db_fetch_assoc($result);
         $tmp_name = $row['user_name'];
         runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for the user's name is $tmp_name.", 4);
       }
-      mysql_free_result($result);
+      
     }
     else $convoArr['client_properties'][$var_name] = $var_value;
     $lc_var_name = (IS_MB_ENABLED) ? mb_strtolower($var_name) : strtolower($var_name);
     if ($lc_var_name == 'topic') $convoArr['topic'][1] = $var_value;
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$sql", 3);
-    $result = db_query($sql, $con) or trigger_error('Error looking up DB info in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
-    $rowCount = mysql_num_rows($result);
-    $var_name = mysql_real_escape_string($var_name, $con);
-    $var_value = mysql_real_escape_string($var_value, $con);
+    $result = db_query($sql, $dbConn);
+    $rowCount = db_num_rows($result);
+    $var_name = db_escape_string($var_name, $dbConn);
+    $var_value = db_escape_string($var_value, $dbConn);
     if ($rowCount == 0)
     {
       $sql = "insert into `$dbn`.`client_properties` (`id`, `user_id`, `bot_id`, `name`, `value`)
@@ -354,8 +354,8 @@
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Value found for $var_name. Updating the table to  $var_value.", 4);
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving to DB - SQL:\n$sql", 3);
-    $result = db_query($sql, $con) or trigger_error('Error saving to db in ' . __FILE__ . ', function ' . __FUNCTION__ . ', line ' . __LINE__ . ' - Error message: ' . mysql_error());
-    $rowCount = mysql_affected_rows();
+    $result = db_query($sql, $dbConn);
+    $rowCount = db_affected_rows();
     $response = $var_value;
     $convoArr['client_properties'][$var_name] = $var_value;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Value for $var_name has ben set. Returning $var_value.", 4);
@@ -697,7 +697,7 @@
   function parse_learn_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a LEARN tag.', 2);
-    global $dbn, $con;
+    global $dbn, $dbConn;
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $sqlTemplate = "insert into `$dbn`.`aiml_userdefined` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `user_id`)
@@ -731,12 +731,12 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
       $catXML->addChild('template', $template);
       $category = $catXML->asXML();
       $category = trim(str_replace('<?xml version="1.0"?>', '', $category));
-      $sqlAdd = str_replace('[aiml]', mysql_real_escape_string($category, $con), $sqlTemplate);
-      $sqlAdd = str_replace('[pattern]', mysql_real_escape_string($pattern, $con), $sqlAdd);
-      $sqlAdd = str_replace('[that]', mysql_real_escape_string($thatpattern, $con), $sqlAdd);
-      $sqlAdd = str_replace('[template]', mysql_real_escape_string($template, $con), $sqlAdd);
+      $sqlAdd = str_replace('[aiml]', db_escape_string($category, $dbConn), $sqlTemplate);
+      $sqlAdd = str_replace('[pattern]', db_escape_string($pattern, $dbConn), $sqlAdd);
+      $sqlAdd = str_replace('[that]', db_escape_string($thatpattern, $dbConn), $sqlAdd);
+      $sqlAdd = str_replace('[template]', db_escape_string($template, $dbConn), $sqlAdd);
       $sql .= $sqlAdd;
-      $result = db_query($sql, $con) or trigger_error('Looks like we have a problem adding stuff to the aiml_userdefined table. Error: ' . mysql_error());
+      $result = db_query($sql, $dbConn);
     }
     else
     {

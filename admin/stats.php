@@ -1,9 +1,9 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.3.1
+//My Program-O Version: 2.4.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
-//Aug 2011
+//DATE: MAY 17TH 2014
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // stats.php
@@ -55,8 +55,7 @@
   $mainContent = str_replace('[avg]', $avg, $mainContent);
 
 function getStats($interval) {
-	global $bot_id;
-	$dbConn = db_open();
+	global $bot_id, $dbConn;
 	if($interval!="all") {
 		$intervaldate =  date("Y-m-d", strtotime($interval));
 		$sqladd = " AND date(timestamp) >= '$intervaldate'";
@@ -66,16 +65,15 @@ function getStats($interval) {
 	}
 	//get undefined defaults from the db
 	$sql = "SELECT count(distinct(`user_id`)) AS TOT FROM `conversation_log` WHERE bot_id = '$bot_id' $sqladd";
-	if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-	$row = mysql_fetch_assoc($result);
-    mysql_free_result($result);
+	$result = db_query($sql, $dbConn);
+	$row = db_fetch_assoc($result);
+
 	$res = $row['TOT'];
 	return $res;
 }
 
 function getChatLines($i,$j) {
-  global $bot_id;
-	$dbConn = db_open();
+  global $bot_id, $dbConn;
 		$sql = <<<endSQL
 SELECT AVG(`chatlines`) AS TOT
 				FROM `users`
@@ -90,21 +88,11 @@ endSQL;
 	}
   $sql = str_replace('[endCondition]', $endCondition, $sql);
 	//get undefined defaults from the db
-	if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-	$row = mysql_fetch_assoc($result);
-    mysql_free_result($result);
+	$result = db_query($sql, $dbConn);
+	$row = db_fetch_assoc($result);
+
 	$res = $row['TOT'];
 	return $res;
 }
-
-
-
-
-
-
-
-
-
-
 
 ?>

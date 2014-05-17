@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-11-2013
@@ -18,7 +18,7 @@
   ini_set('log_errors', true);
   ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
   ini_set('html_errors', false);
-  ini_set('display_errors', false);
+  ini_set('display_errors', true);
   #set_exception_handler("handle_exceptions");
   $msg = '';
 
@@ -47,12 +47,14 @@
     }
   }
   //load shared files
+  //(class_exists('PDO')) ? require_once(_LIB_PATH_ . 'PDO_functions.php') : require_once(_LIB_PATH_ . 'db_functions.php');
   require_once(_LIB_PATH_ . 'db_functions.php');
   require_once(_LIB_PATH_ . 'error_functions.php');
   require_once(_LIB_PATH_ . 'misc_functions.php');
   require_once(_LIB_PATH_ . 'template.class.php');
 
-
+  // Open the DB
+  $dbConn = db_open();
   # Load the template file
   $thisPath = dirname(__FILE__);
   $template = new Template("$thisPath/default.page.htm");
@@ -65,7 +67,6 @@
 
 # Build page sections
 # ordered here in the order that the page is constructed
-  $page_head     = $template->getSection('Logo');
   $logo          = $template->getSection('Logo');
   $titleSpan     = $template->getSection('TitleSpan');
   $main          = $template->getSection('Main');
@@ -92,15 +93,14 @@
 
   if((isset($post_vars['user_name']))&&(isset($post_vars['pw']))) {
     $_SESSION['poadmin']['display'] = $hide_logo;
-    $dbConn = db_open();
     $user_name = filter_input(INPUT_POST,'user_name',FILTER_SANITIZE_STRING);
     $pw    = filter_input(INPUT_POST,'pw',FILTER_SANITIZE_STRING);
     $sql = "SELECT * FROM `myprogramo` WHERE user_name = '".$user_name."' AND password = '".MD5($pw)."'";
-    $result = mysql_query($sql,$dbConn) or $msg .= SQL_Error(mysql_errno(), __FILE__, __FUNCTION__, __LINE__, mysql_error());
+    $result = db_query($sql,$dbConn);
     if ($result) {
-      $count = mysql_num_rows($result);
+      $count = db_num_rows($result);
       if($count > 0) {
-        $row=mysql_fetch_assoc($result);
+        $row=db_fetch_assoc($result);
         $_SESSION['poadmin']['uid']=$row['id'];
         $_SESSION['poadmin']['name']=$row['user_name'];
         $_SESSION['poadmin']['lip']=$row['last_ip'];
@@ -115,15 +115,15 @@
           $ip=$_SERVER['REMOTE_ADDR'];
         }
         $sqlupdate = "UPDATE `myprogramo` SET `last_ip` = '$ip', `last_login` = CURRENT_TIMESTAMP WHERE user_name = '$user_name' limit 1";
-        $result = mysql_query($sqlupdate,$dbConn);
-        $transact = mysql_affected_rows($dbConn);
+        $result = db_query($sqlupdate,$dbConn);
+        $transact = db_affected_rows($dbConn);
         $_SESSION['poadmin']['ip']=$ip;
         $_SESSION['poadmin']['last_login']=date('l jS \of F Y h:i:s A');
         $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
-        $result = mysql_query($sql,$dbConn);
-        $count = mysql_num_rows($result);
+        $result = db_query($sql,$dbConn);
+        $count = db_num_rows($result);
         if($count > 0) {
-          $row=mysql_fetch_assoc($result);
+          $row=db_fetch_assoc($result);
           $_SESSION['poadmin']['bot_id']=$row['bot_id'];
           $_SESSION['poadmin']['bot_name']=$row['bot_name'];
         }
@@ -136,7 +136,6 @@
         $msg .= "incorrect username/password<br>\n";
       }
     }
-    mysql_close($dbConn);
     if($msg == "") {
       include ('main.php');
     }
@@ -151,6 +150,10 @@
         setcookie(session_name(), '', time()-42000, '/');
       }
       session_destroy();
+    }
+    elseif($curPage == 'login')
+    {
+      login();
     }
     else {
       $_SESSION['poadmin']['curPage'] = $curPage;
@@ -439,14 +442,6 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => '',
-                       '[linkHref]' => ' href="index.php?page=db_stats"',
-                       '[linkOnclick]' => '',
-                       '[linkAlt]' => ' alt="DB Stats"',
-                       '[linkTitle]' => ' title="DB Stats"',
-                       '[linkLabel]' => 'DB Stats'
-                 ),
-                 array(
-                       '[linkClass]' => '',
                        '[linkHref]' => ' href="' . _BASE_URL_ . '"',
                        '[linkOnclick]' => ' target="_blank"',
                        '[linkAlt]' => ' alt="open the page for [curBot] in a new tab/window"',
@@ -516,12 +511,14 @@ endFooter;
       curl_setopt($ch, CURLOPT_URL, $url);
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_USERAGENT, 'Program O Admin: ' . $_SERVER['HTTP_USER_AGENT']);
+      curl_setopt($ch, CURLOPT_USERAGENT, 'Program-O/Program-O');
       $out = curl_exec($ch);
-      if (false === $out) trigger_error('Not sure what it is, but there\'s a problem with checking the current version on GitHub. Maybe this will help: "' . curl_error($ch) . '"');
+      //if (false === $out) trigger_error('Not sure what it is, but there\'s a problem with checking the current version on GitHub. Maybe this will help: "' . curl_error($ch) . '"');
       curl_close($ch);
+      if (false === $out) return VERSION;
       $repoArray = json_decode($out, true);
       //save_file(_LOG_PATH_ . 'repoArray.txt', print_r($repoArray, true));
+      if (!isset($repoArray['content'])) return VERSION;
       $versionB64 = $repoArray['content'];
       $version = base64_decode($versionB64);
       #save_file(_DEBUG_PATH_ . 'version.txt', "out = " . print_r($out, true) . "\r\nVersion = $versionB64 = $version");
@@ -537,6 +534,13 @@ endFooter;
     file_put_contents(_LOG_PATH_ . 'admin.exception.log', print_r($trace, true), FILE_APPEND);
     $msg .= $e->getMessage();
 
+  }
+
+  function login ()
+  {
+    global $post_vars;
+    header('Content-type: text/plain');
+    exit(print_r($post_vars, true));
   }
 
 ?>

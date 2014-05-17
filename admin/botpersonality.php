@@ -1,9 +1,9 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.3.1
+//My Program-O Version: 2.4.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
-//Aug 2011
+//DATE: MAY 17TH 2014
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // bots.php
@@ -44,8 +44,7 @@
     $msg = updateBot();
   }
 function getBot() {
-  global $dbn;
-  $dbConn = db_open();
+  global $dbn, $dbConn;
   $formCell  = '                <td><label for="[row_label]"><span class="label">[row_label]:</span></label> <span class="formw"><input name="[row_label]" id="[row_label]" value="[row_value]" /></span></td>
 ';
   $blankCell ='                <td style="text-align: center"><label for="newEntryName[cid]"><span class="label">New Entry Name: <input name="newEntryName[cid]" id="newEntryName[cid]" style="width: 98%" /></label></span>&nbsp;<span class="formw"><label for="newEntryValue[cid]" style="float: left; padding-left: 3px;">New Entry Value: </label><input name="newEntryValue[cid]" id="newEntryValue[cid]" /></span></td>
@@ -58,13 +57,13 @@ function getBot() {
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
   //get the current bot's personality table from the db
   $sql = "SELECT * FROM `botpersonality` where  `bot_id` = $bot_id";
-  $result = mysql_query($sql,$dbConn)or $msg .= SQL_Error(mysql_errno());
+  $result = db_query($sql, $dbConn);
   if ($result) {
-  $rowCount = mysql_num_rows($result);
+  $rowCount = db_num_rows($result);
   if ($rowCount > 0) {
     $left = true;
     $colCount = 0;
-    while($row = mysql_fetch_assoc($result)) {
+    while($row = db_fetch_assoc($result)) {
       $rid = $row['id'];
       $label = $row['name'];
       $value = stripslashes_deep($row['value']);
@@ -87,7 +86,7 @@ function getBot() {
         $inputs .= $addCell;
       }
     }
-    mysql_close($dbConn);
+    db_close($dbConn);
     $action = 'Update Data';
     $func   = 'updateBot';
   }
@@ -130,9 +129,8 @@ function stripslashes_deep($value) {
 
 
 function updateBot() {
-  global $bot_id, $bot_name, $post_vars;
+  global $bot_id, $bot_name, $post_vars, $dbConn;
   $botId = (isset($post_vars['bot_id'])) ? $post_vars['bot_id'] : $bot_id;
-  $dbConn = db_open();
   $msg = "";
   if (!empty($post_vars['newEntryName'])) {
     $newEntryNames  = $post_vars['newEntryName'];
@@ -147,7 +145,7 @@ function updateBot() {
       $addSQL .= $tmpSQL;
     }
     $addSQL = rtrim($addSQL,",\n");
-    $result = mysql_query($addSQL,$dbConn) or trigger_error('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />SQL:<br /><pre>\n$addSQL\n<br />\n</pre>\n");
+    $result = db_query($addSQL, $dbConn);
     if(!$result) {
       $msg = 'Error updating bot personality.';
     }
@@ -160,16 +158,16 @@ function updateBot() {
   $sql = "SELECT * FROM `botpersonality` where `bot_id` = $botId;";
   $changes = array();
   $additions = array();
-  $result = mysql_query($sql, $dbConn) or $msg .= SQL_Error(mysql_errno());
+  $result = db_query($sql, $dbConn);
   if ($result) {
-  while ($row = mysql_fetch_assoc($result)) {
+  while ($row = db_fetch_assoc($result)) {
     $id = $row['id'];
     $name = $row['name'];
     $value = $row['value'];
     $postVal = (isset($post_vars[$name])) ? $post_vars[$name] : '';
     if (!empty($postVal)) {
        if ($postVal != $value){
-        $changes[$id] = mysql_real_escape_string(stripslashes_deep($postVal));
+        $changes[$id] = $postVal;
         $additions[$id] = $name;
        }
     }
@@ -183,18 +181,17 @@ function updateBot() {
     }
     $updateSQL .= "END WHERE `id` IN ($changesText);";
     $saveSQL = str_replace("\n", "\r\n", $updateSQL);
-    $result = mysql_query($updateSQL, $dbConn) or trigger_error('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />SQL:<br /><pre>\n$updateSQL\n<br />\n</pre>\n");
+    $result = db_query($updateSQL, $dbConn);
     if (!$result) $msg = 'Error updating bot.';
     $msg = (empty($msg)) ? 'Bot personality updated.' : $msg;
   }
   else $msg .= 'Bot personality updated.';
-  mysql_close($dbConn);
+  db_close($dbConn);
   return $msg;
 }
 
 function addBotPersonality() {
-  global $post_vars;
-  $dbConn = db_open();
+  global $post_vars, $dbConn;
   $bot_id = $post_vars['bot_id'];
   $sql = "Insert into `botpersonality` (`id`, `bot_id`, `name`, `value`) values\n";
   $sql2 = "(null, $bot_id, '[key]', '[value]'),\n";
@@ -218,7 +215,7 @@ function addBotPersonality() {
       if (is_array($value)) {
         foreach ($value as $index => $fieldValue) {
           $field = $key[$fieldValue];
-          $fieldValue = mysql_real_escape_string(trim($fieldValue));
+          $fieldValue = trim($fieldValue);
           $tmpSQL = str_replace('[key]', $field, $sql2);
           $tmpSQL = str_replace('[value]', $fieldValue, $tmpSQL);
           $sql .= $tmpSQL;
@@ -226,7 +223,7 @@ function addBotPersonality() {
         continue;
       }
       else {
-        $value = mysql_real_escape_string(trim($value));
+        $value = trim($value);
         $tmpSQL = str_replace('[key]', $key, $sql2);
         $tmpSQL = str_replace('[value]', $value, $tmpSQL);
         $sql .= $tmpSQL;
@@ -234,14 +231,14 @@ function addBotPersonality() {
     }
   }
   $sql = rtrim($sql,",\n");
-  $result = mysql_query($sql,$dbConn) or trigger_error('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />SQL:<br /><pre>\n$sql\n<br />\n</pre>\n");
+  $result = db_query($sql, $dbConn);
   if(!$result) {
     $msg = 'Error updating bot personality.';
   }
   elseif($msg == "") {
     $msg = 'Bot personality added!';
   }
-  mysql_close($dbConn);
+  db_close($dbConn);
   return $msg;
 }
 

@@ -3,10 +3,10 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: word_censor/word_censor.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 4TH 2011
+  * DATE: MAY 17TH 2014
   * DETAILS: this file contains the addon library to censor output before they are output to user
   *             the swear words are encoded in the session array to protect little eyes
   ***************************************/
@@ -33,17 +33,18 @@
   **/
   function initialise_censor($bot_id)
   {
-    global $con, $dbn; //set in global config file
+    global $dbConn, $dbn; //set in global config file
+    $_SESSION['pgo_word_censor'] = array();
     $sql = "SELECT * FROM `$dbn`.`wordcensor` WHERE `bot_exclude` NOT LIKE '%[$bot_id]%'";
-    $result = db_query($sql, $con);
-    while ($row = mysql_fetch_assoc($result))
+    $result = db_query($sql, $dbConn);
+    while ($row = db_fetch_assoc($result))
     {
       $index = "/\b{$row['word_to_censor']}\b/i";
       $index = $row['word_to_censor'];
       $value = $row['replace_with'];
       $_SESSION['pgo_word_censor'][$index] = $value;
     }
-    mysql_free_result($result);
+    
   }
 
   /**

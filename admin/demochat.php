@@ -1,9 +1,9 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.3.1
+//My Program-O Version: 2.4.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
-//Aug 2011
+//DATE: MAY 17TH 2014
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // demochat.php
@@ -27,11 +27,10 @@
   $mainTitle     = 'Chat Demo';
 
   function showChatFrame() {
-    global $template, $bot_name, $bot_id;
-    $dbConn = db_open();
+    global $template, $bot_name, $bot_id, $dbConn;
     $sql = "select `format` from `bots` where `bot_id` = $bot_id limit 1;";
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-    $row = mysql_fetch_assoc($result);
+    $result = db_query($sql, $dbConn);
+    $row = db_fetch_assoc($result);
     $format = strtolower($row['format']);
     switch ($format) {
       case "html":

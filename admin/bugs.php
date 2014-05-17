@@ -1,9 +1,9 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.3.1
+//My Program-O Version: 2.4.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
-//Aug 2011
+//DATE: MAY 17TH 2014
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // bugs.php
@@ -48,7 +48,7 @@ endScript;
   if (count($post_vars) > 0)
   {
     foreach ($post_vars as $key => $value) {
-      $$key = mysql_real_escape_string($value);
+      $$key = db_escape_string($value);
     }
   }
   $func = (isset($post_vars['func'])) ? $post_vars['func'] : 'showBugForm';

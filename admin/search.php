@@ -1,9 +1,9 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.3.1
+//My Program-O Version: 2.4.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
-//Aug 2011
+//DATE: MAY 17TH 2014
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // search.php
@@ -49,11 +49,10 @@
   $mainTitle     = 'Search/Edit AIML';
 
   function delAIML($id) {
-    
-    $dbConn = db_open();
+    global $dbConn;
     if($id!="") {
       $sql = "DELETE FROM `aiml` WHERE `id` = '$id' LIMIT 1";
-      if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+      $result = db_query($sql, $dbConn);
       if(!$result) {
         $msg = 'Error AIML couldn\'t be deleted - no changes made.</div>';
       }
@@ -64,22 +63,21 @@
     else {
       $msg = 'Error AIML couldn\'t be deleted - no changes made.';
     }
-    mysql_close($dbConn);
+    db_close($dbConn);
     return $msg;
   }
 
 
   function runSearch() {
-    global $bot_id, $bot_name, $post_vars;
-    $dbConn = db_open();
+    global $bot_id, $bot_name, $post_vars, $dbConn;
     $i=0;
     $searchTermsTemplate = " like '[value]' or\n  ";
     $searchTerms = '';
-    $search_topic    = mysql_real_escape_string(trim($post_vars['search_topic']));
-    $search_filename = mysql_real_escape_string(trim($post_vars['search_filename']));
-    $search_pattern  = mysql_real_escape_string(trim($post_vars['search_pattern']));
-    $search_template = mysql_real_escape_string(trim($post_vars['search_template']));
-    $search_that     = mysql_real_escape_string(trim($post_vars['search_that']));
+    $search_topic    = db_escape_string(trim($post_vars['search_topic']));
+    $search_filename = db_escape_string(trim($post_vars['search_filename']));
+    $search_pattern  = db_escape_string(trim($post_vars['search_pattern']));
+    $search_template = db_escape_string(trim($post_vars['search_template']));
+    $search_that     = db_escape_string(trim($post_vars['search_that']));
     if(!empty($search_topic) or !empty($search_filename) or !empty($search_pattern) or !empty($search_template) or !empty($search_that)) {
       $sql = "SELECT * FROM `aiml` WHERE `bot_id` = '$bot_id'  AND (\n  [searchTerms]\n) LIMIT 50;";
       $searchTerms .= (!empty($search_topic)) ? '`topic`' . str_replace('[value]', $search_topic, $searchTermsTemplate) : '';
@@ -89,7 +87,7 @@
       $searchTerms .= (!empty($search_that)) ? '`thatpattern`' . str_replace('[value]', $search_that, $searchTermsTemplate) : '';
       $searchTerms = rtrim($searchTerms, " or\n ");
       $sql = str_replace('[searchTerms]', $searchTerms, $sql);
-      if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+      $result = db_query($sql, $dbConn);
       $htmltbl = <<<endtHead
           <table width="99%" border="1" cellpadding="1" cellspacing="1">
             <thead>
@@ -104,7 +102,7 @@
             </thead>
             <tbody>
 endtHead;
-      while($row=mysql_fetch_assoc($result)) {
+      while($row=db_fetch_assoc($result)) {
         $i++;
         $topic = $row['topic'];
         $pattern = $row['pattern'];
@@ -132,7 +130,7 @@ endLink;
             </tr>
 endRow;
     }
-      mysql_close($dbConn);
+      db_close($dbConn);
       $htmltbl .= "          </tbody>\n        </table>";
       if($i == 50) {
         $msg = "Found more than 50 results for your specified search terms. please refine your search further";
@@ -155,11 +153,10 @@ endRow;
 
   function editAIMLForm($id) {
     //db globals
-    global $template;
-    $dbConn = db_open();
+    global $template, $dbConn;
     $sql = "SELECT * FROM `aiml` WHERE `id` = '$id' LIMIT 1";
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
-    $row=mysql_fetch_assoc($result);
+    $result = db_query($sql, $dbConn);
+    $row=db_fetch_assoc($result);
     $topic = $row['topic'];
     $pattern = $row['pattern'];
     $thatpattern = $row['thatpattern'];
@@ -173,25 +170,24 @@ endRow;
     $form = str_replace('[thatpattern]', $thatpattern, $form);
     $form = str_replace('[template]', $row_template, $form);
     $form = str_replace('[filename]', $filename, $form);
-    mysql_close($dbConn);
+    db_close($dbConn);
     return $form;
   }
 
   function updateAIML() {
-    global $post_vars;
-    $dbConn = db_open();
-    $template = mysql_real_escape_string(trim($post_vars['template']));
-    $filename = mysql_real_escape_string(trim($post_vars['filename']));
-    $pattern = (IS_MB_ENABLED) ? mb_strtoupper(mysql_real_escape_string(trim($post_vars['pattern']))) : strtoupper(mysql_real_escape_string(trim($post_vars['pattern'])));
-    $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper(mysql_real_escape_string(trim($post_vars['thatpattern']))) : strtoupper(mysql_real_escape_string(trim($post_vars['thatpattern'])));
-    $topic = (IS_MB_ENABLED) ? mb_strtoupper(mysql_real_escape_string(trim($post_vars['topic']))) : strtoupper(mysql_real_escape_string(trim($post_vars['topic'])));
+    global $post_vars, $dbConn;
+    $template = db_escape_string(trim($post_vars['template']));
+    $filename = db_escape_string(trim($post_vars['filename']));
+    $pattern = (IS_MB_ENABLED) ? mb_strtoupper(db_escape_string(trim($post_vars['pattern']))) : strtoupper(db_escape_string(trim($post_vars['pattern'])));
+    $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper(db_escape_string(trim($post_vars['thatpattern']))) : strtoupper(db_escape_string(trim($post_vars['thatpattern'])));
+    $topic = (IS_MB_ENABLED) ? mb_strtoupper(db_escape_string(trim($post_vars['topic']))) : strtoupper(db_escape_string(trim($post_vars['topic'])));
     $id = trim($post_vars['id']);
     if(($template == "")||($pattern== "")||($id=="")) {
       $msg =  'Please make sure you have entered a user input and bot response ';
     }
     else {
       $sql = "UPDATE `aiml` SET `pattern` = '$pattern',`thatpattern`='$thatpattern',`template`='$template',`topic`='$topic',`filename`='$filename' WHERE `id`='$id' LIMIT 1";
-      if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception('You have a SQL error on line '. __LINE__ . ' of ' . __FILE__ . '. Error message is: ' . mysql_error() . ".<br />\nSQL = $sql<br />\n");
+      $result = db_query($sql, $dbConn);
       if($result) {
         $msg =  'AIML Updated.';
       }
@@ -199,7 +195,7 @@ endRow;
         $msg =  'There was an error updating the AIML - no changes made.';
       }
     }
-    mysql_close($dbConn);
+    db_close($dbConn);
     return $msg;
   }
 

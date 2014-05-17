@@ -2,7 +2,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-15-2013
@@ -40,13 +40,13 @@
   {
     $name = $postVars['name'];
     $pass = md5($postVars['pass']);
-    $con = db_open();
+    $dbConn = db_open();
     $sql = "select `password` from `myprogramo` where `user_name` = '$name' limit 1;";
-    $result = mysql_query($sql, $con) or die ('SQL error! Error:' . mysql_error());
-    $numRows = mysql_num_rows($result);
+    $result = db_query($sql, $dbConn);
+    $numRows = db_num_rows($result);
     if ($numRows > 0)
     {
-      $row = mysql_fetch_assoc($result);
+      $row = db_fetch_assoc($result);
       $verify = $row['password'];
       if ($pass == $verify)
       {
@@ -56,7 +56,7 @@
       else $iframeURL = _LIB_URL_ . 'accessdenied.htm';
     }
     else echo 'No results found!';
-    mysql_free_result($result);
+    
   }
   if (!isset($_SESSION['isLoggedIn']) or $_SESSION['isLoggedIn'] === false)
   {

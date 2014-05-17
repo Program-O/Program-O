@@ -1,19 +1,34 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: CHANGELOG
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 11-05-2013
+  * DATE: MAY 17TH 2014
   * DETAILS: Describes the version changes in Program O
   ***************************************/
 
 Version History:
+2.4.0   Conditional PDO support added, major bug fixes
+            1.) Added PDO support for PHP versions that support it (and have it enabled),
+            with a fallback to the original MySQL functions if no PDO support is detected
+            2.) Finally found the problem with template-side <that> tags not being displayed
+                correctly. Special thanks to Tom (AKA Slow Putzo) for the assist with this!
+            3.) Also fixed the long-standing bug with pattern-side <that> tags not being
+                scored and chosen correctly. Once again, Thanks Tom! :D
+            4.) Removed the DB stats page from the admin. It was more or less a failed
+                experiment, and really needed to be removed.
+            5.) Also removed the scripts to upgrade from version 2.0 to 2.3 - If you have any
+                version of Program O that's older than 2.3.1, you need to do a fresh install
+                and more or less start from scratch. Sorry, but that's just the way it is.
+            6.) Other miscellaneous, minor bug fixes, mainly dealing with unnecessary error
+                log entries.
+
 2.3.1   Bug fixes, repaired missing table columns
             1.) Corrected a bug in the function parse_learn_tag that prevented new data from being
                 inserted into the aiml_userdefined table
-            2.) Added a column in the aiml_userdefined table that was missing, which was also preventing
-                new data from being  added
+            2.) Added a column in the aiml_userdefined table that was missing, which was also
+                preventing new data from being added.
 
 2.3.0   Minor DB refactor, in preparation for version 2.5
             1.) removed the last of the PHP code columns from the database

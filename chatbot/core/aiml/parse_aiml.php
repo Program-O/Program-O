@@ -3,10 +3,10 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: chatbot/core/aiml/parse_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 4TH 2011
+  * DATE: MAY 17TH 2014
   * DETAILS: this file contains the functions used to convert aiml to php
   ***************************************/
 
@@ -451,23 +451,23 @@
   **/
   function make_learn($convoArr, $pattern, $template)
   {
-    global $con, $dbn;
+    global $dbConn, $dbn;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making learn", 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Pattern:  $pattern", 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Template: $template", 2);
     $pattern = normalize_text($pattern);
     $aiml = "<learn> <category> <pattern> <eval>$pattern</eval> </pattern> <template> <eval>$template</eval> </template> </category> </learn>";
-    $aiml = mysql_real_escape_string($aiml);
-    $pattern = mysql_real_escape_string($pattern . " ");
-    $template = mysql_real_escape_string($template . " ");
+    $aiml = db_escape_string($aiml);
+    $pattern = db_escape_string($pattern . " ");
+    $template = db_escape_string($template . " ");
     $u_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
     $sql = "INSERT INTO `$dbn`.`aiml_userdefined`
         VALUES
         (NULL, '$aiml','$pattern','$template','$u_id','$bot_id',NOW())";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Make learn SQL: $sql", 3);
-    $result = db_query($sql, $con);
-    $numRows = mysql_affected_rows($result);
+    $result = db_query($sql, $dbConn);
+    $numRows = db_affected_rows($result);
   }
 
   /**

@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: AIMLdownload.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 07-30-2013
@@ -82,8 +82,7 @@
   }
   // define whether mb_string functions are available (just in case it sin't already defined)
   if (!defined('IS_MB_ENABLED')) define('IS_MB_ENABLED', (function_exists('mb_internal_encoding')) ? true : false);
-  $dbCon = mysql_connect($dbh, $dbu, $dbp) or trigger_error('Cannot open the database. Error: ' . mysql_error(), E_USER_ERROR);
-  mysql_select_db($dbn, $dbCon) or trigger_error('Cannot open the database. Error: ' . mysql_error(), E_USER_ERROR);
+  $dbCon = db_open();
   $fileList = get_file_list();
   $zip = new ZipArchive();
   $result = $zip->open(ROOT_PATH . 'AIML_files.zip', ZipArchive :: CREATE);
@@ -127,12 +126,12 @@
     $filenames = array();
     $no_file = 'no_file';
     $sql = 'select distinct filename from aiml;';
-    $result = mysql_query($sql, $dbCon) or trigger_error('oops? ' . mysql_error());
-    while ($row = mysql_fetch_assoc($result))
+    $result = db_query($sql, $dbCon);
+    while ($row = db_fetch_assoc($result))
     {
       $filenames[] = $row['filename'];
     }
-    mysql_free_result($result);
+    
     return $filenames;
   }
 
@@ -150,9 +149,9 @@
     $fileContent = '<?xml version="1.0" encoding="utf-8"?>
 <aiml>';
     $sql = "select distinct topic from aiml where filename like '$filename';";
-    //$sql = mysql_real_escape_string($sql,$dbCon);
-    $result = mysql_query($sql, $dbCon) or trigger_error('Cannot load the list of topics from the DB. Error = ' . mysql_error());
-    while ($row = mysql_fetch_assoc($result))
+    //$sql = db_escape_string($sql,$dbCon);
+    $result = db_query($sql, $dbCon);
+    while ($row = db_fetch_assoc($result))
     {
       $topicArray[] = $row['topic'];
     }
@@ -161,8 +160,8 @@
       if (!empty ($topic))
         $fileContent .= "<topic name=\"$topic\">\n";
       $sql = "select pattern, thatpattern, template from aiml where topic like '$topic' and filename like '$filename';";
-      $result = mysql_query($sql, $dbCon) or trigger_error('Cannot obtain the AIML categories from the DB. Error = ' . mysql_error());
-      while ($row = mysql_fetch_assoc($result))
+      $result = db_query($sql, $dbConn);
+      while ($row = db_fetch_assoc($result))
       {
         $pattern = (IS_MB_ENABLED) ? mb_strtoupper($row['pattern']) : strtoupper($row['pattern']);
         $template = str_replace("\r\n", '', $row['template']);

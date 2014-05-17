@@ -3,10 +3,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: chatbot/core/aiml/find_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 4TH 2011
+  * DATE: MAY 17TH 2014
   * DETAILS: this file contains the functions find and score
   *          the most likely AIML match from the database
   ***************************************/
@@ -452,7 +452,7 @@
       elseif (($aiml_pattern == "*")&&($aiml_thatpattern!="")) {
        if (($aiml_thatpattern_wildcards != '') && (preg_match($aiml_thatpattern_wildcards, $current_thatpattern, $m))) {
           $allrows[$all]['score'] += $that_pattern_match;
-          $allrows[$all]['track_score'][] = "general aiml that pattern match";
+          $allrows[$all]['track_score'] = "general aiml that pattern match";
         }
       }      
       
@@ -640,10 +640,10 @@
     function get_winning_category($id)
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__,"And the winner is... $id!", 2);
-      global $con, $dbn, $error_response;
+      global $dbConn, $dbn, $error_response;
       $sql = "SELECT `template` from `$dbn`.`aiml` where `id` = $id limit 1;";
-      $result = mysql_query($sql, $con) or trigger_error('Houston, we have a problem! Error: ' . mysql_error());
-      if ($row = mysql_fetch_assoc($result))
+      $result = db_query($sql, $dbConn);
+      if ($row = db_fetch_assoc($result))
       {
         $template = $row['template'];
       }
@@ -727,7 +727,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Rummaging through the DB and stuff for a client property.', 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Looking for client property '$name'", 2);
-    global $con, $dbn;
+    global $dbConn, $dbn;
     If (isset($convoArr['client_properties'][$name]))
     {
       $value = $convoArr['client_properties'][$name];
@@ -739,18 +739,18 @@
     $bot_id = $convoArr['conversation']['bot_id'];
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$name' limit 1;";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for $name. SQL:\n$sql", 3);
-    $result = db_query($sql, $con);
-    $rowCount = mysql_num_rows($result);
+    $result = db_query($sql, $dbConn);
+    $rowCount = db_num_rows($result);
     if ($rowCount != 0)
     {
-      $row = mysql_fetch_assoc($result);
+      $row = db_fetch_assoc($result);
       $response = trim($row['value']);
       $convoArr['client_properties'][$name] = $response;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Found client property '$name' in the DB. Adding it to the conversation array and returning '$response'", 2);
 
     }
     else $response = 'undefined';
-    mysql_free_result($result);
+    
     return $response;
     }
 
@@ -765,24 +765,24 @@
   function find_userdefined_aiml($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Looking for user defined responses', 4);
-    global $dbn, $con;
+    global $dbn, $dbConn;
     $i = 0;
     $allrows = array();
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
-    $lookingfor = mysql_real_escape_string($convoArr['aiml']['lookingfor']);
+    $lookingfor = db_escape_string($convoArr['aiml']['lookingfor']);
     //build sql
     $sql = "SELECT * FROM `$dbn`.`aiml_userdefined` WHERE
 		`bot_id` = '$bot_id' AND
 		(`user_id` = '$user_id' OR `user_id` = '-1') AND
 		`pattern` = '$lookingfor'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined SQL: $sql", 3);
-    $result = db_query($sql, $con);
+    $result = db_query($sql, $dbConn);
     //if there is a result get it
-    if (($result) && (mysql_num_rows($result) > 0))
+    if (($result) && (db_num_rows($result) > 0))
     {
     //loop through results
-      while ($row = mysql_fetch_assoc($result))
+      while ($row = db_fetch_assoc($result))
       {
         $allrows['pattern'] = $row['pattern'];
         $allrows['thatpattern'] = $row['thatpattern'];
@@ -791,7 +791,7 @@
         $i++;
       }
     }
-    mysql_free_result($result);
+    
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined rows found: '$i'", 2);
     //return rows
     return $allrows;
@@ -855,19 +855,19 @@
   **/
   function check_and_add_unknown_inputs($allrows,$convoArr){
     if($allrows['pattern']==$convoArr['conversation']['default_aiml_pattern']){
-        global $con, $dbn;
+        global $dbConn, $dbn;
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding unknown input", 2);
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Pattern: ".$convoArr['aiml']['lookingfor'], 2);
         $pattern = trim(normalize_text($convoArr['aiml']['lookingfor']));
-        $pattern = mysql_real_escape_string($pattern . " ");
+        $pattern = db_escape_string($pattern . " ");
         $u_id = $convoArr['conversation']['user_id'];
         $bot_id = $convoArr['conversation']['bot_id'];
         $sql = "INSERT INTO `$dbn`.`unknown_inputs`
             VALUES
-            (NULL, '".mysql_real_escape_string($pattern)."','$bot_id','$u_id',NOW())";
+            (NULL, '".db_escape_string($pattern)."','$bot_id','$u_id',NOW())";
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Unknown Input SQL: $sql", 3);
-        $result = db_query($sql, $con);
-        $numRows = mysql_affected_rows($result);
+        $result = db_query($sql, $dbConn);
+        $numRows = db_affected_rows($result);
     }
   }
 
@@ -880,7 +880,7 @@
   **/
   function find_aiml_matches($convoArr)
   {
-    global $con, $dbn, $error_response, $use_parent_bot;
+    global $dbConn, $dbn, $error_response, $use_parent_bot;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Finding the aiml matches from the DB", 4);
     $i = 0;
     //TODO convert to get_it
@@ -889,7 +889,7 @@
     $aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
     #$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
     $convoArr['aiml']['lookingfor'] = str_replace('  ', ' ', $convoArr['aiml']['lookingfor']);
-    $lookingfor = trim(strtoupper(mysql_real_escape_string($convoArr['aiml']['lookingfor'])));
+    $lookingfor = trim(strtoupper(db_escape_string($convoArr['aiml']['lookingfor'])));
     //get the first and last words of the cleaned user input
     $lastInputWord = get_last_word($lookingfor);
     $firstInputWord = get_first_word($lookingfor);
@@ -901,7 +901,7 @@
     //build like patterns
     if ($lastthat != '')
     {
-      $lastthat =  mysql_real_escape_string($lastthat);
+      $lastthat =  db_escape_string($lastthat);
       $thatPatternSQL = " OR " . make_like_pattern($lastthat, 'thatpattern');
     }
     else
@@ -946,14 +946,14 @@
 		$topic_select) order by `topic` desc, `id` desc, `pattern` asc;";
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);
-    $result = db_query($sql, $con);
-    if (($result) && (mysql_num_rows($result) > 0))
+    $result = db_query($sql, $dbConn);
+    if (($result) && (db_num_rows($result) > 0))
     {
-      $tmp_rows = number_format(mysql_num_rows($result));
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: '" . mysql_num_rows($result) . "' potential AIML matches", 2);
+      $tmp_rows = number_format(db_num_rows($result));
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: '" . db_num_rows($result) . "' potential AIML matches", 2);
       $tmp_content = date('H:i:s') . ": SQL:\n$sql\nRows = $tmp_rows\n\n";
       //loop through results
-      while ($row = mysql_fetch_assoc($result))
+      while ($row = db_fetch_assoc($result))
       {
         $row['aiml_id'] = $row['id'];
         $row['score'] = 0;
@@ -977,7 +977,7 @@
       $allrows[$i]['thatpattern'] = '';
       $allrows[$i]['topic'] = '';
     }
-    mysql_free_result($result);
+    
     return $allrows;
   }
 
@@ -988,15 +988,15 @@
   **/
   function get_topic($convoArr)
   {
-    global $con,$dbn;
+    global $dbConn,$dbn;
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $sql = "SELECT `value` FROM `client_properties` WHERE `user_id` = $user_id AND `bot_id` = $bot_id and `name` = 'topic';";
-    $result = db_query($sql, $con);
-    $num_rows = mysql_num_rows($result);
+    $result = db_query($sql, $dbConn);
+    $num_rows = db_num_rows($result);
     if ($num_rows == 0) return '';
-    $row = mysql_fetch_assoc($result);
-    mysql_free_result($result);
+    $row = db_fetch_assoc($result);
+    
     $retval = $row['value'];
     return $retval;
   }

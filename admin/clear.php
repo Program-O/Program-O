@@ -1,9 +1,9 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.3.1
+//My Program-O Version: 2.4.0
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
-//Aug 2011
+//DATE: MAY 17TH 2014
 //for more information and support please visit www.program-o.com
 //-----------------------------------------------------------------------------------------------
 // select_bots.php
@@ -82,46 +82,43 @@ else {
   }
 
   function clearAIML() {
-    global $dbn, $bot_id, $bot_name;
-    $dbConn = db_open();
+    global $dbn, $bot_id, $bot_name, $dbConn;
 
     $sql = "DELETE FROM `aiml` WHERE `bot_id` = $bot_id;";
     #return "SQL = $sql";
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
-    mysql_close($dbConn);
+    $result = db_query($sql, $dbConn);
+    ;
     $msg = "<strong>All AIML categories cleared for $bot_name!</strong><br />";
     return $msg;
   }
 
   function clearAIMLByFileName($filename) {
-    global $dbn, $bot_id;
-    $dbConn = db_open();
-    $cleanedFilename = mysql_real_escape_string($filename, $dbConn);
+    global $dbn, $bot_id, $dbConn;
+    $cleanedFilename = db_escape_string($filename, $dbConn);
     $sql = "delete from `aiml` where `filename` like '$cleanedFilename' and `bot_id` = $bot_id;";
     #return "SQL = $sql";
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
-    mysql_close($dbConn);
+    $result = db_query($sql, $dbConn);
+    ;
     $msg = "<br/><strong>AIML categories cleared for file $filename!</strong><br />";
     return $msg;
   }
 
   function getSelOpts() {
-    global $dbn, $bot_id, $msg;
+    global $dbn, $bot_id, $msg, $dbConn;
     $out = "                  <!-- Start Selectbox Options -->\n";
-    $dbConn = db_open();
     $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     #return "SQL = $sql";
-    if (($result = mysql_query($sql, $dbConn)) === false) throw new Exception(mysql_error());
-    if (mysql_num_rows($result) == 0) $msg = "This bot has no AIML categories to clear.";
-    while ($row = mysql_fetch_assoc($result)) {
+    $result = db_query($sql, $dbConn);
+    if (db_num_rows($result) == 0) $msg = "This bot has no AIML categories to clear.";
+    while ($row = db_fetch_assoc($result)) {
       if (empty($row['filename'])) {
         $curOption = "                  <option value=\"\">{No Filename entry}</option>\n";
       }
       else $curOption = str_replace('[val]', $row['filename'], $optionTemplate);
       $out .= $curOption;
     }
-    mysql_close($dbConn);
+    ;
     $out .= "                  <!-- End Selectbox Options -->\n";
     return $out;
   }

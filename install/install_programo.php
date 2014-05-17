@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: install_programo.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -110,8 +110,8 @@ endPage;
     $conn = mysql_connect($myPostVars['dbh'], $myPostVars['dbu'], $myPostVars['dbp']) or install_error('Could not connect to the database!', mysql_error(), $sql);
     $dbn = $myPostVars['dbn'];
     $db = mysql_select_db($dbn, $conn) or install_error("Can't select the database $dbn!", mysql_error(), "use $dbn");
-    $result = mysql_query($sql, $conn) or install_error('Unknown database error!', mysql_error(), $sql);
-    $row = mysql_fetch_assoc($result);
+    $result = db_query($sql, $conn) or install_error('Unknown database error!', mysql_error(), $sql);
+    $row = db_fetch_assoc($result);
     if (empty ($row))
     {
       $sql = file_get_contents('new.sql');
@@ -120,14 +120,14 @@ endPage;
       {
         if (strlen(trim($query)) > 0)
         {
-          $result = mysql_query($query, $conn) or install_error('Error creating new tables for DB!', mysql_error(), $query);
-          $success = mysql_affected_rows();
+          $result = db_query($query, $conn) or install_error('Error creating new tables for DB!', mysql_error(), $query);
+          $success = db_affected_rows();
         }
       }
     }
     $sql = 'select `error_response` from `bots` where 1 limit 1';
-    $result = mysql_query($sql, $conn) or upgrade($conn);
-    mysql_free_result($result);
+    $result = db_query($sql, $conn) or upgrade($conn);
+    
     $sql_template = "
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
 VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[save_state]',
@@ -158,7 +158,7 @@ VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_pare
     $cur_ip = $_SERVER['REMOTE_ADDR'];
     $adminSQL = "insert ignore into `myprogramo` (`id`, `user_name`, `password`, `last_ip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
     $result = db_query($adminSQL, $conn) or install_error('Could not add admin credentials! Check line #' . __LINE__, mysql_error(), $adminSQL);
-    mysql_close($conn);
+    $conn = db_close();
     if ($result and empty ($_SESSION['errorMessage']))
     {
       $out = getSection('InstallComplete', $page_template);
@@ -192,8 +192,8 @@ endError;
       $sql = trim($sql);
       if (!empty ($sql))
       {
-        $result = mysql_query($sql, $conn) or install_error('Error upgrading the database! check line #' . $line + 1 . ' of the SQL file. Error:', mysql_error() . "\nSQL: $sql\n", $sql);
-        $success = mysql_affected_rows();
+        $result = db_query($sql, $conn) or install_error('Error upgrading the database! check line #' . $line + 1 . ' of the SQL file. Error:', mysql_error() . "\nSQL: $sql\n", $sql);
+        $success = db_affected_rows();
       }
     }
   }

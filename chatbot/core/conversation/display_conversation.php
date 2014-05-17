@@ -3,10 +3,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: chatbot/core/conversation/display_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 4TH 2011
+  * DATE: MAY 17TH 2014
   * DETAILS: this file contains the functions to handle the return of the conversation lines back to the user
   ***************************************/
   /**
@@ -18,7 +18,7 @@
   **/
   function get_conversation_to_display($convoArr)
   {
-    global $con, $dbn, $bot_name, $unknown_user;
+    global $dbConn, $dbn, $bot_name, $unknown_user;
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_name = $convoArr['conversation']['user_name'];
@@ -27,8 +27,8 @@
     if (empty ($bot_name))
     {
       $sql = "select `bot_name` from `bots` where `bot_id` = $bot_id limit 1;";
-      $result = db_query($sql, $con);
-      $row = mysql_fetch_assoc($result);
+      $result = db_query($sql, $dbConn);
+      $row = db_fetch_assoc($result);
       $bot_name = $row['bot_name'];
     }
     if ($convoArr['conversation']['conversation_lines'] != 0)
@@ -39,7 +39,7 @@
     {
       $limit = "";
     }
-    mysql_free_result($result);
+    
     $sql = "SELECT * FROM `$dbn`.`conversation_log`
         WHERE
         `user_id` = '" . $convoArr['conversation']['user_id'] . "'
@@ -47,10 +47,10 @@
         AND `convo_id` = '" . $convoArr['conversation']['convo_id'] . "'
         ORDER BY id DESC $limit ";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql", 3);
-    $result = db_query($sql, $con);
-    if (mysql_num_rows($result) > 0)
+    $result = db_query($sql, $dbConn);
+    if (db_num_rows($result) > 0)
     {
-      while ($row = mysql_fetch_assoc($result))
+      while ($row = db_fetch_assoc($result))
       {
         $allrows[] = $row;
       }
@@ -60,8 +60,8 @@
     {
       $orderedRows = array('id' => NULL, 'input' => "", 'response' => "", 'user_id' => $convoArr['conversation']['user_id'], 'bot_id' => $convoArr['conversation']['bot_id'], 'timestamp' => "");
     }
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Found '" . mysql_num_rows($result) . "' lines of conversation", 2);
-    mysql_free_result($result);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Found '" . db_num_rows($result) . "' lines of conversation", 2);
+    
     return $orderedRows;
   }
 

@@ -3,10 +3,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.3.1
+  * Version: 2.4.0
   * FILE: gui/plain/index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 19 JUNE 2012
+  * DATE: MAY 17TH 2014
   * DETAILS: simple example gui
   ***************************************/
   $display = "";
