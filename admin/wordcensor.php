@@ -101,7 +101,7 @@ endScript;
     $result = db_query($sql, $dbConn);
     $row = db_fetch_assoc($result);
     $rowCount = $row['count(*)'];
-    db_close($dbConn);
+    ;
     $lastPage = intval($rowCount / 50);
     $remainder = ($rowCount / 50) - $lastPage;
     if ($remainder > 0) $lastPage++;
@@ -189,7 +189,7 @@ function insertWordCensor() {
             $msg = '<div id="errMsg">There was a problem editing the replace_with - no changes made.</div>';
         }
     }
-    db_close($dbConn);
+    ;
 
     return $msg;
 }
@@ -209,7 +209,7 @@ function delWordCensor($id) {
             $msg = '<div id="errMsg">There was a problem editing the replace_with - no changes made.</div>';
         }
     }
-    db_close($dbConn);
+    ;
 }
 
 
@@ -256,7 +256,7 @@ function runWordCensorSearch() {
         $msg = "Found $i results for '<b>$search</b>'";
     }
     $htmlresults = "<div id=\"pTitle\">$msg</div>".$htmltbl;
-    db_close($dbConn);
+    ;
     return $htmlresults;
 }
 

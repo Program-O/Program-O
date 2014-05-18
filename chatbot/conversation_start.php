@@ -15,7 +15,8 @@
   $thisFile = __FILE__;
   require_once ("../config/global_config.php");
   //load shared files
-  include_once (_LIB_PATH_ . "db_functions.php");
+  (class_exists('PDO')) ? require_once(_LIB_PATH_ . 'PDO_functions.php') : require_once(_LIB_PATH_ . 'db_functions.php');
+  //include_once (_LIB_PATH_ . "db_functions.php");
   include_once (_LIB_PATH_ . "error_functions.php");
   include_once(_LIB_PATH_ . 'misc_functions.php');
   ini_set('default_charset', $charset);
@@ -171,7 +172,7 @@
     $convoArr['send_to_user'] = '';
   }
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
-  db_close($dbConn);
+  ;
   display_conversation($convoArr);
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
   $convoArr = handleDebug($convoArr); // Make sure this is the last line in the file, so that all debug entries are captured.

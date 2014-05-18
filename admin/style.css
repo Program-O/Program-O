@@ -731,6 +731,10 @@ td input, td select {
   width: 95%;
   margin: 0 auto;
 }
+td input[type="checkbox"], input[type="radio"], td select {
+  width: auto !important;
+  margin: 0 auto;
+}
 .formTable {
   border: 1px solid orange;
   border: none;

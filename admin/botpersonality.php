@@ -86,7 +86,7 @@ function getBot() {
         $inputs .= $addCell;
       }
     }
-    db_close($dbConn);
+    ;
     $action = 'Update Data';
     $func   = 'updateBot';
   }
@@ -186,7 +186,7 @@ function updateBot() {
     $msg = (empty($msg)) ? 'Bot personality updated.' : $msg;
   }
   else $msg .= 'Bot personality updated.';
-  db_close($dbConn);
+  ;
   return $msg;
 }
 
@@ -238,7 +238,7 @@ function addBotPersonality() {
   elseif($msg == "") {
     $msg = 'Bot personality added!';
   }
-  db_close($dbConn);
+  ;
   return $msg;
 }
 

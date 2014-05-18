@@ -63,7 +63,7 @@
     else {
       $msg = 'Error AIML couldn\'t be deleted - no changes made.';
     }
-    db_close($dbConn);
+    ;
     return $msg;
   }
 
@@ -130,7 +130,7 @@ endLink;
             </tr>
 endRow;
     }
-      db_close($dbConn);
+      ;
       $htmltbl .= "          </tbody>\n        </table>";
       if($i == 50) {
         $msg = "Found more than 50 results for your specified search terms. please refine your search further";
@@ -170,7 +170,7 @@ endRow;
     $form = str_replace('[thatpattern]', $thatpattern, $form);
     $form = str_replace('[template]', $row_template, $form);
     $form = str_replace('[filename]', $filename, $form);
-    db_close($dbConn);
+    ;
     return $form;
   }
 
@@ -195,7 +195,7 @@ endRow;
         $msg =  'There was an error updating the AIML - no changes made.';
       }
     }
-    db_close($dbConn);
+    ;
     return $msg;
   }
 

@@ -47,8 +47,8 @@
     }
   }
   //load shared files
-  //(class_exists('PDO')) ? require_once(_LIB_PATH_ . 'PDO_functions.php') : require_once(_LIB_PATH_ . 'db_functions.php');
-  require_once(_LIB_PATH_ . 'db_functions.php');
+  (class_exists('PDO')) ? require_once(_LIB_PATH_ . 'PDO_functions.php') : require_once(_LIB_PATH_ . 'db_functions.php');
+  //require_once(_LIB_PATH_ . 'db_functions.php');
   require_once(_LIB_PATH_ . 'error_functions.php');
   require_once(_LIB_PATH_ . 'misc_functions.php');
   require_once(_LIB_PATH_ . 'template.class.php');

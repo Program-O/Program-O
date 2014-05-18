@@ -176,7 +176,7 @@ function getSelectedBot() {
       }
       $action = "update";
     }
-    db_close($dbConn);
+    ;
   }
   else {
     $bot_id = '';
@@ -260,7 +260,7 @@ function updateBotSelection() {
     $msg = 'Bot details updated.';
   }
 
-  db_close($dbConn);
+  ;
   return $msg;
 
 }
@@ -366,7 +366,7 @@ endSQL;
   else {
     $msg .= 'Unable to create the bots personality.';
   }
-  db_close($dbConn);
+  ;
   return $msg;
 }
 
@@ -392,7 +392,7 @@ function changeBot() {
       $_SESSION['poadmin']['bot_name']='';
       $_SESSION['poadmin']['bot_id']="new";
     }
-  db_close($dbConn);
+  ;
 }
 
 
@@ -418,7 +418,7 @@ function getChangeList() {
     $options .= "                <option value=\"$bot_id\"$sel>$bot_name</option>\n";
   }
   $options = rtrim($options);
-  db_close($dbConn);
+  ;
   $form = $template->getSection('ChangeBot');
   $form = str_replace('[options]', $options, $form);
   return $form;

@@ -133,7 +133,8 @@ INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_
 VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[save_state]',
 '$conversation_lines', '$remember_up_to', '[debugemail]', '[debugshow]', '[debugmode]', '$error_response', '$pattern');";
     require_once (_LIB_PATH_ . 'error_functions.php');
-    require_once (_LIB_PATH_ . 'db_functions.php');
+    (class_exists('PDO')) ? require_once(_LIB_PATH_ . 'PDO_functions.php') : require_once(_LIB_PATH_ . 'db_functions.php');
+    //require_once (_LIB_PATH_ . 'db_functions.php');
     $bot_id = 1;
     $sql = str_replace('[default_bot_id]', $bot_id, $sql_template);
     $sql = str_replace('[bot_name]', $myPostVars['bot_name'], $sql);

@@ -103,7 +103,7 @@ endScript;
     $result = db_query($sql, $dbConn);
     $row = db_fetch_assoc($result);
     $rowCount = $row['count(*)'];
-    db_close($dbConn);
+    ;
     $lastPage = intval($rowCount / 50);
     $remainder = ($rowCount / 50) - $lastPage;
     if ($remainder > 0) $lastPage++;
@@ -188,7 +188,7 @@ function insertSpell() {
             $msg = '<div id="errMsg">There was a problem editing the correction - no changes made.</div>';
         }
     }
-    db_close($dbConn);
+    ;
 
     return $msg;
 }
@@ -209,7 +209,7 @@ function delSpell($id) {
             $msg = '<div id="errMsg">There was a problem editing the correction - no changes made.</div>';
         }
     }
-    db_close($dbConn);
+    ;
 }
 
 
@@ -256,7 +256,7 @@ function runSpellSearch() {
         $msg = "Found $i results for '<b>$search</b>'";
     }
     $htmlresults = "<div id=\"pTitle\">$msg</div>".$htmltbl;
-    db_close($dbConn);
+    ;
     return $htmlresults;
 }
 
@@ -274,7 +274,7 @@ function editSpellForm($id) {
   $form   = str_replace('[missspelling]', $uc_missspelling, $form);
   $form   = str_replace('[correction]', $uc_correction, $form);
   $form   = str_replace('[group]', $group, $form);
-  db_close($dbConn);
+  ;
   return $form;
 }
 

@@ -102,7 +102,7 @@ function insertAIML() {
       $msg = "There was a problem adding the AIML - no changes made.";
     }
   }
-  db_close($dbConn);
+  ;
 
   return $msg;
 }

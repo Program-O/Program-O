@@ -74,7 +74,7 @@ function getUserNames() {
   while ($row = db_fetch_assoc($result)) {
     $nameList[$row['id']] = $row['user_name'];
   }
-  db_close($dbConn);
+  ;
   return $nameList;
 }
 
@@ -138,7 +138,7 @@ endList;
     $list .= "$tmpLink\n$anchor";
   }
   $list .="\n       </div>\n";
-  db_close($dbConn);
+  ;
   return $list;
 }
 
@@ -234,7 +234,7 @@ function getuserConvo($id, $showing) {
     $lasttimestamp = $thisdate;
   }
   $list .="</div>";
-  db_close($dbConn);
+  ;
   $list = str_ireplace('<script', '&lt;script', $list);
   return $list;
 }

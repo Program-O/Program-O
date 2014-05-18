@@ -305,7 +305,7 @@ endScript;
         $out .= $row['filename'] . "<br />\n";
     }
     
-    db_close($dbConn);
+    ;
     $out .= "                  <!-- End List of Currently Stored AIML files -->\n";
     return $out;
   }
@@ -325,7 +325,7 @@ endScript;
       $botOptions .= "                    <option$sel value=\"$bi\">$bn</option>\n";
     }
     
-    db_close($dbConn);
+    ;
     return $botOptions;
   }
 
