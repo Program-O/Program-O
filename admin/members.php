@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.0
+//My Program-O Version: 2.4.1
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -101,8 +101,9 @@ endScript;
 
   function updateDB($sql) {
     global $dbConn;
-    $result = db_query($sql, $dbConn);
-    $commit = db_affected_rows($dbConn);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $commit = $sth->rowCount();
     return $commit;
   }
 
@@ -154,8 +155,10 @@ endScript;
     $out = "                  <!-- Start List of Current Admin Accounts -->\n";
     $optionTemplate = "                  <option value=\"[val]\">[key]</option>\n";
     $sql = 'SELECT id, user_name FROM myprogramo order by user_name;';
-    $result = db_query($sql, $dbConn);
-    while ($row = db_fetch_assoc($result)) {
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($result as $row) {
       $user_name = $row['user_name'];
       $id = $row['id'];
       $curOption = str_replace('[key]', $row['user_name'], $optionTemplate);
@@ -171,8 +174,9 @@ endScript;
     if ($id <= 0) return false;
     global $dbn, $user_name, $id, $dbConn;
     $sql = "select id, user_name from myprogramo where id = $id limit 1;";
-    $result = db_query($sql, $dbConn);
-    $row = db_fetch_assoc($result);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
     $user_name = $row['user_name'];
     $id = $row['id'];
     
@@ -181,8 +185,9 @@ endScript;
   function getNextID() {
     global $dbn, $user_name, $dbConn;
     $sql = "select id from myprogramo order by id desc limit 1;";
-    $result = db_query($sql, $dbConn);
-    $row = db_fetch_assoc($result);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetchAll(PDO::FETCH_ASSOC);
     $id = $row['id'];
     
     return $id + 1;

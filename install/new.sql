@@ -100,7 +100,7 @@ DROP TABLE IF EXISTS `conversation_log`;
 CREATE TABLE IF NOT EXISTS `conversation_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `input` text NOT NULL,
-  `response` text NOT NULL,
+  `response` longtext NOT NULL,
   `user_id` int(11) NOT NULL,
   `convo_id` text NOT NULL,
   `bot_id` int(11) NOT NULL,
@@ -346,3 +346,9 @@ CREATE TABLE IF NOT EXISTS `wordcensor` (
 INSERT IGNORE INTO wordcensor (censor_id, word_to_censor, replace_with, bot_exclude) VALUES
 (1, 'shit', 's***', ''),
 (2, 'fuck', 'f***', '');
+
+CREATE TABLE IF NOT EXISTS `srai_lookup` (
+`id` int(11) NOT NULL,
+  `pattern` text NOT NULL,
+  `template_id` int(11) NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1 ;

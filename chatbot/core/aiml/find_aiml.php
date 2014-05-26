@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: chatbot/core/aiml/find_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -220,7 +220,6 @@
     sort2DArray("show top scoring aiml matches", $relevantRow, "good matches", 1, 10);
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Found ".count($relevantRow)." relevant rows", 4);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($relevantRow, true), 4);
     return $relevantRow;
 
   }
@@ -543,7 +542,7 @@
     $thisCount = count($thisArr);
     $showLimit = ($thisCount < $limit) ? $thisCount : $limit;
     //runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($thisArr, true), 4);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName - sorting $thisCount results by $sortByItem and getting the top $showLimit for debugging.", 4);
+   // runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName - sorting $thisCount results by $sortByItem and getting the top $showLimit for debugging.", 4);
     $i = 0;
     $tmpSortArr = array();
     $resArr = array();
@@ -584,19 +583,18 @@
     }
     //get the limited top results
     $outArr = array_slice($resArr, 0, $limit);
-    //send to debug
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName " . print_r($resArr, true), 4);
   }
 
   /**
   * function get_highest_scoring_row()
   * This function takes all the relevant and scored aiml results
   * and saves the highest scoring rows
+  * @param array $convoArr - the conversation array
   * @param array $allrows - all the results
   * @param string $lookingfor - the user input
   * @return array bestResponseArr - best response and its parts (topic etc)
   **/
-  function get_highest_scoring_row($allrows, $lookingfor)
+  function get_highest_scoring_row(&$convoArr, $allrows, $lookingfor)
   {
     $bestResponse = array();
     $last_high_score = 0;
@@ -623,7 +621,7 @@
     }
     //there may be any number of results with the same score so pick any random one
     $bestResponse = (count($tmpArr) > 0) ? $tmpArr[array_rand($tmpArr)] : false;
-    if (false !== $bestResponse) $bestResponse['template'] = get_winning_category($bestResponse['aiml_id']);
+    if (false !== $bestResponse) $bestResponse['template'] = get_winning_category($convoArr, $bestResponse['aiml_id']);
     $cRes = count($tmpArr);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Best Responses: " . print_r($tmpArr, true), 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Will use randomly picked best response chosen out of $cRes responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'], 2);
@@ -637,15 +635,20 @@
     * @param array  $id - the id number of the AIML category to get
     * @return string $template - the value of the `template` field from the chosen DB entry
     **/
-    function get_winning_category($id)
+    function get_winning_category(&$convoArr, $id)
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__,"And the winner is... $id!", 2);
       global $dbConn, $dbn, $error_response;
       $sql = "SELECT `template` from `$dbn`.`aiml` where `id` = $id limit 1;";
-      $result = db_query($sql, $dbConn);
-      if ($row = db_fetch_assoc($result))
+      
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $row = $sth->fetch(PDO::FETCH_ASSOC);
+
+      if ($row)
       {
         $template = $row['template'];
+        $convoArr['aiml']['template_id'] = $id;
       }
       else
       {
@@ -739,11 +742,16 @@
     $bot_id = $convoArr['conversation']['bot_id'];
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$name' limit 1;";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for $name. SQL:\n$sql", 3);
-    $result = db_query($sql, $dbConn);
-    $rowCount = db_num_rows($result);
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
+
+
+
+    $rowCount = count($row);
     if ($rowCount != 0)
     {
-      $row = db_fetch_assoc($result);
       $response = trim($row['value']);
       $convoArr['client_properties'][$name] = $response;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Found client property '$name' in the DB. Adding it to the conversation array and returning '$response'", 2);
@@ -770,19 +778,25 @@
     $allrows = array();
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
-    $lookingfor = db_escape_string($convoArr['aiml']['lookingfor']);
+    $lookingfor = $convoArr['aiml']['lookingfor'];
     //build sql
     $sql = "SELECT * FROM `$dbn`.`aiml_userdefined` WHERE
 		`bot_id` = '$bot_id' AND
 		(`user_id` = '$user_id' OR `user_id` = '-1') AND
 		`pattern` = '$lookingfor'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined SQL: $sql", 3);
-    $result = db_query($sql, $dbConn);
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+
+    $num_rows = count($result);
     //if there is a result get it
-    if (($result) && (db_num_rows($result) > 0))
+    if (($result) && ($num_rows > 0))
     {
     //loop through results
-      while ($row = db_fetch_assoc($result))
+      foreach ($result as $row)
       {
         $allrows['pattern'] = $row['pattern'];
         $allrows['thatpattern'] = $row['thatpattern'];
@@ -826,7 +840,7 @@
       //score the relevant matches
       $allrows = score_matches($convoArr, $bot_parent_id, $allrows, $lookingfor, $current_thatpattern, $current_topic, $aiml_pattern);
       //get the highest
-      $allrows = get_highest_scoring_row($allrows, $lookingfor);
+      $allrows = get_highest_scoring_row($convoArr, $allrows, $lookingfor);
       //READY FOR v2.5 do not uncomment will not work
       //check if this is an unknown input and place in the unknown_inputs table if true
       //check_and_add_unknown_inputs($allrows,$convoArr);
@@ -844,7 +858,6 @@
     return $convoArr;
   }
 
-
   /**
   * function check_and_add_unknown_inputs()
   * READY FOR v2.5 
@@ -859,15 +872,16 @@
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding unknown input", 2);
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Pattern: ".$convoArr['aiml']['lookingfor'], 2);
         $pattern = trim(normalize_text($convoArr['aiml']['lookingfor']));
-        $pattern = db_escape_string($pattern . " ");
+        $pattern = $pattern . " ";
         $u_id = $convoArr['conversation']['user_id'];
         $bot_id = $convoArr['conversation']['bot_id'];
         $sql = "INSERT INTO `$dbn`.`unknown_inputs`
             VALUES
-            (NULL, '".db_escape_string($pattern)."','$bot_id','$u_id',NOW())";
+            (NULL, '".$pattern."','$bot_id','$u_id',NOW())";
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Unknown Input SQL: $sql", 3);
-        $result = db_query($sql, $dbConn);
-        $numRows = db_affected_rows($result);
+        
+        $sth = $dbConn->prepare($sql);
+        $sth->execute();
     }
   }
 
@@ -889,7 +903,7 @@
     $aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
     #$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
     $convoArr['aiml']['lookingfor'] = str_replace('  ', ' ', $convoArr['aiml']['lookingfor']);
-    $lookingfor = trim(strtoupper(db_escape_string($convoArr['aiml']['lookingfor'])));
+    $lookingfor = trim(strtoupper($convoArr['aiml']['lookingfor']));
     //get the first and last words of the cleaned user input
     $lastInputWord = get_last_word($lookingfor);
     $firstInputWord = get_first_word($lookingfor);
@@ -901,7 +915,6 @@
     //build like patterns
     if ($lastthat != '')
     {
-      $lastthat =  db_escape_string($lastthat);
       $thatPatternSQL = " OR " . make_like_pattern($lastthat, 'thatpattern');
     }
     else
@@ -946,14 +959,20 @@
 		$topic_select) order by `topic` desc, `id` desc, `pattern` asc;";
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);
-    $result = db_query($sql, $dbConn);
-    if (($result) && (db_num_rows($result) > 0))
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+    $num_rows = count($result);
+
+    if (($result) && ($num_rows > 0))
     {
-      $tmp_rows = number_format(db_num_rows($result));
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: '" . db_num_rows($result) . "' potential AIML matches", 2);
+      $tmp_rows = number_format($num_rows);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ($num_rows) potential AIML matches", 2);
       $tmp_content = date('H:i:s') . ": SQL:\n$sql\nRows = $tmp_rows\n\n";
       //loop through results
-      while ($row = db_fetch_assoc($result))
+      foreach ($result as $row)
       {
         $row['aiml_id'] = $row['id'];
         $row['score'] = 0;
@@ -977,7 +996,7 @@
       $allrows[$i]['thatpattern'] = '';
       $allrows[$i]['topic'] = '';
     }
-    
+
     return $allrows;
   }
 
@@ -992,12 +1011,13 @@
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $sql = "SELECT `value` FROM `client_properties` WHERE `user_id` = $user_id AND `bot_id` = $bot_id and `name` = 'topic';";
-    $result = db_query($sql, $dbConn);
-    $num_rows = db_num_rows($result);
-    if ($num_rows == 0) return '';
-    $row = db_fetch_assoc($result);
-    
-    $retval = $row['value'];
+
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
+
+    $num_rows = count($row);
+    $retval = ($num_rows == 0) ? '' : $row['value'];
     return $retval;
   }
 

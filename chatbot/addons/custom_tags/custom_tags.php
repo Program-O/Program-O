@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.4.0
+* Version: 2.4.1
 * FILE: custom_tags.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 17TH 2014
@@ -99,7 +99,7 @@ function parse_wiki_tag($convoArr, $element, $parentName, $level)
   $xml = simplexml_load_string($wikiText, 'SimpleXMLElement', LIBXML_NOCDATA);
   if((string)$xml->Section->Item->Description)
   {
-    $description = (string)$xml->Section->Item->Description ;
+    $description = (string)$xml->Section->Item->Description;
     $image = (string)$xml->Section->Item->Image->asXML();
     $image = str_replace('<Image source', '<img src', $image);
     $linkHref = (string)$xml->Section->Item->Url;

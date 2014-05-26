@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: TODO
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-18-2013
@@ -9,27 +9,19 @@
   ***************************************/
 
 
-  1.) Bug Fix: "clear properties" still generates a new user_id - MUST be fixed! - HIGH PRIORITY
-
-  2.) Bug Fix: Re-formulate the SQL query for finding proper AIML categories, as some catagories that
-      use a <that> tag are being missed
-
-  3.) Add functionality for botmasters to see what inputs triggered the default
+  1.) Add functionality for botmasters to see what inputs triggered the default
       response category, so that they may be able to more easily determine what
       AIML categories need to be added.
 
-  4.) Add a page to the admin script that helps botmasters create new AIML categories
+  2.) Add a page to the admin script that helps botmasters create new AIML categories
       based on the functionality mentioned in item 1, above.
 
-  5.) Add a page to the admin script that allows botmasters to edit the config file
+  3.) Add a page to the admin script that allows botmasters to edit the config file
       directly.
 
-  6.) Add functionality to the downloads section of the admin to download multiple
-      AIML files ad a single zip file.
-
-  7.) Add row count for AIML files in the admin/download page
+  4.) Add row count for AIML files in the admin/download page
       "select count(*) from aiml where filename = '$fileName'"
 
-  8.) Create/modify some bot-level configurable default values so that botmasters can use their own
+  5.) Create/modify some bot-level configurable default values so that botmasters can use their own
       values, based on their chatbot's "native language".
 

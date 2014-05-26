@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: library/error_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -159,19 +159,18 @@
       $log .= '[NEWLINE]-----------------------[NEWLINE]';
       $log .= 'CONVERSATION ARRAY';
       $log .= '[NEWLINE]-----------------------[NEWLINE]';
-      $log .= print_r($showArr, true);
+      $log .= str_replace("\n", PHP_EOL, print_r($showArr, true));
     }
     switch ($debug_mode)
     {
       case 0 :
         //show in source code
-        $log = str_replace('[NEWLINE]', "\r\n", $log);
+        $log = str_replace('[NEWLINE]', "\n", $log);
         display_on_page(0, $log);
         break;
       case 1 :
         //write to log file
-        $log = str_replace('[NEWLINE]', "\r\n", $log);
-        $log = str_replace("\r\r", "\r", $log);
+        $log = str_replace('[NEWLINE]', PHP_EOL, $log);
         writefile_debug($log, $convoArr);
         break;
       case 2 :
@@ -197,6 +196,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Reducing the conversation array.', 0);
     $showConvoArr = array();
     $showConvoArr['conversation'] = (isset($convoArr['conversation'])) ? $convoArr['conversation'] : '';
+    $showConvoArr['aiml'] = (isset($convoArr['aiml'])) ? $convoArr['aiml'] : '';
     $showConvoArr['topic'][1] = (isset($convoArr['topic'][1])) ? $convoArr['topic'][1] : '';
     $showConvoArr['that'][1] = (isset($convoArr['that'][1])) ? $convoArr['that'][1] : '';
     if (isset($convoArr['star']))

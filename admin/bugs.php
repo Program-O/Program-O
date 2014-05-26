@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.0
+//My Program-O Version: 2.4.1
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -48,7 +48,7 @@ endScript;
   if (count($post_vars) > 0)
   {
     foreach ($post_vars as $key => $value) {
-      $$key = db_escape_string($value);
+      $$key = $value;
     }
   }
   $func = (isset($post_vars['func'])) ? $post_vars['func'] : 'showBugForm';

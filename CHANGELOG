@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: CHANGELOG
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -9,6 +9,17 @@
   ***************************************/
 
 Version History:
+2.4.1   Complete refactor for PDO support, added SRAI lookup
+            1.) Refactored the code that deals with DB access to completely remove the
+                last of the mysql_* functions, including "fallback support".
+            2.) Added an additional table to the database to handle looking up previously
+                used calls to <srai> tags. This will improve performance in the future,
+                in that if an <srai> tag is stored in the lookup table, the script doesn't
+                have to run through the entire AIML table to find it. If a suitable srai
+                category is found that isn't already in the lookup table, it's added for
+                future use. While the table is being added now, the feature is not yet
+                enabled. We'll be enabling it in the near future, once further testing is
+                completed.
 2.4.0   Conditional PDO support added, major bug fixes
             1.) Added PDO support for PHP versions that support it (and have it enabled),
             with a fallback to the original MySQL functions if no PDO support is detected

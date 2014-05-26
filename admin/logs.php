@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.0
+//My Program-O Version: 2.4.1
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -68,13 +68,15 @@ endScript;
 
 function getUserNames() {
   global $dbConn;
-  $sql = "select `id`, `user_name` from `users` where 1;";
-  $result = db_query($sql,$dbConn);
   $nameList = array();
-  while ($row = db_fetch_assoc($result)) {
+  $sql = "select `id`, `user_name` from `users` where 1;";
+  $sth = $dbConn->prepare($sql);
+  $sth->execute();
+  $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($result as $row) {
+
     $nameList[$row['id']] = $row['user_name'];
   }
-  ;
   return $nameList;
 }
 
@@ -121,9 +123,12 @@ function getuserList($showing) {
         <ul>
 
 endList;
-  $result = db_query($sql,$dbConn);
-  if (db_num_rows($result) == 0) $list .= '          <li>No log entries found</li>';
-  while($row = db_fetch_assoc($result)) {
+  $sth = $dbConn->prepare($sql);
+  $sth->execute();
+  $rows = $sth->fetchAll(PDO::FETCH_ASSOC);
+  $numRows = count($rows);
+  if ($numRows == 0) $list .= '          <li>No log entries found</li>';
+  foreach ($rows as $row) {
     $user_id = $row['user_id'];
     $linkClass = ($user_id == $curUserid) ? 'selected' : 'noClass';
     $userName = @$nameList[$user_id];
@@ -138,7 +143,7 @@ endList;
     $list .= "$tmpLink\n$anchor";
   }
   $list .="\n       </div>\n";
-  ;
+
   return $list;
 }
 
@@ -216,8 +221,10 @@ function getuserConvo($id, $showing) {
   $sql = "SELECT *  FROM `conversation_log` WHERE `bot_id` = '$bot_id' AND `user_id` = $id $sqladd ORDER BY `id` ASC";
   $list = "<hr><br/><h4>$title conversations for user: $id</h4>";
   $list .="<div class=\"convolist\">";
-  $result = db_query($sql,$dbConn);
-  while($row = db_fetch_assoc($result)) {
+  $sth = $dbConn->prepare($sql);
+  $sth->execute();
+  $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($result as $row) {
     $thisdate = date("Y-m-d",strtotime($row['timestamp']));
     if($thisdate!=$lasttimestamp) {
       if($i>1) {
@@ -234,7 +241,7 @@ function getuserConvo($id, $showing) {
     $lasttimestamp = $thisdate;
   }
   $list .="</div>";
-  ;
+
   $list = str_ireplace('<script', '&lt;script', $list);
   return $list;
 }

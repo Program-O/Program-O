@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.0
+//My Program-O Version: 2.4.1
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -54,11 +54,13 @@ function getBotParentList($current_parent) {
   //get active bots from the db
   if(empty($current_parent)) $current_parent = 0;
   $sql = "SELECT * FROM `bots` where bot_active = '1'";
-  $result = db_query($sql, $dbConn);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 
   $options = '                  <option value="0"[noBot]>No Parent Bot</option>';
 
-  while($row = db_fetch_assoc($result)) {
+  foreach ($result as $row) {
     if ($row['bot_id'] == 0) $options = str_replace('[noBot]', 'selected="selected"', $options);
     if($current_parent==$row['bot_id']) {
       $sel = "selected=\"selected\"";
@@ -111,8 +113,10 @@ function getSelectedBot() {
     #$bot_id = $_SESSION['poadmin']['bot_id'];
     //get data for all of the bots from the db
     $sql = "SELECT * FROM `bots` where bot_id = '$bot_id';";
-    $result = db_query($sql, $dbConn);
-    while($row = db_fetch_assoc($result)) {
+      $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($result as $row) {
       foreach ($row as $key => $value) {
         if (strstr($key,'bot_') != false){
           $tmp = '';
@@ -176,7 +180,6 @@ function getSelectedBot() {
       }
       $action = "update";
     }
-    ;
   }
   else {
     $bot_id = '';
@@ -220,11 +223,16 @@ function updateBotSelection() {
   $sql = '';
   $msg = '';
   foreach($post_vars as $key => $value) {
+    $value = str_replace("'", "\'", $value);
+    $value = str_replace("\\'", "\'", $value);
+    $value = str_replace('"', '\"', $value);
+    $value = str_replace('\\"', '\"', $value);
     if(($key!="bot_id")||($key!="action")) {
-      $value = db_escape_string(trim(stripslashes($value)));
       if(($key != "bot_id")&&($key != "action")&&($value!='')) {
         $sql = "UPDATE `bots` SET `$key` ='$value' where `bot_id` = '".$post_vars['bot_id']."' limit 1; ";
-        $result = db_query($sql, $dbConn);
+          $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         if(!$result) {
           $msg = "Error updating bot details. See the <a href=\"$logFile\">error log</a> for details.<br />";
           trigger_error("There was a problem adding '$key' to the database. The value was '$value'.");
@@ -260,7 +268,6 @@ function updateBotSelection() {
     $msg = 'Bot details updated.';
   }
 
-  ;
   return $msg;
 
 }
@@ -271,14 +278,16 @@ function addBot() {
   global $dbConn, $msg, $post_vars;
   
   foreach ($post_vars as $key => $value) {
-    $$key = db_escape_string(trim($value),$dbConn);
+    $$key = trim($value);
   }
   
   $sql = <<<endSQL
 INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `error_response`)
 VALUES (NULL,'$bot_name','$bot_desc','$bot_active','$bot_parent_id','$format','$save_state','$conversation_lines','$remember_up_to','$debugemail','$debugshow','$debugmode','$aiml_pattern','$error_response');
 endSQL;
-  $result = db_query($sql, $dbConn);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 
   if($result) {
     $msg = "$bot_name Bot details added, please dont forget to create the bot personality and add the aiml.";
@@ -288,10 +297,10 @@ endSQL;
     $msg = "$bot_name Bot details could not be added.";
   }
 
-  $_SESSION['poadmin']['bot_id'] = db_insert_id($dbConn);
+  $_SESSION['poadmin']['bot_id'] = $dbConn->lastInsertId();
   $bot_id = $_SESSION['poadmin']['bot_id'];
   $_SESSION['poadmin']['bot_name'] = $post_vars['bot_name'];
-  $bot_name = db_escape_string($_SESSION['poadmin']['bot_name']);
+  $bot_name = $_SESSION['poadmin']['bot_name'];
 
   $sql = <<<endSQL
 INSERT INTO `botpersonality` VALUES
@@ -356,7 +365,9 @@ INSERT INTO `botpersonality` VALUES
   (NULL,  $bot_id, 'website', '');
 endSQL;
 
-  $result = db_query($sql, $dbConn);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 
   if($result)
   {
@@ -366,7 +377,6 @@ endSQL;
   else {
     $msg .= 'Unable to create the bots personality.';
   }
-  ;
   return $msg;
 }
 
@@ -376,10 +386,11 @@ function changeBot() {
   
   if($post_vars['bot_id']!="new") {
     $sql = "SELECT * FROM `bots` WHERE bot_id = '$botId'";
-    $result = db_query($sql, $dbConn);
-    $count = db_num_rows($result);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $count = count($result);
     if($count>0) {
-      $row=db_fetch_assoc($result);
       $_SESSION['poadmin']['bot_id']=$row['bot_id'];
       $_SESSION['poadmin']['bot_name']=$row['bot_name'];
     }
@@ -392,7 +403,6 @@ function changeBot() {
       $_SESSION['poadmin']['bot_name']='';
       $_SESSION['poadmin']['bot_id']="new";
     }
-  ;
 }
 
 
@@ -404,9 +414,11 @@ function getChangeList() {
   $inputs='';
   //get bot names from the db
   $sql = "SELECT * FROM `bots` ORDER BY bot_name";
-  $result = db_query($sql, $dbConn);
+  $sth = $dbConn->prepare($sql);
+  $sth->execute();
+  $result = $sth->fetchAll(PDO::FETCH_ASSOC);
   $options = '<option value="new" selected="selected">Add New Bot</option>' . "\n";
-  while($row = db_fetch_assoc($result)) {
+  foreach ($result as $row) {
     if($bot_id == $row['bot_id']) {
       $sel = ' selected="selected"';
     }
@@ -418,7 +430,6 @@ function getChangeList() {
     $options .= "                <option value=\"$bot_id\"$sel>$bot_name</option>\n";
   }
   $options = rtrim($options);
-  ;
   $form = $template->getSection('ChangeBot');
   $form = str_replace('[options]', $options, $form);
   return $form;

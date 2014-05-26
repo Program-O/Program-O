@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: chatbot/core/aiml/parse_aiml_as_XML.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -78,9 +78,11 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Imploding an array into a string. (recursively, if necessary)', 2);
     #runDebug(__FILE__, __FUNCTION__, __LINE__, "This function was called from $file, function $function at line $line.", 4);
+    if(empty($input)) return '';
     if (!is_array($input) and !is_string($input))
     {
-      trigger_error("Input not array! Error originated in $file, function $function, line $line. Input = " . print_r($input, true));
+      $varType = gettype($input);
+      trigger_error("Input not array! Input is of type $varType. Error originated in $file, function $function, line $line. Input = " . print_r($input, true));
       return $input;
     }
     elseif (is_string($input)) return $input;
@@ -95,6 +97,7 @@
       }
     }
     $out = (is_array($input)) ? implode($glue, $input) : $input;
+    $out = str_replace('  ', ' ', $out);
     if ($function != 'implode_recursive') runDebug(__FILE__, __FUNCTION__, __LINE__, "Imploding complete. Returning '$out'", 4);
     return ltrim($out);
   }
@@ -284,15 +287,18 @@
     {
      	$sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
 	runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the DB for $var_name - sql:\n$sql", 3);
-	$result = db_query($sql, $dbConn);
-	if (($result) and (db_num_rows($result) > 0)) {
-		$row = db_fetch_assoc($result);
+	
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
+
+	if (($row) and (count($row) > 0)) {
 		$response = $row['value'];
 	}
 	else {
 		$response = 'undefined';
 	}
-	
+
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for $var_name is $response.", 4);
     return $response;
@@ -316,18 +322,24 @@
     if ($var_name == 'name')
     {
       $user_name = $var_value;
-      $escaped_var_value = db_escape_string($var_value);
+      $escaped_var_value = $var_value;
       $sql = "UPDATE `$dbn`.`users` set `user_name` = '$escaped_var_value' where `id` = $user_id;";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Updating user name in the DB. SQL:\n$sql", 3);
-      $result = db_query($sql, $dbConn);
-      $numRows = db_affected_rows();
-      $sql = "select `user_name` from `$dbn`.`users` where `id` = $user_id;";
+      
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+
+      $numRows = $sth->rowCount();
+      $sql = "select `user_name` from `$dbn`.`users` where `id` = $user_id limit 1;";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the users table to see if the value has changed. - SQL:\n$sql", 3);
-      $result = db_query($sql, $dbConn);
-      $rowCount = db_num_rows($result);
+      
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $row = $sth->fetch(PDO::FETCH_ASSOC);
+
+      $rowCount = count($row);
       if ($rowCount != 0)
       {
-        $row = db_fetch_assoc($result);
         $tmp_name = $row['user_name'];
         runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for the user's name is $tmp_name.", 4);
       }
@@ -338,10 +350,16 @@
     if ($lc_var_name == 'topic') $convoArr['topic'][1] = $var_value;
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$sql", 3);
-    $result = db_query($sql, $dbConn);
-    $rowCount = db_num_rows($result);
-    $var_name = db_escape_string($var_name, $dbConn);
-    $var_value = db_escape_string($var_value, $dbConn);
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+    $rowCount = count($result);
+    $var_name = $var_name;
+    $var_name = str_replace("'", "\'", $var_name);
+    $var_value = $var_value;
+    $var_value = str_replace("'", "\'", $var_value);
     if ($rowCount == 0)
     {
       $sql = "insert into `$dbn`.`client_properties` (`id`, `user_id`, `bot_id`, `name`, `value`)
@@ -354,8 +372,11 @@
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Value found for $var_name. Updating the table to  $var_value.", 4);
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving to DB - SQL:\n$sql", 3);
-    $result = db_query($sql, $dbConn);
-    $rowCount = db_affected_rows();
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+
+    $rowCount = $sth->rowCount();
     $response = $var_value;
     $convoArr['client_properties'][$var_name] = $var_value;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Value for $var_name has ben set. Returning $var_value.", 4);
@@ -541,7 +562,7 @@
           runDebug(__FILE__, __FUNCTION__, __LINE__,'Pick = ' . print_r($pick, true), 4);
           $testVarValue = get_client_property($convoArr, $condition_name);
           //$testVarValue = trim($testVarValue);
-          runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $testVarValue ($testVarName) is equal to $test_value.", 4);
+          runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $testVarValue ($condition_name) is equal to $test_value.", 4);
           if (strtolower($testVarValue) == strtolower($test_value))
           {
             runDebug(__FILE__, __FUNCTION__, __LINE__,'Pick XML = ' . $pick->asXML(), 4);
@@ -637,21 +658,37 @@
 
   function parse_that_tag($convoArr, $element, $parentName, $level)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THAT tag. How awesome is that?.', 2);
-    $index = (string)$element['index'];
-    $index = (!empty ($index)) ? $index : 1;
-    if (is_numeric($index))
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THAT tag. How awesome is that?', 2);
+
+    if(!empty($element))
     {
-      $index .= ',1';
+      $attributes = $element->attributes();
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'element attributes = ' . print_r($attributes, true), 2);
+      $index = $attributes['index'];
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'element attribute index = ' . $index, 2);
+      $index = (!empty ($index)) ? $index : 1;
+      if ($index == intval($index))
+      {
+        $response = $convoArr['that'][(int)$index];
+        //$index .= ',1';
+      }
+      if (strstr($index, ',') !== false)
+      {
+        list($index1, $index2) = explode(',', $index, 2);
+        $index1 = intval($index1);
+        $index2 = intval($index2);
+        $thatArray = $convoArr['that'];
+        runDebug(__FILE__, __FUNCTION__, __LINE__,'THAT array = ' . print_r($thatArray, true), 2);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'index1 = ' . $index1, 2);
+
+        if (!empty($convoArr['that'][$index1][$index2])) $response = $convoArr['that'][$index1][$index2];
+        else $response = '';
+      }
+
+      $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     }
-    if (strstr($index, ',') !== false)
-    {
-      list($index1, $index2) = explode(',', $index, 2);
-      $index2 = ltrim($index2);
-      $response = $convoArr['that'][$index1][$index2];
-    }
-    else $response = $convoArr['that'][1];
-    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    else $response_string = implode_recursive(' ', $convoArr['that'][1], __FILE__, __FUNCTION__, __LINE__);
+
     return $response_string;
   }
 
@@ -731,12 +768,15 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
       $catXML->addChild('template', $template);
       $category = $catXML->asXML();
       $category = trim(str_replace('<?xml version="1.0"?>', '', $category));
-      $sqlAdd = str_replace('[aiml]', db_escape_string($category, $dbConn), $sqlTemplate);
-      $sqlAdd = str_replace('[pattern]', db_escape_string($pattern, $dbConn), $sqlAdd);
-      $sqlAdd = str_replace('[that]', db_escape_string($thatpattern, $dbConn), $sqlAdd);
-      $sqlAdd = str_replace('[template]', db_escape_string($template, $dbConn), $sqlAdd);
+      $sqlAdd = str_replace('[aiml]', $category, $sqlTemplate);
+      $sqlAdd = str_replace('[pattern]', $pattern, $sqlAdd);
+      $sqlAdd = str_replace('[that]', $thatpattern, $sqlAdd);
+      $sqlAdd = str_replace('[template]', $template, $sqlAdd);
       $sql .= $sqlAdd;
-      $result = db_query($sql, $dbConn);
+      
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+
     }
     else
     {

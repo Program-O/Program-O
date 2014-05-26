@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.0
+//My Program-O Version: 2.4.1
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -77,15 +77,15 @@ function insertAIML() {
   //db globals
   global $template, $msg, $post_vars, $dbConn;
   $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
-  $aimltemplate = db_escape_string(trim($post_vars['template']));
-  $pattern = db_escape_string(trim($post_vars['pattern']));
+  $aimltemplate = trim($post_vars['template']);
+  $pattern = trim($post_vars['pattern']);
   $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
-  $thatpattern = db_escape_string(trim($post_vars['thatpattern']));
+  $thatpattern = trim($post_vars['thatpattern']);
   $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper($thatpattern) : strtoupper($thatpattern);
   $aiml = str_replace('[pattern]', $pattern, $aiml);
   $aiml = (empty($thatpattern)) ? str_replace('[thatpattern]', "<that>$thatpattern</that>", $aiml) : $aiml;
   $aiml = str_replace('[template]', $aimltemplate, $aiml);
-  $topic = db_escape_string(trim($post_vars['topic']));
+  $topic = trim($post_vars['topic']);
   $topic = (IS_MB_ENABLED) ? mb_strtoupper($topic) : strtoupper($topic);
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
   if(($pattern=="") || ($template=="")) {
@@ -93,17 +93,16 @@ function insertAIML() {
   }
   else {
     $sql = "INSERT INTO `aiml` (`id`,`bot_id`, `aiml`, `pattern`,`thatpattern`,`template`,`topic`,`filename`) VALUES (NULL,'$bot_id', '$aiml','$pattern','$thatpattern','$aimltemplate','$topic','admin_added.aiml')";
-    $result = db_query($sql, $dbConn);
-
-    if($result) {
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $affectedRows = $sth->rowCount();
+    if($affectedRows > 0) {
       $msg = "AIML added.";
     }
     else {
       $msg = "There was a problem adding the AIML - no changes made.";
     }
   }
-  ;
-
   return $msg;
 }
 

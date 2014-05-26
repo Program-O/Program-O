@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-11-2013
@@ -18,7 +18,7 @@
   ini_set('log_errors', true);
   ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
   ini_set('html_errors', false);
-  ini_set('display_errors', true);
+  ini_set('display_errors', false);
   #set_exception_handler("handle_exceptions");
   $msg = '';
 
@@ -47,8 +47,7 @@
     }
   }
   //load shared files
-  (class_exists('PDO')) ? require_once(_LIB_PATH_ . 'PDO_functions.php') : require_once(_LIB_PATH_ . 'db_functions.php');
-  //require_once(_LIB_PATH_ . 'db_functions.php');
+  require_once(_LIB_PATH_ . 'PDO_functions.php');
   require_once(_LIB_PATH_ . 'error_functions.php');
   require_once(_LIB_PATH_ . 'misc_functions.php');
   require_once(_LIB_PATH_ . 'template.class.php');
@@ -96,45 +95,45 @@
     $user_name = filter_input(INPUT_POST,'user_name',FILTER_SANITIZE_STRING);
     $pw    = filter_input(INPUT_POST,'pw',FILTER_SANITIZE_STRING);
     $sql = "SELECT * FROM `myprogramo` WHERE user_name = '".$user_name."' AND password = '".MD5($pw)."'";
-    $result = db_query($sql,$dbConn);
-    if ($result) {
-      $count = db_num_rows($result);
-      if($count > 0) {
-        $row=db_fetch_assoc($result);
-        $_SESSION['poadmin']['uid']=$row['id'];
-        $_SESSION['poadmin']['name']=$row['user_name'];
-        $_SESSION['poadmin']['lip']=$row['last_ip'];
-        $_SESSION['poadmin']['llast_login']=date('l jS \of F Y h:i:s A', strtotime($row['last_login']));
-        if(!empty($_SERVER['HTTP_CLIENT_IP'])) {  //check ip from share internet
-          $ip=$_SERVER['HTTP_CLIENT_IP'];
-        }
-        elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {  //to check ip is pass from proxy
-          $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-        else {
-          $ip=$_SERVER['REMOTE_ADDR'];
-        }
-        $sqlupdate = "UPDATE `myprogramo` SET `last_ip` = '$ip', `last_login` = CURRENT_TIMESTAMP WHERE user_name = '$user_name' limit 1";
-        $result = db_query($sqlupdate,$dbConn);
-        $transact = db_affected_rows($dbConn);
-        $_SESSION['poadmin']['ip']=$ip;
-        $_SESSION['poadmin']['last_login']=date('l jS \of F Y h:i:s A');
-        $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
-        $result = db_query($sql,$dbConn);
-        $count = db_num_rows($result);
-        if($count > 0) {
-          $row=db_fetch_assoc($result);
-          $_SESSION['poadmin']['bot_id']=$row['bot_id'];
-          $_SESSION['poadmin']['bot_name']=$row['bot_name'];
-        }
-        else {
-          $_SESSION['poadmin']['bot_id']=-1;
-          $_SESSION['poadmin']['bot_name']="unknown";
-        }
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    if(!empty($row)) {
+      $_SESSION['poadmin']['uid']=$row['id'];
+      $_SESSION['poadmin']['name']=$row['user_name'];
+      $_SESSION['poadmin']['lip']=$row['last_ip'];
+      $_SESSION['poadmin']['llast_login']=date('l jS \of F Y h:i:s A', strtotime($row['last_login']));
+      if(!empty($_SERVER['HTTP_CLIENT_IP'])) {  //check ip from share internet
+        $ip=$_SERVER['HTTP_CLIENT_IP'];
+      }
+      elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {  //to check ip is pass from proxy
+        $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
       }
       else {
-        $msg .= "incorrect username/password<br>\n";
+        $ip=$_SERVER['REMOTE_ADDR'];
       }
+      $sql = "UPDATE `myprogramo` SET `last_ip` = '$ip', `last_login` = CURRENT_TIMESTAMP WHERE user_name = '$user_name' limit 1";
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $transact = $sth->rowCount();
+      $_SESSION['poadmin']['ip']=$ip;
+      $_SESSION['poadmin']['last_login']=date('l jS \of F Y h:i:s A');
+      $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $row = $sth->fetchAll(PDO::FETCH_ASSOC);
+      $count = count($row);
+      if($count > 0) {
+        $_SESSION['poadmin']['bot_id']=$row['bot_id'];
+        $_SESSION['poadmin']['bot_name']=$row['bot_name'];
+      }
+      else {
+        $_SESSION['poadmin']['bot_id']=-1;
+        $_SESSION['poadmin']['bot_name']="unknown";
+      }
+    }
+    else {
+      $msg .= "incorrect username/password<br>\n";
     }
     if($msg == "") {
       include ('main.php');
@@ -503,6 +502,7 @@ endFooter;
 
   function getCurrentVersion()
   {
+    if(isset($_SESSION['GitHubVersion'])) return $_SESSION['GitHubVersion'];
     $url = 'https://api.github.com/repos/Program-O/Program-O/contents/version.txt';
     $out = false;
     if (function_exists('curl_init'))
@@ -524,6 +524,7 @@ endFooter;
       #save_file(_DEBUG_PATH_ . 'version.txt', "out = " . print_r($out, true) . "\r\nVersion = $versionB64 = $version");
       $out = $version;
     }
+    $_SESSION['GitHubVersion'] = $out;
     return $out;
   }
 

@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: spell_checker/spell_checker.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -116,10 +116,15 @@
     global $dbConn, $dbn;
     $_SESSION['spellcheck'] = array();
     $sql = "SELECT `missspelling`, `correction` FROM `$dbn`.`spellcheck`;";
-    $result = db_query($sql, $dbConn);
-    if (db_num_rows($result) > 0)
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+    $num_rows = count($result);
+    if ($num_rows > 0)
     {
-      while($row = db_fetch_assoc($result))
+      foreach ($result as $row)
       {
         $missspelling = (IS_MB_ENABLED) ? mb_strtolower($row['missspelling']) : strtolower($row['missspelling']);
         $correction = $row['correction'];

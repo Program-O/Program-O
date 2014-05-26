@@ -2,7 +2,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-15-2013
@@ -19,8 +19,7 @@
     $thisFile = __FILE__;
     require_once('../../config/global_config.php');
     if (!defined('SCRIPT_INSTALLED')) header('location: ' . _INSTALL_PATH_ . 'install_programo.php');
-    (class_exists('PDO')) ? require_once(_LIB_PATH_ . 'PDO_functions.php') : require_once(_LIB_PATH_ . 'db_functions.php');
-    //include_once (_LIB_PATH_ . "db_functions.php");
+    require_once(_LIB_PATH_ . 'PDO_functions.php');
     include_once (_LIB_PATH_ . "error_functions.php");
     ini_set('error_log', _LOG_PATH_ . 'debug.reader.error.log');
   }
@@ -43,11 +42,12 @@
     $pass = md5($postVars['pass']);
     $dbConn = db_open();
     $sql = "select `password` from `myprogramo` where `user_name` = '$name' limit 1;";
-    $result = db_query($sql, $dbConn);
-    $numRows = db_num_rows($result);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $numRows = count($result);
     if ($numRows > 0)
     {
-      $row = db_fetch_assoc($result);
       $verify = $row['password'];
       if ($pass == $verify)
       {

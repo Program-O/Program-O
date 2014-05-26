@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: chatbot/conversation_start.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -11,12 +11,12 @@
   ***************************************/
 
   $time_start = microtime(true);
+  $script_start = $time_start;
   $last_timestamp = $time_start;
   $thisFile = __FILE__;
   require_once ("../config/global_config.php");
   //load shared files
-  (class_exists('PDO')) ? require_once(_LIB_PATH_ . 'PDO_functions.php') : require_once(_LIB_PATH_ . 'db_functions.php');
-  //include_once (_LIB_PATH_ . "db_functions.php");
+  require_once(_LIB_PATH_ . 'PDO_functions.php');
   include_once (_LIB_PATH_ . "error_functions.php");
   include_once(_LIB_PATH_ . 'misc_functions.php');
   ini_set('default_charset', $charset);
@@ -79,8 +79,13 @@
       $_SESSION = array();
       $user_id = (isset($convoArr['conversation']['user_id'])) ? $convoArr['conversation']['user_id'] : -1;
       $sql = "delete from `$dbn`.`client_properties` where `user_id` = $user_id;";
-      $result = db_query($sql, $dbConn);
-      $numRows = db_affected_rows();
+      
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+
+
+
+      $numRows = $sth->rowCount();
       $convoArr['client_properties'] = null;
       $convoArr['conversation'] = null;
       $convoArr['conversation']['user_id'] = $user_id;
@@ -96,14 +101,22 @@
       // Update the users table, and clear out any unused client properties as needed
       $sql = "update `$dbn`.`users` set `session_id` = '$new_convo_id' where `session_id` = '$old_convo_id';";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Update user - SQL:\n$sql", 3);
-      $result = db_query($sql, $dbConn);
-      $confirm = db_affected_rows($dbConn);
+      
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+
+      $confirm = $sth->rowCount();
       // Get user id, so that we can clear the client properties
       $sql = "select `id` from `$dbn`.`users` where `session_id` = '$new_convo_id' limit 1;";
-      $result = db_query($sql, $dbConn);
-      if ($result !== false)
+      
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $row = $sth->fetch(PDO::FETCH_ASSOC);
+
+
+
+      if ($row !== false)
       {
-        $row = db_fetch_assoc($result);
         $user_id = $row['id'];
         $convoArr['conversation']['user_id'] = $user_id;
         $convoArr['conversation']['convo_id'] = $new_convo_id;
@@ -161,8 +174,6 @@
     //return the values to display
     $display = $convoArr['send_to_user'];
     $time_start = $convoArr['time_start'];
-    $time_end = microtime(true);
-    $time = round(($time_end - $time_start) * 1000,4);
     unset($convoArr['nounList']);
     $final_convoArr = $convoArr;
   }
@@ -172,7 +183,9 @@
     $convoArr['send_to_user'] = '';
   }
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
-  ;
+  $dbConn = db_close();
+  $time_end = microtime(true);
+  $time = number_format(round(($time_end - $script_start) * 1000,7));
   display_conversation($convoArr);
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
   $convoArr = handleDebug($convoArr); // Make sure this is the last line in the file, so that all debug entries are captured.

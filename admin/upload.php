@@ -1,7 +1,7 @@
 <?php
 
   //-----------------------------------------------------------------------------------------------
-  //My Program-O Version: 2.4.0
+  //My Program-O Version: 2.4.1
   //Program-O  chatbot admin area
   //Written by Elizabeth Perreau and Dave Morton
   //DATE: MAY 17TH 2014
@@ -174,10 +174,10 @@ endScript;
             # Strip CRLF from category (windows)
             $aiml_add = str_replace("\n", '', $aiml_add);
             # Strip LF from category (mac/*nix)
-            $sql_add = str_replace('[aiml_add]', db_escape_string($aiml_add), $sql_template);
+            $sql_add = str_replace('[aiml_add]', $aiml_add, $sql_template);
             $sql_add = str_replace('[pattern]', $pattern, $sql_add);
             $sql_add = str_replace('[that]', $that, $sql_add);
-            $sql_add = str_replace('[template]', db_escape_string($template), $sql_add);
+            $sql_add = str_replace('[template]', $template, $sql_add);
             $sql_add = str_replace('[topic]', $topic, $sql_add);
             $sql .= "$sql_add";
             $rowCount++;
@@ -205,10 +205,10 @@ endScript;
           $template = substr($template,0, $tLen - 11);
           # Strip CRLF and LF from category (Windows/mac/*nix)
           $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
-          $sql_add = str_replace('[aiml_add]', db_escape_string($aiml_add), $sql_template);
+          $sql_add = str_replace('[aiml_add]', $aiml_add, $sql_template);
           $sql_add = str_replace('[pattern]', $pattern, $sql_add);
           $sql_add = str_replace('[that]', $that, $sql_add);
-          $sql_add = str_replace('[template]', db_escape_string($template), $sql_add);
+          $sql_add = str_replace('[template]', $template, $sql_add);
           $sql_add = str_replace('[topic]', '', $sql_add);
           $sql .= "$sql_add";
           $rowCount++;
@@ -242,9 +242,10 @@ endScript;
 
   function updateDB($sql)
   {
-    
-    $result = db_query($sql, $dbConn);
-    $commit = db_affected_rows($dbConn);
+    global $dbConn;
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $commit = $sth->rowCount();
     return $commit;
   }
 
@@ -294,8 +295,10 @@ endScript;
     $out = "                  <!-- Start List of Currently Stored AIML files -->\n";
     
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
-    $result = db_query($sql, $dbConn);
-    while ($row = db_fetch_assoc($result))
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($result as $row)
     {
       if (empty ($row['filename']))
       {
@@ -304,8 +307,6 @@ endScript;
       else
         $out .= $row['filename'] . "<br />\n";
     }
-    
-    ;
     $out .= "                  <!-- End List of Currently Stored AIML files -->\n";
     return $out;
   }
@@ -316,16 +317,16 @@ endScript;
     $botOptions = '';
     
     $sql = 'SELECT `bot_name`, `bot_id` FROM `bots` order by `bot_id`;';
-    $result = db_query($sql, $dbConn);
-    while ($row = db_fetch_assoc($result))
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($result as $row)
     {
       $bn = $row['bot_name'];
       $bi = $row['bot_id'];
       $sel = ($bot_id == $bi) ? ' selected="selected"' : '';
       $botOptions .= "                    <option$sel value=\"$bi\">$bn</option>\n";
     }
-    
-    ;
     return $botOptions;
   }
 
@@ -418,7 +419,7 @@ endScript;
     }
     else
     {
-      $out = "Upload failed. $fileName was either corrupted, or not a zip file." ;
+      $out = "Upload failed. $fileName was either corrupted, or not a zip file.";
     }
     return $out;
   }

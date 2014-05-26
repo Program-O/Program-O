@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.0
+//My Program-O Version: 2.4.1
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -52,8 +52,11 @@
     global $dbConn;
     if($id!="") {
       $sql = "DELETE FROM `aiml` WHERE `id` = '$id' LIMIT 1";
-      $result = db_query($sql, $dbConn);
-      if(!$result) {
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $affectedRows = $sth->rowCount();
+
+      if($affectedRows == 0) {
         $msg = 'Error AIML couldn\'t be deleted - no changes made.</div>';
       }
       else {
@@ -63,7 +66,6 @@
     else {
       $msg = 'Error AIML couldn\'t be deleted - no changes made.';
     }
-    ;
     return $msg;
   }
 
@@ -73,12 +75,13 @@
     $i=0;
     $searchTermsTemplate = " like '[value]' or\n  ";
     $searchTerms = '';
-    $search_topic    = db_escape_string(trim($post_vars['search_topic']));
-    $search_filename = db_escape_string(trim($post_vars['search_filename']));
-    $search_pattern  = db_escape_string(trim($post_vars['search_pattern']));
-    $search_template = db_escape_string(trim($post_vars['search_template']));
-    $search_that     = db_escape_string(trim($post_vars['search_that']));
-    if(!empty($search_topic) or !empty($search_filename) or !empty($search_pattern) or !empty($search_template) or !empty($search_that)) {
+    $search_topic    = trim($post_vars['search_topic']);
+    $search_filename = trim($post_vars['search_filename']);
+    $search_pattern  = trim($post_vars['search_pattern']);
+    $search_template = trim($post_vars['search_template']);
+    $search_that     = trim($post_vars['search_that']);
+    if(!empty($search_topic) or !empty($search_filename) or !empty($search_pattern) or !empty($search_template) or !empty($search_that))
+    {
       $sql = "SELECT * FROM `aiml` WHERE `bot_id` = '$bot_id'  AND (\n  [searchTerms]\n) LIMIT 50;";
       $searchTerms .= (!empty($search_topic)) ? '`topic`' . str_replace('[value]', $search_topic, $searchTermsTemplate) : '';
       $searchTerms .= (!empty($search_filename)) ? '`filename`' . str_replace('[value]', $search_filename, $searchTermsTemplate) : '';
@@ -87,7 +90,10 @@
       $searchTerms .= (!empty($search_that)) ? '`thatpattern`' . str_replace('[value]', $search_that, $searchTermsTemplate) : '';
       $searchTerms = rtrim($searchTerms, " or\n ");
       $sql = str_replace('[searchTerms]', $searchTerms, $sql);
-      $result = db_query($sql, $dbConn);
+      trigger_error("SQL = $sql");
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $result = $sth->fetchAll(PDO::FETCH_ASSOC);
       $htmltbl = <<<endtHead
           <table width="99%" border="1" cellpadding="1" cellspacing="1">
             <thead>
@@ -102,7 +108,8 @@
             </thead>
             <tbody>
 endtHead;
-      while($row=db_fetch_assoc($result)) {
+      foreach ($result as $row)
+      {
         $i++;
         $topic = $row['topic'];
         $pattern = $row['pattern'];
@@ -130,8 +137,7 @@ endLink;
             </tr>
 endRow;
     }
-      ;
-      $htmltbl .= "          </tbody>\n        </table>";
+        $htmltbl .= "          </tbody>\n        </table>";
       if($i == 50) {
         $msg = "Found more than 50 results for your specified search terms. please refine your search further";
       }
@@ -155,8 +161,9 @@ endRow;
     //db globals
     global $template, $dbConn;
     $sql = "SELECT * FROM `aiml` WHERE `id` = '$id' LIMIT 1";
-    $result = db_query($sql, $dbConn);
-    $row=db_fetch_assoc($result);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
     $topic = $row['topic'];
     $pattern = $row['pattern'];
     $thatpattern = $row['thatpattern'];
@@ -170,32 +177,32 @@ endRow;
     $form = str_replace('[thatpattern]', $thatpattern, $form);
     $form = str_replace('[template]', $row_template, $form);
     $form = str_replace('[filename]', $filename, $form);
-    ;
     return $form;
   }
 
   function updateAIML() {
     global $post_vars, $dbConn;
-    $template = db_escape_string(trim($post_vars['template']));
-    $filename = db_escape_string(trim($post_vars['filename']));
-    $pattern = (IS_MB_ENABLED) ? mb_strtoupper(db_escape_string(trim($post_vars['pattern']))) : strtoupper(db_escape_string(trim($post_vars['pattern'])));
-    $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper(db_escape_string(trim($post_vars['thatpattern']))) : strtoupper(db_escape_string(trim($post_vars['thatpattern'])));
-    $topic = (IS_MB_ENABLED) ? mb_strtoupper(db_escape_string(trim($post_vars['topic']))) : strtoupper(db_escape_string(trim($post_vars['topic'])));
+    $template = trim($post_vars['template']);
+    $filename = trim($post_vars['filename']);
+    $pattern = (IS_MB_ENABLED) ? mb_strtoupper(trim($post_vars['pattern'])) : strtoupper(trim($post_vars['pattern']));
+    $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper(trim($post_vars['thatpattern'])) : strtoupper(trim($post_vars['thatpattern']));
+    $topic = (IS_MB_ENABLED) ? mb_strtoupper(trim($post_vars['topic'])) : strtoupper(trim($post_vars['topic']));
     $id = trim($post_vars['id']);
     if(($template == "")||($pattern== "")||($id=="")) {
       $msg =  'Please make sure you have entered a user input and bot response ';
     }
     else {
       $sql = "UPDATE `aiml` SET `pattern` = '$pattern',`thatpattern`='$thatpattern',`template`='$template',`topic`='$topic',`filename`='$filename' WHERE `id`='$id' LIMIT 1";
-      $result = db_query($sql, $dbConn);
-      if($result) {
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $affectedRows = $sth->rowCount();
+      if($affectedRows > 0) {
         $msg =  'AIML Updated.';
       }
       else {
         $msg =  'There was an error updating the AIML - no changes made.';
       }
     }
-    ;
     return $msg;
   }
 

@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.0
+//My Program-O Version: 2.4.1
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -65,8 +65,9 @@ function getStats($interval) {
 	}
 	//get undefined defaults from the db
 	$sql = "SELECT count(distinct(`user_id`)) AS TOT FROM `conversation_log` WHERE bot_id = '$bot_id' $sqladd";
-	$result = db_query($sql, $dbConn);
-	$row = db_fetch_assoc($result);
+	$sth = $dbConn->prepare($sql);
+	$sth->execute();
+	$row = $sth->fetch(PDO::FETCH_ASSOC);
 
 	$res = $row['TOT'];
 	return $res;
@@ -88,9 +89,9 @@ endSQL;
 	}
   $sql = str_replace('[endCondition]', $endCondition, $sql);
 	//get undefined defaults from the db
-	$result = db_query($sql, $dbConn);
-	$row = db_fetch_assoc($result);
-
+	$sth = $dbConn->prepare($sql);
+	$sth->execute();
+	$row = $sth->fetch(PDO::FETCH_ASSOC);
 	$res = $row['TOT'];
 	return $res;
 }

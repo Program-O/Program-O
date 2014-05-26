@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: AIMLdownload.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 07-30-2013
@@ -82,7 +82,7 @@
   }
   // define whether mb_string functions are available (just in case it sin't already defined)
   if (!defined('IS_MB_ENABLED')) define('IS_MB_ENABLED', (function_exists('mb_internal_encoding')) ? true : false);
-  $dbCon = db_open();
+  $dbConn = db_open();
   $fileList = get_file_list();
   $zip = new ZipArchive();
   $result = $zip->open(ROOT_PATH . 'AIML_files.zip', ZipArchive :: CREATE);
@@ -122,12 +122,15 @@
 
   function get_file_list()
   {
-    global $dbCon;
+    global $dbConn;
     $filenames = array();
     $no_file = 'no_file';
     $sql = 'select distinct filename from aiml;';
-    $result = db_query($sql, $dbCon);
-    while ($row = db_fetch_assoc($result))
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($result as $row)
     {
       $filenames[] = $row['filename'];
     }
@@ -137,7 +140,7 @@
 
   function getAIMLByFileName($filename)
   {
-    global $dbCon;
+    global $dbConn;
     $categoryTemplate = '<category><pattern>[pattern]</pattern>[that]<template>[template]</template></category>';
     $fileNameSearch = '[fileName]';
     $cfnLen = strlen($filename);
@@ -149,9 +152,11 @@
     $fileContent = '<?xml version="1.0" encoding="utf-8"?>
 <aiml>';
     $sql = "select distinct topic from aiml where filename like '$filename';";
-    //$sql = db_escape_string($sql,$dbCon);
-    $result = db_query($sql, $dbCon);
-    while ($row = db_fetch_assoc($result))
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($result as $row)
     {
       $topicArray[] = $row['topic'];
     }
@@ -160,8 +165,11 @@
       if (!empty ($topic))
         $fileContent .= "<topic name=\"$topic\">\n";
       $sql = "select pattern, thatpattern, template from aiml where topic like '$topic' and filename like '$filename';";
-      $result = db_query($sql, $dbConn);
-      while ($row = db_fetch_assoc($result))
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+      foreach ($result as $row)
       {
         $pattern = (IS_MB_ENABLED) ? mb_strtoupper($row['pattern']) : strtoupper($row['pattern']);
         $template = str_replace("\r\n", '', $row['template']);

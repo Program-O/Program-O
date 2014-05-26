@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: chatbot/core/conversation/intialise_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -102,12 +102,16 @@
     //set in global config file
     $sql = "SELECT * FROM `$dbn`.`botpersonality` WHERE `bot_id` = '" . $bot_id . "'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "load db bot personality values SQL: $sql", 3);
-    $result = db_query($sql, $dbConn);
-    while ($row = db_fetch_assoc($result))
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($result as $row)
     {
       $convoArr['bot_properties'][$row['name']] = $row['value'];
     }
-    
+
     return $convoArr;
   }
 
@@ -307,11 +311,14 @@
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '" . $convoArr['conversation']['bot_id'] . "'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "load bot config SQL: $sql", 3);
-    $result = db_query($sql, $dbConn);
-    if (db_num_rows($result) > 0)
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
+
+    if (count($row) > 0)
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading bot details from the database.', 4);
-      $row = db_fetch_assoc($result);
       $convoArr['conversation']['conversation_lines'] = $row['conversation_lines'];
       $convoArr['conversation']['remember_up_to'] = $row['remember_up_to'];
       $convoArr['conversation']['debugemail'] = $row['debugemail'];
@@ -356,8 +363,10 @@
     global $dbConn, $dbn;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Saving the conversation to the DB.', 2);
     //clean and set
-    $usersay = db_escape_string($convoArr['aiml']['user_raw']);
-    $botsay = db_escape_string($convoArr['aiml']['parsed_template']);
+    $usersay = $convoArr['aiml']['user_raw'];
+    $usersay = str_replace("'", "\'", $usersay);
+    $botsay = $convoArr['aiml']['parsed_template'];
+    $botsay = str_replace("'", "\'", $botsay);
     $user_id = $convoArr['conversation']['user_id'];
     $convo_id = $convoArr['conversation']['convo_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
@@ -380,7 +389,10 @@
       CURRENT_TIMESTAMP
     )";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving conservation SQL: $sql", 3);
-    db_query($sql, $dbConn);
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+
     return $convoArr;
   }
 
@@ -398,9 +410,9 @@
     //get undefined defaults from the db
     runDebug(__FILE__, __FUNCTION__, __LINE__, "logging state", 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "user name = $user_name. Stored user name = " . $convoArr['conversation']['user_name'], 4);
-    $serialise_convo = db_escape_string(serialize(reduceConvoArr($convoArr)));
+    $serialise_convo = serialize(reduceConvoArr($convoArr));
     $user_id = $convoArr['conversation']['user_id'];
-    $sql_addon = (!empty ($user_name)) ? "`user_name` = '" . db_escape_string($user_name) . "', " : '';
+    $sql_addon = (!empty ($user_name)) ? "`user_name` = '" . $user_name . "', " : '';
     $sql = "UPDATE `$dbn`.`users`
                 SET
                 `state` = '$serialise_convo',
@@ -409,7 +421,10 @@
                 `chatlines` = `chatlines`+1
                 WHERE `id` = '$user_id' LIMIT 1";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "updating conversation state SQL: $sql", 3);
-    db_query($sql, $dbConn);
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+
     return $convoArr;
   }
 
@@ -427,10 +442,15 @@
     $user_id = $convoArr['conversation']['user_id'];
     $sql = "SELECT * FROM `$dbn`.`users` WHERE `id` = '$user_id' LIMIT 1";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation state SQL: $sql", 3);
-    $result = db_query($sql, $dbConn);
-    if (($result) && (db_num_rows($result) > 0))
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
+
+
+
+    if (($row) && (count($row) > 0))
     {
-      	$row = db_fetch_assoc($result);
       	$convoArr = unserialize($row['state']);
     	$user_name = (!empty ($row['user_name'])) ? $row['user_name'] : $unknown_user;
     	$convoArr['conversation']['user_name'] = $user_name;
@@ -468,10 +488,13 @@
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '$bot_id' and `bot_active`='1'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making sure the bot exists. SQL = $sql", 3);
-    $result = db_query($sql, $dbConn);
-    if (($result) && (db_num_rows($result) > 0))
+    
+    $sth = $dbConn->prepare($sql) or exit ('There is a problem in file' . __FILE__ .', function ' . __FUNCTION__ . ', line ' . __LINE__ . '. Error: ' . $dbConn->errorInfo());
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
+
+    if (($row) && (count($row) > 0))
     {
-      $row = db_fetch_assoc($result);
       $bot_name = $row['bot_name'];
       $error_response = $row['error_response'];
       $unknown_user = $row['unknown_user'];
@@ -539,8 +562,12 @@
     $ip = $_SERVER['REMOTE_ADDR'];
     $convoArr['client_properties']['ip_address'] = $ip;
     $sql = "select `user_name`, `id`, `chatlines` from `$dbn`.`users` where `session_id` = '$convo_id' limit 1;";
-    $result = db_query($sql, $dbConn);
-    $numRows = db_num_rows($result);
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+    $numRows = count($result);
     if ($numRows == 0)
     {
       $convoArr = intisaliseUser($convoArr);
@@ -548,7 +575,6 @@
     }
     else
     {
-      $row = db_fetch_assoc($result);
       $user_id = (!empty ($row['id'])) ? $row['id'] : 0;
       $user_name = (!empty ($row['user_name'])) ? $row['user_name'] : $unknown_user;
     }
@@ -614,7 +640,11 @@
     $limit = $remember_up_to;
     $sql = "select `input`, `response` from `$dbn`.`conversation_log` where `user_id` = $user_id and `bot_id` = $bot_id order by `id` desc limit $limit;"; // desc
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation log entries for the current user. SQL:\n$sql", 3);
-    $result = db_query($sql, $dbConn);
+    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
     if ($result)
     {
       $tmpThatRows = array();
@@ -622,7 +652,7 @@
       $tmpThat = array();
       $tmpInput = array();
       $puncuation = array(',', '?', ';', '!');
-      while ($row = db_fetch_assoc($result))
+      foreach ($result as $row)
       {
         $tmpThatRows[] = $row['response'];
         $tmpInputRows[] = $row['input'];

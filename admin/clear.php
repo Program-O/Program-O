@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.0
+//My Program-O Version: 2.4.1
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -14,21 +14,33 @@ $content ="";
 
     <script type="text/javascript">
 <!--
-      function showMe() {
+      function showMe()
+{
+
+
         var sh = document.getElementById('showHelp');
         var tf = document.getElementById('clearForm');
         sh.style.display = 'block';
         tf.style.display = 'none';
       }
-      function hideMe() {
+      function hideMe()
+{
+
+
         var sh = document.getElementById('showHelp');
         var tf = document.getElementById('clearForm');
         sh.style.display = 'none';
         tf.style.display = 'block';
       }
-      function showHide() {
+      function showHide()
+{
+
+
         var display = document.getElementById('showHelp').style.display;
-        switch (display) {
+        switch (display)
+{
+
+
           case '':
           case 'none':
             return showMe();
@@ -46,10 +58,16 @@ endScript;
 $post_vars = filter_input_array(INPUT_POST);
 
 
-if((isset($post_vars['action']))&&($post_vars['action']=="clear")) {
+if((isset($post_vars['action']))&&($post_vars['action']=="clear"))
+{
+
+
   $content .= clearAIML();
 }
-elseif((isset($post_vars['clearFile']))&&($post_vars['clearFile'] != "null")) {
+elseif((isset($post_vars['clearFile']))&&($post_vars['clearFile'] != "null"))
+{
+
+
   $content .= clearAIMLByFileName($post_vars['clearFile']);
 }
 else {
@@ -77,53 +95,73 @@ else {
     $mainTitle     = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
     $mainContent   = str_replace('[showHelp]', $showHelp, $mainContent);
     $mainContent     = str_replace('[upperScripts]', $upperScripts, $mainContent);
-  function replaceTags(&$content) {
+  function replaceTags(&$content)
+{
+
+
     return $content;
   }
 
-  function clearAIML() {
+  function clearAIML()
+{
+
+
     global $dbn, $bot_id, $bot_name, $dbConn;
 
     $sql = "DELETE FROM `aiml` WHERE `bot_id` = $bot_id;";
     #return "SQL = $sql";
-    $result = db_query($sql, $dbConn);
-    ;
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $affectedRows = $sth->rowCount();
     $msg = "<strong>All AIML categories cleared for $bot_name!</strong><br />";
     return $msg;
   }
 
-  function clearAIMLByFileName($filename) {
+  function clearAIMLByFileName($filename)
+{
+
+
     global $dbn, $bot_id, $dbConn;
-    $cleanedFilename = db_escape_string($filename, $dbConn);
-    $sql = "delete from `aiml` where `filename` like '$cleanedFilename' and `bot_id` = $bot_id;";
-    #return "SQL = $sql";
-    $result = db_query($sql, $dbConn);
-    ;
+    $sql = "delete from `aiml` where `filename` like '$filename' and `bot_id` = $bot_id;";
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $affectedRows = $sth->rowCount();
     $msg = "<br/><strong>AIML categories cleared for file $filename!</strong><br />";
     return $msg;
   }
 
-  function getSelOpts() {
+  function getSelOpts()
+{
+
+
     global $dbn, $bot_id, $msg, $dbConn;
     $out = "                  <!-- Start Selectbox Options -->\n";
     $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
-    #return "SQL = $sql";
-    $result = db_query($sql, $dbConn);
-    if (db_num_rows($result) == 0) $msg = "This bot has no AIML categories to clear.";
-    while ($row = db_fetch_assoc($result)) {
-      if (empty($row['filename'])) {
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $numRows = count($result);
+    if ($numRows == 0) $msg = "This bot has no AIML categories to clear.";
+    foreach ($result as $row)
+    {
+      if (empty($row['filename']))
+{
+
+
         $curOption = "                  <option value=\"\">{No Filename entry}</option>\n";
       }
       else $curOption = str_replace('[val]', $row['filename'], $optionTemplate);
       $out .= $curOption;
     }
-    ;
     $out .= "                  <!-- End Selectbox Options -->\n";
     return $out;
   }
 
-  function renderMain() {
+  function renderMain()
+{
+
+
     $selectOptions = getSelOpts();
     $content = <<<endForm
           Deleting AIML categories from the database is <strong>permanent</strong>!
@@ -159,7 +197,10 @@ $selectOptions
           </div>
 [showHelp]
           <script type="text/javascript">
-            function verify() {
+            function verify()
+{
+
+
               var fn = document.getElementById('clearFile').value;
               var clearAll = document.getElementById('actionClearAll').checked;
               if (fn == 'null' && clearAll === false) return false;

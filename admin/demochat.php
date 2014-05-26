@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.0
+//My Program-O Version: 2.4.1
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -29,8 +29,9 @@
   function showChatFrame() {
     global $template, $bot_name, $bot_id, $dbConn;
     $sql = "select `format` from `bots` where `bot_id` = $bot_id limit 1;";
-    $result = db_query($sql, $dbConn);
-    $row = db_fetch_assoc($result);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
     $format = strtolower($row['format']);
     switch ($format) {
       case "html":

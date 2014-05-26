@@ -3,21 +3,25 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.0
+  * Version: 2.4.1
   * FILE: install_programo.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
   * DETAILS: Program O's Automatic install script
   ***************************************/
-  $thisFile = __FILE__;
-  # Test for PHP version 5+
-  $myPHP_Version = (float) phpversion();
-  If ($myPHP_Version < 5)
-    die("I'm sorry, but Program O requires PHP version 5.0 or greater to function. Please ask your hosting provider to upgrade.");
   session_name('PGO_install');
   session_start();
-  $no_unicode_message = '';
-  #$no_unicode_message = "<p class=\"red\">Warning! Unicode Support is not available on this server. Non-English languages will not display properly. Please ask your hosting provider to enable the PHP mbstring extension to correct this.</p>\n";
+  $thisFile = __FILE__;
+  # Test for PHP version 5+
+  $fatalError = '';
+  $myPHP_Version = (float) phpversion();
+  $pdoSupport = (class_exists('PDO'));
+  //$pdoSupport = false;
+  //$myPHP_Version = 5.0;
+  If ($myPHP_Version < 5.2) $fatalError .= "<p class='red bold'>We're sorry, but Program O requires PHP version 5.2 or greater to function. Please ask your hosting provider to upgrade.</p>";
+  If (!$pdoSupport) $fatalError .= "<p class='red bold'>Support for PHP Data Objects (PDO) was not detected! This is required for Program O to function. Please ask your hosting provider to upgrade.</p>";
+  $no_unicode_message = (function_exists('mb_check_encoding')) ? '' : "<p class=\"red bold\">Warning! Unicode Support is not available on this server. Non-English languages will not display properly. Please ask your hosting provider to enable the PHP mbstring extension to correct this.</p>\n";
+  //$no_unicode_message = "<p class=\"red bold\">Warning! Unicode Support is not available on this server. Non-English languages will not display properly. Please ask your hosting provider to enable the PHP mbstring extension to correct this.</p>\n";
   $errorMessage = (!empty ($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';
   $errorMessage .= $no_unicode_message;
   require_once ('install_config.php');
@@ -33,7 +37,9 @@
   $page = (isset ($_REQUEST['page'])) ? $_REQUEST['page'] : 1;
   $action = (isset ($_REQUEST['action'])) ? $_REQUEST['action'] : '';
   if (!empty ($action))
+  {
     $message = $action($page);
+  }
   $pageTemplate = 'Container';
   $pageNotes = ucwords("Page $page Notes");
   $content = getSection('Header', $page_template, false);
@@ -43,6 +49,7 @@
   $notes = getSection($pageNotes, $page_template);
   $submitButton = getSection('SubmitButton', $page_template);
   $main = ($page == 1) ? getSection('InstallForm', $page_template) : $message;
+  $main = (empty($fatalError)) ? $main : $fatalError;
   $tmpSearchArray = array();
   $content = str_replace('[mainPanel]', $main, $content);
   $content = str_replace('[http_host]', $myHost, $content);
@@ -61,7 +68,7 @@
 </html>
 endPage;
 
-  exit ($content);
+  exit($content);
 
   function getSection($sectionName, $page_template, $notFoundReturn = true)
   {
@@ -106,35 +113,45 @@ endPage;
     $configContents = str_replace($tagSearch, $varReplace, $configContents);
     $saveFile = file_put_contents(_CONF_PATH_ . 'global_config.php', $configContents);
     // Now, update the data to the database, starting with making sure the tables are installed
-    $sql = "show tables;";
-    $conn = mysql_connect($myPostVars['dbh'], $myPostVars['dbu'], $myPostVars['dbp']) or install_error('Could not connect to the database!', mysql_error(), $sql);
+    $dbh = $myPostVars['dbh'];
     $dbn = $myPostVars['dbn'];
-    $db = mysql_select_db($dbn, $conn) or install_error("Can't select the database $dbn!", mysql_error(), "use $dbn");
-    $result = db_query($sql, $conn) or install_error('Unknown database error!', mysql_error(), $sql);
-    $row = db_fetch_assoc($result);
+    $dbu = $myPostVars['dbu'];
+    $dbp = $myPostVars['dbp'];
+        try {
+      $dbConn = new PDO("mysql:host=$dbh;dbname=$dbn;charset=utf8", $dbu, $dbp);
+      $dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
+    catch (Exception $e)
+    {
+      header('Content-type: text/plain');
+      var_dump($e);
+      exit('Cannot connect to the database! ' . $e->getMessage());
+
+    }
+
+    $sql = "show tables;";
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
     if (empty ($row))
     {
       $sql = file_get_contents('new.sql');
-      $queries = preg_split("/;/", $sql);
-      foreach ($queries as $query)
-      {
-        if (strlen(trim($query)) > 0)
-        {
-          $result = db_query($query, $conn) or install_error('Error creating new tables for DB!', mysql_error(), $query);
-          $success = db_affected_rows();
-        }
-      }
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $affectedRows = $sth->rowCount();
+      $success = ($affectedRows > 0) ? true : false;
     }
     $sql = 'select `error_response` from `bots` where 1 limit 1';
-    $result = db_query($sql, $conn) or upgrade($conn);
-    
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $error_response = $row['error_response'];
     $sql_template = "
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
 VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[save_state]',
 '$conversation_lines', '$remember_up_to', '[debugemail]', '[debugshow]', '[debugmode]', '$error_response', '$pattern');";
     require_once (_LIB_PATH_ . 'error_functions.php');
-    (class_exists('PDO')) ? require_once(_LIB_PATH_ . 'PDO_functions.php') : require_once(_LIB_PATH_ . 'db_functions.php');
-    //require_once (_LIB_PATH_ . 'db_functions.php');
+    require_once(_LIB_PATH_ . 'PDO_functions.php');
     $bot_id = 1;
     $sql = str_replace('[default_bot_id]', $bot_id, $sql_template);
     $sql = str_replace('[bot_name]', $myPostVars['bot_name'], $sql);
@@ -153,18 +170,20 @@ VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_pare
     $sql = str_replace('[error_response]', $error_response, $sql);
     $sql = str_replace('[aiml_pattern]', $pattern, $sql);
     #$save = file_put_contents(_CONF_PATH_ . 'sql.txt', $sql); // For debugging purposes only
-    $x = db_query($sql, $conn) or install_error('Could not enter bot info for bot #' . $bot_id . '!', mysql_error(), $sql);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $affectedRows = $sth->rowCount();
     $encrypted_adm_dbp = md5($myPostVars['adm_dbp']);
     $adm_dbu = $myPostVars['adm_dbu'];
     $cur_ip = $_SERVER['REMOTE_ADDR'];
-    $adminSQL = "insert ignore into `myprogramo` (`id`, `user_name`, `password`, `last_ip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
-    $result = db_query($adminSQL, $conn) or install_error('Could not add admin credentials! Check line #' . __LINE__, mysql_error(), $adminSQL);
-    $conn = db_close();
-    if ($result and empty ($_SESSION['errorMessage']))
+    $sql = "insert ignore into `myprogramo` (`id`, `user_name`, `password`, `last_ip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $affectedRows = $sth->rowCount();
+
+    if ($affectedRows > 0 and empty ($_SESSION['errorMessage']))
     {
       $out = getSection('InstallComplete', $page_template);
-      if (file_exists(_INSTALL_PATH_ . 'upgrade.php'))
-        unlink(_INSTALL_PATH_ . 'upgrade.php');
     }
     else
       $out = getSection('InstallError', $page_template);
@@ -184,19 +203,5 @@ endError;
       $_SESSION['errorMessage'] .= $errorTemplate;
   }
 
-  function upgrade($conn)
-  {
-    $upgradeSQL = file_get_contents('upgrade_2.0_2.1.sql');
-    $queries = explode(';', $upgradeSQL);
-    foreach ($queries as $line => $sql)
-    {
-      $sql = trim($sql);
-      if (!empty ($sql))
-      {
-        $result = db_query($sql, $conn) or install_error('Error upgrading the database! check line #' . $line + 1 . ' of the SQL file. Error:', mysql_error() . "\nSQL: $sql\n", $sql);
-        $success = db_affected_rows();
-      }
-    }
-  }
 
 ?>

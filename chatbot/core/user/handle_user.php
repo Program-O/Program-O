@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.4.0
+* Version: 2.4.1
 * FILE: chatbot/core/user/handle_user.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 17TH 2014
@@ -40,12 +40,16 @@ function get_user_id($convoArr)
   runDebug(__FILE__, __FUNCTION__, __LINE__, 'Getting user ID.', 2);
   //get undefined defaults from the db
   $sql = "SELECT * FROM `$dbn`.`users` WHERE `session_id` = '".$convoArr['conversation']['convo_id']."' limit 1";
-  $result = db_query($sql,$dbConn);
-  
-  $count = db_num_rows($result);
+  $sth = $dbConn->prepare($sql);
+  $sth->execute();
+  $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+  $count = count($result);
   if($count>0)
   {
-    $row = db_fetch_assoc($result);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $row = $sth->fetch(PDO::FETCH_ASSOC);
     $convoArr['conversation']['user_id'] = $row['id'];
     // add user name, if set
     $convoArr['conversation']['user_name'] = (!empty($convoArr['client_properties']['name'])) ? $convoArr['client_properties']['name'] : (!empty($row['user_name'])) ? $row['user_name'] : $unknown_user;
@@ -82,22 +86,24 @@ function intisaliseUser($convoArr)
   $sb = "unknown browser";
   
   if(isset($_SERVER['REMOTE_ADDR'])){
-    $sa = db_escape_string($_SERVER['REMOTE_ADDR']);
+    $sa = $_SERVER['REMOTE_ADDR'];
   } 
 
   if(isset($_SERVER['HTTP_REFERER'])){
-    $sr = db_escape_string($_SERVER['HTTP_REFERER']);
+    $sr = $_SERVER['HTTP_REFERER'];
   }
   
   if(isset($_SERVER['HTTP_USER_AGENT'])){
-    $sb = db_escape_string($_SERVER['HTTP_USER_AGENT']);
+    $sb = $_SERVER['HTTP_USER_AGENT'];
   }
 
   $sql = "INSERT INTO `$dbn`.`users` (`id`, `user_name`, `session_id`, `bot_id`, `chatlines` ,`ip` ,`referer` ,`browser` ,`date_logged_on` ,`last_update`, `state`)
   VALUES ( NULL , '$unknown_user', '$convo_id', $bot_id, '0', '$sa', '$sr', '$sb', CURRENT_TIMESTAMP , CURRENT_TIMESTAMP, '')";
 
-  db_query($sql,$dbConn);
-  $user_id = db_insert_id($dbConn);
+  $sth = $dbConn->prepare($sql);
+  $sth->execute();
+
+  $user_id = $dbConn->lastInsertId();
   $convoArr['conversation']['user_id'] = $user_id;
   $convoArr['conversation']['totallines'] = 0;
   runDebug( __FILE__, __FUNCTION__, __LINE__, "intisaliseUser #$user_id SQL: $sql",3);
@@ -107,9 +113,11 @@ function intisaliseUser($convoArr)
   $sql = "INSERT INTO `$dbn`.`client_properties` (`id`,`user_id`,`bot_id`,`name`,`value`)
   VALUES ( NULL , '$user_id', $bot_id, 'name', '$unknown_user')";
 
-  db_query($sql, $dbConn);
-  
-  
+  $sth = $dbConn->prepare($sql);
+  $sth->execute();
+
+
+
   return $convoArr;
 }
 
