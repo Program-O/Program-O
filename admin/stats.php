@@ -67,7 +67,7 @@ function getStats($interval) {
 	$sql = "SELECT count(distinct(`user_id`)) AS TOT FROM `conversation_log` WHERE bot_id = '$bot_id' $sqladd";
 	$sth = $dbConn->prepare($sql);
 	$sth->execute();
-	$row = $sth->fetch(PDO::FETCH_ASSOC);
+	$row = $sth->fetch();
 
 	$res = $row['TOT'];
 	return $res;
@@ -91,7 +91,7 @@ endSQL;
 	//get undefined defaults from the db
 	$sth = $dbConn->prepare($sql);
 	$sth->execute();
-	$row = $sth->fetch(PDO::FETCH_ASSOC);
+	$row = $sth->fetch();
 	$res = $row['TOT'];
 	return $res;
 }

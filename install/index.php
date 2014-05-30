@@ -46,7 +46,7 @@
         </div>
         <div id="main_content" class="center">
           It appears that Program O is already installed. If you wish to run the install script again,
-          <a href="install_programo.php">ckick here</a>. Otherwise, you can go to the
+          <a href="install_programo.php">click here</a>. Otherwise, you can go to the
           <a href="<?php echo _ADMIN_URL_ ?>">admin page</a>, or check out your chatbot, <a href="<?php echo _BASE_URL_ ?>">here</a>.
         </div>
       </div>

@@ -72,7 +72,7 @@ function getUserNames() {
   $sql = "select `id`, `user_name` from `users` where 1;";
   $sth = $dbConn->prepare($sql);
   $sth->execute();
-  $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+  $result = $sth->fetchAll();
   foreach ($result as $row) {
 
     $nameList[$row['id']] = $row['user_name'];
@@ -125,7 +125,7 @@ function getuserList($showing) {
 endList;
   $sth = $dbConn->prepare($sql);
   $sth->execute();
-  $rows = $sth->fetchAll(PDO::FETCH_ASSOC);
+  $rows = $sth->fetchAll();
   $numRows = count($rows);
   if ($numRows == 0) $list .= '          <li>No log entries found</li>';
   foreach ($rows as $row) {
@@ -223,7 +223,7 @@ function getuserConvo($id, $showing) {
   $list .="<div class=\"convolist\">";
   $sth = $dbConn->prepare($sql);
   $sth->execute();
-  $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+  $result = $sth->fetchAll();
   foreach ($result as $row) {
     $thisdate = date("Y-m-d",strtotime($row['timestamp']));
     if($thisdate!=$lasttimestamp) {

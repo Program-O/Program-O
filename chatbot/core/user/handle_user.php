@@ -42,14 +42,14 @@ function get_user_id($convoArr)
   $sql = "SELECT * FROM `$dbn`.`users` WHERE `session_id` = '".$convoArr['conversation']['convo_id']."' limit 1";
   $sth = $dbConn->prepare($sql);
   $sth->execute();
-  $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+  $result = $sth->fetchAll();
 
   $count = count($result);
   if($count>0)
   {
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
     $convoArr['conversation']['user_id'] = $row['id'];
     // add user name, if set
     $convoArr['conversation']['user_name'] = (!empty($convoArr['client_properties']['name'])) ? $convoArr['client_properties']['name'] : (!empty($row['user_name'])) ? $row['user_name'] : $unknown_user;

@@ -290,7 +290,7 @@
 	
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
 
 	if (($row) and (count($row) > 0)) {
 		$response = $row['value'];
@@ -335,7 +335,7 @@
       
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $row = $sth->fetch(PDO::FETCH_ASSOC);
+      $row = $sth->fetch();
 
       $rowCount = count($row);
       if ($rowCount != 0)
@@ -353,7 +353,7 @@
     
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
 
     $rowCount = count($result);
     $var_name = $var_name;

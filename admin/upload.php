@@ -121,14 +121,18 @@ endScript;
     $success = false;
     
     #Clear the database of the old entries
-    $sql = "DELETE FROM `aiml`  WHERE `filename` = '$fileName' AND bot_id = '$bot_id'";
+    $sql = "DELETE FROM `aiml`  WHERE `filename` = :filename AND bot_id = :bot_id";
     if (isset ($post_vars['clearDB']))
     {
-      $x = updateDB($sql);
+      $sth = $dbConn->prepare($sql);
+      $sth->bindValue(':filename', $fileName);
+      $sth->bindValue(':bot_id', $bot_id);
+      $sth->execute();
+      $affectedRows = $sth->rowCount();
     }
     $myBot_id = (isset ($post_vars['bot_id'])) ? $post_vars['bot_id'] : $bot_id;
     # Read new file into the XML parser
-    $sql_start = "insert into `aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`) values\n";
+    $sql_start = 'insert into `aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`) values' . PHP_EOL;
     $sql = $sql_start;
     $sql_template = "(NULL, $myBot_id, '[aiml_add]', '[pattern]', '[that]', '[template]', '[topic]', '$fileName'),\n";
     # Validate the incoming document
@@ -146,6 +150,7 @@ endScript;
     $aimlTagStart = stripos($aimlContent, '<aiml', 0);
     $aimlTagEnd = strpos($aimlContent, '>', $aimlTagStart) + 1;
     $aimlFile = $validAIMLHeader . substr($aimlContent, $aimlTagEnd);
+    save_file(_UPLOAD_PATH_ . 'tmp/' . $fileName, $aimlFile);
     try
     {
       libxml_use_internal_errors(true);
@@ -156,11 +161,13 @@ endScript;
       $_SESSION['failCount'] = 0;
       if (!empty ($aiml->topic))
       {
+        $sql = $sql_start;
         foreach ($aiml->topic as $topicXML)
         {
         # handle any topic tag(s) in the file
           $topicAttributes = $topicXML->attributes();
           $topic = $topicAttributes['name'];
+          //$sth->bindValue(':topic', $topic);
           foreach ($topicXML->category as $category)
           {
             $fullCategory = $category->asXML();
@@ -170,10 +177,12 @@ endScript;
             $template = $category->template->asXML();
             $template = str_replace('<template>', '', $template);
             $template = str_replace('</template>', '', $template);
-            $aiml_add = str_replace("\r\n", '', $fullCategory);
-            # Strip CRLF from category (windows)
-            $aiml_add = str_replace("\n", '', $aiml_add);
-            # Strip LF from category (mac/*nix)
+            $template = str_replace("'", "\'", $template);
+            $template = str_replace("\\'", "\'", $template);
+            # Strip CRLF and LF from category (Windows/mac/*nix)
+            $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
+            $aiml_add = str_replace("'", "\'", $aiml_add);
+            $aiml_add = str_replace("\\'", "\'", $aiml_add);
             $sql_add = str_replace('[aiml_add]', $aiml_add, $sql_template);
             $sql_add = str_replace('[pattern]', $pattern, $sql_add);
             $sql_add = str_replace('[that]', $that, $sql_add);
@@ -185,7 +194,10 @@ endScript;
             {
               $rowCount = 0;
               $sql = rtrim($sql, ",\n") . ';';
-              $success = (updateDB($sql) >= 0) ? true : false;
+              save_file(_LOG_PATH_ . 'sql.txt', $sql . PHP_EOL, true);
+              $sth = $dbConn->prepare($sql);
+              $sth->execute();
+              $success = ($sth->rowCount() >= 0) ? true : false;
               $sql = $sql_start;
             }
           }
@@ -203,9 +215,13 @@ endScript;
           $template = substr($template,10);
           $tLen = strlen($template);
           $template = substr($template,0, $tLen - 11);
+          $template = str_replace("'", "\'", $template);
+          $template = str_replace("\\'", "\'", $template);
           # Strip CRLF and LF from category (Windows/mac/*nix)
           $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
-          $sql_add = str_replace('[aiml_add]', $aiml_add, $sql_template);
+          $aiml_add = str_replace("'", "\'", $aiml_add);
+          $aiml_add = str_replace("\\'", "\'", $aiml_add);
+          $sql_add = str_replace('[aiml_add]', $aiml_add , $sql_template);
           $sql_add = str_replace('[pattern]', $pattern, $sql_add);
           $sql_add = str_replace('[that]', $that, $sql_add);
           $sql_add = str_replace('[template]', $template, $sql_add);
@@ -216,21 +232,36 @@ endScript;
           {
             $rowCount = 0;
             $sql = rtrim($sql, ",\n") . ';';
-            $success = (updateDB($sql) >= 0) ? true : false;
+            //save_file(_LOG_PATH_ . 'sql1.txt', $sql . PHP_EOL);
+            $sth = $dbConn->prepare($sql);
+            $sth->execute();
+            $success = ($sth->rowCount() >= 0) ? true : false;
             $sql = $sql_start;
           }
+        }
+        if ($sql != $sql_start)
+        {
+          $sql = rtrim($sql, ",\n") . ';';
+          //save_file(_LOG_PATH_ . 'sql2.txt', $sql . PHP_EOL, true);
+          $sth = $dbConn->prepare($sql);
+          $sth->execute();
+          $success = ($sth->rowCount() >= 0) ? true : false;
         }
       }
       if ($sql != $sql_start)
       {
         $sql = rtrim($sql, ",\n") . ';';
-        $success = (updateDB($sql) >= 0) ? true : false;
+        //save_file(_LOG_PATH_ . 'sql3.txt', $sql . PHP_EOL, true);
+        $sth = $dbConn->query($sql);
+        $success = ($sth->rowCount() >= 0) ? true : false;
       }
       $msg = ($from_zip === true) ? '' : "Successfully added $fileName to the database.<br />\n";
     }
     catch (Exception $e)
     {
       $trace = print_r($e->getTrace(), true);
+      exit($e->getMessage() . ' at line ' . $e->getLine());
+      //trigger_error("Trace:\n$trace");
       //file_put_contents(_LOG_PATH_ . 'error.trace.log', $trace . "\nEnd Trace\n\n", FILE_APPEND);
       $success = false;
       $_SESSION['failCount']++;
@@ -240,14 +271,6 @@ endScript;
     return $msg;
   }
 
-  function updateDB($sql)
-  {
-    global $dbConn;
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $commit = $sth->rowCount();
-    return $commit;
-  }
 
   function processUpload()
   {
@@ -297,7 +320,7 @@ endScript;
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
     foreach ($result as $row)
     {
       if (empty ($row['filename']))
@@ -319,7 +342,7 @@ endScript;
     $sql = 'SELECT `bot_name`, `bot_id` FROM `bots` order by `bot_id`;';
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
     foreach ($result as $row)
     {
       $bn = $row['bot_name'];
@@ -332,13 +355,14 @@ endScript;
 
   function libxml_display_errors($msg)
   {
+    $out = '';
     $errors = libxml_get_errors();
     foreach ($errors as $error)
     {
-      $msg .= libxml_display_error($error) . "<br />\n";
+      $out .= libxml_display_error($error) . "<br />\n";
     }
     libxml_clear_errors();
-    return $msg;
+    return $msg . $out;
   }
 
   function libxml_display_error($error)
@@ -347,22 +371,22 @@ endScript;
     switch ($error->level)
     {
       case LIBXML_ERR_WARNING :
-        $out .= "<b>Warning $error->code</b>: ";
+        $out .= "<b>Warning {$error->code}</b>: ";
         break;
       case LIBXML_ERR_ERROR :
-        $out .= "<b>Error $error->code</b>: ";
+        $out .= "<b>Error {$error->code}</b>: ";
         break;
       case LIBXML_ERR_FATAL :
-        $out .= "<b>Fatal Error $error->code</b>: ";
+        $out .= "<b>Fatal Error {$error->code}</b>: ";
         break;
     }
     $out .= trim($error->message);
     if ($error->file)
     {
-      $out .= " in <b>$error->file</b>";
+      $out .= " in <b>{$error->file}</b><br>\n";
     }
-    $out .= " on line <b>$error->line</b>\n";
-    return $out;
+    $out .= " on line <b>{$error->line}</b><br>\n";
+    return "$out<br>\n";
   }
 
   function processZip($fileName)

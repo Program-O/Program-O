@@ -1,35 +1,41 @@
 <?PHP
-//-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.1
-//Program-O  chatbot admin area
-//Written by Elizabeth Perreau and Dave Morton
-//DATE: MAY 17TH 2014
-//for more information and support please visit www.program-o.com
-//-----------------------------------------------------------------------------------------------
-// select_bots.php
+  /***************************************
+    * http://www.program-o.com
+    * PROGRAM O
+    * Version: 2.4.1
+    * FILE: select_bots.php
+    * AUTHOR: Elizabeth Perreau and Dave Morton
+    * DATE: 05-26-2014
+    * DETAILS: Selects the current chatbot and displays editable config data
+    ***************************************/
 
-$selectBot ='';
-$post_vars = filter_input_array(INPUT_POST);
+  $selectBot = '';
+  $curBot = array();
+  $post_vars = filter_input_array(INPUT_POST);
 
-if((isset($post_vars['action']))&&($post_vars['action']=="update")) {
-  $selectBot .= getChangeList();
-  $msg = updateBotSelection();
-  $selectBot .= getSelectedBot();
-}
-elseif((isset($post_vars['action']))&&($post_vars['action']=="change")) {
-  changeBot();
-  $selectBot .= getChangeList();
-  $selectBot .= getSelectedBot();
-}
-elseif((isset($post_vars['action']))&&($post_vars['action']=="add")) {
-  $selectBot .= addBot();
-  $selectBot .= getChangeList();
-  $selectBot .= getSelectedBot();
-}
-else {
-  $selectBot .= getChangeList();
-  $selectBot .= getSelectedBot();
-}
+  if((isset($post_vars['action']))&&($post_vars['action']=="update")) {
+    $selectBot .= getChangeList();
+    $msg = updateBotSelection();
+    $selectBot .= getSelectedBot();
+  }
+  elseif((isset($post_vars['action']))&&($post_vars['action']=="change")) {
+    $bot_id = $post_vars['bot_id'];
+    changeBot();
+    $selectBot .= getChangeList();
+    $selectBot .= getSelectedBot();
+  }
+  elseif((isset($post_vars['action']))&&($post_vars['action']=="add")) {
+    $selectBot .= addBot();
+    $selectBot .= getChangeList();
+    $selectBot .= getSelectedBot();
+  }
+  else {
+    $selectBot .= getChangeList();
+    $selectBot .= getSelectedBot();
+  }
+  $_SESSION['poadmin']['format'] = $curBot['format'];
+  $bot_format = $curBot['format'];
+
     $topNav        = $template->getSection('TopNav');
     $leftNav       = $template->getSection('LeftNav');
     $main          = $template->getSection('Main');
@@ -56,7 +62,7 @@ function getBotParentList($current_parent) {
   $sql = "SELECT * FROM `bots` where bot_active = '1'";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
 
   $options = '                  <option value="0"[noBot]>No Parent Bot</option>';
 
@@ -77,12 +83,12 @@ function getBotParentList($current_parent) {
 
 
 function getSelectedBot() {
-  global $dbConn, $template, $pattern, $remember_up_to, $conversation_lines, $error_response;
+  global $dbConn, $template, $pattern, $remember_up_to, $conversation_lines, $error_response, $curBot;
   $bot_conversation_lines = $conversation_lines;
   $remember_up_to = $remember_up_to;
   $bot_default_aiml_pattern = $pattern;
   $bot_error_response = $error_response;
-  $unknown_user = 'test';
+  //$unknown_user = 'test';
   
   $inputs='';
   $form = $template->getSection('SelectBotForm');
@@ -111,12 +117,14 @@ function getSelectedBot() {
   if($bot_id != "new")
   {
     #$bot_id = $_SESSION['poadmin']['bot_id'];
-    //get data for all of the bots from the db
-    $sql = "SELECT * FROM `bots` where bot_id = '$bot_id';";
-      $sth = $dbConn->prepare($sql);
+    //get data for the currently selected bot from the db
+    $sql = "SELECT * FROM `bots` where bot_id = :bot_id;";
+    $sth = $dbConn->prepare($sql);
+    $sth->bindValue(':bot_id', $bot_id);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($result as $row) {
+    $row = $sth->fetch();
+    $curBot = $row;
+    //exit('<pre>Result = ' . print_r($result, true));
       foreach ($row as $key => $value) {
         if (strstr($key,'bot_') != false){
           $tmp = '';
@@ -179,7 +187,6 @@ function getSelectedBot() {
         $dm_iv = ' selected="selected"';
       }
       $action = "update";
-    }
   }
   else {
     $bot_id = '';
@@ -198,14 +205,13 @@ function getSelectedBot() {
     $bot_debugshow = '';
     $bot_debugmode = '';
   }
-  $unknown_user = $bot_unknown_user;
   $parent_options = getBotParentList($bot_parent_id);
   $searches = array(
     '[bot_id]','[bot_name]','[bot_desc]','[parent_options]','[sel_yes]','[sel_no]',
     '[sel_html]','[sel_xml]','[sel_json]','[sel_session]','[sel_db]','[sel_fyes]',
     '[sel_fno]','[sel_fuyes]','[sel_funo]','[bot_conversation_lines]','[remember_up_to]',
     '[bot_debugemail]','[dm_]','[dm_i]','[dm_ii]','[dm_iii]','[ds_]','[ds_i]','[ds_ii]',
-    '[ds_iii]','[ds_iv]','[action]', '[bot_default_aiml_pattern]', '[bot_error_response]', '[unknown_user]',
+    '[ds_iii]','[ds_iv]','[action]', '[bot_default_aiml_pattern]', '[bot_error_response]', '[bot_unknown_user]',
   );
   foreach ($searches as $search) {
     $replace = str_replace('[', '', $search);
@@ -220,27 +226,40 @@ function updateBotSelection() {
   global $dbConn, $msg, $format, $post_vars;
   $logFile = _LOG_URL_ . 'admin.error.log';
   
-  $sql = '';
   $msg = '';
+  $bot_id = $post_vars['bot_id'];
+  $sql = "select * from bots where bot_id = $bot_id;";
+  $sth = $dbConn->prepare($sql);
+  $sth->execute();
+  $result = $sth->fetch();
+  //exit("<pre>\nResult = " . print_r($result, true) . "\nPostVars = " . print_r($post_vars, true));
+  $sql = '';
   foreach($post_vars as $key => $value) {
     $value = str_replace("'", "\'", $value);
     $value = str_replace("\\'", "\'", $value);
     $value = str_replace('"', '\"', $value);
     $value = str_replace('\\"', '\"', $value);
-    if(($key!="bot_id")||($key!="action")) {
-      if(($key != "bot_id")&&($key != "action")&&($value!='')) {
-        $sql = "UPDATE `bots` SET `$key` ='$value' where `bot_id` = '".$post_vars['bot_id']."' limit 1; ";
-          $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
-        if(!$result) {
+    if($key == "bot_id" || $key == "action" || !isset($result[$key])) continue;
+      if($result[$key] != $post_vars[$key]) {
+        $sql .= "UPDATE `bots` SET `$key` ='$value' where `bot_id` = '".$post_vars['bot_id']."' limit 1;<br>\n";
+      }
+    }
+      //exit("Update SQL = $sql");
+      if (!empty($sql))
+      {
+        $sth = $dbConn->prepare($sql);
+        $sth->execute();
+        $affectedRows = $sth->rowCount();
+        if($affectedRows == 0) {
           $msg = "Error updating bot details. See the <a href=\"$logFile\">error log</a> for details.<br />";
           trigger_error("There was a problem adding '$key' to the database. The value was '$value'.");
           break;
         }
       }
-    }
-  }
+      else
+      {
+        $msg = 'Nothing seems to have been modified. No changes made.';
+      }
 
   $format = filter_input(INPUT_POST,'format');
 
@@ -287,13 +306,14 @@ VALUES (NULL,'$bot_name','$bot_desc','$bot_active','$bot_parent_id','$format','$
 endSQL;
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-  if($result) {
+    $affectedRows = $sth->rowCount();
+  if($affectedRows > 0)
+  {
     $msg = "$bot_name Bot details added, please dont forget to create the bot personality and add the aiml.";
 
   }
-  else {
+  else
+  {
     $msg = "$bot_name Bot details could not be added.";
   }
 
@@ -301,6 +321,13 @@ endSQL;
   $bot_id = $_SESSION['poadmin']['bot_id'];
   $_SESSION['poadmin']['bot_name'] = $post_vars['bot_name'];
   $bot_name = $_SESSION['poadmin']['bot_name'];
+  $msg .= make_bot_predicates($bot_id);
+  return $msg;
+}
+
+function make_bot_predicates($bot_id)
+{
+  global $dbConn;
 
   $sql = <<<endSQL
 INSERT INTO `botpersonality` VALUES
@@ -365,14 +392,12 @@ INSERT INTO `botpersonality` VALUES
   (NULL,  $bot_id, 'website', '');
 endSQL;
 
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-  if($result)
+  $sth = $dbConn->prepare($sql);
+  $sth->execute();
+  $affectedRows = $sth->rowCount();
+  if($affectedRows > 0)
   {
     $msg .= 'Please create the bots personality.';
-
   }
   else {
     $msg .= 'Unable to create the bots personality.';
@@ -388,19 +413,20 @@ function changeBot() {
     $sql = "SELECT * FROM `bots` WHERE bot_id = '$botId'";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
-    $count = count($result);
-    if($count>0) {
-      $_SESSION['poadmin']['bot_id']=$row['bot_id'];
-      $_SESSION['poadmin']['bot_name']=$row['bot_name'];
+    $row = $sth->fetch();
+    $count = count($row);
+    if($count > 0) {
+      $_SESSION['poadmin']['format'] = $row['format'];
+      $_SESSION['poadmin']['bot_id'] = $row['bot_id'];
+      $_SESSION['poadmin']['bot_name'] = $row['bot_name'];
     }
     else {
       $_SESSION['poadmin']['bot_id']="new";
-      $_SESSION['poadmin']['bot_name']='';
+      $_SESSION['poadmin']['bot_name']='<b class="red">unnamed bot</b>';
     }
   }
   else {
-      $_SESSION['poadmin']['bot_name']='';
+      $_SESSION['poadmin']['bot_name']='<b class="red">unnamed bot</b>';
       $_SESSION['poadmin']['bot_id']="new";
     }
 }
@@ -410,16 +436,19 @@ function getChangeList() {
   //db globals
   global $dbConn, $template;
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
-  
+  $botId = $bot_id;
+
   $inputs='';
   //get bot names from the db
   $sql = "SELECT * FROM `bots` ORDER BY bot_name";
   $sth = $dbConn->prepare($sql);
   $sth->execute();
-  $result = $sth->fetchAll(PDO::FETCH_ASSOC);
-  $options = '<option value="new" selected="selected">Add New Bot</option>' . "\n";
+  $result = $sth->fetchAll();
+  $pResult = print_r($result, true);
+  $options = '                <option value="new">Add New Bot</option>' . "\n";
   foreach ($result as $row) {
-    if($bot_id == $row['bot_id']) {
+    $options .= "<!-- bot ID = {$row['bot_id']}, $botId -->\n";
+    if($botId == $row['bot_id']) {
       $sel = ' selected="selected"';
     }
     else {

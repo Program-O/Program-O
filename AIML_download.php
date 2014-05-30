@@ -4,85 +4,38 @@
   * http://www.program-o.com
   * PROGRAM O
   * Version: 2.4.1
-  * FILE: AIMLdownload.php
+  * FILE: AIML_download.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 07-30-2013
   * DETAILS: extracts all content from a Program O DB's aiml table, converts it into AIML files, adds the files to a zip zrchive and sends it out for download.
   ***************************************/
 
+  error_reporting(E_ALL);
+  ini_set('display_errors', true);
+  ini_set('log_errors', true);
+
   $this_path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
   $this_path = str_replace(DIRECTORY_SEPARATOR, '/', $this_path);
-  chdir($this_path);
+  //chdir($this_path);
   define('ROOT_PATH', $this_path);
-  ini_set('session.save_path', ROOT_PATH . 'mySessions');
+  ini_set('error_log', ROOT_PATH . 'logs/AIML_download.error.log');
+  //ini_set('session.save_path', ROOT_PATH . 'mySessions');
   if (isset($_GET['download'])) exit(serveFile());
   session_start();
-  switch (true)
-  {
-  // Version 1
-  case (file_exists(ROOT_PATH . 'bot/config.php')):
-    $msg = 'Version 1 detected. Loading DB info from config file.<br>' . PHP_EOL;
-    require_once (ROOT_PATH . 'bot/config.php');
-    break;
-    // Version 2
-  case (file_exists(ROOT_PATH . 'config/_global_config.php')):
-    $thisFile = __FILE__; // Just in case this variable is needed (some versions)
-    require_once (ROOT_PATH . 'config/global_config.php');
-    $msg = 'Version 2 detected. Loading DB info from config file.<br>' . PHP_EOL;
-    break;
-    // Version 3
-  case (file_exists(ROOT_PATH . 'config/db.config.php')):
-    $msg = 'Version 3 detected. Loading DB info from config file.<br>' . PHP_EOL;
-    require_once (ROOT_PATH . 'config/db.config.php');
-    $dbh = $db_config['db_host'];
-    $dbn = $db_config['db_name'];
-    $dbu = $db_config['db_user'];
-    $dbp = $db_config['db_pass'];
-    break;
-    default :
-      $msg = 'No version detected. Please enter information in the form above.';
-      if (empty ($_POST))
-      {
-        print_form();
-        if (empty($_SESSION)) exit();
-        foreach ($_SESSION as $key)
-        {
-          $_SESSION[$key] = '';
-          unset ($_SESSION[$key]);
-        }
-        $_SESSION = array();
-        session_write_close();
-        exit ();
-      }
-      else
-      {
-        $post_vars = filter_input_array(INPUT_POST);
-        extract($post_vars);
-        $error = 'All fields are required. Please fill out the missing information.';
-        $url = $_SERVER['PHP_SELF'];
-        $fields_list = array('dbh' => 'DB Host', 'dbn' => 'DB Name', 'dbu' => 'DB Username', 'dbp' => 'DB Password');
-        foreach ($post_vars as $key => $value)
-        {
-          if (!empty($value))
-          {
-            $_SESSION[$key] = $value;
-          }
-          else
-          {
-             $field_name = $fields_list[$key];
-             $error .= "<br>Field $field_name is empty.\n";
-          }
-        }
-        if (empty ($dbh) or empty ($dbn) or empty ($dbu) or empty ($dbp))
-        {
-          $_SESSION['error'] = $error;
-          header("Location: $url");
-        }
-      }
-  }
+    try
+    {
+      $thisFile = __FILE__; // Just in case this variable is needed (some versions)
+      require_once (ROOT_PATH . 'config/global_config.php');
+      include_once (ROOT_PATH . 'library/PDO_functions.php');
+      $dbConn = db_open();
+    }
+    catch(Exception $e)
+    {
+      //something to handle the problem here, usually involving $e->getMessage()
+      if (false === $dbConn) exit('Script cannot continue, due to errors. Check <a href="logs/AIML_download.error.log">error logs</a> for more info.');
+    }
   // define whether mb_string functions are available (just in case it sin't already defined)
   if (!defined('IS_MB_ENABLED')) define('IS_MB_ENABLED', (function_exists('mb_internal_encoding')) ? true : false);
-  $dbConn = db_open();
   $fileList = get_file_list();
   $zip = new ZipArchive();
   $result = $zip->open(ROOT_PATH . 'AIML_files.zip', ZipArchive :: CREATE);
@@ -98,7 +51,7 @@
     }
     $zip->close();
     echo "Process complete. Your download is being prepared. If it doesn't appear in 10 seconds, please <a href=\"$url?download\">click here</a>.";
-    echo '<script type="text/javascript">location.replace(location.href + "?download");</script>';
+    echo '<script type="text/javascript">setTimeout(function(){location.replace(location.href + "?download")}, 1000);</script>';
   }
   else
   {
@@ -112,12 +65,12 @@
     header('Content-Description: File Transfer');
     header('Content-type: application/zip');
     header('Content-Disposition: attachment; filename="AIML_files.zip"');
+    header('Content-Length: '.filesize('AIML_files.zip'));
     header('Pragma: no-cache');
     header('Expires: 0');
     readfile(ROOT_PATH . 'AIML_files.zip');
     unlink(ROOT_PATH . 'AIML_files.zip');
     exit;
-    return $msg;
   }
 
   function get_file_list()
@@ -128,7 +81,7 @@
     $sql = 'select distinct filename from aiml;';
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
 
     foreach ($result as $row)
     {
@@ -151,10 +104,11 @@
     chdir($curPath);
     $fileContent = '<?xml version="1.0" encoding="utf-8"?>
 <aiml>';
-    $sql = "select distinct topic from aiml where filename like '$filename';";
+    $sql = "select distinct topic from aiml where filename like :filename;";
     $sth = $dbConn->prepare($sql);
+    $sth->bindValue(':filename', $filename);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
 
     foreach ($result as $row)
     {
@@ -164,10 +118,12 @@
     {
       if (!empty ($topic))
         $fileContent .= "<topic name=\"$topic\">\n";
-      $sql = "select pattern, thatpattern, template from aiml where topic like '$topic' and filename like '$filename';";
+      $sql = "select pattern, thatpattern, template from aiml where topic like :topic and filename like :filename;";
       $sth = $dbConn->prepare($sql);
+      $sth->bindValue(':topic', $topic);
+      $sth->bindValue(':filename', $filename);
       $sth->execute();
-      $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+      $result = $sth->fetchAll();
 
       foreach ($result as $row)
       {
@@ -219,8 +175,7 @@
   function get_new_filename($filenames, $cur_name)
   {
     global $no_file;
-    if (!in_array("$cur_name.aiml", $filenames))
-      return "$cur_name.aiml";
+    if (!in_array("$cur_name.aiml", $filenames)) return "$cur_name.aiml";
     $index = str_replace($no_file, '', $cur_name);
     $index = ($index = '') ? 0 : $index + 1;
     $index = str_pad($index, 3, '0', STR_PAD_LEFT);

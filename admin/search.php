@@ -1,12 +1,14 @@
 <?php
-//-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.1
-//Program-O  chatbot admin area
-//Written by Elizabeth Perreau and Dave Morton
-//DATE: MAY 17TH 2014
-//for more information and support please visit www.program-o.com
-//-----------------------------------------------------------------------------------------------
-// search.php
+  /***************************************
+    * http://www.program-o.com
+    * PROGRAM O
+    * Version: 2.4.1
+    * FILE: search.php
+    * AUTHOR: Elizabeth Perreau and Dave Morton
+    * DATE: 05-26-2014
+    * DETAILS: Search the AIML table of the DB for desired categories
+    ***************************************/
+
   $post_vars = filter_input_array(INPUT_POST);
   $get_vars = filter_input_array(INPUT_GET);
 
@@ -90,10 +92,10 @@
       $searchTerms .= (!empty($search_that)) ? '`thatpattern`' . str_replace('[value]', $search_that, $searchTermsTemplate) : '';
       $searchTerms = rtrim($searchTerms, " or\n ");
       $sql = str_replace('[searchTerms]', $searchTerms, $sql);
-      trigger_error("SQL = $sql");
+      //trigger_error("SQL = $sql");
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+      $result = $sth->fetchAll();
       $htmltbl = <<<endtHead
           <table width="99%" border="1" cellpadding="1" cellspacing="1">
             <thead>
@@ -163,7 +165,7 @@ endRow;
     $sql = "SELECT * FROM `aiml` WHERE `id` = '$id' LIMIT 1";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
     $topic = $row['topic'];
     $pattern = $row['pattern'];
     $thatpattern = $row['thatpattern'];

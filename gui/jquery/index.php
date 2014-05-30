@@ -9,8 +9,9 @@
   * DETAILS: This is the interface for the Program O JSON API
   ***************************************/
   $cookie_name = 'Program_O_JSON_GUI';
+  $botId = filter_input(INPUT_GET, 'bot_id');
   $convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : get_convo_id();
-  $bot_id = (isset($_COOKIE['bot_id'])) ? $_COOKIE['bot_id'] : 1; // 1
+  $bot_id = (isset($_COOKIE['bot_id'])) ? $_COOKIE['bot_id'] :($botId !== false && $botId !== null) ? $botId : 1;
   setcookie('bot_id', $bot_id);
   // Experimental code
   $base_URL  = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script

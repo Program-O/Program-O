@@ -119,7 +119,7 @@
     
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
 
     $num_rows = count($result);
     if ($num_rows > 0)

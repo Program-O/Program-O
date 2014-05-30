@@ -99,16 +99,8 @@ endScript;
   $mainTitle         = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
 
 
-  function updateDB($sql) {
-    global $dbConn;
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $commit = $sth->rowCount();
-    return $commit;
-  }
-
   function save($action) {
-    global $dbn, $action, $post_vars;
+    global $dbConn, $dbn, $action, $post_vars;
     #return 'action = ' . $action;
     if (isset($post_vars['memberSelect'])) {
       $id = $post_vars['memberSelect'];
@@ -124,7 +116,7 @@ endScript;
     }
     switch ($action) {
       case 'Add':
-      $ip = (isset($_SERVER['REMOTE_HOST'])) ? $_SERVER['REMOTE_HOST'] : gethostbyaddr($_SERVER['REMOTE_ADDR']);
+      $ip = $_SERVER['REMOTE_ADDR'];
       $sql = "insert into myprogramo (id, user_name, password, last_ip, last_login) values (null, '$user_name', '$password','$ip', CURRENT_TIMESTAMP);";
       $out = "Account for $user_name successfully added!";
       break;
@@ -143,7 +135,16 @@ endScript;
       $sql = '';
       $out = '';
     }
-    $x = (!empty($sql)) ? updateDB($sql) : '';
+    //$x = (!empty($sql)) ? updateDB($sql) : '';
+    if (!empty($sql))
+    {
+      save_file(_LOG_PATH_ . 'memberSQL.txt', $sql);
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $affectedRows = $sth->rowCount();
+
+      //
+    }
     #return "action = $action<br />\n SQL = $sql";
     return $out;
   }
@@ -157,7 +158,7 @@ endScript;
     $sql = 'SELECT id, user_name FROM myprogramo order by user_name;';
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
     foreach ($result as $row) {
       $user_name = $row['user_name'];
       $id = $row['id'];
@@ -176,7 +177,7 @@ endScript;
     $sql = "select id, user_name from myprogramo where id = $id limit 1;";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
     $user_name = $row['user_name'];
     $id = $row['id'];
     
@@ -187,7 +188,7 @@ endScript;
     $sql = "select id from myprogramo order by id desc limit 1;";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
     $id = $row['id'];
     
     return $id + 1;

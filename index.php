@@ -17,9 +17,21 @@
   }
   else
   {
+    $get_vars = filter_input_array(INPUT_GET);
+    $qs = '';
+    if (!empty($get_vars))
+    {
+      $qs = '?';
+      foreach ($get_vars as $key => $value)
+      {
+        $qs .= "$key=$value&";
+      }
+      $qs = rtrim($qs, '&');
+    }
     # Config exists we will goto the bot
     $thisFile = __FILE__;
     require_once('config/global_config.php');
+    $format = (isset($get_vars['format'])) ? $get_vars['format'] : $format;
     $format = strtoupper($format);
     switch ($format)
     {
@@ -33,8 +45,7 @@
       $gui = 'plain';
     }
     if (!defined('SCRIPT_INSTALLED')) header('location: ' . _INSTALL_URL_ . 'install_programo.php');
-    elseif (file_exists(_INSTALL_PATH_ . 'upgrade.php')) header('Location: ' . _INSTALL_URL_ . 'upgrade.php?returnTo=' . $gui);
-    else header("location: gui/$gui");
+    else header("location: gui/$gui/$qs");
   }
 
 ?>

@@ -140,7 +140,7 @@ else {
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
     $numRows = count($result);
     if ($numRows == 0) $msg = "This bot has no AIML categories to clear.";
     foreach ($result as $row)

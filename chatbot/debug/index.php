@@ -44,7 +44,7 @@
     $sql = "select `password` from `myprogramo` where `user_name` = '$name' limit 1;";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
     $numRows = count($result);
     if ($numRows > 0)
     {

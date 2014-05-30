@@ -14,22 +14,12 @@
   if (!file_exists('../../config/global_config.php')) header('Location: ../../install/install_programo.php');
   require_once ('../../config/global_config.php');
   require_once ('../chatbot/conversation_start.php');
-  switch ($_SERVER['REQUEST_METHOD'])
-  {
-    case 'POST':
-      $form_vars = filter_input_array(INPUT_POST);
-      break;
-    case 'GET':
-      $form_vars = filter_input_array(INPUT_GET);
-      break;
-    default:
-      $form_vars = array();
-  }
-
+  $get_vars = (!empty($_GET)) ? filter_input_array(INPUT_GET) : array();
+  $post_vars = (!empty($_POST)) ? filter_input_array(INPUT_POST) : array();
+  $form_vars = array_merge($post_vars, $get_vars); // POST overrides and overwrites GET
   $bot_id = (!empty($form_vars['bot_id'])) ? $form_vars['bot_id'] : 1;
   $convo_id = session_id();
   $format = (!empty($form_vars['format'])) ? $form_vars['format'] : 'html';
-
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">

@@ -102,7 +102,7 @@ endScript;
     $sql = "select count(*) from `spellcheck` where 1";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
     $rowCount = $row['count(*)'];
     $lastPage = intval($rowCount / 50);
     $remainder = ($rowCount / 50) - $lastPage;
@@ -142,7 +142,7 @@ endScript;
     $links = '      <div class="userlist">' . "\n";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
     $count = 0;
     foreach ($result as $row) {
       $linkId = $row['id'];
@@ -224,7 +224,7 @@ function runSpellSearch() {
     $sql = "SELECT * FROM `spellcheck` WHERE `missspelling` LIKE '%$search%' OR `correction` LIKE '%$search%' LIMIT 50";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
     $htmltbl = '<table>
                   <thead>
                     <tr>
@@ -272,7 +272,7 @@ function editSpellForm($id) {
   $sql    = "SELECT * FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
   $sth = $dbConn->prepare($sql);
   $sth->execute();
-  $row = $sth->fetch(PDO::FETCH_ASSOC);
+  $row = $sth->fetch();
   $uc_missspelling = (IS_MB_ENABLED) ? mb_strtoupper($row['missspelling']) : strtoupper($row['missspelling']);
   $uc_correction = (IS_MB_ENABLED) ? mb_strtoupper($row['correction']) : strtoupper($row['correction']);
   $form   = str_replace('[id]', $row['id'], $form);

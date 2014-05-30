@@ -28,10 +28,11 @@
 
   function showChatFrame() {
     global $template, $bot_name, $bot_id, $dbConn;
+    $qs = '?bot_id=' . $bot_id;
     $sql = "select `format` from `bots` where `bot_id` = $bot_id limit 1;";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
     $format = strtolower($row['format']);
     switch ($format) {
       case "html":
@@ -44,6 +45,7 @@
         $url = '../gui/xml/';
         break;
     }
+    $url .= $qs;
     $out = $template->getSection('ChatDemo');
     $out = str_replace('[pageSource]', $url, $out);
     $out = str_replace('[format]', strtoupper($format), $out);

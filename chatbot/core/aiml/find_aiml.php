@@ -643,7 +643,7 @@
       
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $row = $sth->fetch(PDO::FETCH_ASSOC);
+      $row = $sth->fetch();
 
       if ($row)
       {
@@ -745,7 +745,7 @@
     
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
 
 
 
@@ -788,7 +788,7 @@
     
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
 
 
     $num_rows = count($result);
@@ -834,7 +834,6 @@
     {
     //look for a match in the normal aiml tbl
       $allrows = find_aiml_matches($convoArr);
-      #save_file(_DEBUG_PATH_ . 'allrows.txt', print_r($allrows, true));
       //unset all irrelvant matches
       $allrows = unset_all_bad_pattern_matches($allrows, $lookingfor, $current_thatpattern, $current_topic, $aiml_pattern);
       //score the relevant matches
@@ -962,7 +961,7 @@
     
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
 
     $num_rows = count($result);
 
@@ -1014,7 +1013,7 @@
 
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
 
     $num_rows = count($row);
     $retval = ($num_rows == 0) ? '' : $row['value'];

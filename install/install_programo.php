@@ -97,6 +97,7 @@ endPage;
   {
     global $page_template, $error_response;
     $pattern = "RANDOM PICKUP LINE";
+    $errorMessage = '';
     #$error_response = "No AIML category found. This is a Default Response.";
     $conversation_lines = '1';
     $remember_up_to = '10';
@@ -120,6 +121,7 @@ endPage;
         try {
       $dbConn = new PDO("mysql:host=$dbh;dbname=$dbn;charset=utf8", $dbu, $dbp);
       $dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      $dbConn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
     catch (Exception $e)
     {
@@ -132,62 +134,107 @@ endPage;
     $sql = "show tables;";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
     if (empty ($row))
     {
       $sql = file_get_contents('new.sql');
       $sth = $dbConn->prepare($sql);
       $sth->execute();
       $affectedRows = $sth->rowCount();
-      $success = ($affectedRows > 0) ? true : false;
+      $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new tables!';
+    }
+    else
+    { // Let's make sure that the srai lookup table exists
+      $sql = 'describe `srai_lookup`;';
+      try
+      {
+        // code to try here
+        $sth = $dbConn->prepare($sql);
+        $sth->execute();
+        $result = $sth->fetchAll();
+      }
+      catch(Exception $e)
+      {
+        //something to handle the problem here, usually involving $e->getMessage()
+        $sql = "CREATE TABLE IF NOT EXISTS `srai_lookup` (`id` int(11) NOT NULL, `pattern` text NOT NULL, `template_id` int(11) NOT NULL) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1 ;";
+        $sth = $dbConn->prepare($sql);
+        $sth->execute();
+      }
     }
     $sql = 'select `error_response` from `bots` where 1 limit 1';
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
     $error_response = $row['error_response'];
-    $sql_template = "
+    $sql = 'select `bot_id` from `bots`;';
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetch();
+    if (count($result) ==0)
+    {
+      $sql_template = "
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
 VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[save_state]',
 '$conversation_lines', '$remember_up_to', '[debugemail]', '[debugshow]', '[debugmode]', '$error_response', '$pattern');";
-    require_once (_LIB_PATH_ . 'error_functions.php');
-    require_once(_LIB_PATH_ . 'PDO_functions.php');
-    $bot_id = 1;
-    $sql = str_replace('[default_bot_id]', $bot_id, $sql_template);
-    $sql = str_replace('[bot_name]', $myPostVars['bot_name'], $sql);
-    $sql = str_replace('[bot_desc]', $myPostVars['bot_desc'], $sql);
-    $sql = str_replace('[bot_active]', $myPostVars['bot_active'], $sql);
-    $sql = str_replace('[bot_parent_id]', 1, $sql);
-    $sql = str_replace('[format]', $myPostVars['format'], $sql);
-    // "Use PHP from DB setting
-    // "Update PHP in DB setting
-    $sql = str_replace('[save_state]', $myPostVars['save_state'], $sql);
-    $sql = str_replace('[conversation_lines]', $conversation_lines, $sql);
-    $sql = str_replace('[remember_up_to]', $remember_up_to, $sql);
-    $sql = str_replace('[debugemail]', $myPostVars['debugemail'], $sql);
-    $sql = str_replace('[debugshow]', $myPostVars['debug_level'], $sql);
-    $sql = str_replace('[debugmode]', $myPostVars['debug_mode'], $sql);
-    $sql = str_replace('[error_response]', $error_response, $sql);
-    $sql = str_replace('[aiml_pattern]', $pattern, $sql);
-    #$save = file_put_contents(_CONF_PATH_ . 'sql.txt', $sql); // For debugging purposes only
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $affectedRows = $sth->rowCount();
+      $bot_id = 1;
+      $sql = str_replace('[default_bot_id]', $bot_id, $sql_template);
+      $sql = str_replace('[bot_name]', $myPostVars['bot_name'], $sql);
+      $sql = str_replace('[bot_desc]', $myPostVars['bot_desc'], $sql);
+      $sql = str_replace('[bot_active]', $myPostVars['bot_active'], $sql);
+      $sql = str_replace('[bot_parent_id]', 1, $sql);
+      $sql = str_replace('[format]', $myPostVars['format'], $sql);
+      // "Use PHP from DB setting
+      // "Update PHP in DB setting
+      $sql = str_replace('[save_state]', $myPostVars['save_state'], $sql);
+      $sql = str_replace('[conversation_lines]', $conversation_lines, $sql);
+      $sql = str_replace('[remember_up_to]', $remember_up_to, $sql);
+      $sql = str_replace('[debugemail]', $myPostVars['debugemail'], $sql);
+      $sql = str_replace('[debugshow]', $myPostVars['debug_level'], $sql);
+      $sql = str_replace('[debugmode]', $myPostVars['debug_mode'], $sql);
+      $sql = str_replace('[error_response]', $error_response, $sql);
+      $sql = str_replace('[aiml_pattern]', $pattern, $sql);
+      try
+      {
+        // code to try here
+        $sth = $dbConn->prepare($sql);
+        $sth->execute();
+        $affectedRows = $sth->rowCount();
+        $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new bot!';
+      }
+      catch(Exception $e)
+      {
+        //something to handle the problem here, usually involving $e->getMessage()
+      }
+    }
     $encrypted_adm_dbp = md5($myPostVars['adm_dbp']);
     $adm_dbu = $myPostVars['adm_dbu'];
-    $cur_ip = $_SERVER['REMOTE_ADDR'];
-    $sql = "insert ignore into `myprogramo` (`id`, `user_name`, `password`, `last_ip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
+    $sql = "select id from `myprogramo` where `user_name` = '$adm_dbu' and `password` = '$encrypted_adm_dbp';";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $affectedRows = $sth->rowCount();
+    $result = $sth->fetch();
+    $cur_ip = $_SERVER['REMOTE_ADDR'];
+    if (count($result) == 0)
+    {
+      $sql = "insert ignore into `myprogramo` (`id`, `user_name`, `password`, `last_ip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
+      try
+      {
+        $sth = $dbConn->prepare($sql);
+        $sth->execute();
+        $affectedRows = $sth->rowCount();
+        $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new Admin!';
+      }
+      catch(Exception $e)
+      {
+        $errorMessage .= $e->getMessage();
+      }
+    }
 
-    if ($affectedRows > 0 and empty ($_SESSION['errorMessage']))
+    if (empty($errorMessage))
     {
       $out = getSection('InstallComplete', $page_template);
     }
-    else
-      $out = getSection('InstallError', $page_template);
-    return $out . $_SESSION['errorMessage'];
+    else $out = getSection('InstallError', $page_template);
+    return $out . $errorMessage;
   }
 
   function install_error($msg, $err, $sql)

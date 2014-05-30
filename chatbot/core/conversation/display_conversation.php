@@ -30,7 +30,7 @@
       
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $row = $sth->fetch(PDO::FETCH_ASSOC);
+      $row = $sth->fetch();
 
       $bot_name = $row['bot_name'];
     }
@@ -53,7 +53,7 @@
     
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
 
 
 

@@ -347,6 +347,7 @@ INSERT IGNORE INTO wordcensor (censor_id, word_to_censor, replace_with, bot_excl
 (1, 'shit', 's***', ''),
 (2, 'fuck', 'f***', '');
 
+DROP TABLE IF EXISTS `srai_lookup`;
 CREATE TABLE IF NOT EXISTS `srai_lookup` (
 `id` int(11) NOT NULL,
   `pattern` text NOT NULL,

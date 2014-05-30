@@ -21,22 +21,23 @@
   ini_set('display_errors', false);
   #set_exception_handler("handle_exceptions");
   $msg = '';
-
-
-  $bot_name = 'unknown';
-  $bot_id = 1;
   session_start();
   $post_vars = filter_input_array(INPUT_POST);
   $get_vars = filter_input_array(INPUT_GET);
 
   $myPage = (isset($get_vars['myPage'])) ? $get_vars['myPage'] : '';
   $hide_logo = (isset($_SESSION['display'])) ? $_SESSION['display'] : '';
+  $bot_name = (isset($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : '<b class="red">not selected</b>';
+  $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
+  $bot_format = (isset($_SESSION['poadmin']['bot_format'])) ? $_SESSION['poadmin']['bot_format'] : '';
   if (!empty($_SESSION)) {
-    if((!isset($_SESSION['poadmin']['uid'])) || ($_SESSION['poadmin']['uid']=="")) {
+    if((!isset($_SESSION['poadmin']['uid'])) || ($_SESSION['poadmin']['uid']==""))
+    {
       $msg .= "Session timed out<br>\n";
       $get_vars['page'] = 'logout';
     }
-    else {
+    else
+    {
       $name = $_SESSION['poadmin']['name'];
       $ip = $_SESSION['poadmin']['ip'];
       $last = $_SESSION['poadmin']['last_login'];
@@ -66,29 +67,29 @@
 
 # Build page sections
 # ordered here in the order that the page is constructed
-  $logo          = $template->getSection('Logo');
-  $titleSpan     = $template->getSection('TitleSpan');
-  $main          = $template->getSection('Main');
-  $divDecoration = $template->getSection('DivDecoration');
-  $mainContent   = $template->getSection('LoginForm');
-  $noLeftNav     = $template->getSection('NoLeftNav');
-  $noRightNav    = $template->getSection('NoRightNav');
-  $navHeader     = $template->getSection('NavHeader');
-  $footer        = $template->getSection('Footer');
-  $topNav        = '';
-  $leftNav       = '';
-  $rightNav      = '';
-  $rightNavLinks = '';
-  $lowerScripts  = $template->getSection('LogoLinkScript');
-  $pageTitleInfo = '';
-  $topNavLinks   = '';
-  $leftNavLinks  = '';
-  $mediaType     = ' media="screen"';
-  $mainTitle     = 'Program O Login';
-  $FooterInfo    = '<p>&copy; 2011-2013 My Program-O<br /><a href="http://www.program-o.com">www.program-o.com</a></p>';
-  $headerTitle   = '';
-  $pageTitle     = 'My-Program O - Login';
-  $upperScripts  = '';
+  $logo            = $template->getSection('Logo');
+  $titleSpan       = $template->getSection('TitleSpan');
+  $main            = $template->getSection('Main');
+  $divDecoration   = '';
+  $mainContent     = $template->getSection('LoginForm');
+  $noLeftNav       = $template->getSection('NoLeftNav');
+  $noRightNav      = $template->getSection('NoRightNav');
+  $navHeader       = $template->getSection('NavHeader');
+  $footer          = $template->getSection('Footer');
+  $topNav          = '';
+  $leftNav         = '';
+  $rightNav        = '';
+  $rightNavLinks   = '';
+  $lowerScripts    = $template->getSection('LogoLinkScript');
+  $pageTitleInfo   = '';
+  $topNavLinks     = '';
+  $leftNavLinks    = '';
+  $mediaType       = ' media="screen"';
+  $mainTitle       = 'Program O Login';
+  $FooterInfo      = '<p>&copy; 2011-2013 My Program-O<br /><a href="http://www.program-o.com">www.program-o.com</a></p>';
+  $headerTitle     = '';
+  $pageTitle       = 'My-Program O - Login';
+  $upperScripts    = '';
 
   if((isset($post_vars['user_name']))&&(isset($post_vars['pw']))) {
     $_SESSION['poadmin']['display'] = $hide_logo;
@@ -97,7 +98,7 @@
     $sql = "SELECT * FROM `myprogramo` WHERE user_name = '".$user_name."' AND password = '".MD5($pw)."'";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
     if(!empty($row)) {
       $_SESSION['poadmin']['uid']=$row['id'];
       $_SESSION['poadmin']['name']=$row['user_name'];
@@ -121,7 +122,7 @@
       $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $row = $sth->fetchAll(PDO::FETCH_ASSOC);
+      $row = $sth->fetch();
       $count = count($row);
       if($count > 0) {
         $_SESSION['poadmin']['bot_id']=$row['bot_id'];
@@ -159,6 +160,7 @@
       include ("$curPage.php");
     }
   }
+  $bot_format_link = (!empty($bot_format)) ? "&amp;format=$bot_format" : '';
   $curPage = (isset($curPage)) ? $curPage : 'main';
   $upperScripts .= ($hide_logo == 'HideLogoCSS') ? $template->getSection('HideLogoCSS') : '';
 
@@ -178,39 +180,40 @@
    $content variable directly, rather than change it and then return it.
 */
   $searches = array(
-                    '[charset]'       => $charset,
-                    '[myPage]'        => $curPage,
-                    '[pageTitle]'     => $pageTitle,
-                    '[styleSheet]'    => $styleSheet,
-                    '[mediaType]'     => $mediaType,
-                    '[upperScripts]'  => $upperScripts,
-                    '[logo]'          => $logo,
-                    '[pageTitleInfo]' => $pageTitleInfo,
-                    '[topNav]'        => $topNav,
-                    '[leftNav]'       => $leftNav,
-                    '[rightNav]'      => $rightNav,
-                    '[main]'          => $main,
-                    '[rightNav]'      => $rightNav,
-                    '[footer]'        => $footer,
-                    '[lowerScripts]'  => $lowerScripts,
-                    '[pageTitleInfo]' => $pageTitleInfo,
-                    '[titleSpan]'     => $titleSpan,
-                    '[divDecoration]' => $divDecoration,
-                    '[topNavLinks]'   => $topNavLinks,
-                    '[navHeader]'     => $navHeader,
-                    '[leftNavLinks]'  => $leftNavLinks,
-                    '[mainTitle]'     => $mainTitle,
-                    '[mainContent]'   => $mainContent,
-                    '[rightNavLinks]' => $rightNavLinks,
-                    '[FooterInfo]'    => $FooterInfo,
-                    '[headerTitle]'   => $headerTitle,
-                    '[errMsg]'        => $msg,
-                    '[bot_id]'        => $bot_id,
-                    '[bot_name]'      => $bot_name,
-                    '[errMsgStyle]'   => $errMsgStyle,
-                    '[noRightNav]'    => $noRightNav,
-                    '[noLeftNav]'     => $noLeftNav,
-                    '[version]'       => $version,
+                    '[charset]'         => $charset,
+                    '[myPage]'          => $curPage,
+                    '[pageTitle]'       => $pageTitle,
+                    '[styleSheet]'      => $styleSheet,
+                    '[mediaType]'       => $mediaType,
+                    '[upperScripts]'    => $upperScripts,
+                    '[logo]'            => $logo,
+                    '[pageTitleInfo]'   => $pageTitleInfo,
+                    '[topNav]'          => $topNav,
+                    '[leftNav]'         => $leftNav,
+                    '[rightNav]'        => $rightNav,
+                    '[main]'            => $main,
+                    '[rightNav]'        => $rightNav,
+                    '[footer]'          => $footer,
+                    '[lowerScripts]'    => $lowerScripts,
+                    '[pageTitleInfo]'   => $pageTitleInfo,
+                    '[titleSpan]'       => $titleSpan,
+                    '[divDecoration]'   => $divDecoration,
+                    '[topNavLinks]'     => $topNavLinks,
+                    '[navHeader]'       => $navHeader,
+                    '[leftNavLinks]'    => $leftNavLinks,
+                    '[mainTitle]'       => $mainTitle,
+                    '[mainContent]'     => $mainContent,
+                    '[rightNavLinks]'   => $rightNavLinks,
+                    '[FooterInfo]'      => $FooterInfo,
+                    '[headerTitle]'     => $headerTitle,
+                    '[errMsg]'          => $msg,
+                    '[bot_id]'          => $bot_id,
+                    '[bot_name]'        => $bot_name,
+                    '[errMsgStyle]'     => $errMsgStyle,
+                    '[noRightNav]'      => $noRightNav,
+                    '[noLeftNav]'       => $noLeftNav,
+                    '[version]'         => $version,
+                    '[bot_format_link]' => $bot_format_link,
                    );
   foreach ($searches as $search => $replace) {
     $content = str_replace($search, $replace, $content);
@@ -226,7 +229,8 @@
     #print "<!-- making links for section $section -->\n";
     global $template, $curPage;
     $curPage = (empty($curPage)) ? 'main' : $curPage;
-    $botName = (isset($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'unknown';
+    $botName = (isset($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : '<b class="red">not selected</b>';
+    $botId = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
     $out = '';
     # [linkClass][linkHref][linkOnclick][linkAlt][linkTitle]>[linkLabel]
     $linkText = $template->getSection('NavLink');
@@ -244,7 +248,10 @@
       $out .= "$tmp\n";
     }
     #print "<!-- returning links for section $section:\n\n out = $out\n\n -->\n";
+    $strippedBotName = preg_replace('~\<b class="red"\>(.*?)\</b\>~', '$1', $botName);
+    $out = str_replace('[botId]', $botId, $out);
     $out = str_replace('[curBot]', $botName, $out);
+    $out = str_replace('[curBot2]', $strippedBotName, $out);
     return trim($out);
   }
 
@@ -333,7 +340,7 @@ endFooter;
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Change or edit the current bot"',
                        '[linkTitle]' => ' title="Change or edit the current bot"',
-                       '[linkLabel]' => 'Change/Edit Bot: ([curBot])'
+                       '[linkLabel]' => 'Current Bot: ([curBot])'
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
@@ -441,10 +448,10 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => '',
-                       '[linkHref]' => ' href="' . _BASE_URL_ . '"',
+                       '[linkHref]' => ' href="' . _BASE_URL_ . '?bot_id=[botId][bot_format_link]"',
                        '[linkOnclick]' => ' target="_blank"',
                        '[linkAlt]' => ' alt="open the page for [curBot] in a new tab/window"',
-                       '[linkTitle]' => ' title="open the page for [curBot] in a new tab/window"',
+                       '[linkTitle]' => ' title="open the page for [curBot2] in a new tab/window"',
                        '[linkLabel]' => 'Talk to [curBot]'
                  )
     );

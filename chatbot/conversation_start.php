@@ -111,7 +111,7 @@
       
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $row = $sth->fetch(PDO::FETCH_ASSOC);
+      $row = $sth->fetch();
 
 
 

@@ -269,7 +269,7 @@
   function set_wildcards($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Setting Wildcards", 2);
-    save_file(_LOG_PATH_ . 'convoarr.txt', print_r($convoArr, true));
+    //save_file(_LOG_PATH_ . 'convoarr.txt', print_r($convoArr, true));
     $aiml_pattern = $convoArr['aiml']['pattern'];
     $ap = trim($aiml_pattern);
     $ap = str_replace("+", "\+", $ap);
@@ -372,7 +372,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = $sql", 2);
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
     $num_rows = count($row);
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Found $num_rows rows in lookup table: " . print_r($row, true), 2);
     if ($num_rows > 0)
@@ -382,7 +382,7 @@
       $sql = "select `template` from `$dbn`.`aiml` where `id` = '$template_id';";
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $row = $sth->fetch(PDO::FETCH_ASSOC);
+      $row = $sth->fetch();
       runDebug(__FILE__, __FUNCTION__, __LINE__,"Row found in AIML for ID $template_id: " . print_r($row, true), 2);
       if (!empty($row))
       {

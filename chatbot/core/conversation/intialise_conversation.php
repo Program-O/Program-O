@@ -105,7 +105,7 @@
     
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
 
     foreach ($result as $row)
     {
@@ -314,7 +314,7 @@
     
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
 
     if (count($row) > 0)
     {
@@ -445,7 +445,7 @@
     
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
 
 
 
@@ -491,7 +491,7 @@
     
     $sth = $dbConn->prepare($sql) or exit ('There is a problem in file' . __FILE__ .', function ' . __FUNCTION__ . ', line ' . __LINE__ . '. Error: ' . $dbConn->errorInfo());
     $sth->execute();
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $row = $sth->fetch();
 
     if (($row) && (count($row) > 0))
     {
@@ -565,7 +565,7 @@
     
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
 
     $numRows = count($result);
     if ($numRows == 0)
@@ -643,7 +643,7 @@
     
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $result = $sth->fetchAll();
 
     if ($result)
     {
