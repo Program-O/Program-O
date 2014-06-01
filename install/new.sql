@@ -349,7 +349,7 @@ INSERT IGNORE INTO wordcensor (censor_id, word_to_censor, replace_with, bot_excl
 
 DROP TABLE IF EXISTS `srai_lookup`;
 CREATE TABLE IF NOT EXISTS `srai_lookup` (
-`id` int(11) NOT NULL,
+`id` int(11) NOT NULL AUTO_INCREMENT,
   `pattern` text NOT NULL,
   `template_id` int(11) NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1 ;

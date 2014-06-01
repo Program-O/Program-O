@@ -62,8 +62,8 @@
   $noTopNav      = '';
   $noRightNav    = $template->getSection('NoRightNav');
   $headerTitle   = 'Actions:';
-  $pageTitle     = 'My-Program O - Search/Edit AIML';
-  $mainTitle     = 'Search/Edit AIML';
+  $pageTitle     = 'My-Program O - SRAI Lookup';
+  $mainTitle     = 'SRAI Lookup';
 
   function delAIML($id) {
     global $dbConn;

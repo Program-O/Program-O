@@ -155,7 +155,7 @@ endPage;
       catch(Exception $e)
       {
         //something to handle the problem here, usually involving $e->getMessage()
-        $sql = "CREATE TABLE IF NOT EXISTS `srai_lookup` (`id` int(11) NOT NULL, `pattern` text NOT NULL, `template_id` int(11) NOT NULL) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1 ;";
+        $sql = "CREATE TABLE IF NOT EXISTS `srai_lookup` (`id` int(11) NOT NULL AUTO_INCREMENT, `pattern` text NOT NULL, `template_id` int(11) NOT NULL) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1 ;";
         $sth = $dbConn->prepare($sql);
         $sth->execute();
       }
