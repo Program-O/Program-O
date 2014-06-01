@@ -795,3 +795,11 @@ blockquote.uncited {
 #pTitle {
   text-align: center;
 }
+iframe {
+  border: none;
+  margin: 5px auto;
+  background-color: white;
+  min-height: 300px;
+  min-width: 80%;
+  display: block;
+}

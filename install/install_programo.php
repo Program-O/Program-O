@@ -144,20 +144,25 @@ endPage;
     }
     else
     { // Let's make sure that the srai lookup table exists
-      $sql = 'describe `srai_lookup`;';
       try
       {
-        // code to try here
+        $sql = 'select bot_id from srai_lookup;';
         $sth = $dbConn->prepare($sql);
         $sth->execute();
         $result = $sth->fetchAll();
       }
       catch(Exception $e)
       {
-        //something to handle the problem here, usually involving $e->getMessage()
-        $sql = "CREATE TABLE IF NOT EXISTS `srai_lookup` (`id` int(11) NOT NULL AUTO_INCREMENT, `pattern` text NOT NULL, `template_id` int(11) NOT NULL) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1 ;";
-        $sth = $dbConn->prepare($sql);
-        $sth->execute();
+        try
+        {
+          $sql = "DROP TABLE IF EXISTS `srai_lookup`; CREATE TABLE IF NOT EXISTS `srai_lookup` (`id` int(11) NOT NULL AUTO_INCREMENT, `bot_id` int(11) NOT NULL, `pattern` text NOT NULL, `template_id` int(11) NOT NULL, PRIMARY KEY (`id`), KEY `pattern` (`pattern`(64)) COMMENT 'Search against this for performance boost') ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1 ;";
+          $sth = $dbConn->prepare($sql);
+          $sth->execute();
+        }
+        catch(Exception $e)
+        {
+          $errorMessage .= 'Could not add SRAI lookup table! Error is: ' . $e->getMessage();
+        }
       }
     }
     $sql = 'select `error_response` from `bots` where 1 limit 1';
@@ -194,7 +199,6 @@ VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_pare
       $sql = str_replace('[aiml_pattern]', $pattern, $sql);
       try
       {
-        // code to try here
         $sth = $dbConn->prepare($sql);
         $sth->execute();
         $affectedRows = $sth->rowCount();
@@ -202,7 +206,7 @@ VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_pare
       }
       catch(Exception $e)
       {
-        //something to handle the problem here, usually involving $e->getMessage()
+        $errorMessage .= $e->getMessage();
       }
     }
     $cur_ip = $_SERVER['REMOTE_ADDR'];

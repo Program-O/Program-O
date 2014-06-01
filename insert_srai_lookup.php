@@ -11,18 +11,30 @@
   ini_set('log_errors', true);
   ini_set('error_log', _LOG_PATH_ . 'sl.error.log');
   $dbConn = db_open();
-  $sql = "select id, template from aiml where template like '%<srai>%';";
-  $sth = $dbConn->prepare($sql);
+  $searchSQL = "select id, template from aiml where template like '%<srai>%';";
+  $es = microtime(true);
+  $sth = $dbConn->prepare($searchSQL);
   $sth->execute();
   $result = $sth->fetchAll();
-  $totalRows = count($result);
-  $maxTime = intval($totalRows / 500);
-  $totalRows = number_format($totalRows);
-  echo "Setting the max execution time to $maxTime seconds.\n\n";
+  $rowCount = count($result);
+  $ct = microtime(true);
+  $et = $ct - $es;
+  $guess = round($rowCount * $et) + 1;
+  $maxTime = intval($rowCount / 300);
+  $totalRows = number_format($rowCount);
+  echo "Initial query took $et seconds to run.\n";
+  echo "Setting the max execution time to $maxTime seconds. We'll also look at setting it to $guess seconds.\n\n";
+  //exit();
   set_time_limit($maxTime);
   echo("Found $totalRows rows that contain SRAI calls.\n");
   $insertCount = 0;
   $count = 0;
+  $patternSQL = "select id from aiml where pattern = :srai limit 1;";
+  $pth = $dbConn->prepare($patternSQL);
+  $ltsql = "select id from srai_lookup where pattern = :pattern;";
+  $ltsth = $dbConn->prepare($ltsql);
+  $insertSQL = "insert into srai_lookup (id, pattern, template_id) values (null, :pattern, :template_id);";
+  $isth = $dbConn->prepare($insertSQL);
   foreach ($result as $row)
   {
     $tid = $row['id'];
@@ -40,28 +52,23 @@
       if (strstr($srai,'<') == false)
       {
         echo "Trying to insert '$srai' into the lookup table. Looking for a match, first.\n";
-        $sql = "select id from aiml where pattern = :srai limit 1;";
-        $sth = $dbConn->prepare($sql);
-        $sth->bindValue(':srai', $srai);
-        $sth->execute();
-        $result = $sth->fetch();
+        $pth->bindValue(':srai', $srai);
+        $pth->execute();
+        $result = $pth->fetch();
         if (!empty($result))
         {
           $id = $result['id'];
           echo "Match found. template id = $id. Let's look to see if it already exists.\n";
-          $sql = "select id from srai_lookup where pattern = '$srai';";
-          $sth = $dbConn->prepare($sql);
-          $sth->execute();
-          $result = $sth->fetch();
+          $ltsth->bindValue(':pattern', $srai);
+          $ltsth->execute();
+          $result = $ltsth->fetch();
           if (empty($result))
           {
             echo "Entry does not already exist. Adding it now.\n";
-            $sql = "insert into srai_lookup (id, pattern, template_id) values (null, :pattern, :template_id);";
-            $sth = $dbConn->prepare($sql);
-            $sth->bindValue(':pattern', $srai);
-            $sth->bindValue(':template_id', $id);
-            $sth->execute();
-            $affectedRows = $sth->rowCount();
+            $isth->bindValue(':pattern', $srai);
+            $isth->bindValue(':template_id', $id);
+            $isth->execute();
+            $affectedRows = $isth->rowCount();
             if ($affectedRows == 0)
             {
               echo "Something went wrong here.\n";

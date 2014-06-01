@@ -209,7 +209,7 @@ between the start and end section tags are the only parts of the template that a
               <td><label for="unknown_user"><span class="label">Unknown User</span></label></td>
               <td>
                 <span class="formw">
-                  <input type="text" name="unknown_user" id="unknown_user" value="[bot_unknown_user]">
+                  <input type="text" name="unknown_user" id="unknown_user" value="[unknown_user]">
                 </span>
               </td>
             </tr>
@@ -778,7 +778,7 @@ between the start and end section tags are the only parts of the template that a
             </form>
 <!-- Section SearchAIMLForm End -->
 <!-- Section SearchSRAIForm Start -->
-[blank]            <!--<form id="search" action="index.php?page=srai_lookup" method="post">
+[blank]            <form id="search" action="index.php?page=srai_lookup" method="post">
               <fieldset>
                 <div class="row">
                   <label for="search_pattern"><span class="twentyPercent">Search Pattern: </span></label>
@@ -792,7 +792,9 @@ between the start and end section tags are the only parts of the template that a
                   <input type="submit" name="action" id="action" value="search"/>
                 </div>
               </fieldset>
-            </form>-->
+            </form>
+            <iframe src="" id="srai_lookup" name="srai_lookup">Test</iframe><br>
+            <a href="../insert_srai_lookup.php" target="srai_lookup">Run SRAI script</a>
             <p>This section is still under construction. Please bear with us as we expand and grow.</p>
 <!-- Section SearchSRAIForm End -->
 <!-- Section EditAIMLForm Start -->
