@@ -11,7 +11,7 @@
   /**
   * function db_open()
   * Connect to the database
-   * @link http://blog.program-o.com/?p=1340
+  * @link http://blog.program-o.com/?p=1340
   * @param  string $host -  db host
   * @param  string $user - db user
   * @param  string $password - db password

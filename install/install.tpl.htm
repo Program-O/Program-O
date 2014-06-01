@@ -74,11 +74,11 @@
       }
       function helpPopups (url) {
         var options = 'left=150,top=100,width=800,height=600,scrollbars=1';
-        if (helpWindow == null || helpWindow.closed) {
+        if (null == helpWindow || helpWindow.closed) {
           helpWindow = window.open(url,'helpWindow',options,true);
           setTimeout(function(){helpWindow.highlight()},500);
         }
-        else if (helpWindow.location == null) {
+        else if (null == helpWindow.location) {
           helpWindow.close();
           helpWindow = null;
           helpPopups (url);
@@ -93,7 +93,7 @@
         var pw1 = $('#adm_dbp').val();
         var pw2 = $('#adm_dbp_confirm').val();
         var out = true;
-        out = ((pw1 != '') && (pw1 == pw2));
+        out = (('' != pw1) && (pw1 == pw2));
         return out;
       }
     </script>

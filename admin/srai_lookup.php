@@ -12,36 +12,37 @@
   $post_vars = filter_input_array(INPUT_POST);
   $get_vars = filter_input_array(INPUT_GET);
   $form_vars = array_merge((array)$post_vars, (array)$get_vars);
+  //exit('Form vars:<pre>' . PHP_EOL . print_r($form_vars, true));
 
   $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
 
   if((isset($post_vars['action']))&&($post_vars['action']=="search")) {
-    $mainContent = $template->getSection('SearchAIMLForm');
+    $mainContent = $template->getSection('SearchSRAIForm');
     $mainContent .= runSearch();
     $mainContent = str_replace('[group]', $group, $mainContent);
   }
   elseif((isset($get_vars['group']))) {
-    $mainContent = $template->getSection('SearchAIMLForm');
+    $mainContent = $template->getSection('SearchSRAIForm');
     $mainContent .= runSearch();
     $mainContent = str_replace('[group]', $group, $mainContent);
   }
   elseif((isset($post_vars['action']))&&($post_vars['action']=="update")) {
-    $mainContent = $template->getSection('SearchAIMLForm');
+    $mainContent = $template->getSection('SearchSRAIForm');
     $mainContent .= updateAIML();
     $mainContent = str_replace('[group]', $group, $mainContent);
   }
   elseif((isset($get_vars['action']))&&($get_vars['action']=="del")&&(isset($get_vars['id']))&&($get_vars['id']!="")) {
-    $mainContent = $template->getSection('SearchAIMLForm');
+    $mainContent = $template->getSection('SearchSRAIForm');
     $mainContent .= delAIML($get_vars['id']);
   $mainContent = str_replace('[group]', $group, $mainContent);
   }
   elseif((isset($get_vars['action']))&&($get_vars['action']=="edit")&&(isset($get_vars['id']))&&($get_vars['id']!="")) {
-    $mainContent = $template->getSection('SearchAIMLForm');
+    $mainContent = $template->getSection('SearchSRAIForm');
     $mainContent .= editAIMLForm($get_vars['id']);
   $mainContent = str_replace('[group]', $group, $mainContent);
   }
   else {
-    $mainContent = $template->getSection('SearchAIMLForm');
+    $mainContent = $template->getSection('SearchSRAIForm');
   $mainContent = str_replace('[group]', $group, $mainContent);
   }
   $mainContent = str_replace('[group]', $group, $mainContent);

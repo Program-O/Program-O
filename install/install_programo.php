@@ -141,7 +141,6 @@ endPage;
       $sth = $dbConn->prepare($sql);
       $sth->execute();
       $affectedRows = $sth->rowCount();
-      $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new tables!';
     }
     else
     { // Let's make sure that the srai lookup table exists
@@ -169,7 +168,7 @@ endPage;
     $sql = 'select `bot_id` from `bots`;';
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetch();
+    $result = $sth->fetchAll();
     if (count($result) ==0)
     {
       $sql_template = "
@@ -206,13 +205,13 @@ VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_pare
         //something to handle the problem here, usually involving $e->getMessage()
       }
     }
+    $cur_ip = $_SERVER['REMOTE_ADDR'];
     $encrypted_adm_dbp = md5($myPostVars['adm_dbp']);
     $adm_dbu = $myPostVars['adm_dbu'];
     $sql = "select id from `myprogramo` where `user_name` = '$adm_dbu' and `password` = '$encrypted_adm_dbp';";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetch();
-    $cur_ip = $_SERVER['REMOTE_ADDR'];
+    $result = $sth->fetchAll();
     if (count($result) == 0)
     {
       $sql = "insert ignore into `myprogramo` (`id`, `user_name`, `password`, `last_ip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
@@ -237,18 +236,4 @@ VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_pare
     return $out . $errorMessage;
   }
 
-  function install_error($msg, $err, $sql)
-  {
-    $errorTemplate = <<<endError
-<pre>There was a problem while working with the database.
-Error message: $msg
-MySQL error: $err
-SQL query:
-$sql
-</pre>
-endError;
-      $_SESSION['errorMessage'] .= $errorTemplate;
-  }
 
-
-?>

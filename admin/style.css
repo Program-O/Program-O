@@ -792,3 +792,6 @@ blockquote.uncited {
 #report_submit {
   width: auto;
 }
+#pTitle {
+  text-align: center;
+}

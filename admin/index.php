@@ -416,6 +416,14 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
+                       '[linkHref]' => ' href="index.php?page=srai_lookup"',
+                       '[linkOnclick]' => '',
+                       '[linkAlt]' => ' alt="Search and edit entries in the srai_lookup table"',
+                       '[linkTitle]' => ' title="Search and edit entries in the srai_lookup table"',
+                       '[linkLabel]' => 'SRAI Lookup'
+                 ),
+                 array(
+                       '[linkClass]' => ' class="[curClass]"',
                        '[linkHref]' => ' href="index.php?page=demochat"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Run a demo version of your bot"',
