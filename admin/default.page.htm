@@ -209,7 +209,7 @@ between the start and end section tags are the only parts of the template that a
               <td><label for="unknown_user"><span class="label">Unknown User</span></label></td>
               <td>
                 <span class="formw">
-                  <input type="text" name="unknown_user" id="unknown_user" value="[unknown_user]">
+                  <input type="text" name="unknown_user" id="unknown_user" value="[bot_unknown_user]">
                 </span>
               </td>
             </tr>
@@ -699,9 +699,10 @@ between the start and end section tags are the only parts of the template that a
               This uploader no longer performs XML validation, so you need to validate your AIML files prior to
               uploading them. It's <strong><u>STRONGLY SUGGESTED</u></strong> that you use either W3School's
               <a href="http://www.w3schools.com/xml/xml_validator.asp" target="_blank">XML Validator</a>,
-              or the <a href="http://www.geekcavecreations.com/pgo/validateAIML.php">GCC AIML Validator</a>.
-              There are other XML validators available, but the W3Schools validator is one of the best,
-              and the one at Geek Cave Creations is specifically designed to validate AIML files.
+              or the <a href="validateAIML.php">Program O AIML Validator</a>. There are other XML validators
+              available, but the W3Schools validator works well, and the Program O Validator is specifically
+              designed to validate AIML files. Please note, however, that neither of the above mentioned
+              validators will work with zip files.
             </p>
 [upload_content]
             <hr />
@@ -777,8 +778,11 @@ between the start and end section tags are the only parts of the template that a
               </fieldset>
             </form>
 <!-- Section SearchAIMLForm End -->
-<!-- Section SearchSRAIForm Start -->
-[blank]            <form id="search" action="index.php?page=srai_lookup" method="post">
+<!-- Section SRAI_lookup Start -->
+[blank]            <div class="row center">
+              The SRAI lookup table currently contains [row_count] entries for [bot_name].
+            </div>
+            <!-- <form id="search" action="index.php?page=srai_lookup" method="post">
               <fieldset>
                 <div class="row">
                   <label for="search_pattern"><span class="twentyPercent">Search Pattern: </span></label>
@@ -792,11 +796,28 @@ between the start and end section tags are the only parts of the template that a
                   <input type="submit" name="action" id="action" value="search"/>
                 </div>
               </fieldset>
-            </form>
-            <iframe src="" id="srai_lookup" name="srai_lookup">Test</iframe><br>
-            <a href="../insert_srai_lookup.php" target="srai_lookup">Run SRAI script</a>
-            <p>This section is still under construction. Please bear with us as we expand and grow.</p>
-<!-- Section SearchSRAIForm End -->
+            </form> -->
+            <p>
+              <a href="?page=srai_lookup&amp;action=fillLookup">Fill Lookup Table</a><br>
+            </p>
+            <p>
+              The link above runs a script that searches the entire AIML table for SRAI calls for every chatbot
+              and stores valid entries (along with the bot ID and the ID's of categories with matching patterns)
+              into a special lookup table. The chatbot engine then uses this lookup table to select the proper
+              response for that SRAI call without having to search through the entire database for a "best match".
+              This can improve performance by as much as 70% for each SRAI call made that is in the lookup table.
+              Since the script runs for all current chatbots, you only have to run it once for all of your bots.
+              Just remember to run it again if you make any significant changes to your AIML, especially if you
+              add or remove a chatbot. You don't have to worry about duplicates because the script starts by
+              emptying the lookup table first, and then uses a routine that rejects duplicates on a per-bot basis.
+            </p>
+            <p>
+              If you have any suggestions regarding functionality that you would like to see here, please post them
+              to the <a href="http://www.program-o.com/forum/viewforum.php?f=18" target="_blank">Feature Requests</a>
+              portion of the forums. Thanks.
+            </p>
+            <p class="center bold">This section is still under construction. Please bear with us as we expand and grow.</p>
+<!-- Section SRAI_lookup End -->
 <!-- Section EditAIMLForm Start -->
           <form id="edit" action="index.php?page=search" method="post">
             <fieldset>

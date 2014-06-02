@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.4.1
+  * Version: 2.4.2
   * FILE: chatbot/core/aiml/parse_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -365,10 +365,12 @@
   function run_srai(&$convoArr, $now_look_for_this)
   {
     global $srai_iterations, $error_response, $dbConn, $dbn;
+    $bot_id = $convoArr['conversation']['bot_id'];
     runDebug(__FILE__, __FUNCTION__, __LINE__,'Checking for entries in the srai_lookup table.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"google bot_id = $bot_id", 2);
     $lookingfor = $convoArr['aiml']['lookingfor'];
     //$now_look_for_this = strtoupper($now_look_for_this);
-    $sql = "select `template_id` from `$dbn`.`srai_lookup` where `pattern` like '$now_look_for_this';";
+    $sql = "select `template_id` from `$dbn`.`srai_lookup` where `pattern` = '$now_look_for_this' and `bot_id` = $bot_id;";
     runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = $sql", 2);
     $sth = $dbConn->prepare($sql);
     $sth->execute();

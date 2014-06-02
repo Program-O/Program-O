@@ -9,6 +9,17 @@
   ***************************************/
 
 Version History:
+2.4.2   Added Local AIML Validation and SRAI Lookup Admin
+            1.) Added a "local" AIML validator script, specifically designed to validate
+                AIML files for Program O and Pandorabots.
+            2.) Added a new page to the admin to work with the new SRAI lookup table. For
+                now, the page only fills the lookup table with direct matches to existing
+                SRAI calls within the AIML table, but soon it will also include functionality
+                for searching the lookup table, finding "inderect match" patterns, and the
+                ability to edit the templates for matched SRAI calls.
+            3.) Several minor bug fixes, including one that limited the number of characters
+                that the admin username could have (without any warning of the limit). The
+                new limit is 255 characters, instead of the previous 10.
 2.4.1   Complete refactor for PDO support, added SRAI lookup
             1.) Refactored the code that deals with DB access to completely remove the
                 last of the mysql_* functions, including "fallback support".

@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `conversation_log` (
 DROP TABLE IF EXISTS `myprogramo`;
 CREATE TABLE IF NOT EXISTS `myprogramo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_name` varchar(10) NOT NULL,
+  `user_name` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `last_ip` varchar(25) NOT NULL,
   `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

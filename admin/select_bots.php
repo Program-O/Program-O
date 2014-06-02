@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.1
+    * Version: 2.4.2
     * FILE: select_bots.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 05-26-2014
@@ -83,12 +83,12 @@ function getBotParentList($current_parent) {
 
 
 function getSelectedBot() {
-  global $dbConn, $template, $pattern, $remember_up_to, $conversation_lines, $error_response, $curBot;
+  global $dbConn, $template, $pattern, $remember_up_to, $conversation_lines, $error_response, $curBot, $unknown_user;
   $bot_conversation_lines = $conversation_lines;
   $remember_up_to = $remember_up_to;
   $bot_default_aiml_pattern = $pattern;
   $bot_error_response = $error_response;
-  //$unknown_user = 'test';
+  $bot_unknown_user = $unknown_user;
   
   $inputs='';
   $form = $template->getSection('SelectBotForm');
@@ -211,7 +211,7 @@ function getSelectedBot() {
     '[sel_html]','[sel_xml]','[sel_json]','[sel_session]','[sel_db]','[sel_fyes]',
     '[sel_fno]','[sel_fuyes]','[sel_funo]','[bot_conversation_lines]','[remember_up_to]',
     '[bot_debugemail]','[dm_]','[dm_i]','[dm_ii]','[dm_iii]','[ds_]','[ds_i]','[ds_ii]',
-    '[ds_iii]','[ds_iv]','[action]', '[bot_default_aiml_pattern]', '[bot_error_response]', '[unknown_user]',
+    '[ds_iii]','[ds_iv]','[action]', '[bot_default_aiml_pattern]', '[bot_error_response]', '[bot_unknown_user]', '[unknown_user]',
   );
   foreach ($searches as $search) {
     $replace = str_replace('[', '', $search);
