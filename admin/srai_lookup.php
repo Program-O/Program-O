@@ -57,12 +57,6 @@ function fillLookup()
   global $dbConn;
   $msg = '';
   $timeStart = microtime(true);
-  $thisFile = __FILE__;
-  include ('config/global_config.php');
-  include ('library/PDO_functions.php');
-  ini_set('log_errors', true);
-  ini_set('error_log', _LOG_PATH_ . 'sl.error.log');
-  $dbConn = db_open();
   // Drop the index on the table srai_lookup to speed things up
   try
   {
