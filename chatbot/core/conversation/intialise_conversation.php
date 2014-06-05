@@ -561,21 +561,21 @@
     $convoArr['conversation']['convo_id'] = $convo_id;
     $ip = $_SERVER['REMOTE_ADDR'];
     $convoArr['client_properties']['ip_address'] = $ip;
-    $sql = "select `user_name`, `id`, `chatlines` from `$dbn`.`users` where `session_id` = '$convo_id' limit 1;";
-    
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fetchAll();
+    $sql = "select `user_name`, `id`, `chatlines` from `$dbn`.`users` where `session_id` = :convo_id limit 1;";
 
-    $numRows = count($result);
-    if ($numRows == 0)
+    $sth = $dbConn->prepare($sql);
+    $sth->bindValue(':convo_id', $convo_id);
+    $sth->execute();
+    $row = $sth->fetch();
+    if ($row === false)
     {
       $convoArr = intisaliseUser($convoArr);
       $user_id = $convoArr['conversation']['user_id'];
+      $user_name = $unknown_user;
     }
     else
     {
-      $user_id = (!empty ($row['id'])) ? $row['id'] : 0;
+      $user_id = $row['id'];
       $user_name = (!empty ($row['user_name'])) ? $row['user_name'] : $unknown_user;
     }
     
@@ -694,4 +694,4 @@
     
     return $convoArr;
   }
-?>
+

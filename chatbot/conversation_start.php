@@ -186,7 +186,7 @@
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
   $dbConn = db_close();
   $time_end = microtime(true);
-  $time = number_format(round(($time_end - $script_start) * 1000,7));
+  $time = number_format(round(($time_end - $script_start) * 1000,7), 3);
   display_conversation($convoArr);
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
   $convoArr = handleDebug($convoArr); // Make sure this is the last line in the file, so that all debug entries are captured.
