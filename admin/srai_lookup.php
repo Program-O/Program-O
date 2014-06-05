@@ -139,7 +139,7 @@ function fillLookup()
   }
 
   // Now put the index back
-  $indexSQL = 'ALTER TABLE `lasttest`.`srai_lookup` ADD INDEX `pattern` (`bot_id`, `pattern`(64)); ALTER TABLE aiml DROP INDEX srai_search;';
+  $indexSQL = 'ALTER TABLE `srai_lookup` ADD INDEX `pattern` (`bot_id`, `pattern`(64)); ALTER TABLE aiml DROP INDEX srai_search;';
   $indexSTH = $dbConn->prepare($indexSQL);
   $indexSTH->execute();
 
