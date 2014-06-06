@@ -85,13 +85,13 @@ function fillLookup()
     $tid = $row['id'];
     $bot_id = $row['bot_id'];
     if (!isset($patterns[$bot_id])) $patterns[$bot_id] = array();
-    $template = trim($row['template']);
-    while (stripos($template, '<srai>', 0) !== false)
+    $AIMLtemplate = trim($row['template']);
+    while (stripos($AIMLtemplate, '<srai>', 0) !== false)
     {
-      $start = stripos($template, '<srai>', 0);
-      $end = stripos($template, '</srai>', $start);
+      $start = stripos($AIMLtemplate, '<srai>', 0);
+      $end = stripos($AIMLtemplate, '</srai>', $start);
       $len = $end - $start;
-      $srai = substr($template, $start, $len);
+      $srai = substr($AIMLtemplate, $start, $len);
       $srai = strtoupper($srai);
       $srai = trim(str_replace('<SRAI>', '', $srai));
       if (strstr($srai,'<') == false)
@@ -101,7 +101,7 @@ function fillLookup()
           $patterns[$bot_id][] = $srai;
         }
       }
-      $template = substr($template, $end);
+      $AIMLtemplate = substr($AIMLtemplate, $end);
     }
   }
   $patternSQL = 'select id from aiml where pattern = :pattern and bot_id = :bot_id order by id limit 1;';
