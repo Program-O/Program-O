@@ -14,6 +14,7 @@ chatbot/debug/*.txt
 gui/jquery/gui.php
 logs/*.log
 logs/*.txt
+makeBuild.php
 
 #################
 ## WeBuilder/ Rapid PHP
