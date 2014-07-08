@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.2
+//My Program-O Version: 2.4.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -71,13 +71,10 @@ endScript;
   $membersForm       = $template->getSection('MembersForm');
   $members_list_form = $template->getSection('MembersListForm');
   $showHelp          = $template->getSection('MembersShowHelp');
-
   $topNav            = $template->getSection('TopNav');
   $leftNav           = $template->getSection('LeftNav');
   $main              = $template->getSection('Main');
-  $topNavLinks       = makeLinks('top', $topLinks, 12);
   $navHeader         = $template->getSection('NavHeader');
-  $leftNavLinks      = makeLinks('left', $leftLinks, 12);
   $FooterInfo        = getFooter();
   $errMsgClass       = (!empty($msg)) ? "ShowError" : "HideError";
   $errMsgStyle       = $template->getSection($errMsgClass);
@@ -99,6 +96,12 @@ endScript;
   $mainTitle         = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
 
 
+  /**
+   * Function save
+   *
+   * * @param $action
+   * @return string
+   */
   function save($action) {
     global $dbConn, $dbn, $action, $post_vars;
     #return 'action = ' . $action;
@@ -150,8 +153,13 @@ endScript;
   }
 
 
-
-    function getAdminsOpts() {
+  /**
+   * Function getAdminsOpts
+   *
+   *
+   * @return string
+   */
+  function getAdminsOpts() {
     global $dbn, $dbConn;
     $out = "                  <!-- Start List of Current Admin Accounts -->\n";
     $optionTemplate = "                  <option value=\"[val]\">[key]</option>\n";
@@ -171,8 +179,14 @@ endScript;
     return $out;
   }
 
+  /**
+   * Function getMemberData
+   *
+   * * @param $id
+   * @return void
+   */
   function getMemberData($id) {
-    if ($id <= 0) return false;
+    if ($id <= 0) return;
     global $dbn, $user_name, $id, $dbConn;
     $sql = "select id, user_name from myprogramo where id = $id limit 1;";
     $sth = $dbConn->prepare($sql);
@@ -180,9 +194,14 @@ endScript;
     $row = $sth->fetch();
     $user_name = $row['user_name'];
     $id = $row['id'];
-    
   }
 
+  /**
+   * Function getNextID
+   *
+   *
+   * @return int
+   */
   function getNextID() {
     global $dbn, $user_name, $dbConn;
     $sql = "select id from myprogramo order by id desc limit 1;";

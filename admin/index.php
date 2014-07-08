@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-11-2013
@@ -58,10 +58,7 @@
   # Load the template file
   $thisPath = dirname(__FILE__);
   $template = new Template("$thisPath/default.page.htm");
-  $leftLinks = makeLeftLinks();
-  $topLinks = makeTopLinks();
   $githubVersion = getCurrentVersion();
-  if (!$githubVersion) $githubVersion = VERSION;
   $version = ($githubVersion == VERSION) ? 'Program O version ' . VERSION : 'Program O ' . $githubVersion . ' is now available. <a href="https://github.com/Dave-Morton/Program-O/archive/master.zip">Click here</a> to download it.';
 # set template section defaults
 
@@ -82,8 +79,8 @@
   $rightNavLinks   = '';
   $lowerScripts    = $template->getSection('LogoLinkScript');
   $pageTitleInfo   = '';
-  $topNavLinks     = '';
-  $leftNavLinks    = '';
+  $topNavLinks     = makeLinks('top', makeTopLinks());
+  $leftNavLinks    = makeLinks('left', makeLeftLinks());
   $mediaType       = ' media="screen"';
   $mainTitle       = 'Program O Login';
   $FooterInfo      = '<p>&copy; 2011-2013 My Program-O<br /><a href="http://www.program-o.com">www.program-o.com</a></p>';
@@ -174,11 +171,7 @@
   $styleSheet = 'style.css';
   $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
   $errMsgStyle   = $template->getSection($errMsgClass);
-/* These are the most common template replacement tags used. Any additional
-   replacement tags should be handled in the include file for the current page,
-   in a function named replaceTags(&$content). This function will alter the
-   $content variable directly, rather than change it and then return it.
-*/
+  $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
   $searches = array(
                     '[charset]'         => $charset,
                     '[myPage]'          => $curPage,
@@ -192,10 +185,8 @@
                     '[leftNav]'         => $leftNav,
                     '[rightNav]'        => $rightNav,
                     '[main]'            => $main,
-                    '[rightNav]'        => $rightNav,
                     '[footer]'          => $footer,
                     '[lowerScripts]'    => $lowerScripts,
-                    '[pageTitleInfo]'   => $pageTitleInfo,
                     '[titleSpan]'       => $titleSpan,
                     '[divDecoration]'   => $divDecoration,
                     '[topNavLinks]'     => $topNavLinks,
@@ -221,17 +212,23 @@
   $content = str_replace('[myPage]', $curPage, $content);
   $content = str_replace('[divDecoration]', $divDecoration, $content);
   $content = str_replace('[blank]', '', $content);
-  if(function_exists('replaceTags')) replaceTags($content); // Handle any extra replacement tags, as needed.
 
   exit($content);
 
-  function makeLinks($section, $linkArray, $spaces = 2) {
-    #print "<!-- making links for section $section -->\n";
+  /**
+   * Function makeLinks
+   *
+   * * @param $section
+   * @param     $linkArray
+   * @return string
+   */
+  function makeLinks($section, $linkArray) {
+    $out = "<!-- making links for section $section -->\n";
     global $template, $curPage;
     $curPage = (empty($curPage)) ? 'main' : $curPage;
     $botName = (isset($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : '<b class="red">not selected</b>';
     $botId = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
-    $out = '';
+    $botId = ($botId == 'new') ? 1 : $botId;
     # [linkClass][linkHref][linkOnclick][linkAlt][linkTitle]>[linkLabel]
     $linkText = $template->getSection('NavLink');
     foreach ($linkArray as $needle) {
@@ -256,6 +253,12 @@
   }
 
 
+  /**
+   * Function getFooter
+   *
+   *
+   * @return string
+   */
   function getFooter() {
     $ip = $_SERVER['REMOTE_ADDR'];
     $name = (isset($_SESSION['poadmin']['name'])) ?  $_SESSION['poadmin']['name'] : 'unknown';
@@ -271,6 +274,12 @@ endFooter;
     return $out;
   }
 
+  /**
+   * Function makeTopLinks
+   *
+   *
+   * @return array
+   */
   function makeTopLinks() {
     $out = array(
                          array(
@@ -332,6 +341,13 @@ endFooter;
                         );
     return $out;
   }
+
+  /**
+   * Function makeLeftLinks
+   *
+   *
+   * @return array
+   */
   function makeLeftLinks() {
     $out = array(
                  array( # Change bot
@@ -466,6 +482,12 @@ endFooter;
     return $out;
   }
 
+  /**
+   * Function getRSS
+   *
+   * * @param string $feed
+   * @return string
+   */
   function getRSS($feed = 'RSS') {
     global $template;
     switch ($feed) {
@@ -497,7 +519,7 @@ endFooter;
       if($rss) {
         $items = $rss->channel->item;
         foreach ($items as $item) {
-          $title = $item->title;
+          $title = htmlentities($item->title);
           $link = $item->link;
           $published_on = $item->pubDate;
           $description = $item->description;
@@ -515,6 +537,12 @@ endFooter;
     return $out;
   }
 
+  /**
+   * Function getCurrentVersion
+   *
+   *
+   * @return bool|mixed|string
+   */
   function getCurrentVersion()
   {
     if(isset($_SESSION['GitHubVersion'])) return $_SESSION['GitHubVersion'];
@@ -540,9 +568,15 @@ endFooter;
       $out = $version;
     }
     $_SESSION['GitHubVersion'] = $out;
-    return $out;
+    return ($out !== false) ? $out : VERSION;
   }
 
+  /**
+   * Function handle_exceptions
+   *
+   * * @param exception $e
+   * @return void
+   */
   function handle_exceptions(exception $e)
   {
     global $msg;

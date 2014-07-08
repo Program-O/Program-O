@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.2
+//My Program-O Version: 2.4.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -44,8 +44,8 @@ endScript;
     $topNav        = $template->getSection('TopNav');
     $leftNav       = $template->getSection('LeftNav');
     $main          = $template->getSection('Main');
-    $topNavLinks   = makeLinks('top', $topLinks, 12);
-    $leftNavLinks  = makeLinks('left', $leftLinks, 12);
+    
+    
     $FooterInfo    = getFooter();
     $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
     $errMsgStyle   = $template->getSection($errMsgClass);
@@ -66,7 +66,13 @@ endScript;
     $mainContent = str_replace('[convo]', $convo, $mainContent);
     $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
 
-function getUserNames() {
+  /**
+   * Function getUserNames
+   *
+   *
+   * @return array
+   */
+  function getUserNames() {
   global $dbConn;
   $nameList = array();
   $sql = "select `id`, `user_name` from `users` where 1;";
@@ -80,7 +86,13 @@ function getUserNames() {
   return $nameList;
 }
 
-function getuserList($showing) {
+  /**
+   * Function getuserList
+   *
+   * * @param $showing
+   * @return string
+   */
+  function getuserList($showing) {
   //db globals
   global $template, $get_vars, $dbConn;
   $nameList = getUserNames();
@@ -147,7 +159,13 @@ endList;
   return $list;
 }
 
-function showThis($showing="last 20") {
+  /**
+   * Function showThis
+   *
+   * * @param string $showing
+   * @return string
+   */
+  function showThis($showing="last 20") {
   $showarray = array("last 20","today","previous week","previous 2 weeks","previous month","last 6 months","past 12 months","all time");
   $options = "";
   foreach($showarray as $index => $value) {
@@ -171,7 +189,14 @@ endForm;
   return $form;
 }
 
-function getuserConvo($id, $showing) {
+  /**
+   * Function getuserConvo
+   *
+   * * @param $id
+   * @param $showing
+   * @return mixed|string
+   */
+  function getuserConvo($id, $showing) {
   global $dbConn;
   $bot_name= (isset($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'Bot';
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;

@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 07-23-2013
@@ -13,7 +13,7 @@
   $base_URL  = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
   $this_path = str_replace(DIRECTORY_SEPARATOR, '/', realpath(dirname(__FILE__)));  // The current location of this file, normalized to use forward slashes
   $this_path = str_replace($_SERVER['DOCUMENT_ROOT'], $base_URL, $this_path);       // transform it from a file path to a URL
-  $url = str_replace('gui/jquery', 'chatbot/conversation_start.php', $this_path);   // and set it to the correct script location
+  $url = str_replace('gui/xml', 'chatbot/conversation_start.php', $this_path);      // and set it to the correct script location
 /*
   Example URL's for use with the chatbot API
   $url = 'http://api.program-o.com/v2.3.1/chatbot/';
@@ -35,7 +35,7 @@ end_display;
   $request_vars = array_merge($get_vars, $post_vars);
   $convo_id = (isset ($request_vars['convo_id'])) ? $request_vars['convo_id'] : get_convo_id();
   $bot_id = (isset ($request_vars['bot_id'])) ? $request_vars['bot_id'] : 1;
-  if (!empty ($request_vars))
+  if (!empty ($post_vars))
   {
     $options = array(
       CURLOPT_USERAGENT => 'Program_O_XML_API',
@@ -76,6 +76,12 @@ end_display;
 
   }
 
+  /**
+   * Function get_convo_id
+   *
+   *
+   * @return string
+   */
   function get_convo_id()
   {
     if (isset($_COOKIE['Program_O_XML_API'])) $convo_id = $_COOKIE['Program_O_XML_API'];
@@ -124,7 +130,7 @@ end_display;
   </head>
   <body onload="document.forms[0].say.focus();">
     <h3>Program O XML GUI</h3>
-    <form accept-charset="utf-8" method="get" action="<?php echo $_SERVER['PHP_SELF'] ?>">
+    <form accept-charset="utf-8" method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
       <p>
         <input type="text" name="say" id="say" size="70" />
         <input id="bot_id" type="hidden" name="bot_id" value="<?php echo $bot_id ?>">

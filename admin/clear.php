@@ -1,6 +1,6 @@
 <?PHP
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.2
+//My Program-O Version: 2.4.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -72,14 +72,14 @@ elseif((isset($post_vars['clearFile']))&&($post_vars['clearFile'] != "null"))
 }
 else {
 }
-    $content .= renderMain();
+    $content .= buildMain();
 
     $topNav        = $template->getSection('TopNav');
     $leftNav       = $template->getSection('LeftNav');
     $main          = $template->getSection('Main');
-    $topNavLinks   = makeLinks('top', $topLinks, 12);
+    
     $navHeader     = $template->getSection('NavHeader');
-    $leftNavLinks  = makeLinks('left', $leftLinks, 12);
+    
     $FooterInfo    = getFooter();
     $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
     $errMsgStyle   = $template->getSection($errMsgClass);
@@ -95,13 +95,13 @@ else {
     $mainTitle     = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
     $mainContent   = str_replace('[showHelp]', $showHelp, $mainContent);
     $mainContent     = str_replace('[upperScripts]', $upperScripts, $mainContent);
-  function replaceTags(&$content)
-{
 
-
-    return $content;
-  }
-
+  /**
+   * Function clearAIML
+   *
+   *
+   * @return string
+   */
   function clearAIML()
 {
 
@@ -117,6 +117,12 @@ else {
     return $msg;
   }
 
+  /**
+   * Function clearAIMLByFileName
+   *
+   * * @param $filename
+   * @return string
+   */
   function clearAIMLByFileName($filename)
 {
 
@@ -130,10 +136,14 @@ else {
     return $msg;
   }
 
-  function getSelOpts()
-{
-
-
+  /**
+   * Function buildSelOpts
+   *
+   *
+   * @return string
+   */
+  function buildSelOpts()
+  {
     global $dbn, $bot_id, $msg, $dbConn;
     $out = "                  <!-- Start Selectbox Options -->\n";
     $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
@@ -146,9 +156,7 @@ else {
     foreach ($result as $row)
     {
       if (empty($row['filename']))
-{
-
-
+      {
         $curOption = "                  <option value=\"\">{No Filename entry}</option>\n";
       }
       else $curOption = str_replace('[val]', $row['filename'], $optionTemplate);
@@ -158,11 +166,17 @@ else {
     return $out;
   }
 
-  function renderMain()
+  /**
+   * Function buildMain
+   *
+   *
+   * @return string
+   */
+  function buildMain()
 {
 
 
-    $selectOptions = getSelOpts();
+    $selectOptions = buildSelOpts();
     $content = <<<endForm
           Deleting AIML categories from the database is <strong>permanent</strong>!
           This action <strong>CANNOT</strong> be undone!<br />
@@ -171,12 +185,12 @@ else {
           <table class="formTable">
             <tr>
               <td>
-                <input type="radio" name="action" id="actionClearAll" value="clear">
-                <label for="actionClearAll" style="width: 250px">Clear <strong>ALL</strong> AIML categories (Purge database)</label>
-              </td>
-              <td>
                 <input type="radio" name="action" value="void" id="actionClearFile" checked="checked">
                 <label for="actionClearFile" style="width: 210px; text-align: left">Clear categories from this AIML file: </label><br />
+              </td>
+              <td>
+                <input type="radio" name="action" id="actionClearAll" value="clear">
+                <label for="actionClearAll" style="width: 250px">Clear <strong>ALL</strong> AIML categories (Purge database)</label>
               </td>
             </tr>
             <tr>

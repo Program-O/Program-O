@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.2
+//My Program-O Version: 2.4.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -59,9 +59,9 @@ endScript;
     $topNav        = $template->getSection('TopNav');
     $leftNav       = $template->getSection('LeftNav');
     $main          = $template->getSection('Main');
-    $topNavLinks   = makeLinks('top', $topLinks, 12);
+    
     $navHeader     = $template->getSection('NavHeader');
-    $leftNavLinks  = makeLinks('left', $leftLinks, 12);
+    
     $FooterInfo    = getFooter();
     $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
     $errMsgStyle   = $template->getSection($errMsgClass);
@@ -75,6 +75,12 @@ endScript;
     $mainTitle     = 'Send a Bug Report';
 
 
+  /**
+   * Function showBugForm
+   *
+   *
+   * @return string
+   */
   function showBugForm() {
     global $debugemail;
     return <<<endForm
@@ -131,6 +137,13 @@ endScript;
       </form>
 endForm;
   }
+
+  /**
+   * Function sendMail
+   *
+   *
+   * @return string
+   */
   function sendMail() {
     global $email, $name, $subject, $message, $captcha;
     #print "<!-- Ginger message = $message --\n";
@@ -183,6 +196,12 @@ endOops;
     return $out;
   }
 
+  /**
+   * Function checkBadAddress
+   *
+   * * @param $address
+   * @return int
+   */
   function checkBadAddress ($address) {
     $out = 0;
 	$excluded = array("namecheap2.ehost-services150.com", "rxciales.info", "mail.ru", "rxcilliss.info", "PaulkyLyday@gmail.com");
@@ -193,6 +212,12 @@ endOops;
 	return $out;
   }
 
+  /**
+   * Function checkBadIP
+   *
+   *
+   * @return int
+   */
   function checkBadIP () {
     $IP = $_SERVER['REMOTE_ADDR'];
     $out = 0;

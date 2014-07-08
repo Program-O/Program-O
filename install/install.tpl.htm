@@ -37,7 +37,7 @@
       var url = 'about:blank';
       var helpWindow = null; // global variable
       $(function() {
-        var sWidth = $(window).width();
+        //var sWidth = $(window).width();
         buildSelect('time_zone_locale');
         $('#save_stateSession').attr('checked', true);
         $('#adm_dbp_confirm').blur(function() {
@@ -56,7 +56,7 @@
         $('span.helpButton').attr('title','Click here to get help for the current item.');
         $('span.helpButton').click(function() {
           var tmpHash = $(this).attr('id');
-          hash = tmpHash.replace('hb_','');
+          var hash = tmpHash.replace('hb_','');
           url = 'help.php#' + hash;
           helpPopups(url);
         });
@@ -74,11 +74,11 @@
       }
       function helpPopups (url) {
         var options = 'left=150,top=100,width=800,height=600,scrollbars=1';
-        if (null == helpWindow || helpWindow.closed) {
+        if (null === helpWindow || helpWindow.closed) {
           helpWindow = window.open(url,'helpWindow',options,true);
           setTimeout(function(){helpWindow.highlight()},500);
         }
-        else if (null == helpWindow.location) {
+        else if (null === helpWindow.location) {
           helpWindow.close();
           helpWindow = null;
           helpPopups (url);
@@ -92,9 +92,7 @@
       function validatePass() {
         var pw1 = $('#adm_dbp').val();
         var pw2 = $('#adm_dbp_confirm').val();
-        var out = true;
-        out = (('' != pw1) && (pw1 == pw2));
-        return out;
+        return (('' !== pw1) && (pw1 === pw2));
       }
     </script>
 <!-- Section jQuery1 End -->
@@ -192,11 +190,13 @@
               <td class="formw"><input name="adm_dbu" id="adm_dbu" value="" /></td>
             </tr>
             <tr>
-              <td class="label"><label for="adm_dbp"><span class="helpButton" id="hb_adm_dbp"> </span>Admin Area Password</label></td>
+              <td class="label"><label for="adm_dbp"><!--suppress XmlDuplicatedId -->
+                  <span class="helpButton" id="hb_adm_dbp"> </span>Admin Area Password</label></td>
               <td class="formw"><input name="adm_dbp" id="adm_dbp" type="password" /></td>
             </tr>
             <tr>
-              <td class="label"><label for="adm_dbp_confirm"><span class="helpButton" id="hb_adm_dbp"> </span>Confirm Admin Area Password</label></td>
+              <td class="label"><label for="adm_dbp_confirm"><!--suppress XmlDuplicatedId -->
+                  <span class="helpButton" id="hb_adm_dbp"> </span>Confirm Admin Area Password</label></td>
               <td class="formw"><input name="adm_dbp_confirm" id="adm_dbp_confirm" type="password" /></td>
             </tr>
             <!-- tr>

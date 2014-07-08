@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.2
+    * Version: 2.4.3
     * FILE: srai_lookup.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 05-26-2014
@@ -28,9 +28,9 @@
   $leftNav       = $template->getSection('LeftNav');
   $rightNav      = $template->getSection('RightNav');
   $main          = $template->getSection('Main');
-  $topNavLinks   = makeLinks('top', $topLinks, 12);
+  
   $navHeader     = $template->getSection('NavHeader');
-  $leftNavLinks  = makeLinks('left', $leftLinks, 12);
+  
   $FooterInfo    = getFooter();
   $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
   $errMsgStyle   = $template->getSection($errMsgClass);
@@ -43,6 +43,7 @@
 
   $countSQL = 'select count(id) from srai_lookup where bot_id = :bot_id;';
   $countSTH = $dbConn->prepare($countSQL);
+  /** @noinspection PhpUndefinedVariableInspection */
   $countSTH->bindValue(':bot_id', $bot_id, PDO::PARAM_INT);
   $countSTH->execute();
   $countRow = $countSTH->fetch();
@@ -52,7 +53,13 @@
   $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
 
 
-function fillLookup()
+  /**
+   * Function fillLookup
+   *
+   *
+   * @return string
+   */
+  function fillLookup()
 {
   global $dbConn;
   $msg = '';

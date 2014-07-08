@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -31,6 +31,7 @@
     # Config exists we will goto the bot
     $thisFile = __FILE__;
     require_once('config/global_config.php');
+    /** @noinspection PhpUndefinedVariableInspection */
     $format = (isset($get_vars['format'])) ? $get_vars['format'] : $format;
     $format = strtoupper($format);
     switch ($format)

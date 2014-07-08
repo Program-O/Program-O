@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 07-23-2013
@@ -10,7 +10,7 @@
   ***************************************/
   $cookie_name = 'Program_O_JSON_GUI';
   $botId = filter_input(INPUT_GET, 'bot_id');
-  $convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : get_convo_id();
+  $convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : jq_get_convo_id();
   $bot_id = (isset($_COOKIE['bot_id'])) ? $_COOKIE['bot_id'] :($botId !== false && $botId !== null) ? $botId : 1;
   setcookie('bot_id', $bot_id);
   // Experimental code
@@ -29,7 +29,13 @@
   $display .= 'Please make sure that you edit this file to change the value of the variable $url in this file to reflect the correct URL address of your chatbot, and to remove this message.' . PHP_EOL;
   #$display = '';
 
-  function get_convo_id()
+  /**
+   * Function jq_get_convo_id
+   *
+   *
+   * @return string
+   */
+  function jq_get_convo_id()
   {
     global $cookie_name;
     session_name($cookie_name);
@@ -148,17 +154,23 @@
       // put all your jQuery goodness in here.
         $('#talkform').submit(function(e) {
           e.preventDefault();
-          user = $('#say').val();
+          var user = $('#say').val();
           $('.usersay').text(user);
-          formdata = $("#talkform").serialize();
+          var formdata = $("#talkform").serialize();
           $('#say').val('')
           $('#say').focus();
           $.post('<?php echo $url ?>', formdata, function(data){
             var b = data.botsay;
-            if (b.indexOf('[img]') >= 0) b = showImg(b);
-            if (b.indexOf('[link') >= 0) b = makeLink(b);
+            if (b.indexOf('[img]') >= 0) {
+              b = showImg(b);
+            }
+            if (b.indexOf('[link') >= 0) {
+              b = makeLink(b);
+            }
             var usersay = data.usersay;
-            if (user != usersay) $('.usersay').text(usersay);
+            if (user != usersay) {
+              $('.usersay').text(usersay);
+            }
             $('.botsay').html(b);
           }, 'json').fail(function(xhr, textStatus, errorThrown){
             $('#urlwarning').html("Something went wrong! Error = " + errorThrown);

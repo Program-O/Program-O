@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.2
+//My Program-O Version: 2.4.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -75,10 +75,10 @@ endScript;
     $topNav        = $template->getSection('TopNav');
     $leftNav       = $template->getSection('LeftNav');
     $main          = $template->getSection('Main');
-    $topNavLinks   = makeLinks('top', $topLinks, 12);
+    
     $navHeader     = $template->getSection('NavHeader');
     $rightNav      = $template->getSection('RightNav');
-    $leftNavLinks  = makeLinks('left', $leftLinks, 12);
+    
     $rightNavLinks = getMisspelledWords();
     $FooterInfo    = getFooter();
     $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
@@ -95,9 +95,16 @@ endScript;
     $mainContent = str_replace('[sc_enabled]', $sc_enabled, $mainContent);
     $rightNav    = str_replace('[rightNavLinks]', $rightNavLinks, $rightNav);
     $rightNav    = str_replace('[navHeader]', $navHeader, $rightNav);
-    $rightNav    = str_replace('[headerTitle]', paginate(), $rightNav);
+    $rightNav    = str_replace('[headerTitle]', scPaginate(), $rightNav);
 
-  function paginate() {
+  /**
+   * Function scPaginate
+   *
+   *
+   * @return string
+   */
+  function scPaginate()
+  {
     global $dbConn, $get_vars;
     $sql = "select count(*) from `spellcheck` where 1";
     $sth = $dbConn->prepare($sql);
@@ -127,6 +134,12 @@ endScript;
     return $out;
   }
 
+  /**
+   * Function getMisspelledWords
+   *
+   *
+   * @return string
+   */
   function getMisspelledWords() {
     global $dbConn, $template, $get_vars;
     # pagination variables
@@ -163,7 +176,13 @@ endScript;
     return $links;
   }
 
-function spellCheckForm() {
+  /**
+   * Function spellCheckForm
+   *
+   *
+   * @return mixed|string
+   */
+  function spellCheckForm() {
   global $template, $get_vars;
   $out = $template->getSection('SpellcheckForm');
   $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
@@ -171,7 +190,13 @@ function spellCheckForm() {
   return $out;
 }
 
-function insertSpell() {
+  /**
+   * Function insertSpell
+   *
+   *
+   * @return string
+   */
+  function insertSpell() {
     global $dbConn, $template, $msg, $post_vars;
     $correction = trim($post_vars['correction']);
     $missspell = trim($post_vars['missspell']);
@@ -195,7 +220,13 @@ function insertSpell() {
     return $msg;
 }
 
-function delSpell($id) {
+  /**
+   * Function delSpell
+   *
+   * * @param $id
+   * @return void
+   */
+  function delSpell($id) {
     global $dbConn, $template, $msg;
     
     if($id=="") {
@@ -216,7 +247,13 @@ function delSpell($id) {
 }
 
 
-function runSpellSearch() {
+  /**
+   * Function runSpellSearch
+   *
+   *
+   * @return string
+   */
+  function runSpellSearch() {
     global $dbConn, $template, $post_vars;
     
     $i=0;
@@ -264,7 +301,13 @@ function runSpellSearch() {
     return $htmlresults;
 }
 
-function editSpellForm($id) {
+  /**
+   * Function editSpellForm
+   *
+   * * @param $id
+   * @return mixed|string
+   */
+  function editSpellForm($id) {
   global $dbConn, $template, $get_vars;
   $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
   $form   = $template->getSection('EditSpellForm');

@@ -1,5 +1,11 @@
 <?php
 // Program O Addon - Parse BB_Code
+  /**
+   * Function parseEmotes
+   *
+   * * @param $msg
+   * @return mixed
+   */
   function parseEmotes($msg) {
     $emotesFile = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'emotes.dat';
     $emotes_URL = _BASE_URL_ . "chatbot/addons/parseBBCode/images/";                                           // Define the location of the emote image
@@ -25,6 +31,12 @@ endLine;
   }
 // end function parseEmotes
 
+  /**
+   * Function parseURLs
+   *
+   * * @param $msg
+   * @return mixed
+   */
   function parseURLs($msg) {
     if (strpos($msg, "[url") === false) return $msg;
     $replace = array('<a href="$1" target="_blank">$2</a>', '<a href="$1" target="_blank">$1</a>');
@@ -36,6 +48,12 @@ endLine;
     return $msg;
   }
 
+  /**
+   * Function parseLinks
+   *
+   * * @param $msg
+   * @return mixed
+   */
   function parseLinks($msg) {
     if (strpos($msg, "[link") === false) return $msg;
     $replace = array('<a href="$1" target="_blank">$2</a>', '<a href="$1" target="_blank">$1</a>');
@@ -47,6 +65,12 @@ endLine;
     return $msg;
   }
 
+  /**
+   * Function parseImages
+   *
+   * * @param $msg
+   * @return mixed
+   */
   function parseImages($msg) {
     $oldMsg = $msg;
     if (strpos($msg, "[img]") === false) return $msg;
@@ -57,6 +81,12 @@ endLine;
     return $msg;
   }
 
+  /**
+   * Function parseColors
+   *
+   * * @param $msg
+   * @return mixed
+   */
   function parseColors($msg) {
     $test = $msg;
     if (preg_match("~\[color=(.*?)\]~", $test, $matches))
@@ -98,12 +128,18 @@ endLine;
     return $msg;
   }
 
+  /**
+   * Function parseFormatting
+   *
+   * * @param $msg
+   * @return mixed
+   */
   function parseFormatting ($msg) {
     $oldMsg = $msg;
     $msg = str_replace("[b]", "<b>", $msg);
     $msg = str_replace("[/b]", "</b>", $msg);
-    $msg = str_replace("[u]", "<u>", $msg);
-    $msg = str_replace("[/u]", "</u>", $msg);
+    $msg = str_replace("[u]", "<span class=\"underline\">", $msg);
+    $msg = str_replace("[/u]", "</span>", $msg);
     $msg = str_replace("[i]", "<i>", $msg);
     $msg = str_replace("[/i]", "</i>", $msg);
     $msg = str_replace("[s]", "<s>", $msg);
@@ -111,6 +147,12 @@ endLine;
     return $msg;
   }
 
+  /**
+   * Function parseInput
+   *
+   * * @param $msg
+   * @return mixed
+   */
   function parseInput ($msg) {
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Pre-parsing input. Setting Timestamp. msg = |$msg|", 4);
     $smilieArray = file(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'inputEmotes.dat');
@@ -127,6 +169,12 @@ endLine;
     return $out;                                                      // Send back the processed image
   }
 
+  /**
+   * Function checkForParsing
+   *
+   * * @param $convoArr
+   * @return mixed
+   */
   function checkForParsing($convoArr) {
     $message = $convoArr['send_to_user'];
     $oldMsg = $message;

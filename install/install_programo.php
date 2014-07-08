@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: install_programo.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -36,6 +36,7 @@
   $page_template = file_get_contents('install.tpl.htm');
   $page = (isset ($_REQUEST['page'])) ? $_REQUEST['page'] : 1;
   $action = (isset ($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+  $message = '';
   if (!empty ($action))
   {
     $message = $action($page);
@@ -70,6 +71,14 @@ endPage;
 
   exit($content);
 
+  /**
+   * Function getSection
+   *
+   * * @param $sectionName
+   * @param      $page_template
+   * @param bool $notFoundReturn
+   * @return string
+   */
   function getSection($sectionName, $page_template, $notFoundReturn = true)
   {
     $sectionStart = str_replace('[section]', $sectionName, SECTION_START);
@@ -93,9 +102,17 @@ endPage;
     return trim($out);
   }
 
+  /**
+   * Function Save
+   *
+   *
+   * @return string
+   */
   function Save()
   {
     global $page_template, $error_response;
+    $tagSearch = array();
+    $varReplace = array();
     $pattern = "RANDOM PICKUP LINE";
     $errorMessage = '';
     #$error_response = "No AIML category found. This is a Default Response.";

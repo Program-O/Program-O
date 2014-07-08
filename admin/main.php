@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.2
+//My Program-O Version: 2.4.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -17,9 +17,9 @@
     #$lowerScripts  = '';
     #$pageTitleInfo = '';
     $divDecoration = $template->getSection('DivDecoration');
-    $topNavLinks   = makeLinks('top', $topLinks, 12);
+    
     $navHeader     = $template->getSection('NavHeader');
-    $leftNavLinks  = makeLinks('left', $leftLinks, 12);
+    
     $mainTitle     = 'Home';
     $rightNavLinks = '';
     $FooterInfo    = getFooter();

@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.2
+//My Program-O Version: 2.4.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //May 2011
@@ -16,14 +16,22 @@ define ('SECTION_END', '<!-- Section [section] End -->'); # search params for st
 
 $template = file_get_contents('help.tpl.htm');
 
-$content = getSection('HelpPage', $template, false);
-$helpContent = getSection('HelpMain',$template);
+$content = help_getSection('HelpPage', $template, false);
+$helpContent = help_getSection('HelpMain',$template);
 $content = str_replace('[helpContent]', $helpContent, $content);
 
 echo($content);
 
 
-function getSection($sectionName, $page_template, $notFoundReturn = true) {
+  /**
+   * Function help_getSection
+   *
+   * * @param $sectionName
+   * @param      $page_template
+   * @param bool $notFoundReturn
+   * @return string
+   */
+  function help_getSection($sectionName, $page_template, $notFoundReturn = true) {
   $sectionStart = str_replace('[section]', $sectionName, SECTION_START);
   $sectionStartLen = strlen($sectionStart);
   $sectionEnd   = str_replace('[section]', $sectionName, SECTION_END);

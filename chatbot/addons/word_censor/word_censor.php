@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: word_censor/word_censor.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -11,12 +11,13 @@
   *             the swear words are encoded in the session array to protect little eyes
   ***************************************/
   /**
-  * function run_censor()
-  * A function to run the censorship of words
-  * if the censor session array is not set this will set it
-  * @param  array $convoArr - the conversation array
-  * @return $convoArr (censored)
-  **/
+   * function run_censor()
+   * A function to run the censorship of words
+   * if the censor session array is not set this will set it
+   *
+   * @param  array $convoArr - the conversation array
+   * @return array $convoArr (censored)
+   */
   function run_censor($convoArr)
   {
     if (!isset ($_SESSION['pgo_word_censor']))
@@ -51,11 +52,12 @@
   }
 
   /**
-  * function censor_words()
-  * A function to censor words before outputting them to screen
-  * @param  str $output - the string we wish to censor
-  * @return $coutput (censored)
-  **/
+   * function censor_words()
+   * A function to censor words before outputting them to screen
+   *
+   * @param  string $output - the string we wish to censor
+   * @return mixed|string $coutput (censored)
+   */
   function censor_words($output)
   {
     foreach ($_SESSION['pgo_word_censor'] as $find => $replace)

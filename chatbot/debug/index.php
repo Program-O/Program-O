@@ -2,7 +2,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-15-2013
@@ -45,8 +45,7 @@
     $sth = $dbConn->prepare($sql);
     $sth->execute();
     $row = $sth->fetch();
-    $numRows = count($result);
-    if ($numRows > 0)
+    if ($row !== false)
     {
       $verify = $row['password'];
       if ($pass == $verify)

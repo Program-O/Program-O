@@ -1,14 +1,18 @@
 <?php
 
-  /***************************************
-  * http://www.program-o.com
-  * PROGRAM O
-  * Version: 2.4.2
-  * FILE: buildSelect.php
-  * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 02-21-2013
-  * DETAILS: Builds HTML  selectbox options from an array
-  ***************************************/
+  /**
+   * Builds HTML  selectbox options from an array of values and labels
+   *
+   * @AUTHOR   Elizabeth Perreau and Dave Morton
+   *
+   * @param array  $optionList
+   * @param array  $selList
+   * @param string $selectText
+   * @param bool   $useSelDefault
+   * @param bool   $useOnlyValues
+   * @param int    $space
+   * @return string
+   */
   function buildSelect($optionList, $selList = array(), $selectText = '', $useSelDefault = false, $useOnlyValues = false, $space = 2)
   {
     $usd = ($useSelDefault) ? 1 : 0;

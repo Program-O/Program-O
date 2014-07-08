@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.4.2
+* Version: 2.4.3
 * FILE: config/global_config.php
 * AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
 * DATE: January 16th, 2013
@@ -142,7 +142,8 @@
     //------------------------------------------------------------------------
 
     //initially set here but overwriten by bot configuration in the admin panel
-    $debug_level = $debug_level;
+  /** @noinspection PhpSillyAssignmentInspection */
+  $debug_level = $debug_level;
 
     //for quick debug to override the bot config debug options
     //0 - Do not show anything

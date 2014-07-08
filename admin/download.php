@@ -1,7 +1,7 @@
-
-<?PHP
+<?php
   $content = '';
   $status = '';
+  $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
   $upperScripts = <<<endScript
 
     <script type="text/javascript">
@@ -58,9 +58,9 @@ endScript;
   $topNav = $template->getSection('TopNav');
   $leftNav = $template->getSection('LeftNav');
   $main = $template->getSection('Main');
-  $topNavLinks = makeLinks('top', $topLinks, 12);
+  
   $navHeader = $template->getSection('NavHeader');
-  $leftNavLinks = makeLinks('left', $leftLinks, 12);
+  
   $FooterInfo = getFooter();
   $errMsgClass = (!empty ($msg)) ? "ShowError" : "HideError";
   $errMsgStyle = $template->getSection($errMsgClass);
@@ -75,11 +75,12 @@ endScript;
   $mainContent = str_replace('[status]', $status, $mainContent);
   $mainTitle = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
 
-  function replaceTags(& $content)
-  {
-    return $content;
-  }
-
+  /**
+   * Function getAIMLByFileName
+   *
+   * * @param $filename
+   * @return string
+   */
   function getAIMLByFileName($filename)
   {
     if ($filename == 'null') return "You need to select a file to download.";
@@ -151,6 +152,12 @@ endScript;
     return serveFile($filename, $msg);
   }
 
+  /**
+   * Function getSQLByFileName
+   *
+   * * @param $filename
+   * @return string
+   */
   function getSQLByFileName($filename)
   {
     global $dbn, $botmaster_name, $dbh, $dbConn;
@@ -200,13 +207,18 @@ endScript;
     return serveFile($filename, $msg);
   }
 
+  /**
+   * Function getSelOpts
+   *
+   *
+   * @return string
+   */
   function getSelOpts()
   {
     global $dbn, $bot_id, $msg, $dbConn;
     $out = "                  <!-- Start Selectbox Options -->\n";
     $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
-    $sql =
-    "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
+    $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
     $result = $sth->fetchAll();
@@ -225,6 +237,12 @@ endScript;
     return $out;
   }
 
+  /**
+   * Function renderMain
+   *
+   *
+   * @return string
+   */
   function renderMain()
   {
     $selectOptions = getSelOpts();
@@ -264,6 +282,13 @@ endForm;
         return $content;
   }
 
+  /**
+   * Function serveFile
+   *
+   * * @param $req_file
+   * @param string $msg
+   * @return string
+   */
   function serveFile($req_file, & $msg = '')
   {
     global $get_vars, $charset;

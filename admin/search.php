@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.2
+    * Version: 2.4.3
     * FILE: search.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 05-26-2014
@@ -51,9 +51,9 @@
   $leftNav       = $template->getSection('LeftNav');
   $rightNav      = $template->getSection('RightNav');
   $main          = $template->getSection('Main');
-  $topNavLinks   = makeLinks('top', $topLinks, 12);
+  
   $navHeader     = $template->getSection('NavHeader');
-  $leftNavLinks  = makeLinks('left', $leftLinks, 12);
+  
   $FooterInfo    = getFooter();
   $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
   $errMsgStyle   = $template->getSection($errMsgClass);
@@ -64,6 +64,12 @@
   $pageTitle     = 'My-Program O - Search/Edit AIML';
   $mainTitle     = 'Search/Edit AIML';
 
+  /**
+   * Function delAIML
+   *
+   * * @param $id
+   * @return string
+   */
   function delAIML($id) {
     global $dbConn;
     if($id!="") {
@@ -86,6 +92,12 @@
   }
 
 
+  /**
+   * Function runSearch
+   *
+   *
+   * @return mixed|string
+   */
   function runSearch()
   {
     global $bot_id, $bot_name, $form_vars, $dbConn, $group;
@@ -120,7 +132,7 @@
       $sth = $dbConn->prepare($countSQL);
       $sth->execute();
       $row = $sth->fetch();
-      $resCount = paginate($row['count(id)'], $group, $qs);
+      $resCount = searchPaginate($row['count(id)'], $group, $qs);
       $sql = str_replace('[searchTerms]', $searchTerms, $sql);
       //trigger_error("SQL = $sql");
       $sth = $dbConn->prepare($sql);
@@ -191,6 +203,12 @@ endRow;
   }
 
 
+  /**
+   * Function editAIMLForm
+   *
+   * * @param $id
+   * @return mixed|string
+   */
   function editAIMLForm($id) {
     //db globals
     global $template, $dbConn, $group;
@@ -215,6 +233,12 @@ endRow;
     return $form;
   }
 
+  /**
+   * Function updateAIML
+   *
+   *
+   * @return string
+   */
   function updateAIML() {
     global $post_vars, $dbConn;
     $template = trim($post_vars['template']);
@@ -241,7 +265,15 @@ endRow;
     return $msg;
   }
 
-  function paginate($rowCount, $group, $qs) {
+  /**
+   * Function searchPaginate
+   *
+   * * @param $rowCount
+   * @param $group
+   * @param $qs
+   * @return string
+   */
+  function searchPaginate($rowCount, $group, $qs) {
     $row_count = number_format($rowCount);
     $firstGroup = 1;
     $prevGroup2 = $group - 2;
@@ -261,7 +293,7 @@ endRow;
     $prevLink2 = str_replace('[group]', $prevGroup2, $prevLink2);
 
     $prevLink1 = ($prevGroup1 > 0) ? str_replace('[label]', $prevGroup1, $link) : '- ..';
-    $prevLink = str_replace('[group]', $prevGroup, $prevLink);
+    $prevLink1 = str_replace('[group]', $prevGroup1, $prevLink1);
 
     $curLink   = str_replace('[label]', "<b>$curGroup</b>", $link);
     $curLink   = str_replace('[group]', $curGroup, $curLink);

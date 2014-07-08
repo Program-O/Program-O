@@ -1,8 +1,8 @@
-<?PHP
+<?php
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.2
+    * Version: 2.4.3
     * FILE: select_bots.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 05-26-2014
@@ -33,27 +33,30 @@
     $selectBot .= getChangeList();
     $selectBot .= getSelectedBot();
   }
-  $_SESSION['poadmin']['format'] = $curBot['format'];
-  $bot_format = $curBot['format'];
+  $bot_format = (isset($curBot['format'])) ? $curBot['format'] : $format;
+  $_SESSION['poadmin']['format'] = $bot_format;
+  $topNav        = $template->getSection('TopNav');
+  $leftNav       = $template->getSection('LeftNav');
+  $main          = $template->getSection('Main');
+  $navHeader     = $template->getSection('NavHeader');
+  $FooterInfo    = getFooter();
+  $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
+  $errMsgStyle   = $template->getSection($errMsgClass);
+  $noLeftNav     = '';
+  $noTopNav      = '';
+  $noRightNav    = $template->getSection('NoRightNav');
+  $headerTitle   = 'Actions:';
+  $pageTitle     = 'My-Program O - Select or Edit a Bot';
+  $mainContent   = $selectBot;
+  $mainTitle     = 'Choose/Edit a Bot';
 
-    $topNav        = $template->getSection('TopNav');
-    $leftNav       = $template->getSection('LeftNav');
-    $main          = $template->getSection('Main');
-    $topNavLinks   = makeLinks('top', $topLinks, 12);
-    $navHeader     = $template->getSection('NavHeader');
-    $leftNavLinks  = makeLinks('left', $leftLinks, 12);
-    $FooterInfo    = getFooter();
-    $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
-    $errMsgStyle   = $template->getSection($errMsgClass);
-    $noLeftNav     = '';
-    $noTopNav      = '';
-    $noRightNav    = $template->getSection('NoRightNav');
-    $headerTitle   = 'Actions:';
-    $pageTitle     = 'My-Program O - Select or Edit a Bot';
-    $mainContent   = $selectBot;
-    $mainTitle     = 'Choose/Edit a Bot';
-
-function getBotParentList($current_parent) {
+  /**
+   * Function getBotParentList
+   *
+   * * @param $current_parent
+   * @return mixed|string
+   */
+  function getBotParentList($current_parent) {
     //db globals
     global$dbConn;
   
@@ -82,10 +85,15 @@ function getBotParentList($current_parent) {
 }
 
 
-function getSelectedBot() {
+  /**
+   * Function getSelectedBot
+   *
+   *
+   * @return mixed|string
+   */
+  function getSelectedBot() {
   global $dbConn, $template, $pattern, $remember_up_to, $conversation_lines, $error_response, $curBot, $unknown_user;
   $bot_conversation_lines = $conversation_lines;
-  $remember_up_to = $remember_up_to;
   $bot_default_aiml_pattern = $pattern;
   $bot_error_response = $error_response;
   $bot_unknown_user = $unknown_user;
@@ -135,7 +143,7 @@ function getSelectedBot() {
           $$tmp = $value;
         }
       }
-      if($bot_active=="1") {
+      if($bot_active == "1") {
         $sel_yes = ' selected="selected"';
       }
       else {
@@ -171,7 +179,8 @@ function getSelectedBot() {
       elseif($bot_debugshow=="4") {
         $ds_iv = ' selected="selected"';
       }
-      if($bot_debugmode=="0") {
+    /** @noinspection PhpUndefinedVariableInspection */
+    if($bot_debugmode=="0") {
         $dm_ = ' selected="selected"';
       }
       elseif($bot_debugmode=="1") {
@@ -197,7 +206,7 @@ function getSelectedBot() {
     $action = "add";
     $bot_format = '';
     $bot_conversation_lines = $conversation_lines;
-    $remember_up_to = $remember_up_to;
+    //$remember_up_to = $remember_up_to;
     $bot_default_aiml_pattern = $pattern;
     $bot_error_response = $error_response;
     $bot_debugemail = '';
@@ -221,7 +230,13 @@ function getSelectedBot() {
   return $form;
 }
 
-function updateBotSelection() {
+  /**
+   * Function updateBotSelection
+   *
+   *
+   * @return string
+   */
+  function updateBotSelection() {
   //db globals
   global $dbConn, $msg, $format, $post_vars;
   $logFile = _LOG_URL_ . 'admin.error.log';
@@ -292,15 +307,22 @@ function updateBotSelection() {
 }
 
 
-function addBot() {
+  /**
+   * Function addBot
+   *
+   *
+   * @return string
+   */
+  function addBot() {
   //db globals
   global $dbConn, $msg, $post_vars;
   
   foreach ($post_vars as $key => $value) {
     $$key = trim($value);
   }
-  
-  $sql = <<<endSQL
+
+    /** @noinspection PhpUndefinedVariableInspection */
+    $sql = <<<endSQL
 INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `error_response`)
 VALUES (NULL,'$bot_name','$bot_desc','$bot_active','$bot_parent_id','$format','$save_state','$conversation_lines','$remember_up_to','$debugemail','$debugshow','$debugmode','$aiml_pattern','$error_response');
 endSQL;
@@ -325,9 +347,16 @@ endSQL;
   return $msg;
 }
 
-function make_bot_predicates($bot_id)
+  /**
+   * Function make_bot_predicates
+   *
+   * * @param $bot_id
+   * @return string
+   */
+  function make_bot_predicates($bot_id)
 {
-  global $dbConn;
+  global $dbConn, $bot_name;
+  $msg = '';
 
   $sql = <<<endSQL
 INSERT INTO `botpersonality` VALUES
@@ -432,7 +461,13 @@ function changeBot() {
 }
 
 
-function getChangeList() {
+  /**
+   * Function getChangeList
+   *
+   *
+   * @return mixed|string
+   */
+  function getChangeList() {
   //db globals
   global $dbConn, $template;
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;

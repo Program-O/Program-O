@@ -12,7 +12,12 @@
   $contents = preg_replace_callback($search, 'make_input', $contents);
 
 
-
+  /**
+   * Function make_input
+   *
+   * * @param $matches
+   * @return string
+   */
   function make_input($matches)
   {
     global $all_vars;
@@ -45,7 +50,7 @@
     <h3>Program O Config File Editor</h3>
     <p>
       Use this (somewhat unconventional) form to edit your chatbot's confituration
-      file directly. Only the settings that you <b>should</b> need to change are
+      file directly. Only the settings that you <strong>should</strong> need to change are
       available here. If you need to change other settings, then you'll need to
       make those changes in a text editor.
     </p>

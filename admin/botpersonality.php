@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.2
+    * Version: 2.4.3
     * FILE: botpersonality.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 05-26-2014
@@ -17,9 +17,9 @@
   $topNav = $template->getSection('TopNav');
   $leftNav = $template->getSection('LeftNav');
   $main = $template->getSection('Main');
-  $topNavLinks = makeLinks('top', $topLinks, 12);
+  
   $navHeader = $template->getSection('NavHeader');
-  $leftNavLinks = makeLinks('left', $leftLinks, 12);
+  
   $FooterInfo = getFooter();
   $errMsgClass = (!empty ($msg)) ? "ShowError" : "HideError";
   $errMsgStyle = $template->getSection($errMsgClass);
@@ -41,6 +41,12 @@
   }
   $mainTitle = 'Bot Personality Settings for ' . $bot_name;
 
+  /**
+   * Function getBot
+   *
+   *
+   * @return string
+   */
   function getBot()
   {
     global $dbn, $dbConn;
@@ -72,8 +78,8 @@
     $inputs = "";
     $row_class = 'row fm-opt';
     $bot_name = $_SESSION['poadmin']['bot_name'];
-    $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] :
-              0;
+    $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
+    $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
     //get the current bot's personality table from the db
     $sql = "SELECT * FROM `botpersonality` where  `bot_id` = $bot_id";
     $sth = $dbConn->prepare($sql);
@@ -143,6 +149,12 @@ endForm2;
       return $form;
   }
 
+  /**
+   * Function stripslashes_deep
+   *
+   * * @param $value
+   * @return string
+   */
   function stripslashes_deep($value)
   {
     $newValue = stripslashes($value);
@@ -154,6 +166,12 @@ endForm2;
     return $newValue;
   }
 
+  /**
+   * Function updateBot
+   *
+   *
+   * @return string
+   */
   function updateBot()
   {
     global $bot_id, $bot_name, $post_vars, $dbConn;
@@ -230,6 +248,12 @@ endForm2;
     return $msg;
   }
 
+  /**
+   * Function addBotPersonality
+   *
+   *
+   * @return string
+   */
   function addBotPersonality()
   {
     global $post_vars, $dbConn;
@@ -243,6 +267,10 @@ endForm2;
                       : '';
     if (!empty ($newEntryNames))
     {
+      if (is_string($newEntryNames))
+      {
+        $newEntryNames = array(0 => $newEntryNames);
+      }
       foreach ($newEntryNames as $index => $key)
       {
         $value = $newEntryValues[$index];
@@ -295,6 +323,12 @@ endForm2;
     return $msg;
   }
 
+  /**
+   * Function newForm
+   *
+   *
+   * @return string
+   */
   function newForm()
   {
     $out = '                <table class="botForm">
@@ -340,85 +374,3 @@ endForm2;
     $out .= $lastBit;
     return $out;
   }
-
-
-function make_bot_predicates($bot_id)
-{
-  global $dbConn, $bot_name, $msg;
-
-  $sql = <<<endSQL
-INSERT INTO `botpersonality` VALUES
-  (NULL,  $bot_id, 'age', ''),
-  (NULL,  $bot_id, 'baseballteam', ''),
-  (NULL,  $bot_id, 'birthday', ''),
-  (NULL,  $bot_id, 'birthplace', ''),
-  (NULL,  $bot_id, 'botmaster', ''),
-  (NULL,  $bot_id, 'boyfriend', ''),
-  (NULL,  $bot_id, 'build', ''),
-  (NULL,  $bot_id, 'celebrities', ''),
-  (NULL,  $bot_id, 'celebrity', ''),
-  (NULL,  $bot_id, 'class', ''),
-  (NULL,  $bot_id, 'email', ''),
-  (NULL,  $bot_id, 'emotions', ''),
-  (NULL,  $bot_id, 'ethics', ''),
-  (NULL,  $bot_id, 'etype', ''),
-  (NULL,  $bot_id, 'family', ''),
-  (NULL,  $bot_id, 'favoriteactor', ''),
-  (NULL,  $bot_id, 'favoriteactress', ''),
-  (NULL,  $bot_id, 'favoriteartist', ''),
-  (NULL,  $bot_id, 'favoriteauthor', ''),
-  (NULL,  $bot_id, 'favoriteband', ''),
-  (NULL,  $bot_id, 'favoritebook', ''),
-  (NULL,  $bot_id, 'favoritecolor', ''),
-  (NULL,  $bot_id, 'favoritefood', ''),
-  (NULL,  $bot_id, 'favoritemovie', ''),
-  (NULL,  $bot_id, 'favoritesong', ''),
-  (NULL,  $bot_id, 'favoritesport', ''),
-  (NULL,  $bot_id, 'feelings', ''),
-  (NULL,  $bot_id, 'footballteam', ''),
-  (NULL,  $bot_id, 'forfun', ''),
-  (NULL,  $bot_id, 'friend', ''),
-  (NULL,  $bot_id, 'friends', ''),
-  (NULL,  $bot_id, 'gender', ''),
-  (NULL,  $bot_id, 'genus', ''),
-  (NULL,  $bot_id, 'girlfriend', ''),
-  (NULL,  $bot_id, 'hockeyteam', ''),
-  (NULL,  $bot_id, 'kindmusic', ''),
-  (NULL,  $bot_id, 'kingdom', ''),
-  (NULL,  $bot_id, 'language', ''),
-  (NULL,  $bot_id, 'location', ''),
-  (NULL,  $bot_id, 'looklike', ''),
-  (NULL,  $bot_id, 'master', ''),
-  (NULL,  $bot_id, 'msagent', ''),
-  (NULL,  $bot_id, 'name', '$bot_name'),
-  (NULL,  $bot_id, 'nationality', ''),
-  (NULL,  $bot_id, 'order', ''),
-  (NULL,  $bot_id, 'orientation', ''),
-  (NULL,  $bot_id, 'party', ''),
-  (NULL,  $bot_id, 'phylum', ''),
-  (NULL,  $bot_id, 'president', ''),
-  (NULL,  $bot_id, 'question', ''),
-  (NULL,  $bot_id, 'religion', ''),
-  (NULL,  $bot_id, 'sign', ''),
-  (NULL,  $bot_id, 'size', ''),
-  (NULL,  $bot_id, 'species', ''),
-  (NULL,  $bot_id, 'talkabout', ''),
-  (NULL,  $bot_id, 'version', ''),
-  (NULL,  $bot_id, 'vocabulary', ''),
-  (NULL,  $bot_id, 'wear', ''),
-  (NULL,  $bot_id, 'website', '');
-endSQL;
-
-  $sth = $dbConn->prepare($sql);
-  $sth->execute();
-  $affectedRows = $sth->rowCount();
-  if($affectedRows > 0)
-  {
-    $msg .= 'Please create the bots personality.';
-  }
-  else {
-    $msg .= 'Unable to create the bots personality.';
-  }
-  return $msg;
-}
-

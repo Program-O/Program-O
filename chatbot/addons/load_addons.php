@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.4.2
+* Version: 2.4.3
 * FILE: chatbot/addons/load_addons.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 17TH 2014
@@ -18,7 +18,14 @@ include("parseBBCode/parseBBCode.php"); // A new addon to allow parsing of outpu
 
 runDebug( __FILE__, __FUNCTION__, __LINE__, "Loading addons",4);
 
-function run_pre_input_addons(&$convoArr, $say) {
+  /**
+   * Function run_pre_input_addons
+   *
+   * * @param $convoArr
+   * @param $say
+   * @return string
+   */
+  function run_pre_input_addons(&$convoArr, $say) {
   global $format;
   $say = (USE_SPELL_CHECKER) ? run_spell_checker_say($say) : $say;
   //$convoArr = checkIP($convoArr);
@@ -26,12 +33,24 @@ function run_pre_input_addons(&$convoArr, $say) {
   return $say;
 }
 
-function run_mid_level_addons($convoArr)
+  /**
+   * Function run_mid_level_addons
+   *
+   * * @param $convoArr
+   * @return mixed
+   */
+  function run_mid_level_addons($convoArr)
 {
   return $convoArr;
 }
 
-function run_post_response_useraddons($convoArr) {
+  /**
+   * Function run_post_response_useraddons
+   *
+   * * @param $convoArr
+   * @return mixed
+   */
+  function run_post_response_useraddons($convoArr) {
   $format = $convoArr['conversation']['format'];
   $response = (isset($convoArr['send_to_user'])) ? $convoArr['send_to_user'] : $convoArr['conversation']['error_response'];
   $curTime = date('H:i:s');

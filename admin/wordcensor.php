@@ -69,10 +69,10 @@ endScript;
   $topNav = $template->getSection('TopNav');
   $leftNav = $template->getSection('LeftNav');
   $main = $template->getSection('Main');
-  $topNavLinks = makeLinks('top', $topLinks, 12);
+  
   $navHeader = $template->getSection('NavHeader');
   $rightNav = $template->getSection('RightNav');
-  $leftNavLinks = makeLinks('left', $leftLinks, 12);
+  
   $rightNavLinks = getWordCensorWords();
   $FooterInfo = getFooter();
   $errMsgClass = (!empty ($msg)) ? "ShowError" : "HideError";
@@ -87,9 +87,15 @@ endScript;
   $mainContent = str_replace('[wordCensorForm]', wordCensorForm(), $mainContent);
   $rightNav = str_replace('[rightNavLinks]', $rightNavLinks, $rightNav);
   $rightNav = str_replace('[navHeader]', $navHeader, $rightNav);
-  $rightNav = str_replace('[headerTitle]', paginate(), $rightNav);
+  $rightNav = str_replace('[headerTitle]', wcPaginate(), $rightNav);
 
-  function paginate()
+  /**
+   * Function wcPaginate
+   *
+   *
+   * @return string
+   */
+  function wcPaginate()
   {
     global $dbConn, $request_vars;
     $sql = "select count(*) from `wordcensor` where 1";
@@ -123,6 +129,12 @@ endScript;
     return $out;
   }
 
+  /**
+   * Function getWordCensorWords
+   *
+   *
+   * @return string
+   */
   function getWordCensorWords()
   {
     global $dbConn, $template, $request_vars;
@@ -165,6 +177,12 @@ endScript;
     return $links;
   }
 
+  /**
+   * Function wordCensorForm
+   *
+   *
+   * @return mixed|string
+   */
   function wordCensorForm()
   {
     global $template, $request_vars;
@@ -174,6 +192,12 @@ endScript;
     return $out;
   }
 
+  /**
+   * Function insertWordCensor
+   *
+   *
+   * @return string
+   */
   function insertWordCensor()
   {
     global $dbConn, $template, $msg, $request_vars;
@@ -201,6 +225,12 @@ endScript;
     return $msg;
   }
 
+  /**
+   * Function delWordCensor
+   *
+   * * @param $id
+   * @return void
+   */
   function delWordCensor($id)
   {
     global $dbConn, $template, $msg;
@@ -227,6 +257,12 @@ endScript;
     }
   }
 
+  /**
+   * Function runWordCensorSearch
+   *
+   *
+   * @return string
+   */
   function runWordCensorSearch()
   {
     global $dbConn, $template, $request_vars;
@@ -286,6 +322,12 @@ endScript;
     return $htmlresults;
   }
 
+  /**
+   * Function editWordCensorForm
+   *
+   * * @param $id
+   * @return mixed|string
+   */
   function editWordCensorForm($id)
   {
     global $dbConn, $template, $request_vars, $dbConn;

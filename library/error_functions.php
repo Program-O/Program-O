@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: library/error_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -53,13 +53,15 @@
   }
 
   /**
-  * function runDebug()
-  * Building to a global debug array
-  * @param  string $fileName - the file the error came from
-  * @param  string $functionName - the function that triggered the error
-  * @param  string $line - the line of code
-  * @param  string $info - the message to display
-  **/
+   * function runDebug()
+   * Building to a global debug array
+   *
+   * @param  string $fileName     - the file the error came from
+   * @param  string $functionName - the function that triggered the error
+   * @param  string $line         - the line of code
+   * @param  string $info         - the message to display
+   * @param int     $level
+   */
   function runDebug($fileName, $functionName, $line, $info, $level = 0)
   {
     global $debugArr, $srai_iterations, $quickdebug, $writetotemp, $convoArr, $last_timestamp, $debug_level;
@@ -69,18 +71,18 @@
     if (($level <= $debug_level))// && ($level != 0) && ($debug_level != 0)
     {
       // Set elapsed time from last debug call and update last timestamp
-      $current_timestamp = microtime(true);
-      $elapsed_time = round(($current_timestamp - $last_timestamp) * 1000, 4);
-      $last_timestamp = $current_timestamp;
       if ($quickdebug == 1)
       {
         outputDebug($fileName, $functionName, $line, $info);
       }
-      list($usec, $sec) = explode(' ', microtime());
-      $usecD = $usec / 1000;
-      $usecD = str_replace('0.000', '', $usecD);
+      $current_timestamp = microtime(true);
+      $usecN = round($current_timestamp - floor($current_timestamp), 5);
+      //Lose the decimal point and everything to the left of it
+      $usecD = str_replace('0.', '', $usecN);
+      $elapsed_time = round((($current_timestamp - $last_timestamp) * 1000), 5);
+      $last_timestamp = $current_timestamp;
       //build timestamp index for the debug array
-      $index = date('d-m-Y H:i:s.') . $usecD . "[$level][$debug_level] - Elapsed: $elapsed_time milliseconds";
+      $index = date('d-m-Y H:i:s.') . $usecD . "[$level][$debug_level] - Elapsed time: $elapsed_time milliseconds";
 
       //If there's already an index in the debug array with the same value, just add a space, to make a new, unique index that is visually identical.
       while (array_key_exists($index, $debugArr))
@@ -116,7 +118,7 @@
   * @param  array $convoArr - conversation arrau
   * @return array $convoArr;
   **/
-  function handleDebug($convoArr)
+  function handleDebug($convoArr, $et)
   {
     global $debugArr, $debug_level, $debug_mode;
     $debug_level = (isset($convoArr['conversation']['debug_level'])) ? $convoArr['conversation']['debug_level'] : $debug_level;
@@ -160,6 +162,8 @@
       $log .= 'CONVERSATION ARRAY';
       $log .= '[NEWLINE]-----------------------[NEWLINE]';
       $log .= str_replace("\n", PHP_EOL, print_r($showArr, true));
+      $log .= '[NEWLINE]-----------------------[NEWLINE]';
+      $log .= "Total execution time: $et Milliseconds. Goodbye.";
     }
     switch ($debug_mode)
     {
@@ -188,9 +192,11 @@
   }
 
   /** reduceConvoArr()
-  *  A small function to create a smaller convoArr just for debuggin!
-  *  @param array $convoArr - the big array to be reduced
-  */
+   *  A small function to create a smaller convoArr just for debuggin!
+   *
+   * @param array $convoArr - the big array to be reduced
+   * @return array
+   */
   function reduceConvoArr($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Reducing the conversation array.', 0);
@@ -226,12 +232,13 @@
   }
 
   /**
-  * function writefile_debug()
-  * Handles the debug when written to a file
-  * @param  string $myFile - the name of the file which is also the convo id
-  * @param  string $log - the data to write
-  **/
-  function writefile_debug($log, $convoArr)
+   * function writefile_debug()
+   * Handles the debug when written to a file
+   *
+   * @param  string $log - the data to write
+   * @internal param string $myFile - the name of the file which is also the convo id
+   */
+  function writefile_debug($log)
   {
     global $new_convo_id, $old_convo_id;
     $session_id = ($new_convo_id === false) ? session_id() : $new_convo_id;
@@ -315,20 +322,15 @@
     print '<br/>----------------------------------------------------';
   }
 
-  function SQL_Error($errNum, $file = 'unknown', $function = 'unknown', $line = 'unknown', $errMsg = '')
-  {
-    $msg = "There's a problem with your Program O installation. Please run the <a href=\"../install/\">install script</a> to correct the problem.<br>\n";
-    switch ($errNum)
-    {
-      case '1146' :
-        $msg .= "The database and/or table used in the config file doesn't exist.<br>\n";
-        break;
-      default :
-        $msg = "Error number $errNum!<br>\n$errMsg<br>\n";
-    }
-    return $msg;
-  }
-
+  /**
+   * Function save_file
+   *
+   * * @param $file
+   * @param      $content
+   * @param bool $append
+   * @return int
+   * @throws Exception
+   */
   function save_file($file, $content, $append = false)
   {
     if (function_exists('file_put_contents'))
@@ -347,12 +349,21 @@
     return 1;
   }
 
+  /**
+   * Function mem_tracer
+   *
+   * * @param $file
+   * @param $function
+   * @param $line
+   * @return void
+   */
   function mem_tracer($file, $function, $line)
   {
     $file = str_replace(_BOTCORE_PATH_ . 'aiml' . DIRECTORY_SEPARATOR, '', $file);
     $mem_state = number_format(memory_get_usage(true));
     $trace_file = _DEBUG_PATH_ . session_id() . '.mem_trace.txt';
-    if (!file_exists($trace_file)) save_file($trace_file, 'PHP memory limit = ' . ini_get('memory_limit') . "\nBase folder = " . _BASE_PATH_ . "\n");
+    if (!file_exists($trace_file)) /** @noinspection PhpUndefinedConstantInspection */
+      save_file($trace_file, 'PHP memory limit = ' . ini_get('memory_limit') . "\nBase folder = " . _BASE_PATH_ . "\n");
     $append = true;
     $content = "$file.$function.$line: Memory used = $mem_state bytes\r\n";
     save_file($trace_file, $content, $append);

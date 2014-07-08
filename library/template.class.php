@@ -1,40 +1,38 @@
 <?php
-     /***************************************************/
-    /*             PHP Class TemplateMaker             */
-   /*     Creates HTML output from template files     */
-  /*        Copyright:2011 Geek Cave Creations       */
- /*              Coded by Dave Morton               */
-/***************************************************/
 
+  /**
+   * The Template class creates a Template object from a supplied filename which can then
+   * be used to return template sections; strings of HTML code used to display data within
+   * the script.
+   *
+   * @author Dave Morton
+   */
   class Template {
-    public $replacements;
 
+    /**
+     * Generates a template object, based on the file name passed to the class
+     *
+     * @param $file
+     * @return \Template
+     */
     public function __construct($file) {
       if (!file_exists($file)) return $this->throwError("File $file does not exist!");
       $this->file = $file;
       $this->rawTemplate = file_get_contents($file, true);
       $this->sectionStart = '<!-- Section [section] Start -->';
       $this->sectionEnd = '<!-- Section [section] End -->';
+      return $this;
     }
 
-    public function buildFullTemplate($sections, $replacementTags, $useRegEx = false) {
-      $content = '';
-      foreach ($sections as $section => $notFoundReturn) {
-        $content .= getSection($section, $notFoundReturn);
-      }
-      if ($useRegEx){
-        $search = array_keys($replacementTags);
-        $replace = array_values($replacementTags);
-        $content = preg_replace($search, $replace, $content);
-      }
-      else {
-        foreach ($replacementTags as $search => $replace) {
-          $content = str_replace($search, $replace, $content);
-        }
-      }
-      return $content;
-    }
-
+    /**
+     * Returns a section of the template file, based on the section name, and whether or not
+     * to return anything if the section's start tag is not found (handy for getting the first
+     * section of the file)
+     *
+     * @param $sectionName
+     * @param bool $notFoundReturn
+     * @return string
+     */
     public function getSection($sectionName, $notFoundReturn = false) {
       $sectionStart = $this->sectionStart;
       $sectionEnd = $this->sectionEnd;
@@ -56,6 +54,13 @@
       return trim($out);
     }
 
+    /**
+     * exits the script with the error message passed
+     * @todo: exit() is a bad idea - a more user-friendly solution needs to be implemented.
+     *
+     * @param $message
+     * @return void
+     */
     protected function throwError($message) {
       exit($message);
     }

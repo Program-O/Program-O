@@ -1,14 +1,23 @@
   /***************************************
-  * http://www.program-o.com
-  * PROGRAM O
-  * Version: 2.4.2
-  * FILE: CHANGELOG
-  * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 17TH 2014
-  * DETAILS: Describes the version changes in Program O
-  ***************************************/
+   * http://www.program-o.com
+   * PROGRAM O
+   * Version: 2.4.3
+   * FILE: CHANGELOG
+   * AUTHOR: Elizabeth Perreau and Dave Morton
+   * DATE: MAY 17TH 2014
+   * DETAILS: Describes the version changes in Program O
+   */
 
 Version History:
+2.4.3   Multiple bug fixes and other changes
+        1.) Fixed a bug in the XML GUI that was creating fatal errors when called from the admin page
+        2.) Fixed bugs in the functions that parse SRAI, SR and CONDITION tags
+        3.) Corrected a bug where certain admin pages didn't display if a new chatbot was created but not saved.
+        4.) Began the process of adding internal documentation to the script, which will allow for later
+            automatic generation of external documentation.
+        5.) Refactored and/or removed some duplicate functions within the admin pages, to avoid conflicts
+            with the generation of the above mentioned external documentation.
+
 2.4.2   Added Local AIML Validation and SRAI Lookup Admin
             1.) Added a "local" AIML validator script, specifically designed to validate
                 AIML files for Program O and Pandorabots.
@@ -20,6 +29,7 @@ Version History:
             3.) Several minor bug fixes, including one that limited the number of characters
                 that the admin username could have (without any warning of the limit). The
                 new limit is 255 characters, instead of the previous 10.
+
 2.4.1   Complete refactor for PDO support, added SRAI lookup
             1.) Refactored the code that deals with DB access to completely remove the
                 last of the mysql_* functions, including "fallback support".
@@ -31,6 +41,7 @@ Version History:
                 future use. While the table is being added now, the feature is not yet
                 enabled. We'll be enabling it in the near future, once further testing is
                 completed.
+
 2.4.0   Conditional PDO support added, major bug fixes
             1.) Added PDO support for PHP versions that support it (and have it enabled),
             with a fallback to the original MySQL functions if no PDO support is detected

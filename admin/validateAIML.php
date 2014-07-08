@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.2
+    * Version: 2.4.3
     * FILE: validateAIML.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 06-02-2014
@@ -83,6 +83,12 @@
     }
   }
 
+  /**
+   * Function libxml_display_error
+   *
+   * * @param $error
+   * @return string
+   */
   function libxml_display_error($error)
   {
     global $aimlArray;

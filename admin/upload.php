@@ -1,7 +1,7 @@
 <?php
 
   //-----------------------------------------------------------------------------------------------
-  //My Program-O Version: 2.4.2
+  //My Program-O Version: 2.4.3
   //Program-O  chatbot admin area
   //Written by Elizabeth Perreau and Dave Morton
   //DATE: MAY 17TH 2014
@@ -13,6 +13,7 @@
   ini_set('display_errors', false);
   ini_set('log_errors', true);
   libxml_use_internal_errors(true);
+  $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
   $msg = (array_key_exists('aimlfile', $_FILES)) ? processUpload() : '';
   $upperScripts = <<<endScript
 
@@ -89,9 +90,9 @@ endScript;
   $topNav = $template->getSection('TopNav');
   $leftNav = $template->getSection('LeftNav');
   $main = $template->getSection('Main');
-  $topNavLinks = makeLinks('top', $topLinks, 12);
+  
   $navHeader = $template->getSection('NavHeader');
-  $leftNavLinks = makeLinks('left', $leftLinks, 12);
+  
   $FooterInfo = getFooter();
   $errMsgClass = (!empty ($msg)) ? "ShowError" : "HideError";
   $errMsgStyle = $template->getSection($errMsgClass);
@@ -112,6 +113,14 @@ endScript;
   $mainTitle = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
   $mainTitle = str_replace('[errMsg]', $msg, $mainTitle);
 
+  /**
+   * Function parseAIML
+   *
+   * * @param $fn
+   * @param      $aimlContent
+   * @param bool $from_zip
+   * @return string
+   */
   function parseAIML($fn,$aimlContent, $from_zip = false)
   {
     global $dbConn, $post_vars;
@@ -259,19 +268,26 @@ endScript;
     }
     catch (Exception $e)
     {
-      $trace = print_r($e->getTrace(), true);
-      exit($e->getMessage() . ' at line ' . $e->getLine());
+      //$trace = print_r($e->getTrace(), true);
+      //exit($e->getMessage() . ' at line ' . $e->getLine());
+      $msg = $e->getMessage() . ' at line ' . $e->getLine() . "<br>\n";
       //trigger_error("Trace:\n$trace");
       //file_put_contents(_LOG_PATH_ . 'error.trace.log', $trace . "\nEnd Trace\n\n", FILE_APPEND);
       $success = false;
       $_SESSION['failCount']++;
-      $msg = "There was a problem adding file $fileName to the database. Please refer to the message below to correct the problem and try again.<br>\n" . $e->getMessage();
-      $msg = libxml_display_errors($msg);
+      $errMsg = "There was a problem adding file $fileName to the database. Please refer to the message below to correct the problem and try again.<br>\n" . $e->getMessage();
+      $msg .= upload_libxml_display_errors($errMsg);
     }
     return $msg;
   }
 
 
+  /**
+   * Function processUpload
+   *
+   *
+   * @return string
+   */
   function processUpload()
   {
     global $msg;
@@ -312,6 +328,12 @@ endScript;
     return $msg;
   }
 
+  /**
+   * Function getAIML_List
+   *
+   *
+   * @return string
+   */
   function getAIML_List()
   {
     global $dbConn, $dbn, $bot_id;
@@ -334,6 +356,12 @@ endScript;
     return $out;
   }
 
+  /**
+   * Function getBotList
+   *
+   *
+   * @return string
+   */
   function getBotList()
   {
     global $dbConn, $dbn, $bot_id;
@@ -353,19 +381,31 @@ endScript;
     return $botOptions;
   }
 
-  function libxml_display_errors($msg)
+  /**
+   * Function upload_libxml_display_errors
+   *
+   * * @param $msg
+   * @return string
+   */
+  function upload_libxml_display_errors($msg)
   {
     $out = '';
     $errors = libxml_get_errors();
     foreach ($errors as $error)
     {
-      $out .= libxml_display_error($error) . "<br />\n";
+      $out .= upload_libxml_display_error($error) . "<br />\n";
     }
     libxml_clear_errors();
     return $msg . $out;
   }
 
-  function libxml_display_error($error)
+  /**
+   * Function upload_libxml_display_error
+   *
+   * * @param $error
+   * @return string
+   */
+  function upload_libxml_display_error($error)
   {
     $out = "<br/>\n";
     switch ($error->level)
@@ -389,6 +429,12 @@ endScript;
     return "$out<br>\n";
   }
 
+  /**
+   * Function processZip
+   *
+   * * @param $fileName
+   * @return string
+   */
   function processZip($fileName)
   {
     $out = '';

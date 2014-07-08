@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: spell_checker/spell_checker.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -24,11 +24,12 @@
     $spellcheck_common_words = $_SESSION['commonWords'];
 
   /**
-  * function run_spellcheck_say()
-  * A function to run the spellchecking of the userinput
-  * @param  string $say - The user's input
-  * @return $say (spellchecked)
-  **/
+   * function run_spellcheck_say()
+   * A function to run the spellchecking of the userinput
+   *
+   * @param  string $say - The user's input
+   * @return string $say (spellchecked)
+   */
   function run_spell_checker_say($say)
   {
     global $bot_id;
@@ -43,11 +44,14 @@
   }
 
   /**
-  * function spell_check()
-  * Checks the given word against a list of commonly misspelled words, replacing it with a correction, if necessary.
-  * @param [type] [variable used]
-  * @return [type] [return value]
-  **/
+   * function spell_check()
+   * Checks the given word against a list of commonly misspelled words, replacing it with a correction, if necessary.
+   *
+   * @param $word
+   * @param $bot_id
+   * @internal param $ [type] [variable used]
+   * @return mixed|string [type] [return value]
+   */
   function spell_check($word, $bot_id)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Preforming a spel chek on $word.", 2);
@@ -105,11 +109,12 @@
   }
 
   /**
-  * function load_spelling_list
-  * Gets all missspelled words and their corrections from the DB, loading them into a session variable.
-  * @param (none)
-  * @return (void)
-  **/
+   * function load_spelling_list
+   * Gets all missspelled words and their corrections from the DB, loading them into a session variable.
+   *
+   * @internal param $ (none)
+   * @return void (void)
+   */
   function load_spelling_list()
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading the spellcheck list from the DB.', 2);

@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.2
+//My Program-O Version: 2.4.3
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -27,9 +27,9 @@
   $topNav        = $template->getSection('TopNav');
   $leftNav       = $template->getSection('LeftNav');
   $main          = $template->getSection('Main');
-  $topNavLinks   = makeLinks('top', $topLinks, 12);
+  
   $navHeader     = $template->getSection('NavHeader');
-  $leftNavLinks  = makeLinks('left', $leftLinks, 12);
+  
   $FooterInfo    = getFooter();
   $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
   $errMsgStyle   = $template->getSection($errMsgClass);
@@ -54,7 +54,13 @@
   $mainContent = str_replace('[dlines]', $dlines, $mainContent);
   $mainContent = str_replace('[avg]', $avg, $mainContent);
 
-function getStats($interval) {
+  /**
+   * Function getStats
+   *
+   * * @param $interval
+   * @return mixed
+   */
+  function getStats($interval) {
 	global $bot_id, $dbConn;
 	if($interval!="all") {
 		$intervaldate =  date("Y-m-d", strtotime($interval));
@@ -73,7 +79,14 @@ function getStats($interval) {
 	return $res;
 }
 
-function getChatLines($i,$j) {
+  /**
+   * Function getChatLines
+   *
+   * * @param $i
+   * @param $j
+   * @return mixed
+   */
+  function getChatLines($i,$j) {
   global $bot_id, $dbConn;
 		$sql = <<<endSQL
 SELECT AVG(`chatlines`) AS TOT

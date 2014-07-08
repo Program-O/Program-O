@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: chatbot/core/aiml/parse_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -12,11 +12,12 @@
 
 
   /**
-  * function buildVerbList()
-  * @param array $convoArr
-  * @param string $name
-  * @param string $gender
-  **/
+   * function buildVerbList()
+   *
+   * @param string $name
+   * @param string $gender
+   * @internal param array $convoArr
+   */
   function buildVerbList($name, $gender)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Building the verb list. Name:$name. Gender:$gender", 4);
@@ -44,7 +45,7 @@
     // Search and replacement templates - grouped in pairs/triplets
     // first to second/third
     $firstPersonSearchTemplate = '/\bi [word]\b/ui';
-    $secondPersonKeyedReplaceTemplate = 'y ou [word]';
+    $secondPersonKeyedReplaceTemplate = 'y%%ou [word]';
     $thirdPersonReplaceTemplate = "$g3 [word]";
     //second to first
     $secondPersonSearchTemplate = '/\byou [word]\b/ui';
@@ -52,7 +53,7 @@
     //second (reversed) to first
     $secondPersonSearchTemplateReversed = '/\b[word] you\b/ui';
     $firstPersonReplaceTemplateReversed = '[word] @II';
-    $secondPersonKeyedSearchTemplate = '/\by ou [word]\b/ui';
+    $secondPersonKeyedSearchTemplate = '/\by%%ou [word]\b/ui';
     $secondPersonReplaceTemplate = 'you [word]';
     //the list of verbs is stored in the config folder
     $file = _CONF_PATH_ . "verbList.dat";
@@ -110,11 +111,10 @@
   * @param array $convoArr
   * @param int $person
   * @param string $input
-  * @return the tranformed string
+  * @return string $tmp
   **/
-  function swapPerson($convoArr, $person = 2, $input)
+ function swapPerson($convoArr, $person, $input)
   {
-  //2 = swap first with second poerson (e.g. I with you) // otherwise swap with third person
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Person:$person In:$input", 4);
     $name = $convoArr['client_properties']['name'];
     $gender = (isset($convoArr['client_properties']['gender'])) ? $convoArr['client_properties']['gender'] : 'unknown';
@@ -123,79 +123,54 @@
     {
       buildVerbList($name, $gender);
     }
+   // <person2> = swap first with second poerson (e.g. I with you)
+   // <person> swap with third person (e.g. I with he,she,it)
     switch ($gender)
     {
       case "male" :
-        $g1 = "his";
-        $g2 = "him";
-        $g3 = "he";
+        $g1 = "his";  //  Third person singular: masculine (Possessive pronoun)
+        $g2 = "him";  // Third person singular: masculine (object)
+        $g3 = "he";  // Third person singular: masculine (subject)
+        $g4 = "his";  // Third person singular: neutral (Possessive adjective)
         break;
       case "female";
-      $g1 = "hers";
-      $g2 = "her";
-      $g3 = "she";
+      $g1 = "hers";  //  Third person singular: feminine (Possessive pronoun)
+      $g2 = "her";;  // Third person singular: feminine (object)
+      $g3 = "she";  // Third person singular: feminine (subject)
+      $g4 = "her";  // Third person singular: neutral (Possessive adjective)
       break;
       default :
-        $g1 = "theirs";
-        $g2 = "them";
-        $g3 = "they";
+        $g1 = "its";  // Third person singular: neutral (Possessive pronoun)
+        $g2 = "it";  // Third person singular: neutral (object)
+        $g3 = "it";  // Third person singular: neutral (subject)
+        $g4 = "its";  // Third person singular: neutral (Possessive adjective)
     }
-    // the "simple" transform arrays - more for exceptions to the above rules than for anything "simple" :)
-    $simpleFirstPersonPatterns = array('/(\bi am\b)/ui', '/(\bam i\b)/ui', '/(\bi\b)/ui', '/(\bmy\b)/ui', '/(\bmine\b)/ui', '/(\bmyself\b)/ui', '/(\bcan i\b)/ui');
-    $simpleSecondPersonKeyedReplacements = array('you are', 'are you', 'you', 'your', 'yours', 'yourself', 'can you');
-    $simpleFirstToThirdPersonPatterns = array('/(\bi am\b)/ui', '/(\bam i\b)/ui', '/(\bi\b)/ui', '/(\bmy\b)/ui', '/(\bmine\b)/ui', '/(\bmyself\b)/ui', '/(\bwill i\b)/ui', '/(\bshall i\b)/ui', '/(\bmay i\b)/ui', '/(\bmight i\b)/ui', '/(\bcan i\b)/ui', '/(\bcould i\b)/ui', '/(\bmust i\b)/ui', '/(\bshould i\b)/ui', '/(\bwould i\b)/ui', '/(\bneed i\b)/ui', '/(\bam i\b)/ui', '/(\bwas i\b)/ui',);
-    $simpleThirdPersonReplacements = array("$g3 is", "is $g3", "$g3", "$g1", "$g1", "$g2" . 'self', 'will ' . $g3, 'shall ' . $g3, 'may ' . $g3, 'might ' . $g3, 'can ' . $g3, 'could ' . $g3, 'must ' . $g3, 'should ' . $g3, 'would ' . $g3, 'need ' . $g3, 'is ' . $g3, 'was ' . $g3,);
-    $simpleSecondPersonPatterns = array('/(\bhelp you\b)/ui', '/(\bwill you\b)/ui', '/(\bshall you\b)/ui', '/(\bmay you\b)/ui', '/(\bmight you\b)/ui', '/(\bcan you\b)/ui', '/(\bcould you\b)/ui', '/(\bmust you\b)/ui', '/(\bshould you\b)/ui', '/(\bwould you\b)/ui', '/(\bneed you\b)/ui', '/(\bare you\b)/ui', '/(\bwere you\b)/ui', '/(\byour\b)/ui', '/(\byours\b)/ui', '/(\byourself\b)/ui', '/(\bthy\b)/ui');
-    # will, shall, may, might, can, could, must, should, would, need
-    $simpleFirstPersonReplacements = array('help m e', 'will @II', 'shall @II', 'may @II', 'might @II', 'can @II', 'could @II', 'must @II', 'should @II', 'would @II', 'need @II', 'am @II', 'was @II', 'my', 'mine', 'myself', 'my');
+    # I am, am I, was I, I, my, mine, myself, me, ourselves, we, us, ours, our
+    $simpleFirstPersonPatterns = array('/(\bi am\b)/ui', '/(\bam i\b)/ui', '/(\bwas i\b)/ui', '/(\bi\b)/ui', '/(\bmy\b)/ui', '/(\bmine\b)/ui', '/(\bmyself\b)/ui', '/(\byour\b)/ui', '/(\bme\b)/ui', '/(\bourselves\b)/ui', '/(\bwe\b)/ui', '/(\bus\b)/ui', '/(\bours\b)/ui', '/(\bour\b)/ui');
+    $simpleSecondPersonKeyedReplacements = array('y%%ou are', 'are y%%ou', 'were y%%ou', 'y%%ou', 'yo%%ur', 'yo%%urs', 'y%%ourself', 'm%%y', 'y%%ou', 'y%%ourselves', 'y%%ou', 'y%%ou', 'y%%ours', 'y%%our');
+
+    # you are, are you, were you, you, your, yours, yourself, thy, yourselves
+    $simpleSecondPersonPatterns = array('/(\bare you\b)/ui', '/(\byou are\b)/ui', '/(\bwere you\b)/ui', '/(\byou\b)/ui', '/(\byour\b)/ui', '/(\byours\b)/ui', '/(\byourself\b)/ui', '/(\bthy\b)/ui', '/(\byourselves\b)/ui');
+   $simpleFirstPersonKeyedReplacements = array('I%% am', 'am I%%', 'was I%%', 'I%%', 'm%%y', 'm%%ine', 'm%%yself', 'm%%y', 'o%%urselves');
+
+    # I am, am I, will I, shall I, may I, might I, can I, could I, must I, should I, would I, need I, was I, ourselves, our, ours, I, me, my, mine, myself, we, us
+    $simpleFirstToThirdPersonPatterns = array('/(\bi am\b)/ui', '/(\bam i\b)/ui', '/(\bwill i\b)/ui', '/(\bshall i\b)/ui', '/(\bmay i\b)/ui', '/(\bmight i\b)/ui', '/(\bcan i\b)/ui', '/(\bcould i\b)/ui', '/(\bmust i\b)/ui', '/(\bshould i\b)/ui', '/(\bwould i\b)/ui', '/(\bneed i\b)/ui', '/(\bwas i\b)/ui', '/(\bourselves\b)/ui', '/(\bour\b)/ui', '/(\bours\b)/ui', '/(\bme\b)/ui', '/(\bi\b)/ui', '/(\bmy\b)/ui', '/(\bmine\b)/ui', '/(\bmyself\b)/ui', '/(\bwe\b)/ui', '/(\bud\b)/ui');
+    $simpleThirdPersonReplacements = array("$g3 is", "is $g3", 'will ' . $g3, 'shall ' . $g3, 'may ' . $g3, 'might ' . $g3, 'can ' . $g3, 'could ' . $g3, 'must ' . $g3, 'should ' . $g3, 'would ' . $g3, 'need ' . $g3, 'was ' . $g3, 'themselves', 'their', 'theirs', "$g2", "$g3", "$g4", "$g1", "$g2" . 'self', 'they', 'them');
+
     if ($person == 2)
     {
-      $tmp = preg_replace('/\bare you\b/ui', 'am @II', $tmp);
-      // simple second to first transform
-      $tmp = preg_replace('/\byou and i\b/ui', 'y ou and @II', $tmp);
-      // fix the "Me and you" glitch
-      $tmp = preg_replace($simpleSecondPersonPatterns, $simpleFirstPersonReplacements, $tmp);
-      // "simple" second to keyed first transform
-      $tmp = preg_replace($simpleFirstPersonPatterns, $simpleSecondPersonKeyedReplacements, $tmp);
-      // simple first to keyed second transform
-      $tmp = preg_replace($_SESSION['transform_list']['secondPersonPatterns'], $_SESSION['transform_list']['firstPersonReplacements'], $tmp);
-      // second to first transform
-      $tmp = preg_replace('/\bme\b/ui', 'you', $tmp);
-      // simple second to first transform (me)
-      #$tmp = preg_replace('/\bi\b/ui', 'y ou', $tmp);                                              // simple second to first transform (I)
-      $tmp = preg_replace('/\byou\b/ui', 'me', $tmp);
-      // simple second to first transform
-      $tmp = str_replace('you', 'you', $tmp);
-      // replace second person key (y ou) with non-keyed value (you)
-      $tmp = str_replace(' me', ' me', $tmp);
-      // replace first person key (m e) with non-keyed value (me)
-      $tmp = str_replace(' my', ' my', $tmp);
-      // replace first person key (m e) with non-keyed value (me)
-      $tmp = str_replace('my ', 'my ', $tmp);
-      // replace first person key (m e) with non-keyed value (me)
-      $tmp = str_replace(' mine', ' mine', $tmp);
-      // replace first person key (m e) with non-keyed value (me)
-      $tmp = str_replace('mine ', 'mine ', $tmp);
-      // replace first person key (m e) with non-keyed value (me)
-      $tmp = str_replace(' @II ', ' I ', $tmp);
-      // replace first person key (@I) with non-keyed value (I)
-      $tmp = str_replace('@II ', 'I ', $tmp);
-      // replace first person key (@I) with non-keyed value (I)
-      $tmp = str_replace(' @II', ' I', $tmp);
-      // replace first person key (@I) with non-keyed value (I)
-      $tmp = str_replace('@you', 'I', $tmp);
-      // replace first person key (@I) with non-keyed value (I)
-      #$tmp = ucfirst(  $tmp);
+//      $tmp = preg_replace('/\byou and me\b/ui', 'you and IzI', $tmp);// fix the "Me and you" glitch
+      $tmp = preg_replace($simpleFirstPersonPatterns, $simpleSecondPersonKeyedReplacements, $tmp);// simple first to keyed second transform
+      $tmp = preg_replace($simpleSecondPersonPatterns, $simpleFirstPersonKeyedReplacements, $tmp);// "simple" second to keyed first transform
+      $tmp = preg_replace($_SESSION['transform_list']['secondPersonPatterns'], $_SESSION['transform_list']['firstPersonReplacements'], $tmp);// second to first transform
     }
     elseif ($person == 3)
     {
+      // first to third transform
+      $tmp = preg_replace($simpleFirstToThirdPersonPatterns, $simpleThirdPersonReplacements, $tmp);// "simple" first to third transform
       $tmp = preg_replace($_SESSION['transform_list']['firstPersonPatterns'], $_SESSION['transform_list']['thirdPersonReplacements'], $tmp);
-      // first to third transform, but only when specifically needed
-      $tmp = preg_replace('/(\byour gender\b)/ui', $g3, $tmp);
-      $tmp = preg_replace('/(\bthey\b)/ui', $g3, $tmp);
-      $tmp = preg_replace('/(\bi\b)/ui', $g3, $tmp);
-      $tmp = preg_replace('/(\bme\b)/ui', $g3, $tmp);
     }
+    $tmp = str_replace('%%', '', $tmp);  // remove token
     //debug
     // if (RUN_DEBUG) runDebug(4, __FILE__, __FUNCTION__, __LINE__,"<br>\nTransformation complete. was: $input, is: $tmp");
     return $tmp;
@@ -228,11 +203,15 @@
   }
 
   /**
-  * function clean_that()
-  * This function cleans the 'that' of html and other bits and bobs
-  * @param string $that - the string to clean
-  * @return string $that - the cleaned string
-  **/
+   * function clean_that()
+   * This function cleans the 'that' of html and other bits and bobs
+   *
+   * @param string $that - the string to clean
+   * @param        $file
+   * @param        $function
+   * @param        $line
+   * @return string $that - the cleaned string
+   */
   function clean_that($that, $file, $function, $line)
   {
     #runDebug(__FILE__, __FUNCTION__, __LINE__,"This was called from $file, function $function, line $line", 4);
@@ -433,7 +412,6 @@
       {
         $tmp_rows = number_format($num_rows);
         runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ($num_rows) potential AIML matches", 2);
-        $tmp_content = date('H:i:s') . ": SQL:\n$sql\nRows = $tmp_rows\n\n";
         //loop through results
         foreach ($result as $row)
         {
@@ -465,7 +443,7 @@
       $allrows = score_matches($convoArr, $allrows, $now_look_for_this);
       //get the highest
       $allrows = get_highest_scoring_row($convoArr, $allrows, $lookingfor);
-      if (isset($allrows['aiml_id']))
+      if (isset($allrows['aiml_id']) && $allrows['aiml_id'] > 0)
       {
         $sql = "select `template` from `$dbn`.`aiml` where `id` = :id limit 1;";
         $sth = $dbConn->prepare($sql);
@@ -511,14 +489,6 @@
         runDebug(__FILE__, __FUNCTION__, __LINE__,"Returning results from stored srai lookup.", 2);
         return $response;
       }
-/*
-      $ar = print_r($allrows, true);
-      runDebug(__FILE__, __FUNCTION__, __LINE__, 'allrows = ' . $ar, 2);
-      $convoArr['send_to_user'] = $ar;
-      display_conversation($convoArr);
-      handleDebug($convoArr);
-      exit();
-*/
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running SRAI $srai_iterations on $now_look_for_this", 3);
     runDebug(__FILE__, __FUNCTION__, __LINE__, $convoArr['aiml']['html_template'], 4);
     //number of srai iterations - will stop recursion if it is over 10
@@ -557,6 +527,13 @@
     return $srai_parsed_template . " ";
   }
 
+  /**
+   * Function push_stack
+   *
+   * * @param $convoArr
+   * @param $item
+   * @return mixed
+   */
   function push_stack(& $convoArr, $item)
   {
     if ((trim($item)) != (trim($convoArr['stack']['top'])))
@@ -614,6 +591,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Template: $template", 2);
     $pattern = normalize_text($pattern);
     $aiml = "<learn> <category> <pattern> <eval>$pattern</eval> </pattern> <template> <eval>$template</eval> </template> </category> </learn>";
+    /** @noinspection PhpSillyAssignmentInspection */
     $aiml = $aiml;
     $pattern = $pattern . " ";
     $template = $template . " ";
@@ -631,13 +609,16 @@
   }
 
   /**
-  * function math_functions()
-  * This function runs the system math operations
-  * @param char $operator - maths operator
-  * @param int $num_1 - the first number
-  * @param int $num_2 - the second number
-  * @param int $output - the result of the math operation
-  **/
+   * function math_functions()
+   * This function runs the system math operations
+   *
+   * @param string       $operator - maths operator
+   * @param int        $num_1    - the first number
+   * @param int|string $num_2    - the second number
+   * @internal param int $output - the result of the math operation
+   *
+   * @return float|int|number|string
+   */
   function math_functions($operator, $num_1, $num_2 = "")
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running system tag math $num_1 $operator $num_2", 4);

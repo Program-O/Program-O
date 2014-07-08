@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.4.2
+* Version: 2.4.3
 * FILE: custom_tags.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 17TH 2014
@@ -11,7 +11,13 @@
 include('code_tag/code_tag.php');
 
 
-function custom_parse_aiml_as_XML($convoArr)
+  /**
+   * Function custom_parse_aiml_as_XML
+   *
+   * * @param $convoArr
+   * @return mixed
+   */
+  function custom_parse_aiml_as_XML($convoArr)
 {
   runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking for custom AIML tags to parse.', 2);
   return $convoArr;
@@ -27,7 +33,16 @@ function custom_parse_aiml_as_XML($convoArr)
  * @return (string) $response_string
  */
 
-function parse_php_tag($convoArr, $element, $parentName, $level)
+  /**
+   * Function parse_php_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return array|string
+   */
+  function parse_php_tag($convoArr, $element, $parentName, $level)
 {
   runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing custom PHP tag.', 2);
   $response = array();
@@ -45,7 +60,16 @@ function parse_php_tag($convoArr, $element, $parentName, $level)
   return $response_string;
 }
 
-function parse_google_tag($convoArr, $element, $parentName, $level)
+  /**
+   * Function parse_google_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return array|string
+   */
+  function parse_google_tag($convoArr, $element, $parentName, $level)
 {
   runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing custom GOOGLE tag.', 2);
   $response = array();
@@ -66,7 +90,16 @@ function parse_google_tag($convoArr, $element, $parentName, $level)
   return $response_string;
 }
 
-function parse_wiki_tag($convoArr, $element, $parentName, $level)
+  /**
+   * Function parse_wiki_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
+  function parse_wiki_tag($convoArr, $element, $parentName, $level)
 {
   runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing custom WIKI tag.', 2);
   $response = array();

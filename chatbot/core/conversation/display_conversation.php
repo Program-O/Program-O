@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: chatbot/core/conversation/display_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -191,12 +191,13 @@
   }
 
   /**
-  * function display_conversation()
-  * Displays the output of the conversation if the current format is XML or JSON and updated referenced $display if html
-  * @link http://blog.program-o.com/?p=1233
-  * @param (array) $convoArr
-  * @return (void) [return value]
-  **/
+   * function display_conversation()
+   * Displays the output of the conversation if the current format is XML or JSON and updated referenced $display if html
+   *
+   * @link  http://blog.program-o.com/?p=1233
+   * @param (array) $convoArr
+   * @return void (void) [return value]
+   */
   function display_conversation($convoArr)
   {
     $display = $convoArr['send_to_user'];

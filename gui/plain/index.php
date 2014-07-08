@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: gui/plain/index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -18,6 +18,7 @@
   $post_vars = (!empty($_POST)) ? filter_input_array(INPUT_POST) : array();
   $form_vars = array_merge($post_vars, $get_vars); // POST overrides and overwrites GET
   $bot_id = (!empty($form_vars['bot_id'])) ? $form_vars['bot_id'] : 1;
+  $say = (!empty($form_vars['say'])) ? $form_vars['say'] : '';
   $convo_id = session_id();
   $format = (!empty($form_vars['format'])) ? $form_vars['format'] : 'html';
 ?>

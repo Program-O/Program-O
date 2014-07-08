@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: chatbot/core/aiml/find_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -88,14 +88,16 @@
   }
 
   /**
-  * function unset_all_bad_pattern_matches()
-  * This function takes all the sql results and filters out the irrelevant ones
-  * @param array $allrows - all the results
-  * @param string $lookingfor - the user input
-  * @param string $current_thatpattern - the current that pattern
-  * @param string $current_topic - the current topic
-  * @return array tmp_rows - the RELEVANT results
-  **/
+   * function unset_all_bad_pattern_matches()
+   * This function takes all the sql results and filters out the irrelevant ones
+   *
+   * @param        $convoArr
+   * @param array  $allrows    - all the results
+   * @param string $lookingfor - the user input
+   * @internal param string $current_thatpattern - the current that pattern
+   * @internal param string $current_topic - the current topic
+   * @return array tmp_rows - the RELEVANT results
+   */
   function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
   {
     global $default_pattern;
@@ -252,16 +254,18 @@
   }
 
   /**
-  * function score_matches()
-  * This function takes all the relevant sql results and scores them
-  * to find the most likely match with the aiml
-  * @param int $bot_parent_id - the id of the parent bot
-  * @param array $allrows - all the results
-  * @param string $lookingfor - the user input
-  * @param string $current_thatpattern - the current that pattern
-  * @param string $current_topic - the current topic
-  * @return array allrows - the SCORED results
-  **/
+   * function score_matches()
+   * This function takes all the relevant sql results and scores them
+   * to find the most likely match with the aiml
+   *
+   * @param        $convoArr
+   * @param array  $allrows    - all the results
+   * @param string $lookingfor - the user input
+   * @internal param int $bot_parent_id - the id of the parent bot
+   * @internal param string $current_thatpattern - the current that pattern
+   * @internal param string $current_topic - the current topic
+   * @return array allrows - the SCORED results
+   */
   function score_matches($convoArr, $allrows, $lookingfor)
   {
     global $common_words_array, $default_pattern;
@@ -552,11 +556,13 @@
   }
 
   /**
-  * function get_winning_category
-  * Retrieves the AIML template from the selected DB entry
-  * @param array  $id - the id number of the AIML category to get
-  * @return string $template - the value of the `template` field from the chosen DB entry
-  **/
+   * function get_winning_category
+   * Retrieves the AIML template from the selected DB entry
+   *
+   * @param       $convoArr
+   * @param array $id - the id number of the AIML category to get
+   * @return string $template - the value of the `template` field from the chosen DB entry
+   */
   function get_winning_category(& $convoArr, $id)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "And the winner is... $id!", 2);
@@ -579,21 +585,22 @@
   }
 
   /**
-  * function get_convo_var()
-  * This function takes fetches a variable from the conversation array
-  * @param array $convoArr - conversation array
-  * @param string $index_1 - convoArr[$index_1]
-  * @param string $index_2 - convoArr[$index_1][$index_2]
-  * @param int $index_3 - convoArr[$index_1][$index_2][$index_3]
-  * @param int $index_4 - convoArr[$index_1][$index_2][$index_3][$index_4]
-  * @return string $value - the value of the element
-  *
-  *
-  * examples
-  *
-  * $convoArr['conversation']['bot_id'] = $convoArr['conversation']['bot_id']
-  * $convoArr['that'][1][1] = get_convo_var($convoArr,'that','',1,1)
-  **/
+   * function get_convo_var()
+   * This function takes fetches a variable from the conversation array
+   *
+   * @param array      $convoArr - conversation array
+   * @param string     $index_1  - convoArr[$index_1]
+   * @param string     $index_2  - convoArr[$index_1][$index_2]
+   * @param int|string $index_3  - convoArr[$index_1][$index_2][$index_3]
+   * @param int|string $index_4  - convoArr[$index_1][$index_2][$index_3][$index_4]
+   * @return string $value - the value of the element
+   *
+   *
+   * examples
+   *
+   * $convoArr['conversation']['bot_id'] = $convoArr['conversation']['bot_id']
+   * $convoArr['that'][1][1] = get_convo_var($convoArr,'that','',1,1)
+   */
   function get_convo_var($convoArr, $index_1, $index_2 = '', $index_3 = '', $index_4 = '')
   {
     if ($index_2 == '')
@@ -900,10 +907,12 @@
   }
 
   /** get_topic()
-  * Extracts the current topic directly from the database
-  * @param Array $convoArr - the conversation array
-  * returns String $retval - the topic
-  **/
+   * Extracts the current topic directly from the database
+   *
+   * @param Array $convoArr - the conversation array
+   *                        returns String $retval - the topic
+   *                        *@return string
+   */
   function get_topic($convoArr)
   {
     global $dbConn, $dbn;

@@ -6,7 +6,7 @@
   /* address that were banned, aborting the script   */
   /* if the address is found, and notifying the user */
   /* of the ban.                                     */
-  /* ©2011 Geek Cave Creations - All rights Reserved */
+  /* ï¿½2011 Geek Cave Creations - All rights Reserved */
   /*                  Coded by Dave                  */
   /***************************************************/
 
@@ -22,6 +22,12 @@
   # behind, such as a 'Banned Users' table.          #
   ####################################################
 
+  /**
+   * Function checkIP
+   *
+   * * @param $convoArr
+   * @return mixed
+   */
   function checkIP($convoArr) {
     global $debugemail;
     $pathInfo = pathinfo(realpath(__FILE__));
@@ -43,6 +49,12 @@ endMessage;
     return $convoArr;
   }
 
+  /**
+   * Function add_to_ban
+   *
+   * * @param $ip
+   * @return void
+   */
   function add_to_ban($ip)
   {
     $pathInfo = pathinfo(realpath(__FILE__));

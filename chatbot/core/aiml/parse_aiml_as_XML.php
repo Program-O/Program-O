@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.2
+  * Version: 2.4.3
   * FILE: chatbot/core/aiml/parse_aiml_as_XML.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -42,6 +42,12 @@
     return $convoArr;
   }
 
+  /**
+   * Wraps mixed content XML with <text></text> tags, allowing full use of PHP's SimpleXML functions
+   *
+   * @param $input
+   * @return string
+   */
   function add_text_tags($input)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Adding some TEXT tags into the template, just because I can...', 2);
@@ -74,6 +80,16 @@
     return $template;
   }
 
+  /**
+   * Function implode_recursive
+   *
+   * * @param $glue
+   * @param        $input
+   * @param string $file
+   * @param string $function
+   * @param string $line
+   * @return array|string
+   */
   function implode_recursive($glue, $input, $file = 'unknown', $function = 'unknown', $line = 'unknown')
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Imploding an array into a string. (recursively, if necessary)', 2);
@@ -102,6 +118,14 @@
     return ltrim($out);
   }
 
+  /**
+   * Function parseTemplateRecursive
+   *
+   * * @param $convoArr
+   * @param SimpleXMLElement $element
+   * @param int              $level
+   * @return array
+   */
   function parseTemplateRecursive($convoArr, SimpleXMLElement $element, $level = 0)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Recursively parsing the AIML template.', 2);
@@ -153,12 +177,30 @@
     return $response;
   }
 
+  /**
+   * Function parse_text_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
   function parse_text_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a TEXT tag.', 2);
     return (string) $element;
   }
 
+  /**
+   * Function parse_star_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return array
+   */
   function parse_star_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a STAR tag.', 2);
@@ -178,6 +220,15 @@
     return $response;
   }
 
+  /**
+   * Function parse_thatstar_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return array
+   */
   function parse_thatstar_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THATSTAR tag.', 2);
@@ -197,6 +248,15 @@
     return $response;
   }
 
+  /**
+   * Function parse_date_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
   function parse_date_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a DATE tag.', 2);
@@ -255,6 +315,15 @@
     return $response;
   }
 
+  /**
+   * Function parse_random_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return array|string
+   */
   function parse_random_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a RANDOM tag, or doing some stargazing, or fomenting chaos, or...', 2);
@@ -268,6 +337,15 @@
     return $response;
   }
 
+  /**
+   * Function parse_get_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
   function parse_get_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a GET tag. Oh, and getting a sandwich while I\'m at it.', 2);
@@ -304,6 +382,15 @@
     return $response;
   }
 
+  /**
+   * Function parse_set_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return mixed
+   */
   function parse_set_tag(&$convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing the SET tag.', 2);
@@ -356,8 +443,10 @@
     $result = $sth->fetchAll();
 
     $rowCount = count($result);
+    /** @noinspection PhpSillyAssignmentInspection */
     $var_name = $var_name;
     $var_name = str_replace("'", "\'", $var_name);
+    /** @noinspection PhpSillyAssignmentInspection */
     $var_value = $var_value;
     $var_value = str_replace("'", "\'", $var_value);
     if ($rowCount == 0)
@@ -383,6 +472,15 @@
     return $response;
   }
 
+  /**
+   * Function parse_think_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
   function parse_think_tag(&$convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'I\'m considering parsing a THINK tag.', 2);
@@ -390,6 +488,13 @@
     return '';
   }
 
+  /**
+   * Function parse_bot_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @return string
+   */
   function parse_bot_tag($convoArr, $element)
   {
     global $remember_up_to;
@@ -405,18 +510,45 @@
     return $response;
   }
 
+  /**
+   * Function parse_id_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return mixed
+   */
   function parse_id_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an ID tag.', 2);
     return $convoArr['conversation']['convo_id'];
   }
 
+  /**
+   * Function parse_version_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
   function parse_version_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a VERSION tag.', 2);
     return 'Program O version ' . VERSION;
   }
 
+  /**
+   * Function parse_uppercase_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
   function parse_uppercase_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'PARSING AN UPPERCASE TAG.', 2);
@@ -425,14 +557,32 @@
     return ltrim($response_string, ' ');
   }
 
+  /**
+   * Function parse_lowercase_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
   function parse_lowercase_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'parsing a lowercase tag.', 2);
-    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+    $response = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     return ltrim(strtolower($response_string), ' ');
   }
 
+  /**
+   * Function parse_sentence_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
   function parse_sentence_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SENTENCE tag.', 2);
@@ -447,6 +597,15 @@
     return $response;
   }
 
+  /**
+   * Function parse_formal_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
   function parse_formal_tag($convoArr, $element, $parentName, $level)
   {
     global $charset;
@@ -457,6 +616,15 @@
     return $response;
   }
 
+  /**
+   * Function parse_srai_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return array|string
+   */
   function parse_srai_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SRAI tag.', 2);
@@ -467,6 +635,15 @@
     return $response_string;
   }
 
+  /**
+   * Function parse_sr_tag
+   *
+   * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return array|string
+   */
   function parse_sr_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SR tag.', 4);
@@ -486,6 +663,15 @@
   * @return [string] $response_string
   */
 
+  /**
+   * Function parse_condition_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return array|string
+   */
   function parse_condition_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag.', 2);
@@ -533,7 +719,7 @@
         case (isset($element['contains'])):
           $condition_value = (string)$element['contains'];
           break;
-        case (isset($element['value'])):
+        case (isset($element['exists'])):
           $condition_value = (string)$element['exists'];
           break;
         default:
@@ -559,10 +745,12 @@
         runDebug(__FILE__, __FUNCTION__, __LINE__,'parent XML = ' . $element->asXML(), 4);
         foreach ($choice as $pick)
         {
-          runDebug(__FILE__, __FUNCTION__, __LINE__,'Pick = ' . print_r($pick, true), 4);
-          $testVarValue = get_client_property($convoArr, $condition_name);
+          runDebug(__FILE__, __FUNCTION__, __LINE__,'Current pick = ' . print_r($pick, true), 4);
+          $testVarValue = (isset($pick->attributes()['value'])) ? $pick->attributes()['value'] : '';
+          runDebug(__FILE__, __FUNCTION__, __LINE__,"Pick Value = '$testVarValue'", 4);
+          //$testVarValue = get_client_property($convoArr, $condition_name);
           //$testVarValue = trim($testVarValue);
-          runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $testVarValue ($condition_name) is equal to $test_value.", 4);
+          runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $testVarValue (condition value) is equal to $test_value (Client Property).", 4);
           if (strtolower($testVarValue) == strtolower($test_value))
           {
             runDebug(__FILE__, __FUNCTION__, __LINE__,'Pick XML = ' . $pick->asXML(), 4);
@@ -602,6 +790,15 @@
     return $response_string;
   }
 
+  /**
+   * Function parse_person_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string $response
+   */
   function parse_person_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a PERSON tag.', 2);
@@ -610,6 +807,16 @@
     return $response;
   }
 
+  /**
+   * Function parse_person2_tag
+   *
+   * *
+   * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string $response
+   */
   function parse_person2_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a PERSON2 tag.', 2);
@@ -618,6 +825,15 @@
     return $response;
   }
 
+  /**
+   * Function parse_html_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return mixed
+   */
   function parse_html_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a generic HTML tag.', 2);
@@ -629,6 +845,15 @@
     return $response_string;
   }
 
+  /**
+   * Function parse_gender_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return mixed|string
+   */
   function parse_gender_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Giving part of the response a sex change!', 2);
@@ -656,6 +881,15 @@
     return $response_string;
   }
 
+  /**
+   * Function parse_that_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return array|string
+   */
   function parse_that_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THAT tag. How awesome is that?', 2);
@@ -692,6 +926,15 @@
     return $response_string;
   }
 
+  /**
+   * Function parse_input_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return mixed
+   */
   function parse_input_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an INPUT tag.', 2);
@@ -713,6 +956,15 @@
    * @return (string) $response_string
    */
 
+  /**
+   * Function parse_system_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
   function parse_system_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SYSTEM tag (May God have mercy on us all).', 2);
@@ -731,6 +983,15 @@
    * @return (string) $response_string
    */
 
+  /**
+   * Function parse_learn_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return string
+   */
   function parse_learn_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a LEARN tag.', 2);
@@ -829,6 +1090,15 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
    * @return (string) $response_string
    */
 
+  /**
+   * Function parse_eval_tag
+   *
+   * * @param $convoArr
+   * @param $element
+   * @param $parentName
+   * @param $level
+   * @return array|string
+   */
   function parse_eval_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an EVAL tag.', 2);
@@ -847,6 +1117,16 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
    * @return (string) $response_string
    */
 
+  /**
+   * Function tag_to_string
+   *
+   * * @param $convoArr
+   * @param        $element
+   * @param        $parentName
+   * @param        $level
+   * @param string $type
+   * @return array|string
+   */
   function tag_to_string(&$convoArr, $element, $parentName, $level, $type = 'element')
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "converting the $parentName tag into text.", 2);
