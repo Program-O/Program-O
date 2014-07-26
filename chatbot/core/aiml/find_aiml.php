@@ -1,21 +1,20 @@
 <?php
 
-  /***************************************
-  * http://www.program-o.com
-  * PROGRAM O
-  * Version: 2.4.3
-  * FILE: chatbot/core/aiml/find_aiml.php
-  * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 17TH 2014
-  * DETAILS: this file contains the functions find and score
-  *          the most likely AIML match from the database
-  ***************************************/
   /**
-  * function get_last_word()
-  * This function gets the last word from a sentence
-  * @param  string $sentence - the sentence to use
-  * @return string $last_word
-  **/
+   * This file contains the functions find and score he most likely AIML match from the database
+   *
+   * @version 2.4.3
+   * @filename find_aiml.php
+   * @author Elizabeth Perreau and Dave Morton
+   * @since MAY 17TH 2014
+   **/
+
+  /**
+   * Gets the last word from a sentence
+   *
+   * @param  string $sentence
+   * @return string
+   **/
   function get_last_word($sentence)
   {
     $wordArr = explode(' ', $sentence);
@@ -25,11 +24,10 @@
   }
 
   /**
-  * function get_first_word()
-  * This function gets the last word from a sentence
-  * @param  string $sentence - the sentence to use
-  * @return string $last_word
-  **/
+   * Gets the first word from a sentence
+   * @param  string $sentence
+   * @return string
+   **/
   function get_first_word($sentence)
   {
     $wordArr = explode(' ', $sentence);
@@ -39,12 +37,11 @@
   }
 
   /**
-  * function make_like_pattern()
-  * This function gets an input sentence from the user and a aiml tag and creates an sql like pattern
-  * @param  string $sentence - the user input to be turned into a like pattern
-  * @param  string $field - the name of the aiml tag which we are going to use in our like pattern
-  * @return string $sql_like_pattern - the like pattern
-  **/
+   * Gets an input sentence from the user and a aiml tag and creates an sql like pattern
+   * @param  string $sentence
+   * @param  string $field
+   * @return string
+   **/
   function make_like_pattern($sentence, $field)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making a like pattern to use in the sql", 4);
@@ -74,11 +71,10 @@
   }
 
   /**
-  * function wordsCount_inSentence()
-  * This function counts the words in a sentence
-  * @param  string $sentence - the user input to be turned into a like pattern
-  * @return int wordCount
-  **/
+   * Counts the words in a sentence
+   * @param  string $sentence
+   * @return int
+   **/
   function wordsCount_inSentence($sentence)
   {
     $wordArr = explode(" ", $sentence);
@@ -88,16 +84,15 @@
   }
 
   /**
-   * function unset_all_bad_pattern_matches()
-   * This function takes all the sql results and filters out the irrelevant ones
+   * Takes all the sql results passed to the function and filters out the irrelevant ones
    *
-   * @param        $convoArr
-   * @param array  $allrows    - all the results
-   * @param string $lookingfor - the user input
-   * @internal param string $current_thatpattern - the current that pattern
-   * @internal param string $current_topic - the current topic
-   * @return array tmp_rows - the RELEVANT results
-   */
+   * @param array  $convoArr
+   * @param array  $allrows
+   * @param string $lookingfor
+   * @internal param string $current_thatpattern
+   * @internal param string $current_topic
+   * @return array
+   **/
   function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
   {
     global $default_pattern;
@@ -139,16 +134,13 @@
       $aiml_topic = trim($subrow['topic']);
       $aiml_topic = (IS_MB_ENABLED) ? mb_strtolower($aiml_topic) : strtolower($aiml_topic);
       $current_topic_lc = (IS_MB_ENABLED) ? mb_strtolower($current_topic) : strtolower($current_topic);
-      //runDebug(__FILE__, __FUNCTION__, __LINE__, "TOPICHK '".$aiml_topic."'", 4);
       if ($aiml_topic == '')
       {
-      //runDebug(__FILE__, __FUNCTION__, __LINE__, "NO TOPIC this is true", 4);
         $topicMatch = TRUE;
       }
       elseif (($aiml_topic == $current_topic_lc))
       {
         $topicMatch = TRUE;
-        //runDebug(__FILE__, __FUNCTION__, __LINE__, "TOPIC MATCH this is true", 4);
         $message[$j]['topic match'] = "Found topic match $aiml_topic and $current_topic_lc";
       }
       else
@@ -199,13 +191,13 @@
         $tmp_rows[$i]['score'] = 0;
         $tmp_rows[$i]['track_score'] = "default pick up line ($aiml_pattern = $default_pattern) ";
       }
-      elseif ((!$aiml_thatpattern_wildcards) && ($aiml_patternmatch))
-      { // no thatpattern and a pattern match keep
+      elseif ((!$aiml_thatpattern_wildcards) && ($aiml_patternmatch)) // no thatpattern and a pattern match keep
+      {
         $tmp_rows[$i]['score'] = 1;
         $tmp_rows[$i]['track_score'] = " no thatpattern in result and a pattern match";
       }
-      elseif (($aiml_thatpattern_wildcards) && ($aiml_thatpatternmatch) && ($aiml_patternmatch))
-      { //pattern match and a wildcard match on the thatpattern keep
+      elseif (($aiml_thatpattern_wildcards) && ($aiml_thatpatternmatch) && ($aiml_patternmatch)) //pattern match and a wildcard match on the thatpattern keep
+      {
         $tmp_rows[$i]['score'] = 2;
         $tmp_rows[$i]['track_score'] = " thatpattern match and a pattern match";
       }
@@ -228,19 +220,18 @@
       $i++;
       $j++;
     }
-    //runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($message, true), 4);
     sort2DArray("show top scoring aiml matches", $relevantRow, "good matches", 1, 10);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Found " . count($relevantRow) . " relevant rows", 4);
     return $relevantRow;
   }
 
   /**
-  * function match_wildcard_rows()
-  * This function takes a sentence and converts AIML wildcards to PHP wildcards
-  * so that it can be matched in php
-  * @param string $item
-  * @return string matchme
-  **/
+   * Takes a sentence and converts AIML wildcards to Regular Expression wildcards
+   * so that it can be matched in php using pcre search functions
+   *
+   * @param string $item
+   * @return string
+   **/
   function match_wildcard_rows($item)
   {
     $item = trim($item);
@@ -254,18 +245,16 @@
   }
 
   /**
-   * function score_matches()
-   * This function takes all the relevant sql results and scores them
-   * to find the most likely match with the aiml
+   * Takes all the relevant sql results and scores them to find the most likely match with the aiml
    *
-   * @param        $convoArr
-   * @param array  $allrows    - all the results
-   * @param string $lookingfor - the user input
-   * @internal param int $bot_parent_id - the id of the parent bot
-   * @internal param string $current_thatpattern - the current that pattern
-   * @internal param string $current_topic - the current topic
-   * @return array allrows - the SCORED results
-   */
+   * @param array  $convoArr
+   * @param array  $allrows
+   * @param string $lookingfor
+   * @internal param int $bot_parent_id
+   * @internal param string $current_thatpattern
+   * @internal param string $current_topic
+   * @return array
+   **/
   function score_matches($convoArr, $allrows, $lookingfor)
   {
     global $common_words_array, $default_pattern;
@@ -448,31 +437,32 @@
       }
     }
     //send off for debugging
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Unsorted array \$allrows:\n" . print_r($allrows, true), 4);
     sort2DArray("show top scoring aiml matches", $allrows, "score", 1, 10);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Returned array:\n" . print_r($allrows, true), 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Sorted array \$allrows:\n" . print_r($allrows, true), 4);
     return $allrows;
     //return the scored rows
   }
 
   /**
-  * function sort2DArray()
-  * Small helper function to sort a 2d array
-  * @param string $opName - name of this operation i.e. show top scored aiml
-  * @param array $thisArr - the array to sort
-  * @param $sortByItem - the array field to sort by
-  * @param $sortAsc - 1 = ascending order, 0 = descending
-  * @param $limit - the number of results to return
-  * @return void;
-  **/
+   * Small helper function to sort a 2d array
+   *
+   * @param string $opName
+   * @param array $thisArr
+   * @param $sortByItem
+   * @param $sortAsc
+   * @param $limit
+   * @return void;
+   **/
   function sort2DArray($opName, $thisArr, $sortByItem, $sortAsc = 1, $limit = 10)
   {
     $thisCount = count($thisArr);
+    /** @noinspection PhpUnusedLocalVariableInspection */
     $showLimit = ($thisCount < $limit) ? $thisCount : $limit;
-    //runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($thisArr, true), 4);
-    // runDebug(__FILE__, __FUNCTION__, __LINE__, "$opName - sorting $thisCount results by $sortByItem and getting the top $showLimit for debugging.", 4);
     $i = 0;
     $tmpSortArr = array();
     $resArr = array();
+    /** @noinspection PhpUnusedLocalVariableInspection */
     $last_high_score = 0;
     //loop through the results and put in tmp array to sort
     foreach ($thisArr as $all => $subrow)

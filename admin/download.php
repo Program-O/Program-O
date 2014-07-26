@@ -124,8 +124,7 @@ endScript;
       $result = $sth->fetchAll();
       foreach ($result as $row)
       {
-        $pattern = (IS_MB_ENABLED) ? mb_strtoupper($row['pattern']) : strtoupper($row[
-                   'pattern']);
+        $pattern = (IS_MB_ENABLED) ? mb_strtoupper($row['pattern']) : strtoupper($row['pattern']);
         $template = str_replace("\r\n", '', $row['template']);
         $template = str_replace("\n", '', $row['template']);
         $newLine = str_replace('[pattern]', $pattern, $categoryTemplate);

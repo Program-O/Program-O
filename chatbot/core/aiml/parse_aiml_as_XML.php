@@ -1,21 +1,20 @@
 <?php
 
-  /***************************************
-  * http://www.program-o.com
-  * PROGRAM O
-  * Version: 2.4.3
-  * FILE: chatbot/core/aiml/parse_aiml_as_XML.php
-  * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 17TH 2014
-  * DETAILS: this file contains the functions generate php code from aiml
-  ***************************************/
+  /**
+   * This file contains the functions that parse AIML tags,converting them into text
+   *
+   * @version 2.4.3
+   * @filename parse_aiml_as_xml.php
+   * @author Elizabeth Perreau and Dave Morton
+   * @since MAY 17TH 2014
+   **/
 
   /**
-  * function parse_aiml_as_XML()
-  * This function starts the process of recursively parsing the AIML template as XML, converting it to text.
-  * @param  array $convoArr - the existing conversation array
-  * @return array $convoArr
-  **/
+   * This function starts the process of recursively parsing the AIML template as XML, converting it to text
+   *
+   * @param  array $convoArr - the existing conversation array
+   * @return array $convoArr
+   **/
   function parse_aiml_as_XML($convoArr)
   {
     global $botsay, $error_response;
@@ -81,14 +80,14 @@
   }
 
   /**
-   * Function implode_recursive
+   * Implodes a nested array into a single string recursively
    *
-   * * @param $glue
-   * @param        $input
+   * @param string $glue
+   * @param array  $input
    * @param string $file
    * @param string $function
    * @param string $line
-   * @return array|string
+   * @return string
    */
   function implode_recursive($glue, $input, $file = 'unknown', $function = 'unknown', $line = 'unknown')
   {
@@ -119,12 +118,12 @@
   }
 
   /**
-   * Function parseTemplateRecursive
+   * Parses a SimpleXMLelement object into a string
    *
-   * * @param $convoArr
+   * @param array            $convoArr
    * @param SimpleXMLElement $element
    * @param int              $level
-   * @return array
+   * @return string
    */
   function parseTemplateRecursive($convoArr, SimpleXMLElement $element, $level = 0)
   {
@@ -162,7 +161,6 @@
     $tmpResponse = ($level <= 1 and ($parentName != 'think') and (!in_array($parentName, $doNotParseChildren))) ? $value : '';
     if (count($children) > 0 and is_object($retVal))
     {
-      $childLabel = (count($children) == 1) ? ' child' : ' children';
       foreach ($children as $child)
       {
         $childName = $child->getName();
@@ -178,12 +176,12 @@
   }
 
   /**
-   * Function parse_text_tag
+   * Converts an XML <text> tag into a string
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return string
    */
   function parse_text_tag($convoArr, $element, $parentName, $level)
@@ -193,12 +191,12 @@
   }
 
   /**
-   * Function parse_star_tag
+   * Parses the AIML <star> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return array
    */
   function parse_star_tag($convoArr, $element, $parentName, $level)
@@ -221,12 +219,12 @@
   }
 
   /**
-   * Function parse_thatstar_tag
+   * Parses the AIML <thatstar> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return array
    */
   function parse_thatstar_tag($convoArr, $element, $parentName, $level)
@@ -249,12 +247,12 @@
   }
 
   /**
-   * Function parse_date_tag
+   * Parses the AIML <date> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return string
    */
   function parse_date_tag($convoArr, $element, $parentName, $level)
@@ -316,13 +314,13 @@
   }
 
   /**
-   * Function parse_random_tag
+   * Parses the AIML <random> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return array|string
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
+   * @return string
    */
   function parse_random_tag($convoArr, $element, $parentName, $level)
   {
@@ -338,12 +336,12 @@
   }
 
   /**
-   * Function parse_get_tag
+   * Parses the AIML <get> tag, obtaining it's value from the database
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return string
    */
   function parse_get_tag($convoArr, $element, $parentName, $level)
@@ -383,13 +381,13 @@
   }
 
   /**
-   * Function parse_set_tag
+   * Parses the AIML <set> tag, storing it's value in the database
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return mixed
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
+   * @return string
    */
   function parse_set_tag(&$convoArr, $element, $parentName, $level)
   {
@@ -473,26 +471,27 @@
   }
 
   /**
-   * Function parse_think_tag
+   * Parses the AIML <think> tag, suppressing output by returning an empty string
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return string
    */
   function parse_think_tag(&$convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'I\'m considering parsing a THINK tag.', 2);
+    /** @noinspection PhpUnusedLocalVariableInspection */
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     return '';
   }
 
   /**
-   * Function parse_bot_tag
+   * Parses the AIML <bot> tag, obtaining it's value from the database
    *
-   * * @param $convoArr
-   * @param $element
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
    * @return string
    */
   function parse_bot_tag($convoArr, $element)
@@ -511,13 +510,13 @@
   }
 
   /**
-   * Function parse_id_tag
+   * Parses the AIML <id> tag, returning the current conversation ID
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return mixed
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
+   * @return string
    */
   function parse_id_tag($convoArr, $element, $parentName, $level)
   {
@@ -526,12 +525,12 @@
   }
 
   /**
-   * Function parse_version_tag
+   * Parses the AIML <version> tag, returning the current version of Program O
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return string
    */
   function parse_version_tag($convoArr, $element, $parentName, $level)
@@ -541,12 +540,12 @@
   }
 
   /**
-   * Function parse_uppercase_tag
+   * Parses the AIML <uppercase> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return string
    */
   function parse_uppercase_tag($convoArr, $element, $parentName, $level)
@@ -558,12 +557,12 @@
   }
 
   /**
-   * Function parse_lowercase_tag
+   * Parses the AIML <lowercase> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return string
    */
   function parse_lowercase_tag($convoArr, $element, $parentName, $level)
@@ -575,12 +574,12 @@
   }
 
   /**
-   * Function parse_sentence_tag
+   * Parses the AIML <sentence> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return string
    */
   function parse_sentence_tag($convoArr, $element, $parentName, $level)
@@ -598,12 +597,12 @@
   }
 
   /**
-   * Function parse_formal_tag
+   * Parses the AIML <formal> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return string
    */
   function parse_formal_tag($convoArr, $element, $parentName, $level)
@@ -617,32 +616,32 @@
   }
 
   /**
-   * Function parse_srai_tag
+   * Parses the AIML <srai> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return array|string
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
+   * @return string
    */
   function parse_srai_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SRAI tag.', 2);
-    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $response = run_srai($convoArr, $response_string);
+    $srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+    $response = run_srai($convoArr, $srai);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 4);
-    $response_string = (is_array($response_string)) ? implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__) : $response;
+    $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     return $response_string;
   }
 
   /**
-   * Function parse_sr_tag
+   * Parses the AIML <sr> tag
    *
-   * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return array|string
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
+   * @return string
    */
   function parse_sr_tag($convoArr, $element, $parentName, $level)
   {
@@ -653,23 +652,13 @@
     return $response_string;
   }
 
-  /*
-  * function parse_condition_tag
-  * Acts as a de-facto if/else structure, selecting a specific output, based on certain criteria
-  * @param [array] $convoArr    - The conversation array (a container for a number of necessary variables)
-  * @param [object] $element    - The current XML element being parsed
-  * @param [string] $parentName - The parent tag (if applicable)
-  * @param [int] $level         - The current recursion level
-  * @return [string] $response_string
-  */
-
   /**
-   * Function parse_condition_tag
+   * Parses the AIML <condition> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return array|string
    */
   function parse_condition_tag($convoArr, $element, $parentName, $level)
@@ -791,13 +780,13 @@
   }
 
   /**
-   * Function parse_person_tag
+   * Parses the AIML <person> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return string $response
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
+   * @return string
    */
   function parse_person_tag($convoArr, $element, $parentName, $level)
   {
@@ -808,14 +797,13 @@
   }
 
   /**
-   * Function parse_person2_tag
+   * Parses the AIML <person2> tag
    *
-   * *
-   * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return string $response
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
+   * @return string
    */
   function parse_person2_tag($convoArr, $element, $parentName, $level)
   {
@@ -826,13 +814,13 @@
   }
 
   /**
-   * Function parse_html_tag
+   * Parses any HTML tags that are not also AIML tags
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return mixed
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
+   * @return string
    */
   function parse_html_tag($convoArr, $element, $parentName, $level)
   {
@@ -846,13 +834,13 @@
   }
 
   /**
-   * Function parse_gender_tag
+   * Parses the AIML <gender> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return mixed|string
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
+   * @return string
    */
   function parse_gender_tag($convoArr, $element, $parentName, $level)
   {
@@ -882,13 +870,13 @@
   }
 
   /**
-   * Function parse_that_tag
+   * Parses the AIML <that> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return array|string
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
+   * @return string
    */
   function parse_that_tag($convoArr, $element, $parentName, $level)
   {
@@ -927,13 +915,13 @@
   }
 
   /**
-   * Function parse_input_tag
+   * Parses the AIML <input> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return mixed
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
+   * @return string
    */
   function parse_input_tag($convoArr, $element, $parentName, $level)
   {
@@ -946,23 +934,13 @@
     return $response_string;
   }
 
-  /*
-   * function parse_system_tag
-   * Executes system calls, returning the results.
-   * @param (array) $convoArr
-   * @param (SimpleXMLelement) $element
-   * @param (string) $parentName
-   * @param (int) $level
-   * @return (string) $response_string
-   */
-
   /**
-   * Function parse_system_tag
+   * Parses the AIML <system> tag, Executing system calls and returning the results
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return string
    */
   function parse_system_tag($convoArr, $element, $parentName, $level)
@@ -973,23 +951,13 @@
     return $response_string;
   }
 
-  /*
-   * function parse_learn_tag
-   * Loads an AIML file or inline category into the DB
-   * @param (array) $convoArr
-   * @param (SimpleXMLelement) $element
-   * @param (string) $parentName
-   * @param (int) $level
-   * @return (string) $response_string
-   */
-
   /**
-   * Function parse_learn_tag
+   * Parses the 'extended' AIML <learn> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return string
    */
   function parse_learn_tag($convoArr, $element, $parentName, $level)
@@ -1080,23 +1048,13 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
     return '';
   }
 
-  /*
-   * function parse_eval_tag
-   * Evaluates the enclosed contents, for use with eht <learn> tag
-   * @param (array) $convoArr
-   * @param (SimpleXMLelement) $element
-   * @param (string) $parentName
-   * @param (int) $level
-   * @return (string) $response_string
-   */
-
   /**
-   * Function parse_eval_tag
+   * Parses the 'extended' AIML <eval> tag
    *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
+   * @param array $convoArr
+   * @param SimpleXMLElement $element
+   * @param string $parentName
+   * @param int $level
    * @return array|string
    */
   function parse_eval_tag($convoArr, $element, $parentName, $level)
@@ -1107,25 +1065,15 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
     return $response_string;
   }
 
-  /*
-   * function tag_to_string
-   * Converts the contents of the AIML tag to a string.
-   * @param (array) $convoArr
-   * @param (SimpleXMLelement) $element
-   * @param (string) $parentName
-   * @param (int) $level
-   * @return (string) $response_string
-   */
-
   /**
-   * Function tag_to_string
+   * Converts the contents of the AIML tag to a string.
    *
-   * * @param $convoArr
-   * @param        $element
-   * @param        $parentName
-   * @param        $level
-   * @param string $type
-   * @return array|string
+   * @param array            $convoArr
+   * @param SimpleXMLElement $element
+   * @param string           $parentName
+   * @param int              $level
+   * @param string           $type
+   * @return string
    */
   function tag_to_string(&$convoArr, $element, $parentName, $level, $type = 'element')
   {
@@ -1154,6 +1102,3 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
     // do something here
     return $response_string;
   }
-
-
-?>

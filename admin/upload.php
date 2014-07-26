@@ -180,8 +180,9 @@ endScript;
           foreach ($topicXML->category as $category)
           {
             $fullCategory = $category->asXML();
-            $pattern = $category->pattern;
+            $pattern = trim($category->pattern);
             $pattern = str_replace("'", ' ', $pattern);
+            $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
             $that = $category->that;
             $template = $category->template->asXML();
             $template = str_replace('<template>', '', $template);
@@ -217,8 +218,9 @@ endScript;
         foreach ($aiml->category as $category)
         {
           $fullCategory = $category->asXML();
-          $pattern = $category->pattern;
+          $pattern = trim($category->pattern);
           $pattern = str_replace("'", ' ', $pattern);
+          $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
           $that = $category->that;
           $template = $category->template->asXML();
           $template = substr($template,10);

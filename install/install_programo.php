@@ -25,6 +25,16 @@
   $errorMessage = (!empty ($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';
   $errorMessage .= $no_unicode_message;
   require_once ('install_config.php');
+  $writeCheckArray = array('config' => _CONF_PATH_, 'debug' => _DEBUG_PATH_, 'logs' => _LOG_PATH_);
+  $canWrite = true;
+
+  foreach ($writeCheckArray as $key => $folder)
+  {
+    if (!is_writable($folder))
+    {
+      $errorMessage .= "<p class='red bold'>The $key folder cannot be written to, or does not exist. Please correct this before you continue.</p>\n";
+    }
+  }
   define('SECTION_START', '<!-- Section [section] Start -->'); # search params for start and end of sections
   define('SECTION_END', '<!-- Section [section] End -->'); # search params for start and end of sections
   define('PHP_SELF', $_SERVER['SCRIPT_NAME']); # This is more secure than $_SERVER['PHP_SELF'], and returns more or less the same thing

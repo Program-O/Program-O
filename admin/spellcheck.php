@@ -1,12 +1,12 @@
 <?php
-//-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.3
-//Program-O  chatbot admin area
-//Written by Elizabeth Perreau and Dave Morton
-//DATE: MAY 17TH 2014
-//for more information and support please visit www.program-o.com
-//-----------------------------------------------------------------------------------------------
-// spellcheck.php
+  /**
+   * Displays the admin page for the Spellcheck plugin, and provides access to various features
+   *
+   * @version 2.4.3
+   * @file spellcheck.php
+   * @author Elizabeth Perreau and Dave Morton
+   * @since 05-26-2014
+   */
   $msg = '';
   $upperScripts = <<<endScript
 

@@ -1,13 +1,12 @@
 <?php
-  /***************************************
-    * http://www.program-o.com
-    * PROGRAM O
-    * Version: 2.4.3
-    * FILE: select_bots.php
-    * AUTHOR: Elizabeth Perreau and Dave Morton
-    * DATE: 05-26-2014
-    * DETAILS: Selects the current chatbot and displays editable config data
-    ***************************************/
+  /**
+   * Selects the current chatbot and displays editable config data
+   *
+   * @version 2.4.3
+   * @file select_bots.php
+   * @author Elizabeth Perreau and Dave Morton
+   * @since 05-26-2014
+   */
 
   $selectBot = '';
   $curBot = array();
@@ -51,10 +50,10 @@
   $mainTitle     = 'Choose/Edit a Bot';
 
   /**
-   * Function getBotParentList
+   * Returns a list of current, active chatbots, for selecting a parent chatbot
    *
-   * * @param $current_parent
-   * @return mixed|string
+   * @param $current_parent
+   * @return string
    */
   function getBotParentList($current_parent) {
     //db globals
@@ -86,10 +85,10 @@
 
 
   /**
-   * Function getSelectedBot
+   * Returns an HTML form, filled with the current chatbot's configuration data
    *
    *
-   * @return mixed|string
+   * @return string
    */
   function getSelectedBot() {
   global $dbConn, $template, $pattern, $remember_up_to, $conversation_lines, $error_response, $curBot, $unknown_user;
@@ -124,15 +123,12 @@
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 'new';
   if($bot_id != "new")
   {
-    #$bot_id = $_SESSION['poadmin']['bot_id'];
-    //get data for the currently selected bot from the db
     $sql = "SELECT * FROM `bots` where bot_id = :bot_id;";
     $sth = $dbConn->prepare($sql);
     $sth->bindValue(':bot_id', $bot_id);
     $sth->execute();
     $row = $sth->fetch();
     $curBot = $row;
-    //exit('<pre>Result = ' . print_r($result, true));
       foreach ($row as $key => $value) {
         if (strstr($key,'bot_') != false){
           $tmp = '';
@@ -231,84 +227,78 @@
 }
 
   /**
-   * Function updateBotSelection
+   * Updates the database whth the current chatbot's modified configuration data
    *
    *
    * @return string
    */
-  function updateBotSelection() {
-  //db globals
-  global $dbConn, $msg, $format, $post_vars;
-  $logFile = _LOG_URL_ . 'admin.error.log';
-  
-  $msg = '';
-  $bot_id = $post_vars['bot_id'];
-  $sql = "select * from bots where bot_id = $bot_id;";
-  $sth = $dbConn->prepare($sql);
-  $sth->execute();
-  $result = $sth->fetch();
-  //exit("<pre>\nResult = " . print_r($result, true) . "\nPostVars = " . print_r($post_vars, true));
-  $sql = '';
-  foreach($post_vars as $key => $value) {
-    $value = str_replace("'", "\'", $value);
-    $value = str_replace("\\'", "\'", $value);
-    $value = str_replace('"', '\"', $value);
-    $value = str_replace('\\"', '\"', $value);
-    if($key == "bot_id" || $key == "action" || !isset($result[$key])) continue;
+  function updateBotSelection()
+  {
+    global $dbConn, $msg, $format, $post_vars;
+    $logFile = _LOG_URL_ . 'admin.error.log';
+    $msg = '';
+    $bot_id = $post_vars['bot_id'];
+    $sql = "select * from bots where bot_id = $bot_id;";
+    $sth = $dbConn->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetch();
+    $sql = '';
+    foreach($post_vars as $key => $value) {
+      $value = str_replace("'", "\'", $value);
+      $value = str_replace("\\'", "\'", $value);
+      $value = str_replace('"', '\"', $value);
+      $value = str_replace('\\"', '\"', $value);
+      if($key == "bot_id" || $key == "action" || !isset($result[$key])) continue;
       if($result[$key] != $post_vars[$key]) {
         $sql .= "UPDATE `bots` SET `$key` ='$value' where `bot_id` = '".$post_vars['bot_id']."' limit 1;<br>\n";
       }
     }
-      //exit("Update SQL = $sql");
-      if (!empty($sql))
-      {
-        $sth = $dbConn->prepare($sql);
-        $sth->execute();
-        $affectedRows = $sth->rowCount();
-        if($affectedRows == 0) {
-          $msg = "Error updating bot details. See the <a href=\"$logFile\">error log</a> for details.<br />";
-          trigger_error("There was a problem adding '$key' to the database. The value was '$value'.");
-          break;
-        }
-      }
-      else
-      {
-        $msg = 'Nothing seems to have been modified. No changes made.';
-      }
-
-  $format = filter_input(INPUT_POST,'format');
-
-  if (strtoupper($format) !== strtoupper($format))
-  {
-    $format = strtoupper($format);
-    $cfn = _CONF_PATH_ . 'global_config.php';
-    $configFile = file(_CONF_PATH_ . 'global_config.php',FILE_IGNORE_NEW_LINES);
-    $search = '    $format = \'' . $format . '\';';
-    $replace = '    $format = \'' . $format . '\';';
-    $index = array_search($search, $configFile);
-    if (false === $index)
+    if (!empty($sql))
     {
-      $msg .= "Error updating the config file. See the <a href=\"$logFile\">error log</a> for details.<br />";
-      trigger_error("There was a problem with updating the default format in the config file. Please edit the value manually and submit a bug report.");
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $affectedRows = $sth->rowCount();
+      if($affectedRows == 0) {
+        $msg = "Error updating bot details. See the <a href=\"$logFile\">error log</a> for details.<br />";
+        trigger_error("There was a problem adding '$key' to the database. The value was '$value'.");
+        //return $msg;
+      }
     }
     else
     {
-      $configFile[$index] = $replace;
-      $configContent = implode("\n", $configFile);
-      $x = file_put_contents(_CONF_PATH_ . 'global_config.php', $configContent);
+      $msg = 'Nothing seems to have been modified. No changes made.';
     }
-  }
-  if($msg == '') {
-    $msg = 'Bot details updated.';
-  }
+    $format = filter_input(INPUT_POST,'format');
 
-  return $msg;
-
-}
+    if (strtoupper($format) !== strtoupper($format))
+    {
+      $format = strtoupper($format);
+      $cfn = _CONF_PATH_ . 'global_config.php';
+      $configFile = file(_CONF_PATH_ . 'global_config.php',FILE_IGNORE_NEW_LINES);
+      $search = '    $format = \'' . $format . '\';';
+      $replace = '    $format = \'' . $format . '\';';
+      $index = array_search($search, $configFile);
+      if (false === $index)
+      {
+        $msg .= "Error updating the config file. See the <a href=\"$logFile\">error log</a> for details.<br />";
+        trigger_error("There was a problem with updating the default format in the config file. Please edit the value manually and submit a bug report.");
+      }
+      else
+      {
+        $configFile[$index] = $replace;
+        $configContent = implode("\n", $configFile);
+        $x = file_put_contents(_CONF_PATH_ . 'global_config.php', $configContent);
+      }
+    }
+    if($msg == '') {
+      $msg = 'Bot details updated.';
+    }
+    return $msg;
+  }
 
 
   /**
-   * Function addBot
+   * Adds a new chatbot to the database
    *
    *
    * @return string
@@ -348,9 +338,9 @@ endSQL;
 }
 
   /**
-   * Function make_bot_predicates
+   * Adds default predicate (personality) data to the database for the current chatbot
    *
-   * * @param $bot_id
+   * @param $bot_id
    * @return string
    */
   function make_bot_predicates($bot_id)
@@ -434,7 +424,13 @@ endSQL;
   return $msg;
 }
 
-function changeBot() {
+  /**
+   * Changes the current chatbot
+   *
+   *
+   * @return void
+   */
+  function changeBot() {
   global $dbConn, $msg, $bot_id, $post_vars;
   $botId = (isset($post_vars['bot_id'])) ? $post_vars['bot_id'] : $bot_id;
   
@@ -462,19 +458,15 @@ function changeBot() {
 
 
   /**
-   * Function getChangeList
+   * Returns an HTML form for selecting a chatbot from the database
    *
    *
-   * @return mixed|string
+   * @return string
    */
   function getChangeList() {
-  //db globals
   global $dbConn, $template;
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
   $botId = $bot_id;
-
-  $inputs='';
-  //get bot names from the db
   $sql = "SELECT * FROM `bots` ORDER BY bot_name";
   $sth = $dbConn->prepare($sql);
   $sth->execute();
@@ -498,5 +490,3 @@ function changeBot() {
   $form = str_replace('[options]', $options, $form);
   return $form;
 }
-
-?>
