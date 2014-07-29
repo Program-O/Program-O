@@ -735,10 +735,10 @@
         foreach ($choice as $pick)
         {
           runDebug(__FILE__, __FUNCTION__, __LINE__,'Current pick = ' . print_r($pick, true), 4);
-          $testVarValue = (isset($pick->attributes()['value'])) ? $pick->attributes()['value'] : '';
+          $attr = $pick->attributes();
+          runDebug(__FILE__, __FUNCTION__, __LINE__,'Current pick attributes = ' . print_r($attr, true), 4);
+          $testVarValue = (isset($attr['value'])) ? (string)$attr['value'] : '';
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Pick Value = '$testVarValue'", 4);
-          //$testVarValue = get_client_property($convoArr, $condition_name);
-          //$testVarValue = trim($testVarValue);
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $testVarValue (condition value) is equal to $test_value (Client Property).", 4);
           if (strtolower($testVarValue) == strtolower($test_value))
           {
