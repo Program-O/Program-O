@@ -94,7 +94,7 @@ endScript;
   $topic = trim($post_vars['topic']);
   $topic = (IS_MB_ENABLED) ? mb_strtoupper($topic) : strtoupper($topic);
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
-  if(($pattern=="") || ($template=="")) {
+  if(($pattern=="") || ($aimltemplate=="")) {
     $msg = 'You must enter a user input and bot response.';
   }
   else {

@@ -773,3 +773,74 @@ iframe {
   min-width: 80%;
   display: block;
 }
+
+/* Edit aiml styles */
+.editaiml-table {
+    text-indent: 0;
+}
+.editaiml-table .search-msg {
+    float: right;
+    padding-right: 0.6%;
+}
+.editaiml-table a {
+    margin: 0 2px 3px 0;
+    padding: 0 10px;
+    display: inline-block;
+    border: solid 1px #CBCBCB;
+    text-decoration: none;
+    line-height: 1.7em;
+    color: #4A4A4A;
+}
+.editaiml-table a.selected {
+    background: #39A3C6;
+    color: white;
+}
+.editaiml-table .yui3-datatable * {
+    font-family: inherit !important;
+}
+.editaiml-table th.yui3-datatable-header {
+    background: #FFF45A;
+}
+.editaiml-table th input {
+    display: block;
+    width: 100%;
+}
+.editaiml-table td.yui3-datatable-cell {
+    padding: 4px 5px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    cursor: text;
+}
+.editaiml-table .yui3-datatable-even td.yui3-datatable-cell {
+    background-color:transparent;
+}
+.editaiml-table .yui3-datatable-odd td.yui3-datatable-cell {
+    background-color: #FCFC9D;
+}
+.editaiml-table .yui3-datatable-cell.delete-row {
+    background-image: url(images/del.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+.editaiml-table .yui3-datatable-message-content {
+    text-align: center;
+    font-style: italic;
+}
+.yui3-overlay textarea {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    padding: 4px 5px;
+    font-family: inherit;
+    font-size: 1em;
+}
+.editaiml-table tfoot {
+    background: #FFF45A;
+}
+.editaiml-table tfoot textarea {
+    width: 94%;
+    margin:0;
+}

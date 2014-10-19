@@ -424,7 +424,7 @@ endFooter;
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
-                       '[linkHref]' => ' href="index.php?page=search"',
+                       '[linkHref]' => ' href="index.php?page=editAiml"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Search and edit specific AIML categories"',
                        '[linkTitle]' => ' title="Search and edit specific AIML categories"',
