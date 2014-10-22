@@ -13,7 +13,6 @@
 $post_vars = filter_input_array(INPUT_POST);
 $get_vars = filter_input_array(INPUT_GET);
 $form_vars = array_merge((array) $post_vars, (array) $get_vars);
-
 if (isset($get_vars['action'])) {
     //load shared files  
     $thisFile = __FILE__;
@@ -46,7 +45,7 @@ if ((isset($get_vars['action'])) && ($get_vars['action'] == "search")) {
     $mainContent = $template->getSection('EditAimlPage');
 }
 
-$upperScripts = '<script type="text/javascript" src="scripts/tablesorter.min.js"></script>' . "\n";
+//$upperScripts = '<script type="text/javascript" src="scripts/tablesorter.min.js"></script>' . "\n";
 $topNav = $template->getSection('TopNav');
 $leftNav = $template->getSection('LeftNav');
 $rightNav = $template->getSection('RightNav');
@@ -96,53 +95,51 @@ function delAIML($id) {
  * @return mixed|string
  */
 function runSearch() {
-    global $bot_id, $bot_name, $form_vars, $dbConn, $group;
+    global $bot_id, $form_vars, $dbConn, $group;
+
     $groupSize = 10;
-    //exit("group = $group");
-    $i = 0;
-    $searchTermsTemplate = " like '%[value]%' or\n  ";
-    $searchTerms = '';
-    $search_fields = array('search_topic', 'search_filename', 'search_pattern', 'search_template', 'search_that');
-    $qs = '';
-    foreach ($search_fields as $index) {
-        $$index = trim($form_vars[$index]);
-        if (!empty($form_vars[$index])) {
-            $ue = urlencode($form_vars[$index]);
-            $qs .= "&amp;$index=$ue";
-        }
-    }
-//    if (!empty($search_topic) or ! empty($search_filename) or ! empty($search_pattern) or ! empty($search_template) or ! empty($search_that)) {
     $limit = ($group - 1) * $groupSize;
     $limit = ($limit < 0) ? 0 : $limit;
 
-    $searchTerms .= (!empty($search_topic)) ? '`topic`' . str_replace('[value]', $search_topic, $searchTermsTemplate) : '';
-    $searchTerms .= (!empty($search_filename)) ? '`filename`' . str_replace('[value]', $search_filename, $searchTermsTemplate) : '';
-    $searchTerms .= (!empty($search_pattern)) ? '`pattern`' . str_replace('[value]', $search_pattern, $searchTermsTemplate) : '';
-    $searchTerms .= (!empty($search_template)) ? '`template`' . str_replace('[value]', $search_template, $searchTermsTemplate) : '';
-    $searchTerms .= (!empty($search_that)) ? '`thatpattern`' . str_replace('[value]', $search_that, $searchTermsTemplate) : '';
-    $searchTerms = rtrim($searchTerms, " or\n ");
-    if ($searchTerms != "")
-        $searchTerms = " AND (" . $searchTerms . ")";
-    $countSQL = "SELECT count(id) FROM `aiml` WHERE `bot_id` = '$bot_id' [searchTerms]";
-    $countSQL = str_replace('[searchTerms]', $searchTerms, $countSQL);
+    //exit("group = $group");
+    $search_fields = array('topic', 'filename', 'pattern', 'template', 'thatpattern');
+    $searchTerms = array();
+    $searchArguments = array($bot_id);
+    foreach ($search_fields as $index) {
+        if (!empty($form_vars[$index])) {
+            array_push($searchArguments, "%" . trim($form_vars[$index]) . "%");
+            array_push($searchTerms, "$index like ?");
+        }
+    }
+
+    $searchTerms = (!empty($searchTerms)) ? join(" AND ", $searchTerms) : "TRUE";
+    $countSQL = "SELECT count(id) FROM `aiml` WHERE `bot_id` = ? AND ($searchTerms)";
     $sth = $dbConn->prepare($countSQL);
-    $sth->execute();
-    $row = $sth->fetch();
-    $total = $row['count(id)'];
+    try {
+        $sth->execute($searchArguments);
+    } catch (Exception $e) {
+        header("HTTP/1.0 500 Internal Server Error");
+        throw($e);
+    }
+    $count = $sth->fetch();
+    $total = $count['count(id)'];
 
-    $limit = ($limit >= $row['count(id)']) ? $total - 1 - ($total - 1) % $groupSize : $limit;
+    $limit = ($limit >= $total) ? $total - 1 - (($total - 1) % $groupSize) : $limit;
 
-    $sql = "SELECT id, topic, filename, pattern, template, thatpattern FROM `aiml` WHERE `bot_id` = '$bot_id' [searchTerms] order by id limit $limit, $groupSize;";
-    $sql = str_replace('[searchTerms]', $searchTerms, $sql);
+    $order = isset($form_vars['sort'])? $form_vars['sort']." ".$form_vars['sortOrder']: "id";
+    
+    $sql = "SELECT id, topic, filename, pattern, template, thatpattern FROM `aiml` "
+            . "WHERE `bot_id` = ? AND ($searchTerms) order by $order limit $limit, $groupSize;";
     //trigger_error("SQL = $sql");
     $sth = $dbConn->prepare($sql);
-    $sth->execute();
+    $sth->execute($searchArguments);
     $result = $sth->fetchAll();
-    return ["results" => $result,
-        "total_records" => $row['count(id)'],
+
+    return array("results" => $result,
+        "total_records" => $total,
         "start_index" => 0,
         "page" => ($limit / $groupSize) + 1,
-        "page_size" => $groupSize];
+        "page_size" => $groupSize);
 }
 
 /**
@@ -154,7 +151,6 @@ function runSearch() {
 function updateAIML() {
     global $post_vars, $dbConn;
     $template = trim($post_vars['template']);
-    $filename = trim($post_vars['filename']);
     $pattern = (IS_MB_ENABLED) ? mb_strtoupper(trim($post_vars['pattern'])) : strtoupper(trim($post_vars['pattern']));
     $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper(trim($post_vars['thatpattern'])) : strtoupper(trim($post_vars['thatpattern']));
     $topic = (IS_MB_ENABLED) ? mb_strtoupper(trim($post_vars['topic'])) : strtoupper(trim($post_vars['topic']));
@@ -162,9 +158,16 @@ function updateAIML() {
     if (($template == "") || ($pattern == "") || ($id == "")) {
         $msg = 'Please make sure you have entered a user input and bot response ';
     } else {
-        $sql = "UPDATE `aiml` SET `pattern` = '$pattern',`thatpattern`='$thatpattern',`template`='$template',`topic`='$topic',`filename`='$filename' WHERE `id`='$id' LIMIT 1";
+        $sql = "UPDATE `aiml` SET `pattern`=?,`thatpattern`=?,`template`=?,`topic`=?,`filename`=? WHERE `id`=? LIMIT 1";
         $sth = $dbConn->prepare($sql);
-        $sth->execute();
+
+        try {
+            $sth->execute(array($pattern, $thatpattern, $template, $topic, trim($post_vars['filename']), $id));
+        } catch (Exception $e) {
+            header("HTTP/1.0 500 Internal Server Error");
+            throw($e);
+        }
+
         $affectedRows = $sth->rowCount();
         if ($affectedRows > 0) {
             $msg = 'AIML Updated.';
@@ -183,7 +186,7 @@ function updateAIML() {
  */
 function insertAIML() {
     //db globals
-    global $template, $msg, $post_vars, $dbConn;
+    global $msg, $post_vars, $dbConn;
     $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
     $aimltemplate = trim($post_vars['template']);
     $pattern = trim($post_vars['pattern']);
@@ -199,9 +202,16 @@ function insertAIML() {
     if (($pattern == "") || ($aimltemplate == "")) {
         $msg = 'You must enter a user input and bot response.';
     } else {
-        $sql = "INSERT INTO `aiml` (`id`,`bot_id`, `aiml`, `pattern`,`thatpattern`,`template`,`topic`,`filename`) VALUES (NULL,'$bot_id', '$aiml','$pattern','$thatpattern','$aimltemplate','$topic','admin_added.aiml')";
-        $sth = $dbConn->prepare($sql);
-        $sth->execute();
+        $sth = $dbConn->prepare("INSERT INTO `aiml` (`id`,`bot_id`, `aiml`, `pattern`,`thatpattern`,`template`,`topic`,`filename`) "
+                . "VALUES (NULL, ?, ?, ?, ?, ?, ?,'admin_added.aiml')");
+
+        try {
+            $sth->execute(array($bot_id, $aiml, $pattern, $thatpattern, $aimltemplate, $topic));
+        } catch (Exception $e) {
+            header("HTTP/1.0 500 Internal Server Error");
+            throw($e);
+        }
+
         $affectedRows = $sth->rowCount();
         if ($affectedRows > 0) {
             $msg = "AIML added.";

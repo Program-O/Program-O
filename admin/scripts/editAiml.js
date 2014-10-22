@@ -2,17 +2,18 @@
  * http://www.program-o.com
  * PROGRAM O
  * Version: 2.4.3
- * FILE: index.php
+ * FILE: editAiml.js
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-11-2013
  * DETAILS: UI for aiml edition
  ***************************************/
 YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mutable",
-    "datatable-datasource", "datasource-io", "datasource-jsonschema",
-    "paginator-url", "overlay", "event-valuechange", function(Y) {
+    "datatable-datasource", "datasource-io", "datasource-jsonschema", "paginator",
+    "overlay", "event-valuechange", function(Y) {
 
         var currentEditionCell, currentRequest, table, Paginator, paginator,
             dataSource, overlay, filterTimer, saveTimer,
+            fields = ['topic', 'thatpattern', 'pattern', 'template', 'filename'],
             url = "editAiml.php";
 
         // Create a widget to render pages (1 2 3 ... 4 5 6 ... 80 81 82)
@@ -57,36 +58,28 @@ YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mu
         // Render the table
         table = new Y.DataTable({
             width: "99.7%",
-            //sortable: true,
-            //sortBy: {record_id: 'DESC'},
-            columns: [{
-                    label: " ",
-                    className: "delete-row",
-                    sortable: false
-                }, {
-                    key: "topic",
-                    label: "Topic<input placeholder='filter' class='filter-topic'/>"
-                }, {
-                    key: "thatpattern",
-                    label: "Previous bot response<input placeholder='filter' class='filter-that'/>"
-                }, {
-                    key: "pattern",
-                    label: "User input<input placeholder='filter' class='filter-pattern'/>"
-                }, {
-                    key: "template",
-                    label: "Bot response<input placeholder='filter' class='filter-template'/>"
-                }, {
-                    key: "filename",
-                    label: "File<input placeholder='filter' class='filter-filename'/>"
-                }]
-        })
+            columns: [{label: " ", className: "delete-row"},
+                {key: "topic", label: "Topic", sortable: true},
+                {key: "thatpattern", label: "Previous bot response", sortable: true},
+                {key: "pattern", label: "User input", sortable: true},
+                {key: "template", label: "Bot response", sortable: true},
+                {key: "filename", label: "File", sortable: true}]})
             .plug(Y.Plugin.DataTableDataSource, {datasource: dataSource})
             .render(".editaiml-table");
+
+        // Reload table every time it's sorted
+        table.after("sort", load);
+
+        // Append filters
+        table.get("boundingBox").one("thead").append("<tr><th class='yui3-datatable-header yui3-datatable-cell'></th>"
+            + Y.Array.map(fields, function(i) {
+                return "<th class='yui3-datatable-header yui3-datatable-cell'><input placeholder='filter' class='filter-" + i + "'/></th>";
+            }).join("") + "</tr>");
 
         // Filters changed event
         Y.one(".editaiml-table").delegate("valueChange", function() {
             filterTimer && filterTimer.cancel();
-            filterTimer = Y.later(300, this, load);
+            filterTimer = Y.later(400, this, load);
         }, "th input");
 
         // Handle row deletion
@@ -101,7 +94,7 @@ YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mu
                     }
                 }
             });
-        }, ".delete-row");
+        }, "td.delete-row");
 
         // Field edition
         table.get("boundingBox").delegate("click", function(e) {
@@ -109,7 +102,7 @@ YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mu
             currentEditionCell = e.currentTarget;
             alignOverlay(e.currentTarget);
             overlay.get("boundingBox").one("textarea").select().focus();
-        }, ".yui3-datatable-cell");
+        }, "td.yui3-datatable-cell");
 
         overlay = new Y.Overlay({
             zIndex: 10,
@@ -145,15 +138,19 @@ YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mu
                     data: table.getRecord(currentEditionCell).toJSON(),
                     on: {
                         success: function() {
-                            Y.one(".search-msg").setContent("All changes saved");
+                            Y.one(".search-msg").setContent("Changes saved");
                         },
-                        failure: function() {
-                            alert("Error saving object. Please reload page.");
-                        }
+                        failure: onError
                     }
                 });
             }
         }
+
+        function onError(e) {
+            alert("Error saving object. Please reload page.");
+            console && console.log(e);
+        }
+
         function alignOverlay(cell) {
             overlay.setAttrs({
                 align: {
@@ -174,13 +171,15 @@ YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mu
                 Y.DataSource.Local.transactions[currentRequest] = null;         // @hack Remove reference since YUI won't do it
             }
 
+            var sortBy = table.get("sortBy") ? "&sort=" + Y.Object.keys(table.get("sortBy")[0])[0]
+                + "&sortOrder=" + (Y.Object.values(table.get("sortBy")[0])[0] === 1 ? "DESC" : "ASC") : "",
+                filters = Y.Array.map(fields, function(i) {
+                    return "&" + i + "=" + Y.one(".filter-" + i).get("value");
+                }).join("");
+
             currentRequest = table.datasource.load({
-                request: "&search_topic=" + Y.one(".filter-topic").get("value")
-                    + "&search_filename=" + Y.one(".filter-filename").get("value")
-                    + "&search_pattern=" + Y.one(".filter-pattern").get("value")
-                    + "&search_template=" + Y.one(".filter-template").get("value")
-                    + "&search_that=" + Y.one(".filter-that").get("value")
-                    + "&group=" + (page || paginator.get("page")),
+                request: "&group=" + (Y.Lang.isNumber(page) ? page : paginator.get("page"))
+                    + filters + sortBy,
                 callback: {
                     success: function(e) {
                         table.datasource.onDataReturnInitializeTable(e);
@@ -242,9 +241,7 @@ YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mu
                         load(paginator.get("totalPages"));
                         Y.one(".search-msg").setContent("All changes saved");
                     },
-                    failure: function() {
-                        alert("Error saving object. Please reload page.");
-                    }
+                    failure: onError
                 }
             });
             texts.set("value", "");

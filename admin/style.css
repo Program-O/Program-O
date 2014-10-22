@@ -781,6 +781,8 @@ iframe {
 .editaiml-table .search-msg {
     float: right;
     padding-right: 0.6%;
+    font-style: italic;
+    padding-top: 10px;
 }
 .editaiml-table a {
     margin: 0 2px 3px 0;
