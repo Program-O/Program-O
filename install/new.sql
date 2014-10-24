@@ -354,5 +354,5 @@ CREATE TABLE IF NOT EXISTS `srai_lookup` (
   `pattern` text NOT NULL,
   `template_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `pattern` (`pattern`(64)) COMMENT 'Search against this for performance boost'
+  KEY `pattern` (`pattern`(64))
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1 ;

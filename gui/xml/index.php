@@ -87,7 +87,7 @@ end_display;
     if (isset($_COOKIE['Program_O_XML_API'])) $convo_id = $_COOKIE['Program_O_XML_API'];
     else
     {
-      session_name('Program O XML GUI');
+      session_name('Program_O_XML_API');
       session_start();
       $convo_id = session_id();
       session_destroy();
