@@ -120,17 +120,19 @@
     $search_fields = array('topic', 'filename', 'pattern', 'template', 'thatpattern');
     $searchTerms = array();
     $searchArguments = array($bot_id);
+    $searchParams = array($bot_id);
     foreach ($search_fields as $index)
     {
       if (!empty ($form_vars[$index]))
       {
+        $searchParams[] = $form_vars[$index];
         array_push($searchArguments, "%" . trim($form_vars[$index]) . "%");
         array_push($searchTerms, "$index like ?");
       }
     }
-    $searchTerms = (!empty ($searchTerms)) ? join(" AND ", $searchTerms) : "TRUE";
+    $searchTerms = (!empty ($searchTerms)) ? implode(" AND ", $searchTerms) : "TRUE";
     $countSQL = "SELECT count(id) FROM `aiml` WHERE `bot_id` = ? AND ($searchTerms)";
-    $count = db_fetch($countSQL, $searchArguments, __FILE__, __FUNCTION__, __LINE__);
+    $count = db_fetch($countSQL, $searchParams, __FILE__, __FUNCTION__, __LINE__);
 /*
     $sth = $dbConn->prepare($countSQL);
     try {
@@ -145,7 +147,7 @@
     $limit = ($limit >= $total) ? $total - 1 - (($total - 1) % $groupSize) : $limit;
     $order = isset ($form_vars['sort']) ? $form_vars['sort'] . " " . $form_vars['sortOrder'] : "id";
     $sql = "SELECT id, topic, filename, pattern, template, thatpattern FROM `aiml` " . "WHERE `bot_id` = ? AND ($searchTerms) order by $order limit $limit, $groupSize;";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql, array($bot_id), __FILE__, __FUNCTION__, __LINE__);
 /*
     $sth = $dbConn->prepare($sql);
     $sth->execute($searchArguments);

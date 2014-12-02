@@ -61,7 +61,7 @@
     }
     catch (Exception $e)
     {
-      error_log("bad SQL encountered. SQL:\n$sql\n", 3, _LOG_PATH_ . 'badSQL.txt');
+      //error_log("bad SQL encountered in file $file, line #$line. SQL:\n$sql\n", 3, _LOG_PATH_ . 'badSQL.txt');
       $pdoError = print_r($dbConn->errorInfo(), true);
       $psError  = print_r($sth->errorInfo(), true);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while extracting a row of data from the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
@@ -80,7 +80,7 @@
     }
     catch (Exception $e)
     {
-      error_log("bad SQL encountered. SQL:\n$sql\n", 3, _LOG_PATH_ . 'badSQL.txt');
+      //error_log("bad SQL encountered in file $file, line #$line. SQL:\n$sql\n", 3, _LOG_PATH_ . 'badSQL.txt');
       $pdoError = print_r($dbConn->errorInfo(), true);
       $psError  = print_r($sth->errorInfo(), true);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while extracting multiple rows of data from the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
