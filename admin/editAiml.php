@@ -23,8 +23,7 @@
     $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
     if (empty ($_SESSION) || !isset ($_SESSION['poadmin']['uid']) || $_SESSION['poadmin']['uid'] == "")
     {
-      echo "No session found";
-      exit ();
+      exit (json_encode(array('error' =>"No session found")));
     }
     // Open the DB
     $dbConn = db_open();
@@ -112,11 +111,9 @@
   function runSearch()
   {
     global $bot_id, $form_vars, $dbConn, $group;
-    error_log("bot ID = $bot_id\n", 3, _LOG_PATH_ . 'botid.txt');
     $groupSize = 10;
     $limit = ($group - 1) * $groupSize;
     $limit = ($limit < 0) ? 0 : $limit;
-    //exit("group = $group");
     $search_fields = array('topic', 'filename', 'pattern', 'template', 'thatpattern');
     $searchTerms = array();
     $searchArguments = array($bot_id);
@@ -125,13 +122,15 @@
     {
       if (!empty ($form_vars[$index]))
       {
-        $searchParams[] = $form_vars[$index];
+        $searchParams[] = "%{$form_vars[$index]}%";
         array_push($searchArguments, "%" . trim($form_vars[$index]) . "%");
         array_push($searchTerms, "$index like ?");
       }
     }
     $searchTerms = (!empty ($searchTerms)) ? implode(" AND ", $searchTerms) : "TRUE";
     $countSQL = "SELECT count(id) FROM `aiml` WHERE `bot_id` = ? AND ($searchTerms)";
+    error_log("SQL = $countSQL\n", 3, _LOG_PATH_ . 'searchSQL.txt');
+    error_log("Search terms = " . print_r($searchParams, true) . "\n", 3, _LOG_PATH_ . 'searchSQL.txt');
     $count = db_fetch($countSQL, $searchParams, __FILE__, __FUNCTION__, __LINE__);
 /*
     $sth = $dbConn->prepare($countSQL);
@@ -147,7 +146,7 @@
     $limit = ($limit >= $total) ? $total - 1 - (($total - 1) % $groupSize) : $limit;
     $order = isset ($form_vars['sort']) ? $form_vars['sort'] . " " . $form_vars['sortOrder'] : "id";
     $sql = "SELECT id, topic, filename, pattern, template, thatpattern FROM `aiml` " . "WHERE `bot_id` = ? AND ($searchTerms) order by $order limit $limit, $groupSize;";
-    $result = db_fetchAll($sql, array($bot_id), __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql, $searchParams, __FILE__, __FUNCTION__, __LINE__);
 /*
     $sth = $dbConn->prepare($sql);
     $sth->execute($searchArguments);
