@@ -4,6 +4,8 @@
 
 admin/*.log
 admin/skins
+admin/unused
+admin/unused/*
 !admin/downloads
 admin/downloads/*
 !admin/downloads/index.html

@@ -1,9 +1,18 @@
 <?php
 
+  /***************************************
+    * http://www.program-o.com
+    * PROGRAM O
+    * Version: 2.4.4
+    * FILE: find_aiml.php
+    * AUTHOR: Elizabeth Perreau and Dave Morton
+    * DATE: 12-01-2014
+    * DETAILS: Contains functions that find and score the most likely AIML match from the database
+    ***************************************/
   /**
-   * This file contains the functions find and score he most likely AIML match from the database
+   * This file contains functions that find and score the most likely AIML match from the database
    *
-   * @version 2.4.3
+   * @version 2.4.4
    * @filename find_aiml.php
    * @author Elizabeth Perreau and Dave Morton
    * @since MAY 17TH 2014
@@ -558,9 +567,12 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "And the winner is... $id!", 2);
     global $dbConn, $dbn, $error_response;
     $sql = "SELECT `template` from `$dbn`.`aiml` where `id` = $id limit 1;";
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch();
+    $row = $sth->fet ch();
+*/
     if ($row)
     {
       $template = $row['template'];
@@ -655,9 +667,12 @@
     $bot_id = $convoArr['conversation']['bot_id'];
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$name' limit 1;";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for $name. SQL:\n$sql", 3);
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch();
+    $row = $sth->fet ch();
+*/
     $rowCount = count($row);
     if ($rowCount != 0)
     {
@@ -692,9 +707,12 @@
     (`user_id` = '$user_id' OR `user_id` = '-1') AND
     `pattern` = '$lookingfor'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined SQL: $sql", 3);
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
+    $result = $sth->fet chAll();
+*/
     $num_rows = count($result);
     //if there is a result get it
     if (($result) && ($num_rows > 0))
@@ -860,9 +878,12 @@
     $topic_select) order by `topic` desc, `id` desc, `pattern` asc;";
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
+    $result = $sth->fet chAll();
+*/
     $num_rows = count($result);
     if (($result) && ($num_rows > 0))
     {
@@ -905,15 +926,31 @@
    */
   function get_topic($convoArr)
   {
-    global $dbConn, $dbn;
-    $bot_id = $convoArr['conversation']['bot_id'];
+    global $dbConn, $dbn, $bot_id;
+    $bot_id = (!empty($convoArr['conversation']['bot_id'])) ? $convoArr['conversation']['bot_id'] : $bot_id;
     $user_id = $convoArr['conversation']['user_id'];
     $sql = "SELECT `value` FROM `client_properties` WHERE `user_id` = $user_id AND `bot_id` = $bot_id and `name` = 'topic';";
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fetch();
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $num_rows = count($row);
     $retval = ($num_rows == 0) ? '' : $row['value'];
+/*
+    try
+    {
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $row = $sth->fet ch();
+      $num_rows = count($row);
+      $retval = ($num_rows == 0) ? '' : $row['value'];
+    }
+    catch (Exception $e)
+    {
+      error_log("bad SQL encountered. SQL:\n$sql\n", 3, _LOG_PATH_ . 'badSQL.txt');
+      $pdoError = print_r($dbConn->errorInfo(), true);
+      $psError  = print_r($sth->errorInfo(), true);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Something went wrong!. SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
+      $retval = '';
+    }
+*/
     return $retval;
   }
 

@@ -1,10 +1,14 @@
-/*
-My Program-O Version: 2.4.3
-Program-O  chatbot admin area
-Written by Elizabeth Perreau and Dave Morton
-DATE: MAY 17TH 2014
-for more information and support please visit www.program-o.com
-*/
+/***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.4.4
+  * FILE: style.css
+  * AUTHOR: Elizabeth Perreau and Dave Morton
+  * DATE: 10-26-2014
+  * DETAILS: sets the CSS styling for the admin pages
+  ***************************************/
+
+/* Main Styles */
 html, body  {
 	height: 100%;
 }
@@ -775,74 +779,59 @@ iframe {
 }
 
 /* Edit aiml styles */
-.editaiml-table {
-    text-indent: 0;
+.editaiml-table table {
+  width: 90%;
+  margin: 0 auto;
+  border-spacing: 0;
+  border-radius: 10px;
+  empty-cells: show;
 }
-.editaiml-table .search-msg {
-    float: right;
-    padding-right: 0.6%;
-    font-style: italic;
-    padding-top: 10px;
+
+.editaiml-table thead {
+  background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.21)) repeat-x scroll 0px 0px #FFF;
+  border-radius: 10px;
 }
-.editaiml-table a {
-    margin: 0 2px 3px 0;
-    padding: 0 10px;
-    display: inline-block;
-    border: solid 1px #CBCBCB;
-    text-decoration: none;
-    line-height: 1.7em;
-    color: #4A4A4A;
-}
-.editaiml-table a.selected {
-    background: #39A3C6;
-    color: white;
-}
-.editaiml-table .yui3-datatable * {
-    font-family: inherit !important;
-}
-.editaiml-table th.yui3-datatable-header {
-    background: #FFF45A;
-}
-.editaiml-table th input {
-    display: block;
-    width: 100%;
-}
-.editaiml-table td.yui3-datatable-cell {
-    padding: 4px 5px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    cursor: text;
-}
-.editaiml-table .yui3-datatable-even td.yui3-datatable-cell {
-    background-color:transparent;
-}
-.editaiml-table .yui3-datatable-odd td.yui3-datatable-cell {
-    background-color: #FCFC9D;
-}
-.editaiml-table .yui3-datatable-cell.delete-row {
-    background-image: url(images/del.png);
-    background-position: center;
-    background-repeat: no-repeat;
-    cursor: pointer;
-}
-.editaiml-table .yui3-datatable-message-content {
-    text-align: center;
-    font-style: italic;
-}
-.yui3-overlay textarea {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    border: none;
-    padding: 4px 5px;
-    font-family: inherit;
-    font-size: 1em;
-}
+.editaiml-table thead input, .editaiml-table tfoot textarea {width: 80%; margin: 0 auto;}
 .editaiml-table tfoot {
-    background: #FFF45A;
+  background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.21)) repeat-x scroll 0px 0px #Fca;
 }
-.editaiml-table tfoot textarea {
-    width: 94%;
-    margin:0;
+
+.datatable-table tr.odd {
+  background-color: #EEE8AA;
+}
+.datatable-table tr.even {
+  background-color: transparent;
+}
+.delete-row {
+  width: 15px;
+  min-height: 15px;
+  /*padding-top: 5px;*/
+  margin: auto;
+  vertical-align: middle;
+}
+.delete-row span.id_holder {
+  display: block;
+  min-height: 15px;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  cursor: pointer;
+  background: transparent url(images/del.png) no-repeat center 50%;
+  /*
+  background-color: pink;
+  border: 1px solid red;
+  */
+}
+
+#tblSearch {
+  width: 95%;
+  margin: 0 auto;
+}
+th.search {
+  /*min-width: 15%;*/
+  text-align: center;
+}
+th.search input {
+  width: 90%;
+  margin: 0 auto;
 }

@@ -106,10 +106,12 @@ endScript;
     $fileContent = str_replace($curDateSearch, $curDate, $fileContent);
     $fileContent = str_replace($fileNameSearch, $cleanedFilename, $fileContent);
     $sql = "select distinct topic from aiml where filename like '$cleanedFilename';";
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
-    foreach ($result as $row)
+    $result = $sth->fet chAll();
+*/    foreach ($result as $row)
     {
       $topicArray[] = $row['topic'];
     }
@@ -119,9 +121,12 @@ endScript;
         $fileContent .= "<topic name=\"$topic\">\n";
       $sql =
       "select pattern, thatpattern, template from aiml where topic like '$topic' and filename like '$cleanedFilename';";
+      $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $result = $sth->fetchAll();
+      $result = $sth->fet chAll();
+*/
       foreach ($result as $row)
       {
         $pattern = (IS_MB_ENABLED) ? mb_strtoupper($row['pattern']) : strtoupper($row['pattern']);
@@ -179,9 +184,12 @@ endScript;
     $curDate = date('m-d-Y h:j:s A', time());
     $fileContent = str_replace('[curDate]', $curDate, $fileContent);
     $fileContent = str_replace('[fileName]', $cleanedFilename, $fileContent);
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
+    $result = $sth->fet chAll();
+*/
     foreach ($result as $row)
     {
       $aiml = str_replace("\r\n", '', $row['aiml']);
@@ -214,13 +222,16 @@ endScript;
    */
   function getSelOpts()
   {
-    global $dbn, $bot_id, $msg, $dbConn;
+    global $bot_id, $msg;
     $out = "                  <!-- Start Selectbox Options -->\n";
     $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
+    $result = $sth->fet chAll();
+*/
     if (count($result) == 0) $msg = "This bot has no AIML categories. Please select another bot.";
     foreach ($result as $row)
     {

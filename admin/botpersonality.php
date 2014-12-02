@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.3
+    * Version: 2.4.4
     * FILE: botpersonality.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 05-26-2014
@@ -82,9 +82,12 @@
     $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
     //get the current bot's personality table from the db
     $sql = "SELECT * FROM `botpersonality` where  `bot_id` = $bot_id";
+    $rows = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $rows = $sth->fetchAll(PDO :: FETCH_ASSOC);
+    $rows = $sth->fet chAll(PDO :: FETCH_ASSOC);
+*/
       $rowCount = count($rows);
       if ($rowCount > 0)
       {
@@ -208,9 +211,12 @@ endForm2;
       }
     }
     $sql = "SELECT * FROM `botpersonality` where `bot_id` = $bot_id;";
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
+    $result = $sth->fet chAll();
+*/
     $rows = array();
     foreach ($result as $row)
     {

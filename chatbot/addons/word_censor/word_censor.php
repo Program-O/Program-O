@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.4.3
+  * Version: 2.4.4
   * FILE: word_censor/word_censor.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -37,11 +37,12 @@
     global $dbConn, $dbn; //set in global config file
     $_SESSION['pgo_word_censor'] = array();
     $sql = "SELECT * FROM `$dbn`.`wordcensor` WHERE `bot_exclude` NOT LIKE '%[$bot_id]%'";
-    
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
-
+    $result = $sth->fet chAll();
+*/
     foreach ($result as $row)
     {
       $index = $row['word_to_censor'];

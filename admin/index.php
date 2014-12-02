@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.3
+  * Version: 2.4.4
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-11-2013
@@ -87,15 +87,19 @@
   $headerTitle     = '';
   $pageTitle       = 'My-Program O - Login';
   $upperScripts    = '';
+  $extraCSS = '';
 
   if((isset($post_vars['user_name']))&&(isset($post_vars['pw']))) {
     $_SESSION['poadmin']['display'] = $hide_logo;
     $user_name = filter_input(INPUT_POST,'user_name',FILTER_SANITIZE_STRING);
     $pw    = filter_input(INPUT_POST,'pw',FILTER_SANITIZE_STRING);
     $sql = "SELECT * FROM `myprogramo` WHERE user_name = '".$user_name."' AND password = '".MD5($pw)."'";
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch();
+    $row = $sth->fet ch();
+*/
     if(!empty($row)) {
       $_SESSION['poadmin']['uid']=$row['id'];
       $_SESSION['poadmin']['name']=$row['user_name'];
@@ -117,9 +121,12 @@
       $_SESSION['poadmin']['ip']=$ip;
       $_SESSION['poadmin']['last_login']=date('l jS \of F Y h:i:s A');
       $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
+      $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $row = $sth->fetch();
+      $row = $sth->fet ch();
+*/
       $count = count($row);
       if($count > 0) {
         $_SESSION['poadmin']['bot_id']=$row['bot_id'];
@@ -178,6 +185,7 @@
                     '[pageTitle]'       => $pageTitle,
                     '[styleSheet]'      => $styleSheet,
                     '[mediaType]'       => $mediaType,
+                    '[extraCSS]'        => $extraCSS,
                     '[upperScripts]'    => $upperScripts,
                     '[logo]'            => $logo,
                     '[pageTitleInfo]'   => $pageTitleInfo,

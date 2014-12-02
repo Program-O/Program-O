@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="[charset]">
     <title>[pageTitle]</title>
     <link rel="stylesheet" href="[styleSheet]"[mediaType] type="text/css" />
-    [noLeftNav][noRightNav][upperScripts][errMsgStyle]
+    [extraCSS][noLeftNav][noRightNav][upperScripts][errMsgStyle]
   </head>
 <!-- Section Header End -->
 <!-- Section PageBody Start -->
@@ -536,7 +536,7 @@ between the start and end section tags are the only parts of the template that a
         <div id="logoLink" onclick="[showHide]Logo()">[showHide] Logo</div>
 <!-- Section LogoLink End -->
 <!-- Section LogoLinkScript Start -->
-    <script type="text/javascript">
+[blank]    <script type="text/javascript" id="lowerScripts">
       function ShowLogo() {
         //setDisplay('1');
         var body = document.body;
@@ -872,11 +872,81 @@ between the start and end section tags are the only parts of the template that a
           </div>
 <!-- Section StatsPage End -->
 <!-- Section EditAimlPage Start -->
-[blank]
-<div class="yui3-skin-sam editaiml-table">
-    <div class='search-msg'></div>
-</div>
-
-<script src="http://yui.yahooapis.com/3.18.0/build/yui/yui-min.js"></script>
-<script src="scripts/editAiml.js"></script>
+[blank]          <div class="yui3-skin-sam editaiml-table">
+            <div class='search-msg'></div>
+          </div>
+          <script src="http://yui.yahooapis.com/3.18.0/build/yui/yui-min.js"></script>
+          <script src="scripts/editAiml.js"></script>
 <!-- Section EditAimlPage End -->
+<!-- Section DataTable Start -->
+[blank]      <div class="editaiml-table">
+        <div class='search-msg'></div>
+          <table id="[table_id]" class="datatable-table">
+            <thead class="datatable-columns">
+[thead_content]
+            </thead>
+            <tfoot>
+[tfoot_content]
+            </tfoot>
+            <tbody>
+[tbody_content]
+            </tbody>
+          </table>
+        </div>
+<!-- Section DataTable End -->
+<!-- Section DataTableScript Start -->
+[blank]    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdn.datatables.net/1.10.3/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="scripts/jeditable.js"></script>
+    <script type="text/javascript" src="scripts/jquery.datatable.editable.js"></script>
+    <script type="text/javascript">
+    $(function(){
+      $('#[table_id] thead th.search').each( function () {
+      var title = $(this).text();
+      $(this).html( '<input type="text" placeholder="Search ' + title + '" />' );
+    });
+    var editOptions = {
+      sUpdateURL: 'seTest.php?action=test',
+    };
+    var tableOptions = {
+      scrollY: '340','bPaginate': true,
+      'sDom': 'lpit'
+/*
+        ajax: 'seTest.php?action=getTbody',
+        "bProcessing": true,
+        //"sAjaxSource": 'seTest.php?action=getTbody'
+        "columns": [
+          {"class": "delete-row read_only", "data": function(row){return '<span class="id_holder" id="dataRow_' + row.id +'" title="Delete this row (ID#' + row.id + ')"></span>';}},
+          {"data": function(row){return encodeHtml(row.topic);}},
+          {"data": function(row){return encodeHtml(row.thatpattern);}},
+          {"data": function(row){return encodeHtml(row.pattern);}},
+          {"data": function(row){return encodeHtml(row.template);}},
+          {"data": "filename"}
+        ]
+*/
+    };
+      var table = $('#[table_id]').dataTable(tableOptions).makeEditable(editOptions);//
+/*
+      $('#[table_id] tbody tr').each(function(){
+        var sTitle;
+        var aRow = $('td', this);
+        var idCell = $(aRow[0]).text
+      });
+*/
+/*
+      table.columns().eq( 0 ).each( function ( colIdx ) {
+        $( 'input', table.column( colIdx ).footer() ).on( 'keyup change', function () {
+          table
+            .column( colIdx )
+            .search( this.value )
+            .draw();
+        });
+      });
+*/
+    });
+    </script>
+<!-- Section DataTableScript End -->
+<!-- Section DataTableCSS Start -->
+<link rel="stylesheet" href="datatables.css" type="text/css">
+[blank]
+<!-- Section DataTableCSS End -->

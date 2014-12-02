@@ -1,7 +1,7 @@
 <?php
 
   //-----------------------------------------------------------------------------------------------
-  //My Program-O Version: 2.4.3
+  //My Program-O Version: 2.4.4
   //Program-O  chatbot admin area
   //Written by Elizabeth Perreau and Dave Morton
   //DATE: MAY 17TH 2014
@@ -342,9 +342,12 @@ endScript;
     $out = "                  <!-- Start List of Currently Stored AIML files -->\n";
     
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
+    $result = $sth->fet chAll();
+*/
     foreach ($result as $row)
     {
       if (empty ($row['filename']))
@@ -370,9 +373,12 @@ endScript;
     $botOptions = '';
     
     $sql = 'SELECT `bot_name`, `bot_id` FROM `bots` order by `bot_id`;';
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
+    $result = $sth->fet chAll();
+*/
     foreach ($result as $row)
     {
       $bn = $row['bot_name'];

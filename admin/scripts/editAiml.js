@@ -1,7 +1,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.4.3
+ * Version: 2.4.4
  * FILE: editAiml.js
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-11-2013
@@ -26,11 +26,14 @@ YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mu
                 for (i = 1; i <= totalPages; i++) {                             // Render pagination links
                     if (i < LIMIT || i > totalPages - LIMIT
                         || (i > page - LIMIT && i < page + LIMIT)) {
-                        numbers += '<a href="#" ' + ((page === i) ? "class='selected' " : "") + 'data-page="' + i + '">' + i + '</a>';
-                    } else if (i === LIMIT || i === totalPages - LIMIT) {
+                        numbers += '<a href="#" ' + ((page === i) ? "class='selected' " : "") + 'data-page="' + i + '">' + i + '</a>, ';
+                    }
+                    else if (i === LIMIT || i === totalPages - LIMIT) {
                         numbers += " ... ";
                     }
                 }
+                var li = numbers.lastIndexOf(', ');
+                numbers = numbers.substring(0, li);
                 this.get('boundingBox').setContent(numbers);
             },
             bindUI: function() {
@@ -218,7 +221,7 @@ YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mu
             + "<tr><td></td><td><textarea rows='1' placeholder='Topic'></textarea></td>"
             + "<td><textarea rows='1' placeholder='Previous bot response'></textarea></td>"
             + "<td><textarea rows='1' placeholder='User input'></textarea></td>"
-            + "<td><textarea placeholder='Bot response'></textarea></td>"
+            + "<td><textarea rows='1' placeholder='Bot response'></textarea></td>"
             + "<td><button>Save</button></td></tr>"
             + "</tfoot>");
         table.get("boundingBox").delegate("click", function() {

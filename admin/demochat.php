@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.3
+//My Program-O Version: 2.4.4
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -35,9 +35,12 @@
     global $template, $bot_name, $bot_id, $dbConn;
     $qs = '?bot_id=' . $bot_id;
     $sql = "select `format` from `bots` where `bot_id` = $bot_id limit 1;";
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch();
+    $row = $sth->fet ch();
+*/
     $format = strtolower($row['format']);
     switch ($format) {
       case "html":

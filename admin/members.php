@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.3
+//My Program-O Version: 2.4.4
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -22,7 +22,9 @@
   $id = ($id <= 0) ? getNextID() : $id;
   if (isset($post_vars['memberSelect'])) {
     $id = $post_vars['memberSelect'];
-    getMemberData($post_vars['memberSelect']);
+    $data = getMemberData($post_vars['memberSelect']);
+    $id = $data['id'];
+    $user_name = $data['user_name'];
   }
   $upperScripts = <<<endScript
 
@@ -164,9 +166,12 @@ endScript;
     $out = "                  <!-- Start List of Current Admin Accounts -->\n";
     $optionTemplate = "                  <option value=\"[val]\">[key]</option>\n";
     $sql = 'SELECT id, user_name FROM myprogramo order by user_name;';
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
+    $result = $sth->fet chAll();
+*/
     foreach ($result as $row) {
       $user_name = $row['user_name'];
       $id = $row['id'];
@@ -187,13 +192,15 @@ endScript;
    */
   function getMemberData($id) {
     if ($id <= 0) return;
-    global $dbn, $user_name, $id, $dbConn;
+    global $user_name, $dbConn;
     $sql = "select id, user_name from myprogramo where id = $id limit 1;";
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch();
-    $user_name = $row['user_name'];
-    $id = $row['id'];
+    $row = $sth->fet ch();
+*/
+    return $row;
   }
 
   /**
@@ -203,13 +210,15 @@ endScript;
    * @return int
    */
   function getNextID() {
-    global $dbn, $user_name, $dbConn;
+    global $dbConn;
     $sql = "select id from myprogramo order by id desc limit 1;";
+    $id = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch();
+    $row = $sth->fet ch();
     $id = $row['id'];
-    
+*/
     return $id + 1;
   }
 

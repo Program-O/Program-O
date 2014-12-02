@@ -2,7 +2,7 @@
   /**
    * Displays the admin page for the Spellcheck plugin, and provides access to various features
    *
-   * @version 2.4.3
+   * @version 2.4.4
    * @file spellcheck.php
    * @author Elizabeth Perreau and Dave Morton
    * @since 05-26-2014
@@ -107,9 +107,12 @@ endScript;
   {
     global $dbConn, $get_vars;
     $sql = "select count(*) from `spellcheck` where 1";
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch();
+    $row = $sth->fet ch();
+*/
     $rowCount = $row['count(*)'];
     $lastPage = intval($rowCount / 50);
     $remainder = ($rowCount / 50) - $lastPage;
@@ -153,9 +156,12 @@ endScript;
     $sql = "select `id`,`missspelling` from `spellcheck` where 1 order by abs(`id`) asc limit $startEntry, 50;";
     $baseLink = $template->getSection('NavLink');
     $links = '      <div class="userlist">' . "\n";
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
+    $result = $sth->fet chAll();
+*/
     $count = 0;
     foreach ($result as $row) {
       $linkId = $row['id'];
@@ -259,9 +265,12 @@ endScript;
     $i=0;
     $search = trim($post_vars['search']);
     $sql = "SELECT * FROM `spellcheck` WHERE `missspelling` LIKE '%$search%' OR `correction` LIKE '%$search%' LIMIT 50";
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
+    $result = $sth->fet chAll();
+*/
     $htmltbl = '<table>
                   <thead>
                     <tr>
@@ -313,9 +322,12 @@ endScript;
   $form   = $template->getSection('EditSpellForm');
   
   $sql    = "SELECT * FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
+  $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
   $sth = $dbConn->prepare($sql);
   $sth->execute();
-  $row = $sth->fetch();
+  $row = $sth->fet ch();
+*/
   $uc_missspelling = (IS_MB_ENABLED) ? mb_strtoupper($row['missspelling']) : strtoupper($row['missspelling']);
   $uc_correction = (IS_MB_ENABLED) ? mb_strtoupper($row['correction']) : strtoupper($row['correction']);
   $form   = str_replace('[id]', $row['id'], $form);

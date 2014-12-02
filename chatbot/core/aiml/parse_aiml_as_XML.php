@@ -1,13 +1,14 @@
 <?php
 
-  /**
-   * This file contains the functions that parse AIML tags,converting them into text
-   *
-   * @version 2.4.3
-   * @filename parse_aiml_as_xml.php
-   * @author Elizabeth Perreau and Dave Morton
-   * @since MAY 17TH 2014
-   **/
+  /***************************************
+    * http://www.program-o.com
+    * PROGRAM O
+    * Version: 2.4.4
+    * FILE: parse_aiml_as_xml.php
+    * AUTHOR: Elizabeth Perreau and Dave Morton
+    * DATE: 12-01-2014
+    * DETAILS: Handles the parsing of AIML code as XML
+    ***************************************/
 
   /**
    * This function starts the process of recursively parsing the AIML template as XML, converting it to text
@@ -363,11 +364,12 @@
     {
      	$sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
 	runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the DB for $var_name - sql:\n$sql", 3);
-	
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch();
-
+    $row = $sth->fet ch();
+*/
 	if (($row) and (count($row) > 0)) {
 		$response = $row['value'];
 	}
@@ -417,11 +419,12 @@
       $numRows = $sth->rowCount();
       $sql = "select `user_name` from `$dbn`.`users` where `id` = $user_id limit 1;";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the users table to see if the value has changed. - SQL:\n$sql", 3);
-      
+      $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $row = $sth->fetch();
-
+      $row = $sth->fet ch();
+*/
       $rowCount = count($row);
       if ($rowCount != 0)
       {
@@ -435,11 +438,12 @@
     if ($lc_var_name == 'topic') $convoArr['topic'][1] = $var_value;
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$sql", 3);
-    
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
-
+    $result = $sth->fet chAll();
+*/
     $rowCount = count($result);
     /** @noinspection PhpSillyAssignmentInspection */
     $var_name = $var_name;
@@ -926,7 +930,7 @@
   function parse_input_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an INPUT tag.', 2);
-    $element = $element->input;
+    //$element = $element->input;
     $input_index = (string)$element['index'];
     $input_index = (!empty ($input_index)) ? $input_index : 1;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the INPUT tag. Index = $input_index.", 4);

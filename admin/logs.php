@@ -1,6 +1,6 @@
 <?php
 //-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.3
+//My Program-O Version: 2.4.4
 //Program-O  chatbot admin area
 //Written by Elizabeth Perreau and Dave Morton
 //DATE: MAY 17TH 2014
@@ -76,9 +76,12 @@ endScript;
   global $dbConn;
   $nameList = array();
   $sql = "select `id`, `user_name` from `users` where 1;";
+  $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
   $sth = $dbConn->prepare($sql);
   $sth->execute();
-  $result = $sth->fetchAll();
+  $result = $sth->fet chAll();
+*/
   foreach ($result as $row) {
 
     $nameList[$row['id']] = $row['user_name'];
@@ -135,9 +138,12 @@ endScript;
         <ul>
 
 endList;
+  $rows = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
   $sth = $dbConn->prepare($sql);
   $sth->execute();
-  $rows = $sth->fetchAll();
+  $rows = $sth->fet chAll();
+*/
   $numRows = count($rows);
   if ($numRows == 0) $list .= '          <li>No log entries found</li>';
   foreach ($rows as $row) {
@@ -246,9 +252,12 @@ endForm;
   $sql = "SELECT *  FROM `conversation_log` WHERE `bot_id` = '$bot_id' AND `user_id` = $id $sqladd ORDER BY `id` ASC";
   $list = "<hr><br/><h4>$title conversations for user: $id</h4>";
   $list .="<div class=\"convolist\">";
+  $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
   $sth = $dbConn->prepare($sql);
   $sth->execute();
-  $result = $sth->fetchAll();
+  $result = $sth->fet chAll();
+*/
   foreach ($result as $row) {
     $thisdate = date("Y-m-d",strtotime($row['timestamp']));
     if($thisdate!=$lasttimestamp) {

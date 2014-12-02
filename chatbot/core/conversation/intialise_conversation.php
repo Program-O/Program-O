@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.4.3
+  * Version: 2.4.4
   * FILE: chatbot/core/conversation/intialise_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -107,11 +107,12 @@
     //set in global config file
     $sql = "SELECT * FROM `$dbn`.`botpersonality` WHERE `bot_id` = '" . $bot_id . "'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "load db bot personality values SQL: $sql", 3);
-    
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
-
+    $result = $sth->fet chAll();
+*/
     foreach ($result as $row)
     {
       $convoArr['bot_properties'][$row['name']] = $row['value'];
@@ -321,11 +322,12 @@
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '" . $convoArr['conversation']['bot_id'] . "'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "load bot config SQL: $sql", 3);
-    
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch();
-
+    $row = $sth->fet ch();
+*/
     if (count($row) > 0)
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading bot details from the database.', 4);
@@ -455,13 +457,12 @@
     $user_id = $convoArr['conversation']['user_id'];
     $sql = "SELECT * FROM `$dbn`.`users` WHERE `id` = '$user_id' LIMIT 1";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation state SQL: $sql", 3);
-    
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch();
-
-
-
+    $row = $sth->fet ch();
+*/
     if (($row) && (count($row) > 0))
     {
       	$convoArr = unserialize($row['state']);
@@ -503,11 +504,12 @@
     //get the values from the db
     $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '$bot_id' and `bot_active`='1'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making sure the bot exists. SQL = $sql", 3);
-    
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql) or exit ('There is a problem in file' . __FILE__ .', function ' . __FUNCTION__ . ', line ' . __LINE__ . '. Error: ' . $dbConn->errorInfo());
     $sth->execute();
-    $row = $sth->fetch();
-
+    $row = $sth->fet ch();
+*/
     if (($row) && (count($row) > 0))
     {
       $bot_name = $row['bot_name'];
@@ -579,11 +581,13 @@
     $ip = $_SERVER['REMOTE_ADDR'];
     $convoArr['client_properties']['ip_address'] = $ip;
     $sql = "select `user_name`, `id`, `chatlines` from `$dbn`.`users` where `session_id` = :convo_id limit 1;";
-
+    $row = db_fetch($sql, array(':convo_id' => $convo_id), __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->bindValue(':convo_id', $convo_id);
     $sth->execute();
-    $row = $sth->fetch();
+    $row = $sth->fet ch();
+*/
     if ($row === false)
     {
       $convoArr = intisaliseUser($convoArr);
@@ -652,18 +656,30 @@
   function load_that($convoArr)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading the THAT array.', 2);
-    global $dbConn, $dbn, $remember_up_to;
+    global $dbConn, $dbn, $remember_up_to, $bot_id;
     $remember_up_to = (!empty ($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $remember_up_to;
     $user_id = $convoArr['conversation']['user_id'];
-    $bot_id = $convoArr['conversation']['bot_id'];
+    $bot_id = (!empty($convoArr['conversation']['bot_id'])) ? $convoArr['conversation']['bot_id'] : $bot_id;
     $limit = $remember_up_to;
     $sql = "select `input`, `response` from `$dbn`.`conversation_log` where `user_id` = $user_id and `bot_id` = $bot_id order by `id` desc limit $limit;"; // desc
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation log entries for the current user. SQL:\n$sql", 3);
-    
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fetchAll();
-
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
+    try
+    {
+      $sth = $dbConn->prepare($sql);
+      $sth->execute();
+      $result = $sth->fet chAll();
+    }
+    catch (Exception $e)
+    {
+      error_log("bad SQL encountered. SQL:\n$sql\n", 3, _LOG_PATH_ . 'badSQL.txt');
+      $pdoError = print_r($dbConn->errorInfo(), true);
+      $psError  = print_r($sth->errorInfo(), true);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Something went wrong!. SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
+      $result = false;
+    }
+*/
     if ($result)
     {
       $tmpThatRows = array();

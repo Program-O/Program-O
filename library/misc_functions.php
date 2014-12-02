@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.3
+  * Version: 2.4.4
   * FILE: misc_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-22-2013

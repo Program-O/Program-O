@@ -2,7 +2,7 @@
   /**
    * Selects the current chatbot and displays editable config data
    *
-   * @version 2.4.3
+   * @version 2.4.4
    * @file select_bots.php
    * @author Elizabeth Perreau and Dave Morton
    * @since 05-26-2014
@@ -62,10 +62,12 @@
   //get active bots from the db
   if(empty($current_parent)) $current_parent = 0;
   $sql = "SELECT * FROM `bots` where bot_active = '1'";
+  $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
-
+    $result = $sth->fet chAll();
+*/
   $options = '                  <option value="0"[noBot]>No Parent Bot</option>';
 
   foreach ($result as $row) {
@@ -124,10 +126,13 @@
   if($bot_id != "new")
   {
     $sql = "SELECT * FROM `bots` where bot_id = :bot_id;";
+    $row = db_fetch($sql, array(':bot_id'=>$bot_id), __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->bindValue(':bot_id', $bot_id);
     $sth->execute();
-    $row = $sth->fetch();
+    $row = $sth->fet ch();
+*/
     $curBot = $row;
       foreach ($row as $key => $value) {
         if (strstr($key,'bot_') != false){
@@ -239,9 +244,12 @@
     $msg = '';
     $bot_id = $post_vars['bot_id'];
     $sql = "select * from bots where bot_id = $bot_id;";
+    $result = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetch();
+    $result = $sth->fet ch();
+*/
     $sql = '';
     foreach($post_vars as $key => $value) {
       $value = str_replace("'", "\'", $value);
@@ -436,9 +444,12 @@ endSQL;
   
   if($post_vars['bot_id']!="new") {
     $sql = "SELECT * FROM `bots` WHERE bot_id = '$botId'";
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetch();
+    $row = $sth->fet ch();
+*/
     $count = count($row);
     if($count > 0) {
       $_SESSION['poadmin']['format'] = $row['format'];
@@ -468,9 +479,12 @@ endSQL;
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
   $botId = $bot_id;
   $sql = "SELECT * FROM `bots` ORDER BY bot_name";
+  $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
   $sth = $dbConn->prepare($sql);
   $sth->execute();
-  $result = $sth->fetchAll();
+  $result = $sth->fet chAll();
+*/
   $pResult = print_r($result, true);
   $options = '                <option value="new">Add New Bot</option>' . "\n";
   foreach ($result as $row) {

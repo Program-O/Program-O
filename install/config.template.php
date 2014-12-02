@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.4.3
+* Version: 2.4.4
 * FILE: config/global_config.php
 * AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
 * DATE: January 16th, 2013

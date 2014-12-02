@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.3
+  * Version: 2.4.4
   * FILE: chatbot/core/conversation/display_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -27,11 +27,12 @@
     if (empty ($bot_name))
     {
       $sql = "select `bot_name` from `bots` where `bot_id` = $bot_id limit 1;";
-      
+      $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $row = $sth->fetch();
-
+      $row = $sth->fet ch();
+*/
       $bot_name = $row['bot_name'];
     }
     if ($convoArr['conversation']['conversation_lines'] != 0)
@@ -50,11 +51,12 @@
         AND `convo_id` = '" . $convoArr['conversation']['convo_id'] . "'
         ORDER BY id DESC $limit ";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql", 3);
-    
+    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $result = $sth->fetchAll();
-
+    $result = $sth->fet chAll();
+*/
 
 
     if (count($result) > 0)

@@ -1,7 +1,7 @@
   /***************************************
    * http://www.program-o.com
    * PROGRAM O
-   * Version: 2.4.3
+   * Version: 2.4.4
    * FILE: CHANGELOG
    * AUTHOR: Elizabeth Perreau and Dave Morton
    * DATE: MAY 17TH 2014
@@ -9,6 +9,15 @@
    */
 
 Version History:
+
+2.4.4   Multiple bug fixes, consolidated SELECT type DB queries into calls to teo functions
+            1.) Fixed a bug in the core code that allowed fatal errors to be generated if the variable
+                bot_id is empty or not set
+            2.) Fixed a bug in the new Search/Edit AIML admin page that caused only the default chatbot's
+                AIML to be displayed, rather than the currently selected chatbot.
+            3.) Created 2 new PDO query functions (db_fetch() and db_fetchAll()) to handle retrieving all
+                SELECT type queries, resulting in fewer lines of code to the tune of over 150
+
 2.4.3   Multiple bug fixes, started adding internal documentation with descriptions
             1.) Fixed a bug in the XML GUI that was creating fatal errors when called from the admin page
             2.) Fixed bugs in the functions that parse SRAI, SR and CONDITION tags

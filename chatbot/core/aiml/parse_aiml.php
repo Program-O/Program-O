@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.4.3
+  * Version: 2.4.4
   * FILE: chatbot/core/aiml/parse_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -361,9 +361,12 @@
     //$now_look_for_this = strtoupper($now_look_for_this);
     $sql = "select `template_id` from `$dbn`.`srai_lookup` where `pattern` = '$now_look_for_this' and $sql_bot_select;";
     runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = $sql", 2);
+    $row = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
     $sth = $dbConn->prepare($sql);
     $sth->execute();
-    $row = $sth->fetchAll();
+    $row = $sth->fet chAll();
+*/
     runDebug(__FILE__, __FUNCTION__, __LINE__,'Result = ' . print_r($row, true), 2);
     $num_rows = count($row);
     if ($num_rows > 0)
@@ -372,9 +375,12 @@
       $template_id = $row[0]['template_id'];
       runDebug(__FILE__, __FUNCTION__, __LINE__,"Found a matching entry in the lookup table. Using ID# $template_id.", 2);
       $sql = "select `template` from `$dbn`.`aiml` where `id` = '$template_id';";
+      $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+/*
       $sth = $dbConn->prepare($sql);
       $sth->execute();
-      $row = $sth->fetch();
+      $row = $sth->fet ch();
+*/
       runDebug(__FILE__, __FUNCTION__, __LINE__,"Row found in AIML for ID $template_id: " . print_r($row, true), 2);
       if (!empty($row))
       {
@@ -400,10 +406,13 @@
     }
       runDebug(__FILE__, __FUNCTION__, __LINE__,"Nothing found in the SRAI lookup table. Looking for a direct pattern match for '$now_look_for_this'.", 2);
       $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` where `pattern` = :pattern and $sql_bot_select order by `id` asc;";
+      $result = db_fetchAll($sql, array(':pattern' => $now_look_for_this), __FILE__, __FUNCTION__, __LINE__);
+/*
       $sth = $dbConn->prepare($sql);
       $sth->bindValue(':pattern', $now_look_for_this);
       $sth->execute();
-      $result = $sth->fetchAll();
+      $result = $sth->fet chAll();
+*/
       $num_rows = count($result);
       runDebug(__FILE__, __FUNCTION__, __LINE__,"Found $num_rows potential responses.", 2);
       $allrows = array();
@@ -445,14 +454,17 @@
       $allrows = get_highest_scoring_row($convoArr, $allrows, $lookingfor);
       if (isset($allrows['aiml_id']) && $allrows['aiml_id'] > 0)
       {
-        $sql = "select `template` from `$dbn`.`aiml` where `id` = :id limit 1;";
-        $sth = $dbConn->prepare($sql);
         $aiml_id = $allrows['aiml_id'];
         $pattern = $allrows['pattern'];
+        $sql = "select `template` from `$dbn`.`aiml` where `id` = :id limit 1;";
+        $row = db_fetch($sql, array(':id' => $aiml_id), __FILE__, __FUNCTION__, __LINE__);
+/*
+        $sth = $dbConn->prepare($sql);
         $sth->bindValue(':id', $aiml_id);
         $sth->execute();
-        $row = $sth->fetch();
+        $row = $sth->fet ch();
         $sth->closeCursor();
+*/
         $template = add_text_tags($row['template']);
         try
         {
