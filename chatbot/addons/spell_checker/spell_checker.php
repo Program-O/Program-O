@@ -122,11 +122,6 @@
     $_SESSION['spellcheck'] = array();
     $sql = "SELECT `missspelling`, `correction` FROM `$dbn`.`spellcheck`;";
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fet chAll();
-*/
     $num_rows = count($result);
     if ($num_rows > 0)
     {

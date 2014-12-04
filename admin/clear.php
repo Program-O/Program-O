@@ -149,11 +149,6 @@ else {
     $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fet chAll();
-*/
     $numRows = count($result);
     if ($numRows == 0) $msg = "This bot has no AIML categories to clear.";
     foreach ($result as $row)

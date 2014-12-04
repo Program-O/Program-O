@@ -69,11 +69,6 @@
     //get undefined defaults from the db
     $sql = "SELECT count(distinct(`user_id`)) AS TOT FROM `conversation_log` WHERE bot_id = '$bot_id' $sqladd";
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fet ch();
-*/
     $res = $row['TOT'];
     return $res;
   }
@@ -105,12 +100,6 @@ endSQL;
     $sql = str_replace('[endCondition]', $endCondition, $sql);
     //get undefined defaults from the db
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fet ch();
-*/
     $res = $row['TOT'];
     return $res;
   }

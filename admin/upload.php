@@ -343,11 +343,6 @@ endScript;
     
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fet chAll();
-*/
     foreach ($result as $row)
     {
       if (empty ($row['filename']))
@@ -374,11 +369,6 @@ endScript;
     
     $sql = 'SELECT `bot_name`, `bot_id` FROM `bots` order by `bot_id`;';
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fet chAll();
-*/
     foreach ($result as $row)
     {
       $bn = $row['bot_name'];

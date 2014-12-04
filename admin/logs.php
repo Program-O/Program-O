@@ -77,11 +77,6 @@ endScript;
   $nameList = array();
   $sql = "select `id`, `user_name` from `users` where 1;";
   $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-  $sth = $dbConn->prepare($sql);
-  $sth->execute();
-  $result = $sth->fet chAll();
-*/
   foreach ($result as $row) {
 
     $nameList[$row['id']] = $row['user_name'];
@@ -139,11 +134,6 @@ endScript;
 
 endList;
   $rows = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-  $sth = $dbConn->prepare($sql);
-  $sth->execute();
-  $rows = $sth->fet chAll();
-*/
   $numRows = count($rows);
   if ($numRows == 0) $list .= '          <li>No log entries found</li>';
   foreach ($rows as $row) {
@@ -253,11 +243,6 @@ endForm;
   $list = "<hr><br/><h4>$title conversations for user: $id</h4>";
   $list .="<div class=\"convolist\">";
   $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-  $sth = $dbConn->prepare($sql);
-  $sth->execute();
-  $result = $sth->fet chAll();
-*/
   foreach ($result as $row) {
     $thisdate = date("Y-m-d",strtotime($row['timestamp']));
     if($thisdate!=$lasttimestamp) {

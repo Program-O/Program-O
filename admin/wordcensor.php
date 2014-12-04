@@ -100,11 +100,6 @@ endScript;
     global $dbConn, $request_vars;
     $sql = "select count(*) from `wordcensor` where 1";
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fet ch();
-*/
     $rowCount = $row['count(*)'];
     $lastPage = intval($rowCount / 50);
     $remainder = ($rowCount / 50) - $lastPage;
@@ -154,11 +149,6 @@ endScript;
     $links = '      <div class="userlist">' . "\n";
     $count = 0;
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fet chAll(PDO :: FETCH_ASSOC);
-*/
     foreach ($result as $row)
     {
       $linkId = $row['censor_id'];
@@ -286,11 +276,6 @@ endScript;
                   </thead>
                 <tbody>';
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fet chAll(PDO :: FETCH_ASSOC);
-*/
     $i = 0;
     foreach ($result as $row)
     {
@@ -344,11 +329,6 @@ endScript;
     $form = $template->getSection('EditWordCensorForm');
     $sql = "SELECT * FROM `wordcensor` WHERE `censor_id` = '$id' LIMIT 1";
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fet ch();
-*/
     $uc_word_to_censor = (IS_MB_ENABLED) ? mb_strtoupper($row['word_to_censor']) :
                          strtoupper($row['word_to_censor']);
     $uc_replace_with = (IS_MB_ENABLED) ? mb_strtoupper($row['replace_with']) : strtoupper(

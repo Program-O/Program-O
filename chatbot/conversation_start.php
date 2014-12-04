@@ -108,11 +108,6 @@
       // Get user id, so that we can clear the client properties
       $sql = "select `id` from `$dbn`.`users` where `session_id` = '$new_convo_id' limit 1;";
       $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-      $row = $sth->fet ch();
-*/
       if ($row !== false)
       {
         $user_id = $row['id'];

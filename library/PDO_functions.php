@@ -50,14 +50,28 @@
     return null;
   }
 
+  /*
+   * function db_fetch
+   * Fetches a single row of data from the database
+   *
+   * @param (string) $sql - The SQL query to execute
+   * @param (mixed) $params - either an array of placeholder/value pairs, or null, for no parameters
+   * @param (string) $file - the path/filename of the file that the function call originated in
+   * @param (string) $function - the name of the function that the function call originated in
+   * @param (string) $line - the line number of the originating function call
+   *
+   * @return (mixed) $out - Either the row of data from the DB query, or false, if the query fails
+   */
   function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown')
   {
     global $dbConn;
+    //error_log(print_r($dbConn, true), 3, _LOG_PATH_ . 'dbConn.txt');
     try
     {
       $sth = $dbConn->prepare($sql);
       ($params === null) ? $sth->execute() : $sth->execute($params);
-      return $sth->fetch();
+      $out = $sth->fetch();
+      return $out;
     }
     catch (Exception $e)
     {

@@ -15,7 +15,6 @@
   $action = (isset($post_vars['action'])) ? ucfirst(strtolower($post_vars['action'])) : 'Add';
   if (!empty($post_vars)) {
     $msg = save($action);
-    #$action = ($action == 'editfromlist') ? 'Edit' : $action;
   }
 
   $id = (isset($post_vars['id']) and $action != 'Add') ? $post_vars['id'] : getNextID();
@@ -106,7 +105,6 @@ endScript;
    */
   function save($action) {
     global $dbConn, $dbn, $action, $post_vars;
-    #return 'action = ' . $action;
     if (isset($post_vars['memberSelect'])) {
       $id = $post_vars['memberSelect'];
     }
@@ -140,7 +138,6 @@ endScript;
       $sql = '';
       $out = '';
     }
-    //$x = (!empty($sql)) ? updateDB($sql) : '';
     if (!empty($sql))
     {
       save_file(_LOG_PATH_ . 'memberSQL.txt', $sql);
@@ -150,7 +147,6 @@ endScript;
 
       //
     }
-    #return "action = $action<br />\n SQL = $sql";
     return $out;
   }
 
@@ -167,11 +163,6 @@ endScript;
     $optionTemplate = "                  <option value=\"[val]\">[key]</option>\n";
     $sql = 'SELECT id, user_name FROM myprogramo order by user_name;';
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fet chAll();
-*/
     foreach ($result as $row) {
       $user_name = $row['user_name'];
       $id = $row['id'];
@@ -195,11 +186,6 @@ endScript;
     global $user_name, $dbConn;
     $sql = "select id, user_name from myprogramo where id = $id limit 1;";
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fet ch();
-*/
     return $row;
   }
 
@@ -212,14 +198,8 @@ endScript;
   function getNextID() {
     global $dbConn;
     $sql = "select id from myprogramo order by id desc limit 1;";
-    $id = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fet ch();
-    $id = $row['id'];
-*/
-    return $id + 1;
+    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    return $row['id'] + 1;
   }
 
 ?>

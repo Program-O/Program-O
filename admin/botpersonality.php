@@ -83,11 +83,6 @@
     //get the current bot's personality table from the db
     $sql = "SELECT * FROM `botpersonality` where  `bot_id` = $bot_id";
     $rows = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $rows = $sth->fet chAll(PDO :: FETCH_ASSOC);
-*/
       $rowCount = count($rows);
       if ($rowCount > 0)
       {
@@ -212,11 +207,6 @@ endForm2;
     }
     $sql = "SELECT * FROM `botpersonality` where `bot_id` = $bot_id;";
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fet chAll();
-*/
     $rows = array();
     foreach ($result as $row)
     {

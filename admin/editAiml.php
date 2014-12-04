@@ -132,26 +132,11 @@
     error_log("SQL = $countSQL\n", 3, _LOG_PATH_ . 'searchSQL.txt');
     error_log("Search terms = " . print_r($searchParams, true) . "\n", 3, _LOG_PATH_ . 'searchSQL.txt');
     $count = db_fetch($countSQL, $searchParams, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($countSQL);
-    try {
-    $sth->execute($searchArguments);
-    } catch (Exception $e) {
-    header("HTTP/1.0 500 Internal Server Error");
-    throw($e);
-    }
-    $count = $sth->fet ch();
-*/
     $total = $count['count(id)'];
     $limit = ($limit >= $total) ? $total - 1 - (($total - 1) % $groupSize) : $limit;
     $order = isset ($form_vars['sort']) ? $form_vars['sort'] . " " . $form_vars['sortOrder'] : "id";
     $sql = "SELECT id, topic, filename, pattern, template, thatpattern FROM `aiml` " . "WHERE `bot_id` = ? AND ($searchTerms) order by $order limit $limit, $groupSize;";
     $result = db_fetchAll($sql, $searchParams, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute($searchArguments);
-    $result = $sth->fet chAll();
-*/
     return array("results" => $result, "total_records" => $total, "start_index" => 0, "page" => ($limit / $groupSize) + 1, "page_size" => $groupSize);
   }
 
