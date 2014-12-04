@@ -17,6 +17,8 @@ Version History:
                 AIML to be displayed, rather than the currently selected chatbot.
             3.) Created 2 new PDO query functions (db_fetch() and db_fetchAll()) to handle retrieving all
                 SELECT type queries, resulting in fewer lines of code to the tune of over 150
+            4.) Fixed a security bug where users could directly access certain admin pages without actually
+                being logged in.
 
 2.4.3   Multiple bug fixes, started adding internal documentation with descriptions
             1.) Fixed a bug in the XML GUI that was creating fatal errors when called from the admin page
