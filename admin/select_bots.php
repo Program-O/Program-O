@@ -120,6 +120,9 @@
   $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 'new';
   if($bot_id != "new")
   {
+    $sql = "SELECT count(*) FROM `aiml` where bot_id = :bot_id;";
+    $row = db_fetch($sql, array(':bot_id'=>$bot_id), __FILE__, __FUNCTION__, __LINE__);
+    $aiml_count = ($row['count(*)'] == 0) ? 'no' : number_format($row['count(*)']);
     $sql = "SELECT * FROM `bots` where bot_id = :bot_id;";
     $row = db_fetch($sql, array(':bot_id'=>$bot_id), __FILE__, __FUNCTION__, __LINE__);
     $curBot = $row;
@@ -206,7 +209,7 @@
   }
   $parent_options = getBotParentList($bot_parent_id);
   $searches = array(
-    '[bot_id]','[bot_name]','[bot_desc]','[parent_options]','[sel_yes]','[sel_no]',
+    '[bot_id]','[bot_name]','[aiml_count]','[bot_desc]','[parent_options]','[sel_yes]','[sel_no]',
     '[sel_html]','[sel_xml]','[sel_json]','[sel_session]','[sel_db]','[sel_fyes]',
     '[sel_fno]','[sel_fuyes]','[sel_funo]','[bot_conversation_lines]','[remember_up_to]',
     '[bot_debugemail]','[dm_]','[dm_i]','[dm_ii]','[dm_iii]','[ds_]','[ds_i]','[ds_ii]',
@@ -459,7 +462,6 @@ endSQL;
   $botId = $bot_id;
   $sql = "SELECT * FROM `bots` ORDER BY bot_name";
   $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-  $pResult = print_r($result, true);
   $options = '                <option value="new">Add New Bot</option>' . "\n";
   foreach ($result as $row) {
     $options .= "<!-- bot ID = {$row['bot_id']}, $botId -->\n";
