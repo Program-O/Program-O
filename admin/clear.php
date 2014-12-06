@@ -144,13 +144,16 @@ else {
    */
   function buildSelOpts()
   {
-    global $dbn, $bot_id, $msg, $dbConn;
-    $out = "                  <!-- Start Selectbox Options -->\n";
-    $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
+    global $bot_id, $bot_name, $msg;
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-    $numRows = count($result);
-    if ($numRows == 0) $msg = "This bot has no AIML categories to clear.";
+    if (count($result) == 0)
+    {
+      $msg = "The chatbot '$bot_name' has no AIML categories to clear.";
+      return false;
+    }
+    $out = "                  <!-- Start Selectbox Options -->\n";
+    $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
     foreach ($result as $row)
     {
       if (empty($row['filename']))
@@ -171,10 +174,10 @@ else {
    * @return string
    */
   function buildMain()
-{
-
-
+  {
+    global $msg;
     $selectOptions = buildSelOpts();
+    if ($selectOptions === false) return "<div class=\"bold red center\">$msg</div><br>\n";
     $content = <<<endForm
           Deleting AIML categories from the database is <strong>permanent</strong>!
           This action <strong>CANNOT</strong> be undone!<br />

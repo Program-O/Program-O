@@ -141,7 +141,8 @@ endScript;
     $fileContent = $dom->saveXML();
     $outFile = ltrim($fileContent, "\n\r\n");
     $outFile = mb_convert_encoding($outFile, 'UTF-8');
-    $x = file_put_contents("./downloads/$cleanedFilename", trim($outFile));
+    $filename = (!empty($filename)) ? $filename : 'unnamed.aiml';
+    $x = file_put_contents("./downloads/$filename", trim($outFile));
     $msg =
     "Your file, <strong>$filename</strong>, is being prepaired. If it doesn't start, please <a href=\"file.php?file=$filename&send_file=yes\">Click Here</a>.<br />\n";
     return serveFile($filename, $msg);
@@ -194,6 +195,7 @@ endScript;
     }
     $fileContent = trim($fileContent, ",\r\n");
     $fileContent .= "\n";
+    $filename = (!empty($filename)) ? $filename : 'unnamed.sql';
     $x = file_put_contents("./downloads/$filename", trim($fileContent));
     $msg =
     "Your file, <strong>$filename</strong>, is being prepaired. If it doesn't start, please <a href=\"file.php?file=$filename&send_file=yes\">Click Here</a>.<br />\n";
@@ -208,12 +210,16 @@ endScript;
    */
   function getSelOpts()
   {
-    global $bot_id, $msg;
-    $out = "                  <!-- Start Selectbox Options -->\n";
-    $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
+    global $bot_id, $bot_name, $msg;
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-    if (count($result) == 0) $msg = "This bot has no AIML categories. Please select another bot.";
+    if (count($result) == 0)
+    {
+      $msg = "The chatbot '$bot_name' has no AIML categories to download. Please select another bot.";
+      return false;
+    }
+    $out = "                  <!-- Start Selectbox Options -->\n";
+    $optionTemplate = "                  <option value=\"[val]\">[val]</option>\n";
     foreach ($result as $row)
     {
       if (empty ($row['filename']))
@@ -236,7 +242,9 @@ endScript;
    */
   function renderMain()
   {
+    global $msg;
     $selectOptions = getSelOpts();
+    if ($selectOptions === false) return "<div class=\"bold red center\">$msg</div><br>\n";
     $content = <<<endForm
           <div id="downloadForm" class="fullWidth noBorder">
           Please select the AIML file you wish to download from the list below.<br />
