@@ -3,7 +3,7 @@
  * use this script to enable your visitors to download
  * your files. 
  */
-$pageBack = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : 'http://www.google.com/search?q=prevent+stupid+hacker+tricks';
+$pageBack = filter_input(INPUT_GET, 'referer');
 $fileserver_path = dirname(__FILE__) . '/downloads';	// change this to the directory your files reside
 $req_file 		 = basename($_GET['file']);
 $whoami			 = basename(__FILE__);	// you are free to rename this file
@@ -41,6 +41,9 @@ else {
 	header('Content-Disposition: attachment; filename=' . $req_file);
 	#readfile("$fileserver_path/$req_file");
     print file_get_contents("$fileserver_path/$req_file");
+    
+    // Remove the created file after downloading
+    unlink("$fileserver_path/$req_file");
 	exit;
 }
 header("Location: $pageBack");

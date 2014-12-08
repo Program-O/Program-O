@@ -535,7 +535,7 @@ border:none;
   border: none;
 }
 
-#teachForm, #uploadForm, #downloadForm, #membersForm {
+#teachForm, #uploadForm, #membersForm {
   position: absolute;
   top: 0;
   left: 0;
@@ -547,7 +547,7 @@ border:none;
   overflow: auto;
 }
 
-#teachForm p, #uploadForm p, #downloadForm p, #membersForm p {
+#teachForm p, #uploadForm p, #membersForm p {
   padding: 5px;
 }
 
@@ -728,6 +728,7 @@ td input[type="checkbox"], input[type="radio"], td select {
   margin: 2px;
   padding: 3px;
 }
+.withBorder td {border: 1px solid red !important;}
 .formTable td select { width: 96.2%; margin: 0 auto; }
 .formTable td textarea, .formTable td input[type=text] { width: 95%; margin: 0 auto; }
 .formTable td textarea { height: 45px; }
@@ -817,10 +818,6 @@ iframe {
   margin: auto;
   cursor: pointer;
   background: transparent url(images/del.png) no-repeat center 50%;
-  /*
-  background-color: pink;
-  border: 1px solid red;
-  */
 }
 
 #tblSearch {
@@ -835,3 +832,24 @@ th.search input {
   width: 90%;
   margin: 0 auto;
 }
+table.checkboxes td {
+  border-spacing: 10px;
+  border-collapse: separate;
+  text-align: left;
+  padding: 3px;
+}
+label { cursor: pointer; }
+
+.centered { margin-left: auto; margin-right: auto; }
+#btnCBSub { width: auto; }
+.cbCell {
+  border: 1px solid black;
+  border: none;
+  padding: 3px 12px;
+  width: 205px;
+  float: left;
+  text-align: left;
+}
+
+
+

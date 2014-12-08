@@ -204,26 +204,6 @@
   }
 
 
-  /**
-   * Function getFooter
-   *
-   *
-   * @return string
-   */
-  function getFooter() {
-    $ip = $_SERVER['REMOTE_ADDR'];
-    $name = (isset($_SESSION['poadmin']['name'])) ?  $_SESSION['poadmin']['name'] : 'unknown';
-    $lip = (isset($_SESSION['poadmin']['lip'])) ?  $_SESSION['poadmin']['lip'] : 'unknown';
-    $last = (isset($_SESSION['poadmin']['last_login'])) ?  $_SESSION['poadmin']['last_login'] : 'unknown';
-    $llast = (isset($_SESSION['poadmin']['prior_login'])) ?  $_SESSION['poadmin']['prior_login'] : 'unknown';
-    $admess = "You are logged in as: $name from $ip since: $last";
-    $admess .= "<br />You last logged in from $lip on $llast";
-    $today = date("Y");
-    $out = <<<endFooter
-    <p>&copy; $today My Program-O<br />$admess</p>
-endFooter;
-    return $out;
-  }
 
   /**
    * Function makeTopLinks

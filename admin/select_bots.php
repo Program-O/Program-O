@@ -447,6 +447,7 @@ endSQL;
       $_SESSION['poadmin']['bot_name']='<b class="red">unnamed bot</b>';
       $_SESSION['poadmin']['bot_id']="new";
     }
+    header("Location: index.php?page=select_bots");
 }
 
 
