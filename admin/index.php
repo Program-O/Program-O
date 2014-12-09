@@ -2,13 +2,12 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.4
+  * Version: 2.4.5
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-11-2013
   * DETAILS: Gateway to the admin functions for the script
   ***************************************/
-
 
   $thisFile = __FILE__;
   if (!file_exists('../config/global_config.php')) header('location: ../install/install_programo.php');
@@ -549,18 +548,18 @@
       $sth->execute();
       $transact = $sth->rowCount();
       $_SESSION['poadmin']['ip'] = $ip;
-      $_SESSION['poadmin']['last_login']=date('l jS \of F Y h:i:s A');
+      $_SESSION['poadmin']['last_login'] = date('l jS \of F Y h:i:s A');
 
       $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
       $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
       $count = count($row);
       if($count > 0) {
-        $_SESSION['poadmin']['bot_id']=$row['bot_id'];
-        $_SESSION['poadmin']['bot_name']=$row['bot_name'];
+        $_SESSION['poadmin']['bot_id'] = $row['bot_id'];
+        $_SESSION['poadmin']['bot_name'] = $row['bot_name'];
       }
       else {
-        $_SESSION['poadmin']['bot_id']=-1;
-        $_SESSION['poadmin']['bot_name']="unknown";
+        $_SESSION['poadmin']['bot_id'] = -1;
+        $_SESSION['poadmin']['bot_name'] = "unknown";
       }
     }
     else {
@@ -569,6 +568,7 @@
     if (empty($msg))
     {
       $_SESSION['poadmin']['logged_in'] = true;
+      header('Location: index.php');
       return 'main';
     }
     return 'logout';

@@ -1,13 +1,13 @@
 <?php
 /***************************************
-* http://www.program-o.com
-* PROGRAM O
-* Version: 2.4.4
-* FILE: config/global_config.php
-* AUTHOR: ELIZABETH PERREAU AND DAVE MORTON
-* DATE: January 16th, 2013
-* DETAILS: this file is the ONLY configuration file for the bot and bot admin
-***************************************/
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.4.5
+  * FILE: config/global_config.php
+  * AUTHOR: Elizabeth Perreau and Dave Morton
+  * DATE: 12-09-2014
+  * DETAILS: this file is the ONLY configuration file for the bot and bot admin
+  ***************************************/
     //------------------------------------------------------------------------
     // Paths - only set this manually if the below doesnt work
     //------------------------------------------------------------------------

@@ -1,4 +1,14 @@
 <?php
+  /***************************************
+    * http://www.program-o.com
+    * PROGRAM O
+    * Version: 2.4.5
+    * FILE: download.php
+    * AUTHOR: Elizabeth Perreau and Dave Morton
+    * DATE: 12-08-2014
+    * DETAILS: Provides the ability to download a chatbot's AIML filesm either in AIML or SQL format.
+    ***************************************/
+
   $content = '';
   $status = '';
   $bot_id = ($bot_id == 'new') ? 0 : $bot_id;

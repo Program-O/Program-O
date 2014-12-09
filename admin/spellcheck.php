@@ -1,12 +1,13 @@
 <?php
-  /**
-   * Displays the admin page for the Spellcheck plugin, and provides access to various features
-   *
-   * @version 2.4.4
-   * @file spellcheck.php
-   * @author Elizabeth Perreau and Dave Morton
-   * @since 05-26-2014
-   */
+  /***************************************
+   * http://www.program-o.com
+   * PROGRAM O
+   * Version: 2.4.5
+   * FILE: spellcheck.php
+   * AUTHOR: Elizabeth Perreau and Dave Morton
+   * DATE: 12-09-2014
+   * DETAILS: Displays the admin page for the spellcheck plugin and provides access to various features
+   ***************************************/
   $msg = '';
   $upperScripts = <<<endScript
 

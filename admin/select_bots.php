@@ -1,12 +1,13 @@
 <?php
-  /**
-   * Selects the current chatbot and displays editable config data
-   *
-   * @version 2.4.4
-   * @file select_bots.php
-   * @author Elizabeth Perreau and Dave Morton
-   * @since 05-26-2014
-   */
+  /***************************************
+   * http://www.program-o.com
+   * PROGRAM O
+   * Version: 2.4.5
+   * FILE: select_bots.php
+   * AUTHOR: Elizabeth Perreau and Dave Morton
+   * DATE: 12-09-2014
+   * DETAILS: Selects the current chatbot and displays editable config data
+   ***************************************/
 
   $selectBot = '';
   $curBot = array();

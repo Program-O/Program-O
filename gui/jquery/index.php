@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.4
+  * Version: 2.4.5
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 07-23-2013
@@ -123,11 +123,19 @@
     </p>
     <div class="centerthis">
       <div class="rightside">
-      <div class="manspeech"><div  class="triangle-border bottom blue"><div class="botsay">Hey!</div></div></div>
+      <div class="manspeech">
+        <div  class="triangle-border bottom blue">
+          <div class="botsay">Hey!</div>
+        </div>
+      </div>
       <div class="man"></div>
       </div>
       <div class="leftside">
-      <div class="dogspeech"><div  class="triangle-border-right bottom orange"><div class="usersay">&nbsp;</div></div></div><br />
+      <div class="dogspeech">
+        <div  class="triangle-border-right bottom orange">
+          <div class="usersay">&nbsp;</div>
+        </div>
+      </div><br />
       <div class="dog"></div>
       </div>
     </div>

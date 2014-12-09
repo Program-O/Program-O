@@ -1,7 +1,7 @@
   /***************************************
    * http://www.program-o.com
    * PROGRAM O
-   * Version: 2.4.4
+   * Version: 2.4.5
    * FILE: CHANGELOG
    * AUTHOR: Elizabeth Perreau and Dave Morton
    * DATE: MAY 17TH 2014
@@ -10,7 +10,13 @@
 
 Version History:
 
-2.4.4   Multiple bug fixes, consolidated SELECT type DB queries into calls to teo functions
+2.4.5   Relocated the session save path
+            1.) Moved the session save path from the server default to a new folder. this increases
+                security for those on shared hosts, and ensures that there are no permissions problems
+                (or problems with the session save path not being set in the PHP config) for those who
+                have been experiencing login problems due to sessions not being saved.
+
+2.4. 4   Multiple bug fixes, consolidated SELECT type DB queries into calls to teo functions
             1.) Fixed a bug in the core code that allowed fatal errors to be generated if the variable
                 bot_id is empty or not set
             2.) Fixed a bug in the new Search/Edit AIML admin page that caused only the default chatbot's
@@ -19,6 +25,7 @@ Version History:
                 SELECT type queries, resulting in fewer lines of code to the tune of over 150
             4.) Fixed a security bug where users could directly access certain admin pages without actually
                 being logged in.
+            5.) Changed the download admin page to enable downloading multiple files as a zip arcvhive.
 
 2.4.3   Multiple bug fixes, started adding internal documentation with descriptions
             1.) Fixed a bug in the XML GUI that was creating fatal errors when called from the admin page

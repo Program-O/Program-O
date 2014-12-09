@@ -1,22 +1,13 @@
 <?php
-
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.4
+    * Version: 2.4.5
     * FILE: find_aiml.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 12-01-2014
     * DETAILS: Contains functions that find and score the most likely AIML match from the database
     ***************************************/
-  /**
-   * This file contains functions that find and score the most likely AIML match from the database
-   *
-   * @version 2.4.4
-   * @filename find_aiml.php
-   * @author Elizabeth Perreau and Dave Morton
-   * @since MAY 17TH 2014
-   **/
 
   /**
    * Gets the last word from a sentence
