@@ -16,7 +16,7 @@ Version History:
                 (or problems with the session save path not being set in the PHP config) for those who
                 have been experiencing login problems due to sessions not being saved.
 
-2.4. 4   Multiple bug fixes, consolidated SELECT type DB queries into calls to teo functions
+2.4.4   Multiple bug fixes, consolidated SELECT type DB queries into calls to teo functions
             1.) Fixed a bug in the core code that allowed fatal errors to be generated if the variable
                 bot_id is empty or not set
             2.) Fixed a bug in the new Search/Edit AIML admin page that caused only the default chatbot's
