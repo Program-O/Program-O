@@ -29,8 +29,8 @@
   // Set session parameters
   $session_name = 'PGO_Admin';
   $session_lifetime = 86400; // 24 hours, expressed in seconds
-  $session_cookie_path = './'; // This session is only valid within the confines of the admin folder
-  $session_cookie_domain = filter_input(INPUT_SERVER,'HTTP_HOST');
+  $session_cookie_domain = 'http://' . filter_input(INPUT_SERVER,'HTTP_HOST');
+  $session_cookie_path = str_replace($session_cookie_domain, '', _ADMIN_URL_);
   session_set_cookie_params($session_lifetime, $session_cookie_path, $session_cookie_domain);
   session_name($session_name);
   session_start();
