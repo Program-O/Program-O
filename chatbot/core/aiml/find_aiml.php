@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.5
+    * Version: 2.4.6
     * FILE: find_aiml.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 12-01-2014
@@ -559,11 +559,6 @@
     global $dbConn, $dbn, $error_response;
     $sql = "SELECT `template` from `$dbn`.`aiml` where `id` = $id limit 1;";
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fet ch();
-*/
     if ($row)
     {
       $template = $row['template'];
@@ -659,11 +654,6 @@
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$name' limit 1;";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for $name. SQL:\n$sql", 3);
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fet ch();
-*/
     $rowCount = count($row);
     if ($rowCount != 0)
     {
@@ -699,11 +689,6 @@
     `pattern` = '$lookingfor'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined SQL: $sql", 3);
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fet chAll();
-*/
     $num_rows = count($result);
     //if there is a result get it
     if (($result) && ($num_rows > 0))
@@ -850,7 +835,7 @@
     if ($word_count == 1)
     {
     //if there is one word do this
-      $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
+      $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
     $sql_bot_select AND (
     ((`pattern` = '_') OR (`pattern` = '*') OR (`pattern` = '$lookingfor') OR (`pattern` = '$aiml_pattern' ) )
     $topic_select) order by `topic` desc, `id` desc, `pattern` asc;";
@@ -859,7 +844,7 @@
     {
     //otherwise do this
       $sql_add = make_like_pattern($lookingfor, 'pattern');
-      $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
+      $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
     $sql_bot_select AND (
     ((`pattern` = '_') OR
      (`pattern` = '*') OR
@@ -870,11 +855,6 @@
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-/*
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fet chAll();
-*/
     $num_rows = count($result);
     if (($result) && ($num_rows > 0))
     {
@@ -924,24 +904,6 @@
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $num_rows = count($row);
     $retval = ($num_rows == 0) ? '' : $row['value'];
-/*
-    try
-    {
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-      $row = $sth->fet ch();
-      $num_rows = count($row);
-      $retval = ($num_rows == 0) ? '' : $row['value'];
-    }
-    catch (Exception $e)
-    {
-      error_log("bad SQL encountered. SQL:\n$sql\n", 3, _LOG_PATH_ . 'badSQL.txt');
-      $pdoError = print_r($dbConn->errorInfo(), true);
-      $psError  = print_r($sth->errorInfo(), true);
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Something went wrong!. SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
-      $retval = '';
-    }
-*/
     return $retval;
   }
 

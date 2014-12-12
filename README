@@ -1,12 +1,15 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.5
+  * Version: 2.4.6
   * FILE: README
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
   * DETAILS: Gives an overview of the script, along with basic instructions on installation and use.
   ***************************************/
+
+  ***NEWS:*** Program O version 2.4.6 introduces changes to the config file, so will require at least an overlay install.
+  Please see http://blog.program-o.com/2014/12/program-o-2-4-6-available-bug-fixes-security-enhancements/ for more details.
 
 Introduction
 ---------------------------------------------------------

@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.4.5
+* Version: 2.4.6
 * FILE: custom_tags.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 17TH 2014

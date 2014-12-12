@@ -1,13 +1,14 @@
 <?php
 
-  //-----------------------------------------------------------------------------------------------
-  //My Program-O Version: 2.4.5
-  //Program-O  chatbot admin area
-  //Written by Elizabeth Perreau and Dave Morton
-  //DATE: MAY 17TH 2014
-  //for more information and support please visit www.program-o.com
-  //-----------------------------------------------------------------------------------------------
-  // upload.php
+  /***************************************
+  * http://www.program-o.com
+  * PROGRAM O
+  * Version: 2.4.6
+  * FILE: upload.php
+  * AUTHOR: Elizabeth Perreau and Dave Morton
+  * DATE: 12-11-2014
+  * DETAILS: Provides functionality to upload AIML files to a chatbot's database
+  ***************************************/
   ini_set('memory_limit', '128M');
   ini_set('max_execution_time', '0');
   ini_set('display_errors', false);
@@ -71,8 +72,7 @@
 //-->
     </script>
 endScript;
-  $post_vars = filter_input_array(INPUT_POST);
-
+    $post_vars = filter_input_array(INPUT_POST);
   $XmlEntities = array('&amp;' => '&', '&lt;' => '<', '&gt;' => '>', '&apos;' => '\'', '&quot;' => '"',);
   $g_tagName = null;
   $aiml_sql = "";
@@ -90,9 +90,7 @@ endScript;
   $topNav = $template->getSection('TopNav');
   $leftNav = $template->getSection('LeftNav');
   $main = $template->getSection('Main');
-  
   $navHeader = $template->getSection('NavHeader');
-  
   $FooterInfo = getFooter();
   $errMsgClass = (!empty ($msg)) ? "ShowError" : "HideError";
   $errMsgStyle = $template->getSection($errMsgClass);
@@ -114,21 +112,21 @@ endScript;
   $mainTitle = str_replace('[errMsg]', $msg, $mainTitle);
 
   /**
-   * Function parseAIML
-   *
-   * * @param $fn
-   * @param      $aimlContent
-   * @param bool $from_zip
-   * @return string
-   */
-  function parseAIML($fn,$aimlContent, $from_zip = false)
+  * Function parseAIML
+  *
+  * * @param $fn
+  * @param      $aimlContent
+  * @param bool $from_zip
+  * @return string
+  */
+  function parseAIML($fn, $aimlContent, $from_zip = false)
   {
     global $dbConn, $post_vars;
-    if (empty ($aimlContent)) return "File $fn was empty!";
+    if (empty ($aimlContent))
+      return "File $fn was empty!";
     global $dbConn, $debugmode, $bot_id, $charset;
     $fileName = basename($fn);
     $success = false;
-    
     #Clear the database of the old entries
     $sql = "DELETE FROM `aiml`  WHERE `filename` = :filename AND bot_id = :bot_id";
     if (isset ($post_vars['clearDB']))
@@ -145,12 +143,11 @@ endScript;
     $sql = $sql_start;
     $sql_template = "(NULL, $myBot_id, '[aiml_add]', '[pattern]', '[that]', '[template]', '[topic]', '$fileName'),\n";
     # Validate the incoming document
-
-         /*******************************************************/
-        /*       Set up for validation from a common DTD       */
-       /*       This will involve removing the XML and        */
-      /*       AIML tags from the beginning of the file      */
-     /*       and replacing them with our own tags          */
+    /*******************************************************/
+    /*       Set up for validation from a common DTD       */
+    /*       This will involve removing the XML and        */
+    /*       AIML tags from the beginning of the file      */
+    /*       and replacing them with our own tags          */
     /*******************************************************/
     $validAIMLHeader = '<?xml version="1.0" encoding="[charset]"?>
 <!DOCTYPE aiml PUBLIC "-//W3C//DTD Specification Version 1.0//EN" "http://www.program-o.com/xml/aiml.dtd">
@@ -223,16 +220,16 @@ endScript;
           $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
           $that = $category->that;
           $template = $category->template->asXML();
-          $template = substr($template,10);
+          $template = substr($template, 10);
           $tLen = strlen($template);
-          $template = substr($template,0, $tLen - 11);
+          $template = substr($template, 0, $tLen - 11);
           $template = str_replace("'", "\'", $template);
           $template = str_replace("\\'", "\'", $template);
           # Strip CRLF and LF from category (Windows/mac/*nix)
           $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
           $aiml_add = str_replace("'", "\'", $aiml_add);
           $aiml_add = str_replace("\\'", "\'", $aiml_add);
-          $sql_add = str_replace('[aiml_add]', $aiml_add , $sql_template);
+          $sql_add = str_replace('[aiml_add]', $aiml_add, $sql_template);
           $sql_add = str_replace('[pattern]', $pattern, $sql_add);
           $sql_add = str_replace('[that]', $that, $sql_add);
           $sql_add = str_replace('[template]', $template, $sql_add);
@@ -270,8 +267,8 @@ endScript;
     }
     catch (Exception $e)
     {
-      //$trace = print_r($e->getTrace(), true);
-      //exit($e->getMessage() . ' at line ' . $e->getLine());
+    //$trace = print_r($e->getTrace(), true);
+    //exit($e->getMessage() . ' at line ' . $e->getLine());
       $msg = $e->getMessage() . ' at line ' . $e->getLine() . "<br>\n";
       //trigger_error("Trace:\n$trace");
       //file_put_contents(_LOG_PATH_ . 'error.trace.log', $trace . "\nEnd Trace\n\n", FILE_APPEND);
@@ -283,13 +280,12 @@ endScript;
     return $msg;
   }
 
-
   /**
-   * Function processUpload
-   *
-   *
-   * @return string
-   */
+  * Function processUpload
+  *
+  *
+  * @return string
+  */
   function processUpload()
   {
     global $msg;
@@ -317,9 +313,11 @@ endScript;
         $file = './uploads/' . $_FILES['aimlfile']['name'];
         if (move_uploaded_file($_FILES['aimlfile']['tmp_name'], $file))
         {
-          #file_put_contents(_LOG_PATH_ . 'upload.type.txt', 'Type = ' . $_FILES['aimlfile']['type']);
-          if ($_FILES['aimlfile']['type'] == 'application/zip' or $_FILES['aimlfile']['type'] == 'application/x-zip-compressed') return processZip($file);
-          else return parseAIML($file,file_get_contents($file));
+        #file_put_contents(_LOG_PATH_ . 'upload.type.txt', 'Type = ' . $_FILES['aimlfile']['type']);
+          if ($_FILES['aimlfile']['type'] == 'application/zip' or $_FILES['aimlfile']['type'] == 'application/x-zip-compressed')
+            return processZip($file);
+          else
+            return parseAIML($file, file_get_contents($file));
         }
         else
         {
@@ -331,16 +329,15 @@ endScript;
   }
 
   /**
-   * Function getAIML_List
-   *
-   *
-   * @return string
-   */
+  * Function getAIML_List
+  *
+  *
+  * @return string
+  */
   function getAIML_List()
   {
     global $dbConn, $dbn, $bot_id;
     $out = "                  <!-- Start List of Currently Stored AIML files -->\n";
-    
     $sql = "SELECT DISTINCT filename FROM `aiml` where `bot_id` = $bot_id order by `filename`;";
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
     foreach ($result as $row)
@@ -357,16 +354,15 @@ endScript;
   }
 
   /**
-   * Function getBotList
-   *
-   *
-   * @return string
-   */
+  * Function getBotList
+  *
+  *
+  * @return string
+  */
   function getBotList()
   {
     global $dbConn, $dbn, $bot_id;
     $botOptions = '';
-    
     $sql = 'SELECT `bot_name`, `bot_id` FROM `bots` order by `bot_id`;';
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
     foreach ($result as $row)
@@ -380,11 +376,11 @@ endScript;
   }
 
   /**
-   * Function upload_libxml_display_errors
-   *
-   * * @param $msg
-   * @return string
-   */
+  * Function upload_libxml_display_errors
+  *
+  * * @param $msg
+  * @return string
+  */
   function upload_libxml_display_errors($msg)
   {
     $out = '';
@@ -398,11 +394,11 @@ endScript;
   }
 
   /**
-   * Function upload_libxml_display_error
-   *
-   * * @param $error
-   * @return string
-   */
+  * Function upload_libxml_display_error
+  *
+  * * @param $error
+  * @return string
+  */
   function upload_libxml_display_error($error)
   {
     $out = "<br/>\n";
@@ -428,11 +424,11 @@ endScript;
   }
 
   /**
-   * Function processZip
-   *
-   * * @param $fileName
-   * @return string
-   */
+  * Function processZip
+  *
+  * * @param $fileName
+  * @return string
+  */
   function processZip($fileName)
   {
     $out = '';
@@ -440,7 +436,8 @@ endScript;
     $zipName = basename($fileName);
     $zip = new ZipArchive;
     $res = $zip->open($fileName);
-    if ($res === TRUE) {
+    if ($res === TRUE)
+    {
       $numFiles = $zip->numFiles;
       for ($loop = 0; $loop < $numFiles; $loop++)
       {
@@ -450,12 +447,13 @@ endScript;
           $endPos = strrpos($curName, '/') + 1;
           $curName = substr($curName, $endPos);
         }
-        if (empty($curName)) continue;
+        if (empty ($curName))
+          continue;
         $fp = $zip->getStream($zip->getNameIndex($loop));
-        if(!$fp)
+        if (!$fp)
         {
           $out .= "Processing for $curName failed.<br />\n";
-          $bad_aiml_files = (!isset($bad_aiml_files)) ? array() : $bad_aiml_files;
+          $bad_aiml_files = (!isset ($bad_aiml_files)) ? array() : $bad_aiml_files;
           $bad_aiml_files[] = $curName;
           $_SESSION['bad_aiml_files'] = $curName;
         }
@@ -467,14 +465,15 @@ endScript;
             $curText .= fread($fp, 8192);
           }
           fclose($fp);
-          if (!stristr($curName, '.aiml')) continue;
+          if (!stristr($curName, '.aiml'))
+            continue;
           $out .= parseAIML($curName, $curText, true);
         }
       }
       $zip->close();
       $failCount = $_SESSION['failCount'];
       $out .= "<br />\nUpload complete. $numFiles files were processed, and $failCount files encountered errors.<br />\n";
-      if (isset($_SESSION['bad_aiml_files']))
+      if (isset ($_SESSION['bad_aiml_files']))
       {
         $out .= "<br />\nThe following AIML files encountered errors:<br />\n";
         foreach ($_SESSION['bad_aiml_files'] as $fn)
@@ -482,7 +481,7 @@ endScript;
           $out .= "$fn, ";
         }
         $out = rtrim($out, ', ') . "<br .>\nPlease test each of these files independently, to locate the errors within.";
-        unset($_SESSION['bad_aiml_files']);
+        unset ($_SESSION['bad_aiml_files']);
       }
     }
     else
@@ -491,5 +490,3 @@ endScript;
     }
     return $out;
   }
-
-?>

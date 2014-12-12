@@ -1,12 +1,13 @@
 <?php
-//-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.5
-//Program-O  chatbot admin area
-//Written by Elizabeth Perreau and Dave Morton
-//DATE: MAY 17TH 2014
-//for more information and support please visit www.program-o.com
-//-----------------------------------------------------------------------------------------------
-// members.php
+  /***************************************
+    * http://www.program-o.com
+    * PROGRAM O
+    * Version: 2.4.6
+    * FILE: members.php
+    * AUTHOR: Elizabeth Perreau and Dave Morton
+    * DATE: 12-12-2014
+    * DETAILS: Administers member (admin) accounts
+    ***************************************/
   ini_set('memory_limit','128M');
   ini_set('max_execution_time','0');
   $post_vars = filter_input_array(INPUT_POST);
@@ -25,40 +26,7 @@
     $id = $data['id'];
     $user_name = $data['user_name'];
   }
-  $upperScripts = <<<endScript
-
-    <script type="text/javascript">
-<!--
-      function showMe() {
-        var sh = document.getElementById('showHelp');
-        var tf = document.getElementById('membersForm');
-        sh.style.display = 'block';
-        tf.style.display = 'none';
-      }
-      function hideMe() {
-        var sh = document.getElementById('showHelp');
-        var tf = document.getElementById('membersForm');
-        sh.style.display = 'none';
-        tf.style.display = 'block';
-      }
-      function showHide() {
-        var display = document.getElementById('showHelp').style.display;
-        switch (display) {
-          case '':
-          case 'none':
-            return showMe();
-            break;
-          case 'block':
-            return hideMe();
-            break;
-          default:
-            alert('display = ' + display);
-        }
-      }
-//-->
-    </script>
-endScript;
-
+  $upperScripts = $template->getSection('UpperScripts');
   $XmlEntities = array(
     '&amp;'  => '&',
     '&lt;'   => '<',

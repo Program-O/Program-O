@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.4.5
+* Version: 2.4.6
 * FILE: config/install_config.php
 * AUTHOR: Elizabeth Perreau and Dave Morton AND DAVE MORTON
 * DATE: MAY 17TH 2014
@@ -55,7 +55,7 @@
     $e_all = defined('E_DEPRECATED') ? E_ALL & ~E_DEPRECATED : E_ALL;
     error_reporting($e_all);
     ini_set('log_errors', true);
-    ini_set('error_log', _LOG_PATH_ . 'install.-error.log');
+    ini_set('error_log', _LOG_PATH_ . 'install.error.log');
     ini_set('html_errors', false);
     ini_set('display_errors', false);
 

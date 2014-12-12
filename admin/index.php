@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.5
+  * Version: 2.4.6
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-11-2013
@@ -28,12 +28,12 @@
 
   // Set session parameters
   $session_name = 'PGO_Admin';
-  $session_lifetime = 86400; // 24 hours, expressed in seconds
-  $session_cookie_domain = 'http://' . filter_input(INPUT_SERVER,'HTTP_HOST');
-  $session_cookie_path = str_replace($session_cookie_domain, '', _ADMIN_URL_);
-  session_set_cookie_params($session_lifetime, $session_cookie_path, $session_cookie_domain);
   session_name($session_name);
   session_start();
+  echo '<!-- SESSION vars:' . PHP_EOL . print_r($_SESSION, true) . "\n-->\n";
+  echo '<!-- admin Path = ' . _ADMIN_PATH_ . " -->\n";
+  echo '<!-- $session_cookie_path = ' . $session_cookie_path . " -->\n";
+  echo '<!-- $session_save_path = ' . _SESSION_PATH_ . " -->\n";
 
   // Get form inpputs
   $post_vars = filter_input_array(INPUT_POST);
@@ -433,18 +433,22 @@
     if (function_exists('curl_init')) {
       $ch = curl_init($feedURL);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+      curl_setopt($ch, CURLOPT_TIMEOUT, 5);
       curl_setopt($ch, CURLOPT_HEADER, 0);
       $data = curl_exec($ch);
       curl_close($ch);
       if (false === $data or empty($data)) return $failed;
       try
       {
+        libxml_use_internal_errors(true);
         $rss = new SimpleXmlElement($data, LIBXML_NOCDATA);
       }
       catch (exception $e)
       {
         $rss = false;
-        $msg = $e->getMessage();
+        error_log('RSS load failed. Error: ' . $e->getMessage() . PHP_EOL,3,_LOG_PATH_ . 'rss.error.log');
+        return $failed;
       }
       if($rss) {
         $items = $rss->channel->item;

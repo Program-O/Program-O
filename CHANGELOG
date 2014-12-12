@@ -1,7 +1,7 @@
   /***************************************
    * http://www.program-o.com
    * PROGRAM O
-   * Version: 2.4.5
+   * Version: 2.4.6
    * FILE: CHANGELOG
    * AUTHOR: Elizabeth Perreau and Dave Morton
    * DATE: MAY 17TH 2014
@@ -9,6 +9,18 @@
    */
 
 Version History:
+
+2.4.6   Bug fixes, refined the admin login routines
+            1.) Added code to the install script that detects the current session path, creating a new,
+                uniquely named folder for the session files if one does not currently exist.
+            2.) Fixed a bug with the Search/Edit AIML admin page that prevented any AIML categories from
+                being displayed due to the wrong session variables being loaded.
+            3.) Fixed a bug with the RSS feed display where garbage was sometimes displayed if the forum
+                pages were down.
+            4.) Fixed another bug with the RSS feed display where the admin script would time out if the
+                forum pages were not responding.
+            5.) Cleaned up some of the code where needed, standardizing the remaining PHP comment headers
+                to make them all the same.
 
 2.4.5   Relocated the session save path
             1.) Moved the session save path from the server default to a new folder. this increases

@@ -1,49 +1,15 @@
 <?php
-//-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.5
-//Program-O  chatbot admin area
-//Written by Elizabeth Perreau and Dave Morton
-//DATE: MAY 17TH 2014
-//for more information and support please visit www.program-o.com
-//-----------------------------------------------------------------------------------------------
-// bugs.php
+  /***************************************
+    * http://www.program-o.com
+    * PROGRAM O
+    * Version: 2.4.6
+    * FILE: bugs.php
+    * AUTHOR: Elizabeth Perreau and Dave Morton
+    * DATE: 12-12-2014
+    * DETAILS: Allows admins to file bug reports directly to the Program O dev team
+    ***************************************/
 
-$upperScripts = <<<endScript
-
-    <script type="text/javascript">
-<!--
-      var state = 'hidden';
-      function showhide(layer_ref) {
-        if (state == 'visible') {
-          state = 'hidden';
-        }
-        else {
-          state = 'visible';
-        }
-        if (document.all) { //IS IE 4 or 5 (or 6 beta)
-          eval( "document.all." + layer_ref + ".style.visibility = state");
-        }
-        if (document.layers) { //IS NETSCAPE 4 or below
-          document.layers[layer_ref].visibility = state;
-        }
-        if (document.getElementById && !document.all) {
-          maxwell_smart = document.getElementById(layer_ref);
-          maxwell_smart.style.visibility = state;
-        }
-      }
-        var subj = "Bug Report Submission";
-        var msg = "Your Message Here...";
-        function renewImage() {
-          document.getElementById("capImg").src = "captcha.php?xx=" + Math.random();
-        }
-        function clearElement(e) {
-          var name = e.name;
-          if(name == "subject" && e.value == subj) e.value = "";
-          if(name == "message" && e.value == msg) e.value = "";
-        }
-//-->
-      </script>
-endScript;
+  $upperScripts = $template->getSection('UpperScripts');
   $post_vars = filter_input_array(INPUT_POST);
   if (count($post_vars) > 0)
   {
@@ -82,60 +48,11 @@ endScript;
    * @return string
    */
   function showBugForm() {
-    global $debugemail;
-    return <<<endForm
-      <form method="POST" action="index.php?page=bugs" name="contactForm">
-        <input name="func" value="sendMail" type="hidden">
-        <input name="contactMe" value="true" type="hidden">
-        <table border="1" width="100%">
-          <tr>
-            <td align="center" width="33%">
-              Your Name:<br />
-              <input name="name" value="" type="text">
-            </td>
-            <td align="center">
-              Your Email Address:<br />
-              <input name="email" value="$debugemail" type="text">
-            </td>
-            <td align="center" width="33%">
-              Subject:<br />
-              <input name="subject" value="Bug Report Submission" onfocus="clearElement(this)" type="text">
-            </td>
-          </tr>
-          <tr>
-            <td colspan="3" align="center">
-              Message:<br />
-              <textarea rows="7" id="report_message" name="message" onfocus="clearElement(this)">Your Message Here...</textarea>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <p class="indent">
-                Use this handy form to submit a bug report to Liz and Company over at the Program O website.
-                Please describe the problem as completely as possible, including what actions you were trying
-                to perform at the time that you noticed the problem.
-              </p>
-            </td>
-            <td align="center">
-              <img id="capImg" src="captcha.php" title="Captcha script ©2009-2011 Geek Cave Creations"><br />
-              <input onclick="renewImage(); return false" value="Refresh" type="button">
-            </td>
-            <td>
-              <p class="indent">
-                Answer the question you see in the image on the left into the text area
-                below. We are looking for a one word answer (no numbers). Sry, but bots are not allowed.
-              </p>
-              <input name="captcha" type="text">
-            </td>
-          </tr>
-          <tr>
-            <td colspan="4" align="center">
-              <input name="Post" id="report_submit" value="Submit Bug Report" type="submit">
-            </td>
-          </tr>
-        </table>
-      </form>
-endForm;
+    global $debugemail, $template;
+    $out = $template->getSection('BugForm');
+    $out = str_replace('[blank]', '', $out);
+    $out = str_replace('[debugemail]', $debugemail, $out);
+    return $out;
   }
 
   /**

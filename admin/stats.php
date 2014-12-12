@@ -1,13 +1,13 @@
 <?php
-
-  //-----------------------------------------------------------------------------------------------
-  //My Program-O Version: 2.4.5
-  //Program-O  chatbot admin area
-  //Written by Elizabeth Perreau and Dave Morton
-  //DATE: MAY 17TH 2014
-  //for more information and support please visit www.program-o.com
-  //-----------------------------------------------------------------------------------------------
-  // stats.php
+  /***************************************
+    * http://www.program-o.com
+    * PROGRAM O
+    * Version: 2.4.6
+    * FILE: stats.php
+    * AUTHOR: Elizabeth Perreau and Dave Morton
+    * DATE: 12-12-2014
+    * DETAILS: Displays chatbot statistics for the currently selected chatbot
+    ***************************************/
   $oneday = getStats("today");
   $oneweek = getStats("-1 week");
   $onemonth = getStats("-1 month");

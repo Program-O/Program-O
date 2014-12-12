@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.5
+  * Version: 2.4.6
   * FILE: install_programo.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -25,6 +25,8 @@
   $errorMessage = (!empty ($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';
   $errorMessage .= $no_unicode_message;
   require_once ('install_config.php');
+  $dirArray = glob(_ADMIN_PATH_ . "ses_*",GLOB_ONLYDIR);
+  $session_dir = (empty($dirArray)) ? 'ses_' . md5(time()) : $dirArray[0];
   $writeCheckArray = array('config' => _CONF_PATH_, 'debug' => _DEBUG_PATH_, 'logs' => _LOG_PATH_);
   $canWrite = true;
 
@@ -120,7 +122,7 @@ endPage;
    */
   function Save()
   {
-    global $page_template, $error_response;
+    global $page_template, $error_response, $session_dir;
     $tagSearch = array();
     $varReplace = array();
     $pattern = "RANDOM PICKUP LINE";
@@ -133,6 +135,15 @@ endPage;
     $myPostVars = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
     ksort($myPostVars);
     $configContents = file_get_contents(_INSTALL_PATH_ . 'config.template.php');
+    $configContents = str_replace('[session_dir]', $session_dir, $configContents);
+    if (!file_exists(_ADMIN_PATH_ . $session_dir))
+    {
+      // Create the sessions folder, and set permissions
+      mkdir(_ADMIN_PATH_ . $session_dir, 0755);
+
+      // Place an empty index file in the sessions folder to prevent direct access to the folder from a web browser
+      file_put_contents(_ADMIN_PATH_ . $session_dir . DIRECTORY_SEPARATOR . 'index.html', '');
+    }
     foreach ($myPostVars as $key => $value)
     {
       $tagSearch[] = "[$key]";

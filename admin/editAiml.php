@@ -3,7 +3,7 @@
   /* * *************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.5
+  * Version: 2.4.6
   * FILE: editAiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-26-2014
@@ -19,11 +19,14 @@
     require_once ('../config/global_config.php');
     require_once (_LIB_PATH_ . 'PDO_functions.php');
     require_once (_LIB_PATH_ . 'error_functions.php');
+    $session_name = 'PGO_Admin';
+    session_name($session_name);
     session_start();
     $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
     if (empty ($_SESSION) || !isset ($_SESSION['poadmin']['uid']) || $_SESSION['poadmin']['uid'] == "")
     {
-      exit (json_encode(array('error' =>"No session found")));
+      error_log('Session vars: ' . print_r($_SESSION, true), 3, _LOG_PATH_ . 'session.txt');
+      exit (json_encode(array('error' => "No session found")));
     }
     // Open the DB
     $dbConn = db_open();
@@ -31,31 +34,25 @@
   if ((isset ($get_vars['action'])) && ($get_vars['action'] == "search"))
   {
     $group = (isset ($get_vars['group'])) ? $get_vars['group'] : 1;
-    echo json_encode(runSearch());
-    exit ();
+    exit (runSearch());
+  }
+  elseif ((isset ($get_vars['action'])) && ($get_vars['action'] == "add"))
+  {
+    exit (insertAIML());
+  }
+  elseif ((isset ($get_vars['action'])) && ($get_vars['action'] == "update"))
+  {
+    exit (updateAIML());
+  }
+  elseif ((isset ($get_vars['action'])) && ($get_vars['action'] == "del") && (isset ($get_vars['id'])) && ($get_vars['id'] != ""))
+  {
+    exit (delAIML($get_vars['id']));
   }
   else
-    if ((isset ($get_vars['action'])) && ($get_vars['action'] == "add"))
-    {
-      echo insertAIML();
-      exit ();
-    }
-    else
-      if ((isset ($get_vars['action'])) && ($get_vars['action'] == "update"))
-      {
-        echo updateAIML();
-        exit ();
-      }
-      else
-        if ((isset ($get_vars['action'])) && ($get_vars['action'] == "del") && (isset ($get_vars['id'])) && ($get_vars['id'] != ""))
-        {
-          echo delAIML($get_vars['id']);
-          exit ();
-        }
-        else
-        {
-          $mainContent = $template->getSection('EditAimlPage');
+  {
+    $mainContent = $template->getSection('EditAimlPage');
   }
+
   $topNav = $template->getSection('TopNav');
   $leftNav = $template->getSection('LeftNav');
   $rightNav = $template->getSection('RightNav');
@@ -137,7 +134,8 @@
     $order = isset ($form_vars['sort']) ? $form_vars['sort'] . " " . $form_vars['sortOrder'] : "id";
     $sql = "SELECT id, topic, filename, pattern, template, thatpattern FROM `aiml` " . "WHERE `bot_id` = ? AND ($searchTerms) order by $order limit $limit, $groupSize;";
     $result = db_fetchAll($sql, $searchParams, __FILE__, __FUNCTION__, __LINE__);
-    return array("results" => $result, "total_records" => $total, "start_index" => 0, "page" => ($limit / $groupSize) + 1, "page_size" => $groupSize);
+    $out = array("results" => $result, "total_records" => $total, "start_index" => 0, "page" => ($limit / $groupSize) + 1, "page_size" => $groupSize);
+    return json_encode($out);
   }
 
   /**

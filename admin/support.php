@@ -1,12 +1,13 @@
 <?php
-//-----------------------------------------------------------------------------------------------
-//My Program-O Version: 2.4.5
-//Program-O  chatbot admin area
-//Written by Elizabeth Perreau and Dave Morton
-//DATE: MAY 17TH 2014
-//for more information and support please visit www.program-o.com
-//-----------------------------------------------------------------------------------------------
-// main.php
+  /***************************************
+    * http://www.program-o.com
+    * PROGRAM O
+    * Version: 2.4.6
+    * FILE: support.php
+    * AUTHOR: Elizabeth Perreau and Dave Morton
+    * DATE: 12-12-2014
+    * DETAILS: Displays support information, including the Program O forum RSS feed
+    ***************************************/
     $noRightNav    = $template->getSection('NoRightNav');
     $logo          = $template->getSection('Logo');
     $topNav        = $template->getSection('TopNav');
@@ -14,8 +15,6 @@
     $main          = $template->getSection('Main');
     $rightNav      = '';
     $footer        = trim($template->getSection('Footer'));
-    #$lowerScripts  = '';
-    #$pageTitleInfo = '';
     $divDecoration = $template->getSection('DivDecoration');
     $navHeader     = $template->getSection('NavHeader');
     $mainTitle     = 'Program O Support';
