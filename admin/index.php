@@ -30,12 +30,8 @@
   $session_name = 'PGO_Admin';
   session_name($session_name);
   session_start();
-  echo '<!-- SESSION vars:' . PHP_EOL . print_r($_SESSION, true) . "\n-->\n";
-  echo '<!-- admin Path = ' . _ADMIN_PATH_ . " -->\n";
-  echo '<!-- $session_cookie_path = ' . $session_cookie_path . " -->\n";
-  echo '<!-- $session_save_path = ' . _SESSION_PATH_ . " -->\n";
 
-  // Get form inpputs
+  // Get form inputs
   $post_vars = filter_input_array(INPUT_POST);
   $get_vars = filter_input_array(INPUT_GET);
   $cookie_vars = filter_input_array(INPUT_COOKIE);
