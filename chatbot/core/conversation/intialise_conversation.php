@@ -329,7 +329,7 @@
       $convoArr['conversation']['save_state'] = $row['save_state'];
       $convoArr['conversation']['default_aiml_pattern'] = $row['default_aiml_pattern'];
       $convoArr['conversation']['bot_parent_id'] = $row['bot_parent_id'];
-      $error_response = $row['error_response'];
+      $error_response = (!empty($row['error_response'])) ? $row['error_response'] : $error_response;
     }
     else
     {
@@ -469,7 +469,7 @@
    */
   function check_set_bot($convoArr)
   {
-    global  $form_vars;
+    global  $form_vars, $error_response;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking and/or setting the current bot.', 2);
     global $dbConn, $dbn, $bot_id, $error_response, $format,$unknown_user;
     //check to see if bot_id has been passed if not load default
@@ -493,7 +493,7 @@
     if (($row) && (count($row) > 0))
     {
       $bot_name = $row['bot_name'];
-      $error_response = $row['error_response'];
+      $error_response = (!empty($row['error_response'])) ? $row['error_response'] : $error_response;
       $unknown_user = $row['unknown_user'];
       $convoArr['conversation']['bot_name'] = $bot_name;
       $convoArr['conversation']['bot_id'] = $bot_id;

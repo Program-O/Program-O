@@ -95,7 +95,7 @@
    **/
   function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
   {
-    global $default_pattern;
+    global $default_pattern, $error_response;
     $current_topic = get_topic($convoArr);
     $current_thatpattern = (isset ($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
     $relevantRow = array();
@@ -220,6 +220,18 @@
       $i++;
       $j++;
     }
+    $rrCount = count($relevantRow);
+      if ($rrCount == 0)
+      {
+        $i = 0;
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Error: FOUND NO AIML matches in DB", 1);
+        $relevantRow[$i]['aiml_id'] = "-1";
+        $relevantRow[$i]['bot_id'] = "-1";
+        $relevantRow[$i]['pattern'] = "no results";
+        $relevantRow[$i]['thatpattern'] = '';
+        $relevantRow[$i]['topic'] = '';
+        $relevantRow[$i]['score'] = 0;
+      }
     sort2DArray("show top scoring aiml matches", $relevantRow, "good matches", 1, 10);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Found " . count($relevantRow) . " relevant rows", 4);
     return $relevantRow;

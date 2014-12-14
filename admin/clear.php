@@ -122,7 +122,6 @@
     $selectOptions = buildSelOpts();
     if ($selectOptions === false) return "<div class=\"bold red center\">$msg</div><br>\n";
     $content = $template->getSection('ClearAIML');
-    error_log("$content\n",3,_LOG_PATH_ . 'content.txt');
     $content = str_replace('[selectOptions]', $selectOptions, $content);
     $content = str_replace('[blank]', '', $content);
     return $content;

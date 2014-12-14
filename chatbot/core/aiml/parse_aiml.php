@@ -401,10 +401,10 @@
       runDebug(__FILE__, __FUNCTION__, __LINE__,"Found $num_rows potential responses.", 2);
       $allrows = array();
       $i = 0;
-      if (($result) && ($num_rows > 0))
+      if ($num_rows > 0)
       {
         $tmp_rows = number_format($num_rows);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ($num_rows) potential AIML matches", 2);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ($tmp_rows) potential AIML matches", 2);
         //loop through results
         foreach ($result as $row)
         {
@@ -432,6 +432,16 @@
       }
       //unset all irrelvant matches
       $allrows = unset_all_bad_pattern_matches($convoArr, $allrows, $now_look_for_this);
+      $arCount = count($allrows);
+      if ($arCount == 0)
+      {
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Error: FOUND NO AIML matches in DB", 1);
+        $allrows[$i]['aiml_id'] = "-1";
+        $allrows[$i]['bot_id'] = "-1";
+        $allrows[$i]['pattern'] = "no results";
+        $allrows[$i]['thatpattern'] = '';
+        $allrows[$i]['topic'] = '';
+      }
       //score the relevant matches
       $allrows = score_matches($convoArr, $allrows, $now_look_for_this);
       //get the highest
@@ -473,8 +483,6 @@
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Unable to insert entry for '$pattern'! Error = $err.", 1);
           runDebug(__FILE__, __FUNCTION__, __LINE__,"SQL = $sql", 1);
         }
-
-        //
         runDebug(__FILE__, __FUNCTION__, __LINE__,"Returning results from stored srai lookup.", 2);
         return $response;
       }

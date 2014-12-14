@@ -17,7 +17,8 @@
   $base_URL  = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
   $this_path = str_replace(DIRECTORY_SEPARATOR, '/', realpath(dirname(__FILE__)));  // The current location of this file, normalized to use forward slashes
   $this_path = str_replace($_SERVER['DOCUMENT_ROOT'], $base_URL, $this_path);       // transform it from a file path to a URL
-  $url = str_replace('gui/jquery', 'chatbot/conversation_start.php', $this_path);   // and set it to the correct script location
+  $root_url = str_replace('gui/jquery', '', $this_path);   // and set it to the correct script location
+  $url = $root_url . 'chatbot/conversation_start.php';   // and set it to the correct script location
 /*
   Example URL's for use with the chatbot API
   $url = 'http://api.program-o.com/v2.3.1/chatbot/';
@@ -54,7 +55,7 @@
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Program O jQuery GUI Examples</title>
+    <title>Program O AIML PHP Chatbot</title>
     <meta name="Description" content="A Free Open Source AIML PHP MySQL Chatbot called Program-O. Version2" />
     <meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2" />
     <style type="text/css">
@@ -79,7 +80,6 @@
         bottom: 10px;
         border: 1px solid red;
         box-sizing: border-box;
-        -moz-box-sizing: border-box;
         box-shadow: 2px 2px 2px 0 #808080;
         padding: 5px;
         border-radius: 5px;
@@ -110,69 +110,97 @@
         text-align: center;
         width: 100%;
       }
-      p.center {
-        text-align: center;
+      #chatlog {
+        box-sizing: border-box;
+        min-height: 300px;
+        max-height: 500px;
+        position: relative;
+        min-width: 700px;
+        max-width: 90%;
+        margin: 10px auto;
+        background-color: transparent;
+        overflow: auto;
+        border: 3px inset #C66;
+        border-radius: 9px;
+        padding: 12px;
       }
-      hr.center {
-        margin: 0 auto;
+      .userTitle {
+        color: rgb(77, 38, 204);
+        font-weight: bold;
+      }
+      .botTitle {
+        color: rgb(61, 176, 23);
+        font-weight: bold;
+      }
+      #sbBot_id {
+        margin-right: 35px;
       }
 
     </style>
   </head>
   <body>
     <h3>Program O XML GUI</h3>
-    <p class="center">
+    <p>
       This is a simple example of how to access the Program O chatbot using the JSON API. Feel free to change the HTML
       code for this page to suit your specific needs. For more advanced uses, please visit the <a href="http://www.forum.program-o.com/">
       Program O Forums</a> to ask for assistance.
     </p>
-    <hr class="center">
-    <p class="center">
-      Please check out the Multi-bot example GUI <a href="multibot_gui_with_chatlog.php">here</a>.
-    </p>
-    <div class="centerthis">
-      <div class="rightside">
-      <div class="manspeech">
-        <div  class="triangle-border bottom blue">
-          <div class="botsay">Hey!</div>
-        </div>
-      </div>
-      <div class="man"></div>
-      </div>
-      <div class="leftside">
-      <div class="dogspeech">
-        <div  class="triangle-border-right bottom orange">
-          <div class="usersay">&nbsp;</div>
-        </div>
-      </div><br />
-      <div class="dog"></div>
-      </div>
-    </div>
     <div class="clearthis"></div>
     <div class="centerthis">
       <form method="post" name="talkform" id="talkform" action="index.php">
         <div id="chatdiv">
+          Choose a chatbot:
+          <select id="sbBot_id" name="bot_id">
+            <option value="1">Unknown</option>
+          </select>
           <label for="submit">Say:</label>
           <input type="text" name="say" id="say" size="60"/>
           <input type="submit" name="submit" id="submit" class="submit"  value="say" />
           <input type="hidden" name="convo_id" id="convo_id" value="<?php echo $convo_id;?>" />
-          <input type="hidden" name="bot_id" id="bot_id" value="<?php echo $bot_id;?>" />
           <input type="hidden" name="format" id="format" value="json" />
         </div>
       </form>
+    </div>
+    <div class="centerthis">
+      <div id="chatlog">
+        <span class="botTitle">chatbot: </span>Hey!<br>
+      </div>
     </div>
     <div id="shameless_plug">
       To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
     </div>
     <div id="urlwarning"><?php echo $display ?></div>
-    <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="//ajax.google_apis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script>
+      window.jQuery || document.write('<script type="text/javascript" src="jquery-1.9.1.min.js">\x3C/script>');
+    </script>
     <script type="text/javascript" >
-     $(document).ready(function() {
-      // put all your jQuery goodness in here.
+      var gbURL = '<?php echo $root_url ?>getbots.php';
+      var botTitle = '<span class="botTitle">';
+      var userTitle = '<span class="userTitle">';
+      var endSpan = '</span>';
+      $(document).ready(function() {
+        // Load multiple chatbots into the selectbox
+        $.getJSON(gbURL, function(data){
+          $('#sbBot_id').html("\n");
+          $.each(data.bots, function(bot_id,bot_name){
+            $('#sbBot_id').append('            <option value=' + bot_id + '>' + bot_name + "</option>\n");
+          });
+        });
+        $('#sbBot_id').on('change', function(){
+          var bn = $('#sbBot_id option:selected').text();
+          //$('.botTitle').html(bn + ": ");
+          $('#chatlog').html('Now chatting with <span class="botTitle">' + bn + endSpan + "<br>\n");
+        });
+
+        // Form submission - This is where the magic happens!
         $('#talkform').submit(function(e) {
           e.preventDefault();
+          var bot_name = $('#sbBot_id option:selected').text();
           var user = $('#say').val();
-          $('.usersay').text(user);
+          var userSaid = userTitle + 'User: ' + endSpan + user + "<br>\n";
+          $('#chatlog').html($('#chatlog').html() + userSaid);
+          var botSaid = botTitle + bot_name + endSpan;
           var formdata = $("#talkform").serialize();
           $('#say').val('')
           $('#say').focus();
@@ -185,10 +213,8 @@
               b = makeLink(b);
             }
             var usersay = data.usersay;
-            if (user != usersay) {
-              $('.usersay').text(usersay);
-            }
-            $('.botsay').html(b);
+
+            $('#chatlog').html($('#chatlog').html() + botSaid + b + "<br>\n");
           }, 'json').fail(function(xhr, textStatus, errorThrown){
             $('#urlwarning').html("Something went wrong! Error = " + errorThrown);
           });
