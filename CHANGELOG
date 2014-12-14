@@ -21,6 +21,11 @@ Version History:
                 forum pages were not responding.
             5.) Cleaned up some of the code where needed, standardizing the remaining PHP comment headers
                 to make them all the same.
+            6.) Added getbots.php to the project, which returns a JSON encoded array of ID/name pairs for
+                all active chatbots, enabling botmasters to build selectboxes or radio button groups of
+                chatbots. No more hard-coding bot IDs or bot names! there is a new example GUI in the
+                jQuery folder (multibot_gui_with_chatlog.php) that can be used to learn how to implement
+                this wih a selectbox in an AJAX driven chatbot interface page.
 
 2.4.5   Relocated the session save path
             1.) Moved the session save path from the server default to a new folder. this increases
