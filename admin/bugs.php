@@ -100,7 +100,8 @@ endThanx;
       $description .= ($name == "")            ? "        <li>The name field was left blank.</li>\n" : "";
       $description .= ($subject == "")         ? "        <li>The subject field was left blank.</li>\n" : "";
       $description .= ($message == "")         ? "        <li>The message field was left blank.</li>\n" : "";
-      $description .= ($captcha != $capKey) ? "        <li>The typed CAPTCHA did not match the image (image was $capKey and text was $captcha. Text entered was $rawCap).</li>\n" : "";
+      #$description .= ($captcha != $capKey) ? "        <li>The typed CAPTCHA did not match the image (image was $capKey and text was $captcha. Text entered was $rawCap).</li>\n" : "";
+      $description .= ($captcha != $capKey) ? "        <li>The typed CAPTCHA did not match the image.</li>\n" : "";
       $insert = ($cba == 1 or $cbip == 1) ? " don't" : "";
 
       $out .= <<<endOops

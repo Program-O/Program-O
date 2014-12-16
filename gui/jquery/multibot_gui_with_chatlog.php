@@ -184,7 +184,7 @@
         $.getJSON(gbURL, function(data){
           $('#sbBot_id').html("\n");
           $.each(data.bots, function(bot_id,bot_name){
-            $('#sbBot_id').append('            <option value=' + bot_id + '>' + bot_name + "</option>\n");
+            $('#sbBot_id').append('            <option value="' + bot_id + '">' + bot_name + "</option>\n");
           });
         });
         $('#sbBot_id').on('change', function(){

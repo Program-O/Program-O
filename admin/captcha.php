@@ -2,14 +2,14 @@
      /*******************************************************/
     /*                     CAPTCHA.php                     */
    /* Creates a simple security image, for bot prevention */
-  /*           ©2009-2011 Geek Cave Creations            */
+  /*           ©2009-2015 Geek Cave Creations            */
  /*                Coded by Dave Morton                 */
 /*******************************************************/
-  #session_name("programo"); // Optional - Change or delete as needed.
+
+  require_once('../config/global_config.php');
   chdir( dirname ( __FILE__ ) );
   $thisFolder = dirname( realpath( __FILE__ ) ) . DIRECTORY_SEPARATOR;
   $log_path = str_replace('admin' . DIRECTORY_SEPARATOR, 'logs' . DIRECTORY_SEPARATOR, $thisFolder);
-  define('LOG_PATH', $log_path);
   $captcha_path = $thisFolder . 'captcha-images' . DIRECTORY_SEPARATOR;
   define('CAPTCHA_PATH', $captcha_path);
 
@@ -17,7 +17,11 @@
   error_reporting($e_all);
   ini_set('log_errors', 1);
   ini_set('display_errors', 0);
-  ini_set('error_log', LOG_PATH . 'CAPTCHA.error.log');
+  ini_set('error_log', _LOG_PATH_ . 'CAPTCHA.error.log');
+
+  // Set session config
+  $session_name = 'PGO_Admin';
+  session_name($session_name);
   session_start();
 /*
 captcha.php comments/help
@@ -75,7 +79,6 @@ match should allow the user access, while failure should be handled accordingly.
   $capKeys = array ('red','green','blue','man','woman','cat','dog','fish','one','two','three','four','circle','square','triangle');
   $capKeyCount = count($capKeys);
   $capNum = rand(0,$capKeyCount - 1);
-  #$capNum = rand(0,7);
   $capKey = $capKeys[$capNum];
   $objectWord = '';
   $fn = '';
@@ -201,5 +204,5 @@ match should allow the user access, while failure should be handled accordingly.
   imagejpeg($image,null,100);
   imagedestroy($image);
   // Debug
-  #file_put_contents(_LOG_PATH_ . 'capKey.txt', "$capKey\r\n",FILE_APPEND);
+  //file_put_contents(_LOG_PATH_ . 'capKey.txt', "$capKey\r\n",FILE_APPEND);
 ?>
