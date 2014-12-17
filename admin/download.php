@@ -204,7 +204,7 @@
     $out = "";
     $checkboxTemplate = <<<endRow
                     <div class="cbCell">
-                      <input id="[file_name_id]" name="filenames[]" type="checkbox" value="[file_name]">
+                      <input id="[file_name_id]" name="filenames[]" type="checkbox" class="cbFiles" value="[file_name]">
                       <label for="[file_name_id]">&nbsp;[file_name]</label>
                     </div>
 endRow;

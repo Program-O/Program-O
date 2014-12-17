@@ -79,7 +79,8 @@
     $cba = checkBadAddress($email);
     $cbip = checkBadIP();
 	if ($email != "" and $name != "" and $subject != "" and $cba == 0 and $cbip == 0 and $message != "" and ($captcha == $capKey)) {
-      $toAddr = "dmorton@geekcavecreations.com, " . BUGS_EMAIL;
+      //$toAddr = "dmorton@geekcavecreations.com, " . BUGS_EMAIL;
+      $toAddr = BUGS_EMAIL;
       $fromAddr = "$email";
       $header = "From: $name <$email>";
       $result = mail ($toAddr, $subject, $message, $header);

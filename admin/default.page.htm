@@ -941,27 +941,31 @@ between the start and end section tags are the only parts of the template that a
                     <label for="actionGetFileAIML" style="width: 250px">Download files as AIML</label>
                   </td>
                   <td class="center">
+                    <input type="checkbox" id="cbSelectAll">
+                    <label for="cbSelectAll" style="width: 250px">Select all files</label>
+                  </td>
+                  <td class="center">
                     <input type="radio" name="type" id="actionGetFileSQL" value="SQL">
                     <label for="actionGetFileSQL" style="width: 250px">Download files as SQL</label>
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="2" class="center">
+                  <td colspan="3" class="center">
                     <hr class="eightyPercent">
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="2" class="center">
+                  <td colspan="3" class="center">
 [file_checkboxes]
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="2" class="center">
+                  <td colspan="3" class="center">
                     <hr class="eightyPercent">
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="2" class="center">
+                  <td colspan="3" class="center">
                     <input type="submit" id="btnCBSub" value="Download Zip">
                   </td>
                 </tr>
@@ -973,7 +977,7 @@ between the start and end section tags are the only parts of the template that a
           <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
           <script type="text/javascript">
             $(function(){
-              //
+              $('#cbSelectAll').click(function(){$('.cbFiles').prop('checked', $(this).prop('checked'));});
             });
           </script>
 <!-- Section DownloadForm End -->

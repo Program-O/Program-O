@@ -46,7 +46,7 @@
   $thisPath = dirname(__FILE__);
   $template = new Template("$thisPath/default.page.htm");
   $githubVersion = getCurrentVersion();
-  $version = ($githubVersion == VERSION) ? 'Program O version ' . VERSION : 'Program O ' . $githubVersion . ' is now available. <a href="https://github.com/Dave-Morton/Program-O/archive/master.zip">Click here</a> to download it.';
+  $version = ($githubVersion == VERSION) ? 'Program O version ' . VERSION : 'Program O ' . $githubVersion . ' is now available. <a href="https://github.com/Program-O/Program-O/archive/master.zip">Click here</a> to download it.';
   $dbConn = db_open();
   //error_log(print_r($dbConn, true), 3, _LOG_PATH_ . 'dbConn_original.txt');
   if ($get_vars['page'] == 'logout') logout();
