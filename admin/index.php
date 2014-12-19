@@ -159,6 +159,7 @@
   $content = str_replace('[divDecoration]', $divDecoration, $content);
   $content = str_replace('[blank]', '', $content);
 
+  session_gc();
   exit($content);
 
   /**

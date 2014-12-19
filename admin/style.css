@@ -809,6 +809,7 @@ iframe {
   /*padding-top: 5px;*/
   margin: auto;
   vertical-align: middle;
+  background: url(images/del.png) no-repeat center;
 }
 .delete-row span.id_holder {
   display: block;

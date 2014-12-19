@@ -87,6 +87,8 @@ YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mu
 
         // Handle row deletion
         table.get("boundingBox").delegate("click", function(e) {
+            var delRow = confirm('Are you sure you want to delete this row? you can\'t take it back if you change your mind!');
+            if (!delRow) return false;
             var row = table.getRecord(e.currentTarget);
             table.removeRow(row);
             e.halt(true);

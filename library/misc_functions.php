@@ -82,3 +82,20 @@
 endFooter;
     return $out;
   }
+
+  /*
+   * function session_gc
+   * Performs garbage collection on expired session files
+   *
+   * @return (void)
+   */
+  function session_gc()
+  {
+    global $session_lifetime;
+    $session_files = glob(_SESSION_PATH_ . 'sess_*');
+    foreach($session_files as $file)
+    {
+      $lastAccessed = filemtime($file);
+      if ($lastAccessed < (time() - $session_lifetime)) unlink($file);
+    }
+  }
