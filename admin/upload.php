@@ -156,6 +156,8 @@ endScript;
     $aimlTagStart = stripos($aimlContent, '<aiml', 0);
     $aimlTagEnd = strpos($aimlContent, '>', $aimlTagStart) + 1;
     $aimlFile = $validAIMLHeader . substr($aimlContent, $aimlTagEnd);
+    $tmpDir = _UPLOAD_PATH_ . 'tmp' . DIRECTORY_SEPARATOR;
+    if (!file_exists($tmpDir)) mkdir($tmpDir, 0755);
     save_file(_UPLOAD_PATH_ . 'tmp/' . $fileName, $aimlFile);
     try
     {

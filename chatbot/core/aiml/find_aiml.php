@@ -877,6 +877,7 @@
       foreach ($result as $row)
       {
         $row['aiml_id'] = $row['id'];
+        $row['bot_id'] = $bot_id;
         $row['score'] = 0;
         $row['track_score'] = '';
         $allrows[] = $row;
