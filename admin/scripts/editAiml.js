@@ -61,14 +61,22 @@ YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mu
         // Render the table
         table = new Y.DataTable({
             width: "99.7%",
-            columns: [{label: " ", className: "delete-row"},
-                {key: "topic", label: "Topic", sortable: true},
-                {key: "thatpattern", label: "Previous bot response", sortable: true},
-                {key: "pattern", label: "User input", sortable: true},
-                {key: "template", label: "Bot response", sortable: true},
-                {key: "filename", label: "File", sortable: true}]})
-            .plug(Y.Plugin.DataTableDataSource, {datasource: dataSource})
-            .render(".editaiml-table");
+            columns: [
+              {
+                label: " ",
+                className: "delete-row",
+                allowHTML: true,
+                emptyCellValue: '<div class="delete-row" title="Delete This Row">&nbsp;</div>'
+              },
+              {key: "topic", label: "Topic", sortable: true},
+              {key: "thatpattern", label: "Previous bot response", sortable: true},
+              {key: "pattern", label: "User input", sortable: true},
+              {key: "template", label: "Bot response", sortable: true},
+              {key: "filename", label: "File", sortable: true}
+            ]
+          })
+          .plug(Y.Plugin.DataTableDataSource, {datasource: dataSource})
+          .render(".editaiml-table");
 
         // Reload table every time it's sorted
         table.after("sort", load);
