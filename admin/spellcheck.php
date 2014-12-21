@@ -203,9 +203,11 @@ endScript;
     }
     else {
         $sql = "INSERT INTO `spellcheck` VALUES (NULL,'$missspell','$correction')";
-        $sth = $dbConn->prepare($sql);
-        $sth->execute();
-        $affectedRows = $sth->rowCount();
+        $params = array(
+          ':missspell' => $missspell,
+          ':correction' => $correction
+        );
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
         if($affectedRows > 0) {
             $msg = '<div id="successMsg">Correction added.</div>';
         }
@@ -230,10 +232,9 @@ endScript;
         $msg = '<div id="errMsg">There was a problem editing the correction - no changes made.</div>';
     }
     else {
-        $sql = "DELETE FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
-        $sth = $dbConn->prepare($sql);
-        $sth->execute();
-        $affectedRows = $sth->rowCount();
+        $sql = "DELETE FROM `spellcheck` WHERE `id` = :id LIMIT 1";
+        $params = array(':id' => $id);
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
         if($affectedRows > 0) {
             $msg = '<div id="successMsg">Correction deleted.</div>';
         }
@@ -327,10 +328,13 @@ function updateSpell() {
     $msg = '<div id="errMsg">There was a problem editing the correction - no changes made.</div>';
   }
   else {
-    $sql = "UPDATE `spellcheck` SET `missspelling` = '$missspelling',`correction`='$correction' WHERE `id`='$id' LIMIT 1";
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $affectedRows = $sth->rowCount();
+    $sql = "UPDATE `spellcheck` SET `missspelling` = :missspelling,`correction` = :correction WHERE `id` = :id LIMIT 1";
+    $params = array(
+      ':missspelling' => $missspelling,
+      ':correction' => $correction,
+      ':id' => $id
+    );
+    $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
     if($affectedRows > 0) {
       $msg = '<div id="successMsg">Correction edited.</div>';
     }
@@ -339,5 +343,3 @@ function updateSpell() {
     }
   }
 }
-
-?>

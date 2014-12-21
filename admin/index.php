@@ -544,10 +544,9 @@
           $ip = $_SERVER['REMOTE_ADDR'];
       }
 
-      $sql = "UPDATE `myprogramo` SET `last_ip` = '$ip', `last_login` = CURRENT_TIMESTAMP WHERE user_name = '$user_name' limit 1";
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-      $transact = $sth->rowCount();
+      $sql = "UPDATE `myprogramo` SET `last_ip` = :ip, `last_login` = CURRENT_TIMESTAMP WHERE user_name = :user_name limit 1";
+      $params = array(':ip' => $ip, ':user_name' => $user_name);
+      $transact = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
       $_SESSION['poadmin']['ip'] = $ip;
       $_SESSION['poadmin']['last_login'] = date('l jS \of F Y h:i:s A');
 

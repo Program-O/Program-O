@@ -205,10 +205,13 @@ endScript;
     }
     else
     {
-      $sql = "INSERT INTO `wordcensor` (`censor_id`, `word_to_censor`, `replace_with`, `bot_exclude`) VALUES (NULL,'$word_to_censor','$replace_with', '')";
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-      $rowsAffected = $sth->rowCount();
+      $sql = 'INSERT INTO `wordcensor` (`censor_id`, `word_to_censor`, `replace_with`, `bot_exclude`) VALUES
+      (NULL, :word_to_censor, :replace_with, "")';
+      $params = array(
+        ':word_to_censor' => $word_to_censor,
+        ':replace_with' => $replace_with,
+      );
+      $rowsAffected = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
       if ($rowsAffected > 0)
       {
         $msg = '<div id="successMsg">Correction added.</div>';
@@ -237,10 +240,11 @@ endScript;
     }
     else
     {
-      $sql = "DELETE FROM `wordcensor` WHERE `censor_id` = '$id' LIMIT 1";
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-      $rowsAffected = $sth->rowCount();
+      $sql = 'DELETE FROM `wordcensor` WHERE `censor_id` = :id LIMIT 1;';
+      $params = array(
+        ':id' => $id
+      );
+      $rowsAffected = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
       if ($rowsAffected > 0)
       {
         $msg = '<div id="successMsg">Correction deleted.</div>';
@@ -353,11 +357,13 @@ endScript;
     }
     else
     {
-      $sql =
-      "UPDATE `wordcensor` SET `word_to_censor` = '$word_to_censor',`replace_with`='$replace_with' WHERE `censor_id`='$id' LIMIT 1";
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-      $result = $sth->rowCount();
+      $sql ='UPDATE `wordcensor` SET `word_to_censor` = :word_to_censor,`replace_with`= :replace_with WHERE `censor_id`= :id LIMIT 1';
+      $params = array(
+        ':word_to_censor' => $word_to_censor,
+        ':replace_with' => $replace_with,
+        ':id' => $id
+      );
+      $result = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
       if ($result > 0)
       {
         $msg = '<div id="successMsg">Correction edited.</div>';

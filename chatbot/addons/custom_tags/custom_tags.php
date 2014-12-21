@@ -101,6 +101,7 @@ include('code_tag/code_tag.php');
    */
   function parse_wiki_tag($convoArr, $element, $parentName, $level)
 {
+  global $debugemail;
   runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing custom WIKI tag.', 2);
   $response = array();
   $children = $element->children();
@@ -123,6 +124,7 @@ include('code_tag/code_tag.php');
 		CURLOPT_NOBODY => FALSE,
 		CURLOPT_VERBOSE => FALSE,
 		CURLOPT_REFERER => "",
+		CURLOPT_USERAGENT => "Program O version " . VERSION . " - Please contact $debugemail regarding any queries or complaints.",
 		CURLOPT_SSL_VERIFYPEER => FALSE,
 		CURLOPT_FOLLOWLOCATION => TRUE,
 		CURLOPT_MAXREDIRS => 4
@@ -137,11 +139,11 @@ include('code_tag/code_tag.php');
     $image = str_replace('<Image source', '<img src', $image);
     $linkHref = (string)$xml->Section->Item->Url;
     $linkText = (string)$xml->Section->Item->Text;
-    $link = "<a href=\"$linkHref\">$linkText</a>";
+    $link = "<a href=\"$linkHref\" target=\"_blank\">$linkText</a>";
     $output = "$link<br/>\n$image<br/>\n$description";
   }
   else $output = 'Wikipedia returned no results!';
-  $output = '<![CDATA[' . $output . ']]>';
+  //$output = '<![CDATA[' . $output . ']]>'; // Uncomment this line when using the XHTML doctype
   return $output;
 }
 

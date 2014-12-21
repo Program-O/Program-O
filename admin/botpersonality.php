@@ -49,7 +49,6 @@
    */
   function getBot()
   {
-    global $dbn, $dbConn;
     $formCell =
 '                <td>
                    <label for="[row_label]">
@@ -172,49 +171,43 @@ endForm2;
    */
   function updateBot()
   {
-    global $bot_id, $bot_name, $post_vars, $dbConn;
+    global $bot_id, $bot_name, $post_vars;
     $msg = "";
     if (!empty ($post_vars['newEntryName']))
     {
       $newEntryNames = $post_vars['newEntryName'];
       $newEntryValues = $post_vars['newEntryValue'];
-      $original_sql = "Insert into `botpersonality` (`id`, `bot_id`, `name`, `value`) values\n";
-      $sql = $original_sql;
-      $sqlTemplate = "(null, $bot_id, '[key]', '[value]'),\n";
+      $sql = "Insert into `botpersonality` (`id`, `bot_id`, `name`, `value`) values (null, $bot_id, :name, :value);";
+      $params = array();
       foreach ($newEntryNames as $index => $key)
       {
         $value = $newEntryValues[$index];
         if (empty ($value)) continue;
-        $tmpSQL = str_replace('[key]', $key, $sqlTemplate);
-        $tmpSQL = str_replace('[value]', $value, $tmpSQL);
-        $sql .= $tmpSQL;
+        $params[] = array(':name' => $key, ':value' => $value);
       }
-      if ($sql != $original_sql)
+      $rowsAffected = db_write($sql, $params, true, __FILE__, __FUNCTION__, __LINE__);
+      if ($rowsAffected > 0)
       {
-        $sql = rtrim($sql, ",\n");
-        $sth = $dbConn->prepare($sql);
-        $sth->execute();
-        $rowsAffected = $sth->rowCount();
-        if ($rowsAffected > 0)
-        {
-          $msg = (empty ($msg)) ? "Bot personality added. \n" : $msg;
-        }
-        else
-        {
-          $msg = 'Error updating bot personality.';
-        }
+        $msg = (empty ($msg)) ? "Bot personality added. \n" : $msg;
+      }
+      else
+      {
+        $msg = 'Error updating bot personality.';
       }
     }
     $sql = "SELECT * FROM `botpersonality` where `bot_id` = $bot_id;";
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $rows = array();
+    $insertParams = array();
+    $updateParams = array();
     foreach ($result as $row)
     {
       $name = $row['name'];
       $value = $row['value'];
       $rows[$name] = array('id' => $row['id'], 'value' => $value);
     }
-    $sql = '';
+    $insertSQL = "Insert into `botpersonality` (`id`, `bot_id`, `name`, `value`) values (null, $bot_id, :name, :value);";
+    $updateSQL = "update `botpersonality` set `value` = :value where `id` = :id;";
     $exclude = array('bot_id', 'func', 'action', 'newEntryName', 'newEntryValue');
     $values = '';
     foreach ($post_vars as $key => $value)
@@ -222,7 +215,7 @@ endForm2;
       if (in_array($key, $exclude)) continue;
       if (!isset($rows[$key]))
       {
-        $sql .= "Insert into `botpersonality` (`id`, `bot_id`, `name`, `value`) values (null, $bot_id, '$key', '$value';\n";
+        $insertParams[] = array(':name' => $key, ':value' => $value);
       }
       else
       {
@@ -230,17 +223,15 @@ endForm2;
         if ($value != $oldValue)
         {
           $curId = $rows[$key]['id'];
-          $sql .= "update `botpersonality` set `value` = '$value' where `id` = $curId;\n";
+          $updateParams[] = array(':value' => $value, ':id' => $curId);
         }
       }
     }
-    if (empty($sql)) return 'No changes found.';
-    //exit("<pre>SQL:\n$sql\n</pre>");
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $affectedRows = $sth->rowCount();
+    if (empty($insertParams) && empty($updateParams)) return 'No changes found.';
+    $affectedRows = (!empty($updateParams)) ? db_write($updateSQL, $updateParams, true, __FILE__, __FUNCTION__, __LINE__) : 0;
+    $affectedRows += (!empty($updateParams)) ? db_write($insertSQL, $insertParams, true, __FILE__, __FUNCTION__, __LINE__) : 0;
     if ($affectedRows > 0) $msg = 'Bot Personality Updated.';
-    else $msg = 'Something went wrong!';
+    else $msg = "Something went wrong! Affected rows = $affectedRows.";
     return $msg;
   }
 
@@ -252,15 +243,13 @@ endForm2;
    */
   function addBotPersonality()
   {
-    global $post_vars, $dbConn;
+    global $post_vars;
     $bot_id = $post_vars['bot_id'];
-    $sql = "Insert into `botpersonality` (`id`, `bot_id`, `name`, `value`) values\n";
-    $sql2 = "(null, $bot_id, '[key]', '[value]'),\n";
+    $sql = "Insert into `botpersonality` (`id`, `bot_id`, `name`, `value`) values (null, $bot_id, :name, :value);";
     $msg = "";
-    $newEntryNames = (isset ($post_vars['newEntryName'])) ? $post_vars['newEntryName'] :
-                     '';
-    $newEntryValues = (isset ($post_vars['newEntryValue'])) ? $post_vars['newEntryValue']
-                      : '';
+    $params = array();
+    $newEntryNames = (isset ($post_vars['newEntryName'])) ? $post_vars['newEntryName'] : '';
+    $newEntryValues = (isset ($post_vars['newEntryValue'])) ? $post_vars['newEntryValue'] : '';
     if (!empty ($newEntryNames))
     {
       if (is_string($newEntryNames))
@@ -269,45 +258,35 @@ endForm2;
       }
       foreach ($newEntryNames as $index => $key)
       {
-        $value = $newEntryValues[$index];
+        $value = trim($newEntryValues[$index]);
         if (!empty ($value))
         {
-          $tmpSQL = str_replace('[key]', $key, $sql2);
-          $tmpSQL = str_replace('[value]', $value, $tmpSQL);
-          $sql .= $tmpSQL;
+          $params[] = array(':name' => $key, ':value' => $value);
         }
       }
     }
     $skipKeys = array('bot_id', 'action', 'func', 'newEntryName', 'newEntryValue');
+    $sqlParams = array();
     foreach ($post_vars as $key => $value)
     {
-      if (!in_array($key, $skipKeys))
-      {
+      if (in_array($key, $skipKeys)) continue;
         if (is_array($value))
         {
           foreach ($value as $index => $fieldValue)
           {
             $field = $key[$fieldValue];
             $fieldValue = trim($fieldValue);
-            $tmpSQL = str_replace('[key]', $field, $sql2);
-            $tmpSQL = str_replace('[value]', $fieldValue, $tmpSQL);
-            $sql .= $tmpSQL;
+            $params[] = array(':name' => $field, ':value' => $fieldValue);
           }
           continue;
         }
         else
         {
           $value = trim($value);
-          $tmpSQL = str_replace('[key]', $key, $sql2);
-          $tmpSQL = str_replace('[value]', $value, $tmpSQL);
-          $sql .= $tmpSQL;
+          $params[] = array(':name' => $key, ':value' => $value);
         }
-      }
     }
-    $sql = rtrim($sql, ",\n");
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $rowsAffected = $sth->rowCount();
+    $rowsAffected = db_write($sql, $params, true, __FILE__, __FUNCTION__, __LINE__);
     if ($rowsAffected > 0)
     {
       $msg = (empty ($msg)) ? "Bot personality added. \n" : $msg;

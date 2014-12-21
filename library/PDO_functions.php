@@ -102,3 +102,37 @@
     }
   }
 
+  function db_write($sql, $params = null, $multi = false, $file = 'unknown', $function = 'unknown', $line = 'unknown')
+  {
+    global $dbConn;
+    try
+    {
+      $sth = $dbConn->prepare($sql);
+      switch (true)
+      {
+        case ($params === null):
+        $sth->execute();
+        break;
+
+        case ($multi === true):
+        foreach ($params as $row)
+        {
+          $sth->execute($row);
+        }
+        break;
+
+        default:
+        $sth->execute($params);
+      }
+      return $sth->rowCount();
+    }
+    catch (Exception $e)
+    {
+      $pdoError = print_r($dbConn->errorInfo(), true);
+      $psError  = print_r($sth->errorInfo(), true);
+      error_log("bad SQL encountered in file $file, line #$line. SQL:\n$sql\nPDO Error:\n$pdoError\nSTH Error:\n$psError\nEsception Message:\n" . $e->getMessage(), 3, _LOG_PATH_ . 'db_write.txt');
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while writing to the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
+      return false;
+    }
+  }
+

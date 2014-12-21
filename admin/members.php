@@ -88,17 +88,29 @@
     switch ($action) {
       case 'Add':
       $ip = $_SERVER['REMOTE_ADDR'];
-      $sql = "insert into myprogramo (id, user_name, password, last_ip, last_login) values (null, '$user_name', '$password','$ip', CURRENT_TIMESTAMP);";
+      $sql = "insert into myprogramo (id, user_name, password, last_ip, last_login) values (null, :user_name, :password,:ip, CURRENT_TIMESTAMP);";
+      $params = array(
+        ':user_name' => $user_name,
+        ':password'  => $password,
+        ':ip'        => $ip
+      );
       $out = "Account for $user_name successfully added!";
       break;
       case 'Delete':
       $action = 'Add';
-      $sql = "DELETE FROM `$dbn`.`myprogramo` WHERE `myprogramo`.`id` = $id LIMIT 1";
+      $sql = "DELETE FROM `$dbn`.`myprogramo` WHERE `myprogramo`.`id` = :id LIMIT 1";
+      $params = array(':id' => $id);
       $out = "Account for $user_name successfully deleted!";
       break;
       case 'Edit':
       $action = 'Add';
-      $sql = "update myprogramo set user_name = '$user_name', password = '$password' where id = $id;";
+      $sql = "update myprogramo set user_name = :user_name, password = :password where id = :id;";
+      $params = array(
+        ':user_name' => $user_name,
+        ':password'  => $password,
+        ':id'        => $id
+      );
+
       $out = "Account for $user_name successfully updated!";
       break;
       default:
@@ -108,10 +120,8 @@
     }
     if (!empty($sql))
     {
-      save_file(_LOG_PATH_ . 'memberSQL.txt', $sql);
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-      $affectedRows = $sth->rowCount();
+      //save_file(_LOG_PATH_ . 'memberSQL.txt', $sql);
+      $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
       //
     }

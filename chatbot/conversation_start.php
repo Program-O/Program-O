@@ -53,24 +53,21 @@
   $form_vars_get = filter_input_array(INPUT_GET);
 
   $form_vars = array_merge((array)$form_vars_get, (array)$form_vars_post);
-  #save_file(_LOG_PATH_ . 'Convo_start_form_vars.txt', print_r($form_vars, true));
-  if (!isset($form_vars['say']))
+  if ((!empty($form_vars)) && !isset($form_vars['say']))
   {
-    error_log('Empty input! form vars = ' . print_r($form_vars, true) . PHP_EOL, 3, _LOG_PATH_ . 'convostart.txt');
+    //error_log('Empty input! form vars = ' . print_r($form_vars, true) . PHP_EOL, 3, _LOG_PATH_ . 'debug_formvars.txt');
     $form_vars['say'] = '';
   }
   $say = ($say !== '') ? $say : trim($form_vars['say']);
   $session_name = 'PGOv' . VERSION;
   session_name($session_name);
   session_start();
-  #save_file(_LOG_PATH_ . 'session.txt', print_r($_SESSION, true));
   /** @noinspection PhpUndefinedVariableInspection */
   $debug_level = (isset($_SESSION['programo']['conversation']['debug_level'])) ? $_SESSION['programo']['conversation']['debug_level'] : $debug_level;
   $debug_level = (isset($form_vars['debug_level'])) ? $form_vars['debug_level'] : $debug_level;
   $debug_mode = (isset($form_vars['debug_mode'])) ? $form_vars['debug_mode'] : $debug_mode;
   if (isset($form_vars['convo_id'])) session_id($form_vars['convo_id']);
   $convo_id = session_id();
-  #file_put_contents(_LOG_PATH_ . 'session_id.txt', session_id());
   //if the user has said something
   if (!empty($say))
   {

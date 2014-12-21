@@ -355,7 +355,7 @@ span.eightyPercent textarea.wide { width: 67%; min-height: 150px; margin: 0; flo
 */
 #right_nav ul li a:hover {
     color: black;
-    background: #EEE8AA url(images/bullet_right_hover.gif);
+    background: #E7DF88 url(images/bullet_right_hover.gif) no-repeat left center;
 }
 
 #right_nav .selected, #left_nav .selected, #top_nav ul li a.selected {

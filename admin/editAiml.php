@@ -76,13 +76,10 @@
   */
   function delAIML($id)
   {
-    global $dbConn;
     if ($id != "")
     {
       $sql = "DELETE FROM `aiml` WHERE `id` = '$id' LIMIT 1";
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-      $affectedRows = $sth->rowCount();
+      $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
       if ($affectedRows == 0)
       {
         $msg = 'Error AIML couldn\'t be deleted - no changes made.</div>';

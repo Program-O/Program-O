@@ -97,10 +97,17 @@ endScript;
     }
     else
     {
-      $sql = "INSERT INTO `aiml` (`id`,`bot_id`, `aiml`, `pattern`,`thatpattern`,`template`,`topic`,`filename`) VALUES (NULL,'$bot_id', '$aiml','$pattern','$thatpattern','$aimltemplate','$topic','admin_added.aiml')";
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-      $affectedRows = $sth->rowCount();
+      $sql = 'INSERT INTO `aiml` (`id`,`bot_id`, `aiml`, `pattern`,`thatpattern`,`template`,`topic`,`filename`) VALUES (NULL, :bot_id, :aiml, :pattern, :thatpattern, :aimltemplate, :topic, :file)';
+      $params = array(
+        ':bot_id' => $bot_id,
+        ':aiml' => $aiml,
+        ':pattern' => $pattern,
+        ':thatpattern' => $thatpattern,
+        ':aimltemplate' => $aimltemplate,
+        ':topic' => $topic,
+        ':file' => 'admin_added.aiml'
+      );
+      $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
       if ($affectedRows > 0)
       {
         $msg = "AIML added.";

@@ -11,14 +11,14 @@
   ***************************************/
   $content = "";
   $upperScripts = $template->getSection('UpperScripts');
-  $post_vars = filter_input_array(INPUT_POST);
+  $post_vars = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
   if ((isset ($post_vars['action'])) && ($post_vars['action'] == "clear"))
   {
-    $content .= clearAIML();
+    $msg = clearAIML();
   }
   elseif ((isset ($post_vars['clearFile'])) && ($post_vars['clearFile'] != "null"))
   {
-    $content .= clearAIMLByFileName($post_vars['clearFile']);
+    $msg = clearAIMLByFileName($post_vars['clearFile']);
   }
   else
   {
@@ -53,10 +53,7 @@
   {
     global $dbn, $bot_id, $bot_name, $dbConn;
     $sql = "DELETE FROM `aiml` WHERE `bot_id` = $bot_id;";
-    #return "SQL = $sql";
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $affectedRows = $sth->rowCount();
+    $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
     $msg = "<strong>All AIML categories cleared for $bot_name!</strong><br />";
     return $msg;
   }
@@ -71,9 +68,7 @@
   {
     global $dbn, $bot_id, $dbConn;
     $sql = "delete from `aiml` where `filename` like '$filename' and `bot_id` = $bot_id;";
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $affectedRows = $sth->rowCount();
+    $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
     $msg = "<br/><strong>AIML categories cleared for file $filename!</strong><br />";
     return $msg;
   }

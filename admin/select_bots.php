@@ -239,21 +239,25 @@
     $sql = "select * from bots where bot_id = $bot_id;";
     $result = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $sql = '';
-    foreach($post_vars as $key => $value) {
+    $params = array();
+    $skipVars = array('bot_id', 'action');
+    foreach($post_vars as $key => $value)
+    {
+      if (in_array($key, $skipVars) || !isset($result[$key])) continue;
+      $safeVal = addslashes($value);
+/*
       $value = str_replace("'", "\'", $value);
       $value = str_replace("\\'", "\'", $value);
       $value = str_replace('"', '\"', $value);
       $value = str_replace('\\"', '\"', $value);
-      if($key == "bot_id" || $key == "action" || !isset($result[$key])) continue;
+*/
       if($result[$key] != $post_vars[$key]) {
-        $sql .= "UPDATE `bots` SET `$key` ='$value' where `bot_id` = '".$post_vars['bot_id']."' limit 1;<br>\n";
+        $sql .= "UPDATE `bots` SET `$key` = '$safeVal' where `bot_id` = $bot_id limit 1;\n";
       }
     }
     if (!empty($sql))
     {
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-      $affectedRows = $sth->rowCount();
+      $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
       if($affectedRows == 0) {
         $msg = "Error updating bot details. See the <a href=\"$logFile\">error log</a> for details.<br />";
         trigger_error("There was a problem adding '$key' to the database. The value was '$value'.");
@@ -307,14 +311,26 @@
     $$key = trim($value);
   }
 
-    /** @noinspection PhpUndefinedVariableInspection */
-    $sql = <<<endSQL
-INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `error_response`)
-VALUES (NULL,'$bot_name','$bot_desc','$bot_active','$bot_parent_id','$format','$save_state','$conversation_lines','$remember_up_to','$debugemail','$debugshow','$debugmode','$aiml_pattern','$error_response');
-endSQL;
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $affectedRows = $sth->rowCount();
+  /** @noinspection PhpUndefinedVariableInspection */
+  $sql = 'INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `error_response`)
+VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,:conversation_lines,:remember_up_to,:debugemail,:debugshow,:debugmode,:aiml_pattern,:error_response);';
+  $params = array(
+    ':bot_name'           => $bot_name,
+    ':bot_desc'           => $bot_desc,
+    ':bot_desc'           => $bot_desc,
+    ':bot_active'         => $bot_active,
+    ':bot_parent_id'      => $bot_parent_id,
+    ':format'             => $format,
+    ':save_state'         => $save_state,
+    ':conversation_lines' => $conversation_lines,
+    ':remember_up_to'     => $remember_up_to,
+    ':debugemail'         => $debugemail,
+    ':debugshow'          => $debugshow,
+    ':debugmode'          => $debugmode,
+    ':aiml_pattern'       => $aiml_pattern,
+    ':error_response'     => $error_response
+  );
+  $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
   if($affectedRows > 0)
   {
     $msg = "$bot_name Bot details added, please dont forget to create the bot personality and add the aiml.";
@@ -407,9 +423,7 @@ INSERT INTO `botpersonality` VALUES
   (NULL,  $bot_id, 'website', '');
 endSQL;
 
-  $sth = $dbConn->prepare($sql);
-  $sth->execute();
-  $affectedRows = $sth->rowCount();
+  $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
   if($affectedRows > 0)
   {
     $msg .= 'Please create the bots personality.';

@@ -127,18 +127,21 @@ endScript;
     global $dbConn, $debugmode, $bot_id, $charset;
     $fileName = basename($fn);
     $success = false;
-    $topic = '';
     #Clear the database of the old entries
     $sql = "DELETE FROM `aiml`  WHERE `filename` = :filename AND bot_id = :bot_id";
     if (isset ($post_vars['clearDB']))
     {
-      $params  = array(':filename' => $fileName, ':bot_id' => $bot_id);
-      $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
+      $sth = $dbConn->prepare($sql);
+      $sth->bindValue(':filename', $fileName);
+      $sth->bindValue(':bot_id', $bot_id);
+      $sth->execute();
+      $affectedRows = $sth->rowCount();
     }
     $myBot_id = (isset ($post_vars['bot_id'])) ? $post_vars['bot_id'] : $bot_id;
     # Read new file into the XML parser
-    $sql = 'insert into `aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`) values
-    (NULL, :bot_id, :aiml, :pattern, :that, :template, :topic, :fileName);';
+    $sql_start = 'insert into `aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`) values' . PHP_EOL;
+    $sql = $sql_start;
+    $sql_template = "(NULL, $myBot_id, '[aiml_add]', '[pattern]', '[that]', '[template]', '[topic]', '$fileName'),\n";
     # Validate the incoming document
     /*******************************************************/
     /*       Set up for validation from a common DTD       */
@@ -164,7 +167,6 @@ endScript;
       $aiml = new SimpleXMLElement($xml->saveXML());
       $rowCount = 0;
       $_SESSION['failCount'] = 0;
-      $params = array();
       if (!empty ($aiml->topic))
       {
         $sql = $sql_start;
@@ -173,6 +175,7 @@ endScript;
         # handle any topic tag(s) in the file
           $topicAttributes = $topicXML->attributes();
           $topic = $topicAttributes['name'];
+          //$sth->bindValue(':topic', $topic);
           foreach ($topicXML->category as $category)
           {
             $fullCategory = $category->asXML();
@@ -180,22 +183,32 @@ endScript;
             $pattern = str_replace("'", ' ', $pattern);
             $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
             $that = $category->that;
-            $that = (IS_MB_ENABLED) ? mb_strtoupper($that) : strtoupper($that);
             $template = $category->template->asXML();
             $template = str_replace('<template>', '', $template);
             $template = str_replace('</template>', '', $template);
-            $template = trim($template);
+            $template = str_replace("'", "\'", $template);
+            $template = str_replace("\\'", "\'", $template);
             # Strip CRLF and LF from category (Windows/mac/*nix)
             $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
-            $params[] = array(
-              ':bot_id' => $bot_id,
-              ':aiml' => $aiml_add,
-              ':pattern' => $pattern,
-              ':that' => $that,
-              ':template' => $template,
-              ':topic' => $topic,
-              ':fileName' => $fileName
-            );
+            $aiml_add = str_replace("'", "\'", $aiml_add);
+            $aiml_add = str_replace("\\'", "\'", $aiml_add);
+            $sql_add = str_replace('[aiml_add]', $aiml_add, $sql_template);
+            $sql_add = str_replace('[pattern]', $pattern, $sql_add);
+            $sql_add = str_replace('[that]', $that, $sql_add);
+            $sql_add = str_replace('[template]', $template, $sql_add);
+            $sql_add = str_replace('[topic]', $topic, $sql_add);
+            $sql .= "$sql_add";
+            $rowCount++;
+            if ($rowCount >= 100)
+            {
+              $rowCount = 0;
+              $sql = rtrim($sql, ",\n") . ';';
+              save_file(_LOG_PATH_ . 'sql.txt', $sql . PHP_EOL, true);
+              $sth = $dbConn->prepare($sql);
+              $sth->execute();
+              $success = ($sth->rowCount() >= 0) ? true : false;
+              $sql = $sql_start;
+            }
           }
         }
       }
@@ -209,28 +222,48 @@ endScript;
           $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
           $that = $category->that;
           $template = $category->template->asXML();
-          //strip out the <template> tags, as they aren't needed
           $template = substr($template, 10);
           $tLen = strlen($template);
           $template = substr($template, 0, $tLen - 11);
-          $template = trim($template);
+          $template = str_replace("'", "\'", $template);
+          $template = str_replace("\\'", "\'", $template);
           # Strip CRLF and LF from category (Windows/mac/*nix)
           $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
-          $params[] = array(
-            ':bot_id' => $bot_id,
-            ':aiml' => $aiml_add,
-            ':pattern' => $pattern,
-            ':that' => $that,
-            ':template' => $template,
-            ':topic' => $topic,
-            ':fileName' => $fileName
-          );
+          $aiml_add = str_replace("'", "\'", $aiml_add);
+          $aiml_add = str_replace("\\'", "\'", $aiml_add);
+          $sql_add = str_replace('[aiml_add]', $aiml_add, $sql_template);
+          $sql_add = str_replace('[pattern]', $pattern, $sql_add);
+          $sql_add = str_replace('[that]', $that, $sql_add);
+          $sql_add = str_replace('[template]', $template, $sql_add);
+          $sql_add = str_replace('[topic]', '', $sql_add);
+          $sql .= "$sql_add";
+          $rowCount++;
+          if ($rowCount >= 100)
+          {
+            $rowCount = 0;
+            $sql = rtrim($sql, ",\n") . ';';
+            //save_file(_LOG_PATH_ . 'sql1.txt', $sql . PHP_EOL);
+            $sth = $dbConn->prepare($sql);
+            $sth->execute();
+            $success = ($sth->rowCount() >= 0) ? true : false;
+            $sql = $sql_start;
+          }
+        }
+        if ($sql != $sql_start)
+        {
+          $sql = rtrim($sql, ",\n") . ';';
+          //save_file(_LOG_PATH_ . 'sql2.txt', $sql . PHP_EOL, true);
+          $sth = $dbConn->prepare($sql);
+          $sth->execute();
+          $success = ($sth->rowCount() >= 0) ? true : false;
         }
       }
-      if (!empty($params))
+      if ($sql != $sql_start)
       {
-        $rowCount = db_write($sql, $params, true, __FILE__, __FUNCTION__, __LINE__);
-        $success = ($rowCount !== false) ? true : false;
+        $sql = rtrim($sql, ",\n") . ';';
+        //save_file(_LOG_PATH_ . 'sql3.txt', $sql . PHP_EOL, true);
+        $sth = $dbConn->query($sql);
+        $success = ($sth->rowCount() >= 0) ? true : false;
       }
       $msg = ($from_zip === true) ? '' : "Successfully added $fileName to the database.<br />\n";
     }

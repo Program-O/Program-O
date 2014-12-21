@@ -23,8 +23,8 @@
   $format = (!empty($form_vars['format'])) ? $form_vars['format'] : 'html';
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+<!DOCTYPE html>
+<html>
   <head>
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
@@ -72,18 +72,18 @@
   </head>
   <body onload="document.getElementById('say').focus()">
     <h3>Program O Example GUI Page - HTML</h3>
-    <form method="get" action="index.php#end">
+    <form name="chatform" method="post" action="index.php#end" onsubmit="if(document.getElementById('say').value == '') return false;">
       <div id="input">
         <label for="say">Say:</label>
         <input type="text" name="say" id="say" size="70" />
-        <input type="submit" name="submit" id="say" value="say" />
+        <input type="submit" name="submit" id="btn_say" value="say" />
         <input type="hidden" name="convo_id" id="convo_id" value="<?php echo $convo_id;?>" />
         <input type="hidden" name="bot_id" id="bot_id" value="<?php echo $bot_id;?>" />
         <input type="hidden" name="format" id="format" value="<?php echo $format;?>" />
       </div>
     </form>
     <div id="responses">
-<?php echo $display . '<a id="end"/>' ?>
+      <?php echo $display . '<div id="end">&nbsp;</div>' . PHP_EOL ?>
     </div>
     <div id="shameless_plug">
       To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
