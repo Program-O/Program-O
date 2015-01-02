@@ -1,5 +1,4 @@
 <?PHP
-
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
