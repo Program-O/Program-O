@@ -24,10 +24,13 @@
     ini_set('error_log', _LOG_PATH_ . 'debug.reader.error.log');
   }
   $now_playing = '';
-    $session_name = 'PGO_DEBUG';
-    session_name($session_name);
-    session_start();
-    $iframeURL = 'about:blank';
+  $server_name = filter_input(INPUT_SERVER,'SERVER_NAME');
+  $session_cookie_path = str_replace("http://$server_name", '', _DEBUG_URL_);
+  session_set_cookie_params($session_lifetime, $session_cookie_path);
+  $session_name = 'PGO_DEBUG';
+  session_name($session_name);
+  session_start();
+  $iframeURL = 'about:blank';
 
   $postVars = filter_input_array(INPUT_POST);
   if (isset($postVars['logout']))
