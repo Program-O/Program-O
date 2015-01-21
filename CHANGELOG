@@ -1,7 +1,7 @@
   /***************************************
    * http://www.program-o.com
    * PROGRAM O
-   * Version: 2.4.6
+   * Version: 2.4.7
    * FILE: CHANGELOG
    * AUTHOR: Elizabeth Perreau and Dave Morton
    * DATE: MAY 17TH 2014
@@ -9,6 +9,10 @@
    */
 
 Version History:
+
+2.4.7   Security fixes
+            1.) Added XSS and CSRF attack prevention to the code-base
+                **Please note that this bug fix affects the config file, so will rewuire a reinstall of the script**
 
 2.4.6   Bug fixes, refined the admin login routines
             1.) Added code to the install script that detects the current session path, creating a new,

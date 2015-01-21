@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.6
+    * Version: 2.4.7
     * FILE: validateAIML.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 06-02-2014
@@ -26,7 +26,8 @@
     $tf = str_replace(' ', '_', $tf);
     $target = $uploadDir . $ip . '/' . $tf;
     libxml_use_internal_errors(true);
-    if (move_uploaded_file($_FILES['uploaded']['tmp_name'], $target))
+    $tmpFile = str_replace('../', '', $_FILES['uploaded']['tmp_name']);
+    if (move_uploaded_file($tmpFile, $target))
     {
       $aimlFile = trim(file_get_contents($target));
       //$aimlFile = str_replace('><', ">\n<", $aimlFile);

@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.6
+  * Version: 2.4.7
   * FILE: config/global_config.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 12-09-2014
@@ -251,6 +251,13 @@
   define('SUP_URL' ,   'http://forum.program-o.com/syndication.php');
   define('FORUM_URL',  'http://forum.program-o.com/');
   define('BUGS_EMAIL', 'bugs@program-o.com');
+
+  //------------------------------------------------------------------------
+  // Set Security headers
+  //------------------------------------------------------------------------
+  header("X-Frame-Options:deny");
+  header("X-XSS-Protection: 1; mode=block");
+  header("X-Content-Type-Options: nosniff");
 
   //------------------------------------------------------------------------
   // Set Script Installation as completed

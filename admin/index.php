@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.6
+  * Version: 2.4.7
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-11-2013
@@ -25,6 +25,7 @@
   require_once(_LIB_PATH_ . 'error_functions.php');
   require_once(_LIB_PATH_ . 'misc_functions.php');
   require_once(_LIB_PATH_ . 'template.class.php');
+  require_once(_ADMIN_PATH_ . 'allowedPages.php');
 
   // Set session parameters
   $session_name = 'PGO_Admin';
@@ -32,9 +33,14 @@
   session_start();
 
   // Get form inputs
-  $post_vars = filter_input_array(INPUT_POST);
-  $get_vars = filter_input_array(INPUT_GET);
-  $cookie_vars = filter_input_array(INPUT_COOKIE);
+  $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
+  $page = ($page === false || $page === null) ? 'main' : $page;
+  if (!array_key_exists($page, $allowed_pages)) exit('Invalid argument!');
+  $filters = $allowed_pages[$page];
+  $post_vars = filter_input_array(INPUT_POST, $filters);
+  $get_vars = filter_input_array(INPUT_GET, $filters);
+  $input_vars = array_merge((array) $post_vars, (array) $get_vars);
+  //save_file(_LOG_PATH_ . 'vars/' . $page . '_vars.txt', "$page vars:\n" . print_r($input_vars, true));
 
   // Set default values
   $msg = '';
@@ -48,7 +54,6 @@
   $githubVersion = getCurrentVersion();
   $version = ($githubVersion == VERSION) ? 'Program O version ' . VERSION : 'Program O ' . $githubVersion . ' is now available. <a href="https://github.com/Program-O/Program-O/archive/master.zip">Click here</a> to download it.';
   $dbConn = db_open();
-  //error_log(print_r($dbConn, true), 3, _LOG_PATH_ . 'dbConn_original.txt');
   if ($get_vars['page'] == 'logout') logout();
   $logged_in = getLoginStatus();
   $curPage = 'logout';
