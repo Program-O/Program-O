@@ -38,7 +38,7 @@
   if (!array_key_exists($page, $allowed_pages)) exit('Invalid argument!');
   $filters = $allowed_pages[$page];
   $post_vars = filter_input_array(INPUT_POST, $filters);
-  $get_vars = filter_input_array(INPUT_GET, $filters);
+  $get_vars = filter_input_array(INPUT_GET, $filters, false);
   $input_vars = array_merge((array) $post_vars, (array) $get_vars);
 
   // Set default values
