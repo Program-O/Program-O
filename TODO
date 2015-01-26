@@ -25,3 +25,5 @@
   5.) Create/modify some bot-level configurable default values so that botmasters can use their own
       values, based on their chatbot's "native language".
 
+  6.) Finish the parse_eval_tag() function.
+

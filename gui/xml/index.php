@@ -9,6 +9,14 @@
   * DETAILS: This is the XML GUI interface for Program O
   ***************************************/
 
+
+    $e_all = defined('E_DEPRECATED') ? E_ALL & ~E_DEPRECATED : E_ALL;
+    error_reporting($e_all);
+    ini_set('log_errors', true);
+    ini_set('error_log', '../../logs/gui.xml.error.log');
+    ini_set('html_errors', false);
+    ini_set('display_errors', false);
+
   // Experimental code
   $base_URL  = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
   $this_path = str_replace(DIRECTORY_SEPARATOR, '/', realpath(dirname(__FILE__)));  // The current location of this file, normalized to use forward slashes
@@ -30,9 +38,19 @@
 
 end_display;
 
-  $post_vars = (!empty($_POST)) ? filter_input_array(INPUT_POST) : array();
-  $get_vars = (!empty($_GET)) ? filter_input_array(INPUT_GET) : array();
-  $request_vars = array_merge($get_vars, $post_vars);
+  $options = array(
+    'say'       => FILTER_SANITIZE_STRING,
+    'format'    => FILTER_SANITIZE_STRING,
+    'bot_id'    => FILTER_SANITIZE_STRING,
+    'convo_id'  => array(
+      'filter'    => FILTER_CALLBACK,
+      'options'   => 'validateConvoId'
+    )
+  );
+  $post_vars = filter_input_array(INPUT_POST, $options);
+  $get_vars = filter_input_array(INPUT_GET, $options);
+  $request_vars = array_merge((array)$get_vars, (array)$post_vars);
+  echo ("<!-- POST vars:\n" . print_r($_POST, true) . "\nGET vars:\n" . print_r($_GET, true) . "\$request_vars:\n" . print_r($request_vars, true) . "\n-->\n");
   $convo_id = (isset ($request_vars['convo_id'])) ? $request_vars['convo_id'] : get_convo_id();
   $bot_id = (isset ($request_vars['bot_id'])) ? $request_vars['bot_id'] : 1;
   if (!empty ($post_vars))
@@ -95,6 +113,12 @@ end_display;
     return $convo_id;
   }
 
+  function validateConvoId($convo_id)
+  {
+    $id = htmlentities($convo_id);
+    return ($id === $convo_id) ? $convo_id : get_convo_id();
+  }
+
 ?>
 <!doctype html>
 <html>
@@ -130,7 +154,7 @@ end_display;
   </head>
   <body onload="document.forms[0].say.focus();">
     <h3>Program O XML GUI</h3>
-    <form accept-charset="utf-8" method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
+    <form accept-charset="utf-8" method="post" action="index.php">
       <p>
         <input type="text" name="say" id="say" size="70" />
         <input id="bot_id" type="hidden" name="bot_id" value="<?php echo $bot_id ?>">

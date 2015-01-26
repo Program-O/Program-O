@@ -171,6 +171,8 @@
     ),
     'login' => array(
       'page' => FILTER_SANITIZE_STRING,
+      'user_name' => FILTER_SANITIZE_STRING,
+      'pw' => FILTER_SANITIZE_STRING,
     ),
     'logout' => array(
       'page' => FILTER_SANITIZE_STRING,

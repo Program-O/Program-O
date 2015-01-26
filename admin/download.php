@@ -12,7 +12,7 @@
   $content = '';
   $status = '';
   $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
-  $referer = $_SERVER['HTTP_REFERER'];
+  $referer = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_SANITIZE_URL);
   $upperScripts = $template->getSection('UpperScripts');
   $post_vars = filter_input_array(INPUT_POST);
   $get_vars = filter_input_array(INPUT_GET);
@@ -27,6 +27,7 @@
     else
     {
       $fileNames = $post_vars['filenames'];
+      unlink(_ADMIN_PATH_ . "downloads/$zipFilename"); // clear out any old zip files to prepare for the new one.
       $zip = new ZipArchive();
       $success = $zip->open(_ADMIN_PATH_ . "/downloads/$zipFilename", ZipArchive::CREATE);
       if ($success === true)
@@ -38,8 +39,10 @@
           $zip->addFromString($filename, $curZipContent);
         }
         $zip->close();
-        header("Refresh: 5; url=file.php?file=$zipFilename&send_file=yes&referer=$referer&msg=$msg");
-        $msg .= "The file $zipFilename is being processed. If the download doesn't start within a few seconds, please click <a href=\"file.php?file=$zipFilename&send_file=yes&referer=$referer&msg=$msg\">here</a>.\n";
+        $_SESSION['send_file'] = $zipFilename;
+        $_SESSION['referer'] = $referer;
+        header("Refresh: 5; url=file.php");
+        $msg .= "The file $zipFilename is being processed. If the download doesn't start within a few seconds, please click <a href=\"file.php\">here</a>.\n";
       }
     }
   }

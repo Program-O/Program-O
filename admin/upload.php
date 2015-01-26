@@ -167,7 +167,6 @@ endScript;
       $params = array();
       if (!empty ($aiml->topic))
       {
-        $sql = $sql_start;
         foreach ($aiml->topic as $topicXML)
         {
         # handle any topic tag(s) in the file

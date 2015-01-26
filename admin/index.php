@@ -40,7 +40,6 @@
   $post_vars = filter_input_array(INPUT_POST, $filters);
   $get_vars = filter_input_array(INPUT_GET, $filters);
   $input_vars = array_merge((array) $post_vars, (array) $get_vars);
-  //save_file(_LOG_PATH_ . 'vars/' . $page . '_vars.txt', "$page vars:\n" . print_r($input_vars, true));
 
   // Set default values
   $msg = '';
