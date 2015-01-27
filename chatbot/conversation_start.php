@@ -24,6 +24,7 @@
   //leave this first debug call in as it wipes any existing file for this session
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Starting. Program O version " . VERSION, 0);
   runDebug(__FILE__, __FUNCTION__, __LINE__, "OS: $os version $osv", 0);
+  runDebug(__FILE__, __FUNCTION__, __LINE__, 'PHP  version ' . phpversion(), 0);
   //load all the chatbot functions
   include_once (_BOTCORE_PATH_ . "aiml" . $path_separator . "load_aimlfunctions.php");
   //load all the user functions
