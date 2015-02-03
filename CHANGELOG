@@ -12,7 +12,7 @@ Version History:
 
 2.4.7   Security fixes
             1.) Added XSS and CSRF attack prevention to the code-base
-                **Please note that this bug fix affects the config file, so will rewuire a reinstall of the script**
+                **Please note that this bug fix affects the config file, so will require a reinstall of the script**
 
 2.4.6   Bug fixes, refined the admin login routines
             1.) Added code to the install script that detects the current session path, creating a new,

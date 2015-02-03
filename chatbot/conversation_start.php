@@ -54,9 +54,9 @@
   $form_vars_get = filter_input_array(INPUT_GET);
 
   $form_vars = array_merge((array)$form_vars_get, (array)$form_vars_post);
-  if ((!empty($form_vars)) && !isset($form_vars['say']))
+  if (!isset($form_vars['say']))
   {
-    //error_log('Empty input! form vars = ' . print_r($form_vars, true) . PHP_EOL, 3, _LOG_PATH_ . 'debug_formvars.txt');
+    error_log('Empty input! form vars = ' . print_r($form_vars, true) . PHP_EOL, 3, _LOG_PATH_ . 'debug_formvars.txt');
     $form_vars['say'] = '';
   }
   $say = ($say !== '') ? $say : trim($form_vars['say']);
