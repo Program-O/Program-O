@@ -30,7 +30,7 @@
     }
     catch (Exception $e)
     {
-      exit('Program O has encountered a problem with connecting to the database. With any luck, the following message will help: ' . $e->getMessage();
+      exit('Program O has encountered a problem with connecting to the database. With any luck, the following message will help: ' . $e->getMessage());
     }
     return $dbConn;
   }
