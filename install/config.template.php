@@ -30,7 +30,8 @@
 
   define('_INC_PATH_', _BASE_PATH_ . $path_separator);
   define('_ADMIN_PATH_', _BASE_PATH_ . 'admin' . $path_separator);
-  define('_SESSION_PATH_', _ADMIN_PATH_ . '[session_dir]' . $path_separator);
+  #define('_SESSION_PATH_', _ADMIN_PATH_ . '[session_dir]' . $path_separator);
+  # The above line is commented out till I can come up with a better implementation of session handling
   define('_ADMIN_URL_', _BASE_URL_ . 'admin/');
   define('_CAPTCHA_PATH_', _ADMIN_PATH_ . 'captcha-images' . $path_separator);
   define('_BOTCORE_PATH_', _BASE_PATH_ . 'chatbot' . $path_separator . 'core' . $path_separator);
@@ -164,14 +165,15 @@
   //------------------------------------------------------------------------
 
   //------------------------------------------------------------------------
-  // Session handling
+  // Session handling - Currently disabled until I can find a better way to implement this
   //------------------------------------------------------------------------
+/*
   $session_lifetime = 86400; // 24 hours, expressed in seconds
-  $server_name = filter_input(INPUT_SERVER,'SERVER_NAME');
+  $server_name = filter_input(INPUT_SERVER,'SERVER_NAME', FILTER_SANITIZE_STRING);
   $session_cookie_path = str_replace("http://$server_name", '', _ADMIN_URL_);
   session_set_cookie_params($session_lifetime, $session_cookie_path);
-  //file_put_contents(_LOG_PATH_ . 'session.writable.txt', (is_writable(_SESSION_PATH_)) ? 'true' : 'false');
   if (is_writable(_SESSION_PATH_)) ini_set('session.save_path', _SESSION_PATH_);
+*/
 
   //------------------------------------------------------------------------
   // Addon Configuration - Set as desired

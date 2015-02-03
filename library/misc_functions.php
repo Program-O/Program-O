@@ -91,6 +91,9 @@ endFooter;
    */
   function session_gc()
   {
+    return false;
+/*
+    This function is temporarily disabled until I can devise a better implementation of session handling
     global $session_lifetime;
     $session_files = glob(_SESSION_PATH_ . 'sess_*');
     foreach($session_files as $file)
@@ -98,4 +101,5 @@ endFooter;
       $lastAccessed = filemtime($file);
       if ($lastAccessed < (time() - $session_lifetime)) unlink($file);
     }
+*/
   }
