@@ -177,4 +177,20 @@
     'logout' => array(
       'page' => FILTER_SANITIZE_STRING,
     ),
+    'stats' => array(
+      'page' => FILTER_SANITIZE_STRING,
+    ),
+    'bugs' => array(
+      'page' => FILTER_SANITIZE_STRING,
+      'name' => FILTER_SANITIZE_STRING,
+      'email' => FILTER_SANITIZE_STRING,
+      'subject' => FILTER_SANITIZE_STRING,
+      'message' => FILTER_SANITIZE_STRING,
+      'captcha' => FILTER_SANITIZE_STRING,
+    ),
+    'support' => array(
+      'page' => FILTER_SANITIZE_STRING,
+    ),
+    #'' => array(),
+    #'' => array(),
   );

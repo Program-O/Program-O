@@ -1109,4 +1109,10 @@ between the start and end section tags are the only parts of the template that a
           </tr>
         </table>
       </form>
+      <script type="text/javascript">
+        function renewImage() {
+          var url = 'captcha.php?r=' + Math.random();
+          document.getElementById('capImg').src = url;
+        }
+      </script>
 <!-- Section BugForm End -->
