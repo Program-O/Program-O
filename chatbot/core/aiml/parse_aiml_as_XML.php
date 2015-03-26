@@ -112,7 +112,18 @@
         $input[$index] = implode_recursive($glue, $element, __FILE__, __FUNCTION__, __LINE__);
       }
     }
-    $out = (is_array($input)) ? implode($glue, $input) : $input;
+    switch (gettype($input))
+    {
+      case 'array':
+      $out = implode($glue, $input);
+      break;
+      case 'string':
+      $out = $input;
+      break;
+      default:
+      runDebug(__FILE__, __FUNCTION__, __LINE__,'input type: ' . gettype($input), 4);
+      $out = (string) $input;
+    }
     $out = str_replace('  ', ' ', $out);
     if ($function != 'implode_recursive') runDebug(__FILE__, __FUNCTION__, __LINE__, "Imploding complete. Returning '$out'", 4);
     return ltrim($out);

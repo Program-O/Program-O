@@ -31,18 +31,22 @@
   $session_name = 'PGO_Admin';
   session_name($session_name);
   session_start();
+  $msg = '';
 
   // Get form inputs
+  $pc = print_r($_GET, true) . "\n" . print_r($_POST, true);
   $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
   $page = ($page === false || $page === null) ? 'main' : $page;
-  if (!array_key_exists($page, $allowed_pages)) exit('Invalid argument!');
+  if (!array_key_exists($page, $allowed_pages))
+  {
+    $msg = 'Invalid argument!';
+  }
   $filters = $allowed_pages[$page];
   $post_vars = filter_input_array(INPUT_POST, $filters);
   $get_vars = filter_input_array(INPUT_GET, $filters);
   $input_vars = array_merge((array) $get_vars, (array) $post_vars);
 
   // Set default values
-  $msg = '';
   $bot_name = '<b class="red">not selected</b>';
   $hide_logo = '';
   $curPage = '';

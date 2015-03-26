@@ -54,7 +54,17 @@
     function normalize_text($text)
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__,"Begin normalization - text = '$text'", 4);
-      $normalized_text = preg_replace('/[[:punct:]]/uis', ' ', $text);
+      $normalized_text = preg_replace('/(\d+) - (\d+)/', '$1 MINUS $2', $text);
+      $normalized_text = preg_replace('/(\d+)-(\d+)/', '$1 MINUS $2', $normalized_text);
+      $normalized_text = preg_replace('/(\d+) \+ (\d+)/', '$1 PLUS $2', $normalized_text);
+      $normalized_text = preg_replace('/(\d+)\+(\d+)/', '$1 PLUS $2', $normalized_text);
+      $normalized_text = preg_replace('/(\d+) \* (\d+)/', '$1 TIMES $2', $normalized_text);
+      $normalized_text = preg_replace('/(\d+) x (\d+)/', '$1 TIMES $2', $normalized_text);
+      $normalized_text = preg_replace('/(\d+)x(\d+)/', '$1 TIMES $2', $normalized_text);
+      $normalized_text = preg_replace('/(\d+)\*(\d+)/', '$1 TIMES $2', $normalized_text);
+      $normalized_text = preg_replace('/(\d+) \/ (\d+)/', '$1 DIVIDEDBY $2', $normalized_text);
+      $normalized_text = preg_replace('/(\d+)\/(\d+)/', '$1 DIVIDEDBY $2', $normalized_text);
+      $normalized_text = preg_replace('/[[:punct:]]/uis', ' ', $normalized_text);
       $normalized_text = preg_replace('/\s\s+/', ' ', $normalized_text);
       $normalized_text = (IS_MB_ENABLED) ? mb_strtoupper($normalized_text) : strtoupper($normalized_text);
       $normalized_text = trim($normalized_text);

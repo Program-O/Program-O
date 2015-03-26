@@ -46,7 +46,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making a like pattern to use in the sql", 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Transforming $field: " . print_r($sentence, true), 4);
-    $sql_like_pattern = '';
+    $sql_like_pattern = "\n";
     $i = 0;
     //if the sentence is contained in an array extract the actual text sentence
     if (is_array($sentence))
@@ -59,15 +59,21 @@
     $first_word = $words[0];
     $last_word = $words[$count_words];
     $tmpLike = '';
-    $sql_like_pattern .= " `$field` like '$first_word %' OR";
+    //$sql_like_pattern .= " `$field` like '$first_word % $last_word'";// OR `$field` like '$first_word %' OR `$field` like '% $last_word'";
+    $sql_like_pattern .= "  `$field` like '$first_word % $last_word' OR\n";
+    $sql_like_pattern .= "  `$field` like '$first_word %' OR\n";
+    $mid_lp = "`$field` like '$first_word %'";
     foreach ($words as $word)
     {
       if ($word == $first_word or $word == $last_word) continue;
-      $sql_like_pattern .= " `$field` like '% $word %' OR";
+      $mid_lp = str_replace(' %', " $word %", $mid_lp);
+      $sql_like_pattern .= "  $mid_lp OR\n";
     }
-    $sql_like_pattern .= " `$field` like '% $last_word%' OR  `$field` like '$first_word % $last_word' OR `$field` like '$last_word'";
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"mid_lp = $mid_lp", 4);
+/*
+*/
     runDebug(__FILE__, __FUNCTION__, __LINE__, "returning like pattern:\n$sql_like_pattern", 4);
-    return $sql_like_pattern;
+    return rtrim($sql_like_pattern) . '     ';
   }
 
   /**
@@ -93,47 +99,47 @@
    * @internal param string $current_topic
    * @return array
    **/
+
+
   function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
   {
-    global $default_pattern, $error_response;
+    global $error_response;
+    $lookingfor_lc = make_lc($lookingfor);
     $current_topic = get_topic($convoArr);
     $current_thatpattern = (isset ($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
+    $default_pattern = $convoArr['conversation']['default_aiml_pattern'];
     $relevantRow = array();
     //if default pattern keep
     //if wildcard pattern matches found aiml keep
     //if wildcard pattern and wildard thatpattern keep
     //the end......
     runDebug(__FILE__, __FUNCTION__, __LINE__, "NEW FUNC Searching through " . count($allrows) . " rows to unset bad matches", 4);
-    if (($allrows[0]['pattern'] == "no results") and (count($allrows) == 1))
+    if (($allrows[0]['pattern'] == "no results") && (count($allrows) == 1))
     {
       $tmp_rows[0] = $allrows[0];
       $tmp_rows[0]['score'] = 1;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning error as no results where found", 1);
       return $tmp_rows;
     }
-    $i = 0;
-    $j = 0;
-    $message = array();
     //loop through the results array
+    runDebug(__FILE__, __FUNCTION__, __LINE__,'Blue 5 to Blue leader. Starting my run now!', 4);
+    $i = 0;
     foreach ($allrows as $all => $subrow)
     {
-      $message[$j]['new turn looking for'] = "$lookingfor";
-      $message[$j]['found pattern'] = $subrow['pattern'];
-      $message[$j]['found thatpattern'] = $subrow['thatpattern'];
-      $message[$j]['found topic'] = $subrow['topic'];
-      $message[$j]['checking against'] = implode(",", $subrow);
       //get the pattern
-      $aiml_pattern = $subrow['pattern'];
-      $aiml_pattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_pattern) : strtolower($aiml_pattern);
-      $aiml_pattern_wildcards = match_wildcard_rows($aiml_pattern);
+      $aiml_pattern = make_lc($subrow['pattern']);
+      $aiml_pattern_wildcards = build_wildcard_RegEx($aiml_pattern);
+      $default_pattern_lc = make_lc($default_pattern);
+
       //get the that pattern
-      $aiml_thatpattern = $subrow['thatpattern'];
-      $aiml_thatpattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_thatpattern) : strtolower($aiml_thatpattern);
+      $aiml_thatpattern = make_lc($subrow['thatpattern']);
       //get topic pattern
       $topicMatch = FALSE;
-      $aiml_topic = trim($subrow['topic']);
-      $aiml_topic = (IS_MB_ENABLED) ? mb_strtolower($aiml_topic) : strtolower($aiml_topic);
-      $current_topic_lc = (IS_MB_ENABLED) ? mb_strtolower($current_topic) : strtolower($current_topic);
+      $aiml_topic = make_lc(trim($subrow['topic']));
+      $current_topic_lc = make_lc($current_topic);
+
+      #Check for a matching topic
+      $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($aiml_topic) : '';
       if ($aiml_topic == '')
       {
         $topicMatch = TRUE;
@@ -141,54 +147,36 @@
       elseif (($aiml_topic == $current_topic_lc))
       {
         $topicMatch = TRUE;
-        $message[$j]['topic match'] = "Found topic match $aiml_topic and $current_topic_lc";
+      }
+      elseif (!empty($aiml_topic_wildcards))
+      {
+        preg_match($aiml_topic_wildcards, $current_topic_lc, $matches);
+        $topicMatch = (count($matches) > 0) ? true : false;
       }
       else
       {
-        $message[$j]['topic match'] = "NO topic match $aiml_topic and $current_topic_lc";
         $topicMatch = FALSE;
       }
-      $message[$j]['have made the pattern wildcard to do reg exp'] = $aiml_pattern_wildcards;
+
+      # check for a matching pattern
       preg_match($aiml_pattern_wildcards, $lookingfor, $matches);
-      if (count($matches) > 0)
+      $aiml_patternmatch = (count($matches) > 0) ? true : false;
+      # look for a thatpattern match
+      if (!empty($aiml_thatpattern))
       {
-        $aiml_patternmatch = TRUE;
-        $message[$j]['found some matches'] = $matches[0];
-        $message[$j]['using'] = "$aiml_pattern_wildcards REGEXPIN $lookingfor";
-      }
-      else
-      {
-        $aiml_patternmatch = FALSE;
-      }
-      $message[$j]['found a match'] = $aiml_patternmatch;
-      $message[$j]['what is the current thatpattern'] = $current_thatpattern;
-      $message[$j]['do we have a thatpattern'] = $aiml_patternmatch;
-      if ($aiml_thatpattern != '')
-      {
-        $aiml_thatpattern_wildcards = match_wildcard_rows($aiml_thatpattern);
-        preg_match($aiml_thatpattern_wildcards, $current_thatpattern, $thatmatches);
-        if (count($thatmatches) > 0)
-        {
-          $aiml_thatpatternmatch = TRUE;
-          $message[$j]['there are thatpattern matches'] = "$aiml_thatpattern_wildcards in $current_thatpattern";
-          $message[$j]['thatpattern matches are'] = print_r($thatmatches, true);
-        }
-        else
-        {
-          $aiml_thatpatternmatch = FALSE;
-          $message[$j]['there arent any thatpattern matches'] = "$aiml_thatpattern_wildcards in $current_thatpattern";
-        }
+        $aiml_thatpattern_wildcards = build_wildcard_RegEx($aiml_thatpattern);
+        preg_match($aiml_thatpattern_wildcards, $current_thatpattern, $matches);
+        $aiml_thatpatternmatch = (count($matches) > 0) ? true : false;
       }
       else
       {
         $aiml_thatpattern_wildcards = FALSE;
-        $message[$j]['no thatpattern'] = $aiml_thatpattern;
       }
-      //if default pattern keep
-      if (($aiml_pattern == $default_pattern) || (strtolower($aiml_pattern) == strtolower($default_pattern)) || (strtoupper($aiml_pattern) == strtoupper($default_pattern)))
+
+      if ($aiml_pattern == $default_pattern_lc)
       {
-      //if it is a direct match with our default pattern then add to tmp_rows
-        $tmp_rows[$i]['score'] = 0;
+        //if it is a direct match with our default pattern then add to tmp_rows
+        $tmp_rows[$i]['score'] = 1;
         $tmp_rows[$i]['track_score'] = "default pick up line ($aiml_pattern = $default_pattern) ";
       }
       elseif ((!$aiml_thatpattern_wildcards) && ($aiml_patternmatch)) // no thatpattern and a pattern match keep
@@ -201,11 +189,17 @@
         $tmp_rows[$i]['score'] = 2;
         $tmp_rows[$i]['track_score'] = " thatpattern match and a pattern match";
       }
+      elseif ($aiml_pattern == $lookingfor_lc)
+      {
+        $tmp_rows[$i]['score'] = 1;
+        $tmp_rows[$i]['track_score'] = " direct pattern match";
+      }
       else
       {
         $tmp_rows[$i]['score'] = - 1;
         $tmp_rows[$i]['track_score'] = "dismissing nothing is matched";
       }
+
       if ($topicMatch === FALSE)
       {
         $tmp_rows[$i]['score'] = - 1;
@@ -215,36 +209,33 @@
       {
         $relevantRow[] = $subrow;
       }
-      $message[$j]['score'] = $tmp_rows[$i]['score'];
-      $message[$j]['track score'] = $tmp_rows[$i]['track_score'];
       $i++;
-      $j++;
     }
     $rrCount = count($relevantRow);
-      if ($rrCount == 0)
-      {
-        $i = 0;
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Error: FOUND NO AIML matches in DB", 1);
-        $relevantRow[$i]['aiml_id'] = "-1";
-        $relevantRow[$i]['bot_id'] = "-1";
-        $relevantRow[$i]['pattern'] = "no results";
-        $relevantRow[$i]['thatpattern'] = '';
-        $relevantRow[$i]['topic'] = '';
-        $relevantRow[$i]['score'] = 0;
-      }
+    if ($rrCount == 0)
+    {
+      $i = 0;
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Error: FOUND NO AIML matches in DB", 1);
+      $relevantRow[$i]['aiml_id'] = "-1";
+      $relevantRow[$i]['bot_id'] = "-1";
+      $relevantRow[$i]['pattern'] = "no results";
+      $relevantRow[$i]['thatpattern'] = '';
+      $relevantRow[$i]['topic'] = '';
+      $relevantRow[$i]['score'] = 0;
+    }
     sort2DArray("show top scoring aiml matches", $relevantRow, "good matches", 1, 10);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Found " . count($relevantRow) . " relevant rows", 4);
     return $relevantRow;
   }
 
-  /**
+ /**
    * Takes a sentence and converts AIML wildcards to Regular Expression wildcards
    * so that it can be matched in php using pcre search functions
    *
    * @param string $item
    * @return string
    **/
-  function match_wildcard_rows($item)
+  function build_wildcard_RegEx($item)
   {
     $item = trim($item);
     $item = str_replace("*", ")(.*)(", $item);
@@ -261,199 +252,260 @@
    *
    * @param array  $convoArr
    * @param array  $allrows
-   * @param string $lookingfor
+   * @param string $pattern
    * @internal param int $bot_parent_id
    * @internal param string $current_thatpattern
    * @internal param string $current_topic
    * @return array
    **/
-  function score_matches($convoArr, $allrows, $lookingfor)
+  function score_matches($convoArr, $allrows, $pattern)
   {
-    global $common_words_array, $default_pattern;
-    $current_thatpattern = (isset ($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
-    $current_topic = get_topic($convoArr);
-    $aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
+    global $common_words_array;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Scoring the matches.", 4);
+
+    # obtain some values to test
+    $topic = get_topic($convoArr);
+    $that = (isset ($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
+    $default_pattern = $convoArr['conversation']['default_aiml_pattern'];
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Scoring the matches. Topic = $current_topic", 4);
-    //set the scores for each type of word or sentence to be used in this function
-    $this_bot_match = 500;
-    $underscore_points = 100;
-    $that_pattern_match = 75;
-    $topic_match = 50;
-    $that_pattern_match_general = 9;
-    $uncommon_word_points = 8;
-    $common_word_points = 1;
-    $direct_word_match_points = 1;
-    $pattern_points = 2;
-    $starscore_points = 1;
-    $direct_match = 1;
-    //even the worst match from the actual bot is better than the best match from the base bot
-    //loop through all relevant results
+    $bot_id = $convoArr['conversation']['bot_id'];
+
+    # set the scores for each type of word or sentence to be used in this function
+
+    # full pattern match scores:
+    $this_bot_match               = 250;
+    $underscore_match             = 100;
+    $topic_underscore_match       = 80;
+    $topic_direct_match           = 50;
+    $topic_star_match             = 10;
+    $thatpattern_underscore_match = 45;
+    $thatpattern_direct_match     = 15;
+    $thatpattern_star_match       = 2;
+    $direct_pattern_match         = 10;
+    $pattern_direct_match         = 7;
+    $pattern_star_match           = 1;
+    $default_pattern_match        = 5;
+
+    # individual word match scores:
+    $uncommon_word_match      = 8;
+    $common_word_match        = 1;
+    $direct_word_match        = 2;
+    $underscore_word_match    = 25;
+    $star_word_match          = 1;
+    $rejected                 = -1;
+
+    # loop through all relevant results
     foreach ($allrows as $all => $subrow)
     {
-    //get items
-      if ((!isset ($subrow['pattern'])) || (trim($subrow['pattern']) == ''))
+      $category_bot_id      = isset($subrow['bot_id']) ? $subrow['bot_id'] : 1;
+      $category_topic       = $subrow['topic'];
+      $category_thatpattern = $subrow['thatpattern'];
+      $category_pattern     = $subrow['pattern'];
+      $check_pattern_words  = true;
+
+      # make it all lower case, to make it easier to test, and do it using mbstring functions if possible
+      $category_pattern_lc     = make_lc($category_pattern);
+      $category_thatpattern_lc = make_lc($category_thatpattern);
+      $category_topic_lc       = make_lc($category_topic);
+      $default_pattern_lc      = make_lc($default_pattern);
+      $pattern_lc              = make_lc($pattern);
+      $topic_lc                = make_lc($topic);
+      $that_lc                 = make_lc($that);
+
+      // Start scoring here
+      $current_score = 0;
+      $track_matches = '';
+
+      # 1.) Check for current bot, rather than parent
+      if ($category_bot_id == $bot_id)
       {
-        $aiml_pattern = '';
+        $current_score += $this_bot_match;
+        $track_matches .= 'current bot, ';
       }
-      else
+      elseif ($category_bot_id == $bot_parent_id)
       {
-        $aiml_pattern = trim($subrow['pattern']);
+        $current_score += 0;
+        $track_matches .= 'parent bot, ';
       }
-      if ((!isset ($subrow['thatpattern'])) || (trim($subrow['thatpattern']) == ''))
+      else # if it's not the current bot and not the parent bot, then reject it and log a debug message (this should never happen)
       {
-        $aiml_thatpattern = '';
-      }
-      else
-      {
-        $aiml_thatpattern = trim($subrow['thatpattern']);
-      }
-      if ((!isset ($subrow['topic'])) || (trim($subrow['topic']) == ''))
-      {
-        $aiml_topic = '';
-      }
-      else
-      {
-        $aiml_topic = trim($subrow['topic']);
-      }
-      if ($aiml_pattern == '')
-      {
+        $current_score = $rejected;
+        runDebug(__FILE__, __FUNCTION__, __LINE__,'Found an error trying to identify the chatbot.', 1);
+        unset($allrows[$all]);
         continue;
       }
-      //convert aiml wildcards to php wildcards
-      if ($aiml_thatpattern != '')
+
+      # 2.) test for a non-empty  current topic
+      if (!empty($topic))
       {
-        $aiml_thatpattern_wildcards = match_wildcard_rows($aiml_thatpattern);
-      }
-      else
-      {
-        $aiml_thatpattern_wildcards = '';
-      }
-      //to debug the scoring...
-      $allrows[$all]['track_score'] = '';
-      //if the aiml is from the actual bot and not the base bot
-      //any match in the current bot is better than the base bot
-      if (($bot_parent_id != 0) && ($allrows[$all]['bot_id'] != $bot_parent_id))
-      {
-        $allrows[$all]['score'] += $this_bot_match;
-        $allrows[$all]['track_score'] .= "a";
-      }
-      //if the result aiml pattern matches the user input increase score
-      if ($aiml_pattern == $lookingfor)
-      {
-        $allrows[$all]['score'] += $direct_match;
-        $allrows[$all]['track_score'] .= "b";
-      }
-      //if the result topic matches the user stored aiml topic increase score
-      if (($aiml_topic == $current_topic) && ($current_topic != ''))
-      {
-        $allrows[$all]['score'] += $topic_match;
-        $allrows[$all]['track_score'] .= "c";
-      }
-      //if the result that pattern matches the user stored that pattern increase score
-      if (($aiml_thatpattern == $current_thatpattern) && ($aiml_thatpattern != '') && ($aiml_pattern != "*"))
-      {
-        $allrows[$all]['score'] += $that_pattern_match;
-        $allrows[$all]['track_score'] .= "d";
-      }
-      elseif (($aiml_thatpattern_wildcards != '') && ($aiml_thatpattern != '') && ($aiml_pattern != "*") && (preg_match($aiml_thatpattern_wildcards, $current_thatpattern, $m)))
-      {
-        $allrows[$all]['score'] += $that_pattern_match;
-        $allrows[$all]['track_score'] .= "e";
-      }
-      //if the that pattern is just a star we need to score it seperately as this is very general
-      if (($aiml_pattern == "*") && ((substr($aiml_thatpattern, - 1) == "*") || (substr($aiml_thatpattern, 0, 1) == "*")))
-      {
-      //if the result that pattern matches the user stored that pattern increase score with a lower number
-        if (($aiml_thatpattern == $current_thatpattern) && ($aiml_thatpattern != ''))
+        # 2a.) test for a non-empty topic in the current category
+        if (empty($category_topic) || $category_topic == '*')
         {
-          $allrows[$all]['score'] += $that_pattern_match_general;
-          $allrows[$all]['track_score'] .= "f";
+          // take no action, as we're not looking for a topic here
         }
-        elseif (($aiml_thatpattern_wildcards != '') && ($aiml_thatpattern != '') && (preg_match($aiml_thatpattern_wildcards, $current_thatpattern, $m)))
+        else
         {
-          $allrows[$all]['score'] += $that_pattern_match_general;
-          $allrows[$all]['track_score'] .= "g";
-        }
-      }
-      elseif (($aiml_pattern == "*") && ($aiml_thatpattern != ""))
-      {
-        if (($aiml_thatpattern_wildcards != '') && (preg_match($aiml_thatpattern_wildcards, $current_thatpattern, $m)))
-        {
-          $allrows[$all]['score'] += $that_pattern_match;
-          $allrows[$all]['track_score'] = "general aiml that pattern match";
-        }
-      }
-      //if stored result == default pattern increase score
-      $aiml_pattern = (IS_MB_ENABLED) ? mb_strtolower($aiml_pattern) : strtolower($aiml_pattern);
-      $default_pattern = (IS_MB_ENABLED) ? mb_strtolower($default_pattern) : strtolower($default_pattern);
-      if ($aiml_pattern == $default_pattern)
-      {
-        $allrows[$all]['score'] += $pattern_points;
-        $allrows[$all]['track_score'] .= "j";
-      }
-      elseif ($aiml_pattern == "*")
-      {
-      //if stored result == * increase score
-        $allrows[$all]['score'] += $starscore_points;
-        $allrows[$all]['track_score'] .= "k";
-      }
-      elseif ($aiml_pattern == "_")
-      {
-      //if stored result == _ increase score
-        $allrows[$all]['score'] += $underscore_points;
-        $allrows[$all]['track_score'] .= "l";
-      }
-      else
-      {
-      //if stored result == none of the above BREAK INTO WORDS AND SCORE INDIVIDUAL WORDS
-        $lc_lookingFor = (IS_MB_ENABLED) ? mb_strtolower($convoArr['user_say'][1]) : strtolower($convoArr['user_say'][1]);
-        $lookingforArray = explode(' ', trim($lc_lookingFor));
-        //save_file(_DEBUG_PATH_ . 'lfa.txt', print_r($lookingforArray, true));
-        $wordsArr = explode(" ", $aiml_pattern);
-        foreach ($wordsArr as $index => $word)
-        {
-          $word = (IS_MB_ENABLED) ? mb_strtolower($word) : strtolower($word);
-          $word = trim($word);
-          if (in_Array($word, $lookingforArray))
+          # 2b.) create a RegEx to test for underscore matches
+          if (strpos($category_topic, '_') !== false)
           {
-          // if it is a direct word match increase with (lower) score
-            $allrows[$all]['score'] += $direct_word_match_points;
-            $allrows[$all]['track_score'] .= "m";
+            $regEx = str_replace('_','(.*)', $category_topic);
+            if ($regEx != $category_topic && preg_match("/$regEx/",$topic) === 1)
+            {
+              $current_score += $topic_underscore_match;
+              $track_matches .= 'topic match with underscore, ';
+            }
           }
-          if (in_Array($word, $common_words_array))
+          # 2c.) Check for a direct topic match
+          elseif ($topic == $category_topic)
           {
-          // if it is a commonword increase with (lower) score
-            $allrows[$all]['score'] += $common_word_points;
-            $allrows[$all]['track_score'] .= "n";
+            $current_score += $topic_direct_match;
+            $track_matches .= 'direct topic match, ';
           }
-          elseif ($word == "*")
-          {
-            $allrows[$all]['score'] += $starscore_points;
-            //if it is a star wildcard increase score
-            $allrows[$all]['track_score'] .= "o";
-          }
-          elseif ($word == "_")
-          {
-            $allrows[$all]['score'] += $underscore_points;
-            //if it is a underscore wildcard increase score
-            $allrows[$all]['track_score'] .= "p";
-          }
+          # 2d.) Check topic for a star wildcard match
           else
           {
-            $allrows[$all]['score'] += $uncommon_word_points;
-            //else it must be an uncommon word so increase the score
-            $allrows[$all]['track_score'] .= "q";
+            $regEx = str_replace(array('*','_'), '(.*)', $category_topic);
+            if (preg_match("/$regEx/", $topic))
+            {
+              $current_score += $topic_star_match;
+              $track_matches .= 'topic match with wildcards';
+            }
           }
         }
+      } # end topic testing
+
+      # 3.) test for a category thatpattern
+      if (empty($category_thatpattern) || $category_thatpattern == '*')
+      {
+        $current_score += 1;
+        $track_matches .= 'no thatpattern to match, ';
       }
+      else
+      {
+        if (strpos($category_thatpattern, '_') !== false)
+        {
+
+          # 3a.) Create a RegEx to search for underscore wildcards
+          $regEx = str_replace('_','(.*)', $category_thatpattern);
+          if ($regEx !== $category_thatpattern && preg_match("/$regEx/",$that) === 1)
+          {
+            $current_score += $thatpattern_underscore_match;
+            $track_matches .= 'thatpattern match with underscore, ';
+          }
+        }
+
+        # 3b.) direct thatpattern match
+        elseif ($that == $category_thatpattern)
+        {
+          $current_score += $thatpattern_direct_match;
+          $track_matches .= 'direct thatpattern match, ';
+        }
+
+        # 3c.) thatpattern star matches
+        else
+        {
+            $regEx = str_replace(array('*','_'), '(.*)', $category_thatpattern);
+            if (preg_match("/$regEx/", $that))
+            {
+              $current_score += $thatpattern_star_match;
+              $track_matches .= 'thatpattern match with star, ';
+            }
+        }
+      } # end thatpattern testing
+
+      # 4.) pattern testing
+
+      # 4a.) Create a RegEx to search for underscore wildcards
+      if (strpos($category_pattern, '_') !== false)
+      {
+        $regEx = str_replace('_','(.*)', $category_pattern);
+        //save_file(_LOG_PATH_ . 'regex.txt', "$regEx\n", true);
+        if ($regEx != $category_pattern && preg_match("/$regEx/",$pattern) === 1)
+        {
+          $current_score += $underscore_match;
+          $track_matches .= 'pattern match with underscore, ';
+        }
+      }
+
+      # 4b.) direct pattern match
+      elseif ($pattern == $category_pattern)
+      {
+        $current_score += $pattern_direct_match;
+        $track_matches .= 'direct pattern match, ';
+        //$check_pattern_words  = false;
+      }
+
+      # 4c.) pattern star matches
+      else
+      {
+        $regEx = str_replace(array('*','_'), '(.*?)', $category_pattern);
+        if ($category_pattern == '*')
+        {
+          $current_score += $pattern_star_match;
+          $track_matches .= 'pattern star match, ';
+          $check_pattern_words = false;
+        }
+        elseif ($regEx != $category_pattern && (($category_pattern != '*') || ($category_pattern != '_'))&& preg_match("/$regEx/", $pattern) != 0)
+        {
+        }
+      } # end pattern testing
+
+      # 4d.) See if the current category is the default category
+      if ($category_pattern == $default_pattern_lc)
+      {
+        runDebug(__FILE__, __FUNCTION__, __LINE__,'This category is the default pattern!', 4);
+        $current_score += $default_pattern_match;
+        $track_matches .= 'default pattern match, ';
+        $check_pattern_words = false;
+      }
+
+      #5.) check to see if we need to score word by word
+
+      if ($check_pattern_words && $category_pattern_lc != $default_pattern_lc)
+      {
+        # 5a.) first, a little setup
+        $pattern_lc = make_lc($pattern);
+        $category_pattern_lc = make_lc($category_pattern);
+        $pattern_words = explode(" ", $pattern_lc);
+
+        # 5b.) break the input pattern into an array of individual words and iterate through the array
+        $category_pattern_words = explode(" ", $category_pattern_lc);
+        foreach ($category_pattern_words as $word)
+        {
+          $word = trim($word);
+          switch (true)
+          {
+            case ($word === '_'):
+            $current_score += $underscore_word_match;
+            $track_matches .= 'underscore word match, ';
+            break;
+            case ($word === '*'):
+            $current_score += $star_word_match;
+            $track_matches .= 'star word match, ';
+            break;
+            case (in_array($word, $pattern_words)):
+            $current_score += $direct_word_match;
+            $track_matches .= "direct word match: $word, ";
+            break;
+            case (in_array($word, $common_words_array)):
+            $current_score += $common_word_match;
+            $track_matches .= "common word match: $word, ";
+            break;
+            default:
+            $current_score += $uncommon_word_match;
+            $track_matches .= "uncommon word match: $word, ";
+          }
+
+        }
+      }
+
+      $allrows[$all]['score'] += $current_score;
+      $allrows[$all]['track_score'] = rtrim($track_matches, ', ');
     }
-    //send off for debugging
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Unsorted array \$allrows:\n" . print_r($allrows, true), 4);
-    sort2DArray("show top scoring aiml matches", $allrows, "score", 1, 10);
+    //runDebug(__FILE__, __FUNCTION__, __LINE__, "Unsorted array \$allrows:\n" . print_r($allrows, true), 4);
+    $allrows = sort2DArray("show top scoring aiml matches", $allrows, "score", 1, 10);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Sorted array \$allrows:\n" . print_r($allrows, true), 4);
     return $allrows;
-    //return the scored rows
   }
 
   /**
@@ -481,37 +533,31 @@
     {
       if (isset ($subrow[$sortByItem]))
       {
-        $tmpSortArr[$subrow[$sortByItem]] = $subrow[$sortByItem];
+        //$tmpSortArr[$subrow[$sortByItem]] = $subrow[$sortByItem];
+        $tmpSortArr[] = $subrow[$sortByItem];
       }
     }
+
     //sort the results
     if ($sortAsc == 1)
     {
     //ascending
-      krsort($tmpSortArr);
+      arsort($tmpSortArr);
     }
     else
     {
     //descending
-      ksort($tmpSortArr);
+      asort($tmpSortArr);
     }
+
     //loop through scores
     foreach ($tmpSortArr as $sortedKey => $idValue)
     {
-    //no match against orig res arr
-      foreach ($thisArr as $i => $subArr)
-      {
-        if (isset ($subrow[$sortByItem]))
-        {
-          if (((string) $subArr[$sortByItem] == (string) $idValue))
-          {
-            $resArr[] = $subArr;
-          }
-        }
-      }
+      $resArr[] = $thisArr[$sortedKey];
     }
     //get the limited top results
     $outArr = array_slice($resArr, 0, $limit);
+    return $outArr;
   }
 
   /**
@@ -807,7 +853,7 @@
     //TODO convert to get_it
     $bot_id = $convoArr['conversation']['bot_id'];
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
-    $aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
+    $default_aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
     #$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
     $convoArr['aiml']['lookingfor'] = str_replace('  ', ' ', $convoArr['aiml']['lookingfor']);
     $lookingfor = trim(strtoupper($convoArr['aiml']['lookingfor']));
@@ -816,6 +862,7 @@
     $firstInputWord = get_first_word($lookingfor);
     //get the stored topic
     $storedtopic = get_topic($convoArr);
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"Stored topic = '$storedtopic'", 4);
     //get the cleaned user input
     $lastthat = (isset ($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
     //build like patterns
@@ -838,32 +885,37 @@
     {
       $sql_bot_select = " bot_id = '$bot_id' ";
     }
-    if ($storedtopic != '')
+    if (!empty($storedtopic))
     {
-      $topic_select = "AND ((`topic`='') OR (`topic`='$storedtopic'))";
+      $topic_select = "AND `topic`='' OR\n  `topic`='$storedtopic'";
     }
     else
+    {
       $topic_select = '';
+    }
     if ($word_count == 1)
     {
     //if there is one word do this
       $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
-    $sql_bot_select AND (
-    ((`pattern` = '_') OR (`pattern` = '*') OR (`pattern` = '$lookingfor') OR (`pattern` = '$aiml_pattern' ) )
-    $topic_select) order by `topic` desc, `id` desc, `pattern` asc;";
+  $sql_bot_select AND
+  `pattern` = '_' OR
+  `pattern` = '*' OR
+  `pattern` = '$lookingfor' OR
+  `pattern` = '$default_aiml_pattern'
+   $topic_select order by `topic` desc, `id` asc, `pattern` asc;";
     }
     else
     {
     //otherwise do this
       $sql_add = make_like_pattern($lookingfor, 'pattern');
-      $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
-    $sql_bot_select AND (
-    ((`pattern` = '_') OR
-     (`pattern` = '*') OR
-     (`pattern` like '$lookingfor') OR
-     ($sql_add) OR
-     (`pattern` = '$aiml_pattern' ))
-    $topic_select) order by `topic` desc, `id` desc, `pattern` asc;";
+      $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
+  $sql_bot_select AND
+  `pattern` = '_' OR
+  `pattern` = '*' OR
+  `pattern` = '$lookingfor' OR $sql_add
+  `pattern` = '$default_aiml_pattern'
+  $topic_select
+  order by `topic` desc, `id` asc, `pattern` asc;";
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
@@ -920,4 +972,8 @@
     return $retval;
   }
 
-?>
+  function make_lc($txt)
+  {
+    return (IS_MB_ENABLED) ? mb_strtolower($txt) : strtolower($txt);
+  }
+

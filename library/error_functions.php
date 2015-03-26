@@ -79,7 +79,8 @@
       $usecN = round($current_timestamp - floor($current_timestamp), 5);
       //Lose the decimal point and everything to the left of it
       $usecD = str_replace('0.', '', $usecN);
-      $elapsed_time = round((($current_timestamp - $last_timestamp) * 1000), 5);
+      $et = $current_timestamp - $last_timestamp;
+      $elapsed_time = number_format($et * 1000, 3);
       $last_timestamp = $current_timestamp;
       //build timestamp index for the debug array
       $index = date('d-m-Y H:i:s.') . $usecD . "[$level][$debug_level] - Elapsed time: $elapsed_time milliseconds";

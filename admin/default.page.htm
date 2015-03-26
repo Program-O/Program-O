@@ -1116,3 +1116,51 @@ between the start and end section tags are the only parts of the template that a
         }
       </script>
 <!-- Section BugForm End -->
+<!-- Section SearchTable Start -->
+[blank]          <p>Use the handy table below to both search and edit your AIML categories.</p>
+<!-- Section SearchTable End -->
+<!-- Section SearchScripts Start -->
+[blank]    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.5/css/jquery.dataTables.css" />
+    <style type="text/css">tfoot {display: table-header-group;}</style>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="scripts/jeditable.js"></script>
+    <script type="text/javascript" src="scripts/jquery.datatable.editable.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        // Setup - add a text input to each footer cell
+/*
+*/
+        $('#tblAIML tfoot th').each( function () {
+          var title = $('#tblAIML thead th').eq($(this).index()).text();
+          $(this).html('<input type="text" placeholder="Search '+title+'" />' );
+        });
+        // DataTable
+        var table = $('#tblAIML').dataTable({
+          'columns': [
+            {'width': '10%'},
+            {'width': '10%'},
+            {'width': '10%'},
+            {'width': '70%'},
+            {'width': '10%'}
+          ],
+          'iDisplayLength': 10,
+          'pagingType': 'full_numbers',
+          'sDom': 'lrpit',
+          'processing': true,
+          'serverSide': true,
+          'ajax': 'ajax.php',
+          'sServerMethod': 'POST'
+        }).makeEditable();
+        // Apply the search
+        var tableAPI = table.api();
+        tableAPI.columns().eq(0).each( function(colIdx) {
+          $('input', tableAPI.column(colIdx).footer()).on('keyup change', function() {
+            tableAPI.column(colIdx).search(this.value).draw();
+          });
+        });
+/*
+*/
+      });
+    </script>
+<!-- Section SearchScripts End -->

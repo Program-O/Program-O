@@ -191,6 +191,7 @@
     'support' => array(
       'page' => FILTER_SANITIZE_STRING,
     ),
-    #'' => array(),
-    #'' => array(),
+    'search' => array(
+      'page' => FILTER_SANITIZE_STRING,
+    ),
   );

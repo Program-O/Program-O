@@ -22,9 +22,7 @@
   ini_set('default_charset', $charset);
 
   //leave this first debug call in as it wipes any existing file for this session
-  runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Starting. Program O version " . VERSION, 0);
-  runDebug(__FILE__, __FUNCTION__, __LINE__, "OS: $os version $osv", 0);
-  runDebug(__FILE__, __FUNCTION__, __LINE__, 'PHP  version ' . phpversion(), 0);
+  runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Starting. Program O version " . VERSION . PHP_EOL . 'PHP  version ' . phpversion() . PHP_EOL . "OS: $os version $osv", 0);
   //load all the chatbot functions
   include_once (_BOTCORE_PATH_ . "aiml" . $path_separator . "load_aimlfunctions.php");
   //load all the user functions
@@ -50,8 +48,22 @@
   $say = '';
   $display = "";
 
-  $form_vars_post = filter_input_array(INPUT_POST);
-  $form_vars_get = filter_input_array(INPUT_GET);
+  $options = array (
+    'convo_id'    => FILTER_SANITIZE_STRING,
+    'bot_id'      => FILTER_SANITIZE_NUMBER_INT,
+    'say' => array(
+      'filter'      => FILTER_SANITIZE_STRING,
+      'flags'       => FILTER_FLAG_NO_ENCODE_QUOTES
+    ),
+    'format'      => FILTER_SANITIZE_STRING,
+    'debug_mode'  => FILTER_SANITIZE_NUMBER_INT,
+    'debug_level' => FILTER_SANITIZE_NUMBER_INT,
+    'name'        => FILTER_SANITIZE_STRING
+  );
+
+
+  $form_vars_post = filter_input_array(INPUT_POST, $options);
+  $form_vars_get = filter_input_array(INPUT_GET, $options);
 
   $form_vars = array_merge((array)$form_vars_get, (array)$form_vars_post);
   if (!isset($form_vars['say']))
@@ -69,6 +81,7 @@
   $debug_mode = (isset($form_vars['debug_mode'])) ? $form_vars['debug_mode'] : $debug_mode;
   if (isset($form_vars['convo_id'])) session_id($form_vars['convo_id']);
   $convo_id = session_id();
+  runDebug(__FILE__, __FUNCTION__, __LINE__,"Debug level: $debug_level" . PHP_EOL . "session ID = $convo_id", 0);
   //if the user has said something
   if (!empty($say))
   {
@@ -89,7 +102,7 @@
 
       $numRows = $sth->rowCount();
       $convoArr['client_properties'] = null;
-      $convoArr['conversation'] = null;
+      $convoArr['conversation'] = array();
       $convoArr['conversation']['user_id'] = $user_id;
       // Get old convo id, to use for later
       $old_convo_id = session_id();
@@ -125,7 +138,8 @@
     }
     //add any pre-processing addons
 
-
+    $rawSay = $say;
+    //$say = normalize_text($say);
     $say = run_pre_input_addons($convoArr, $say);
     /** @noinspection PhpUndefinedVariableInspection */
     $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $bot_id;
@@ -140,12 +154,13 @@
     if (!isset($convoArr['conversation']['user_id']) and isset($user_id)) $convoArr['conversation']['user_id'] = $user_id;
     $convoArr = check_set_format($convoArr);
     $convoArr = load_that($convoArr);
+    //save_file(_LOG_PATH_ . 'ca.txt', print_r($convoArr,true));
     $convoArr = buildNounList($convoArr);
     $convoArr['time_start'] = $time_start;
     $convoArr = load_bot_config($convoArr);
     //if totallines isn't set then this is new user
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Debug level = $debug_level", 0);
-    $debug_level = $convoArr['conversation']['debug_level'];
+    $debug_level = isset($convoArr['conversation']['debug_level']) ? $convoArr['conversation']['debug_level'] : $debug_level;
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Debug level = $debug_level", 0);
     if (!isset ($convoArr['conversation']['totallines']))
     {

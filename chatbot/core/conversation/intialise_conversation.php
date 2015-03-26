@@ -526,7 +526,7 @@
     if (isset($form_vars['convo_id']))
     {
       $convo_id = $form_vars['convo_id'];
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Obtaining the convo id from form vars. Valie: $convo_id", 4);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Obtaining the convo id from form vars. Value: $convo_id", 4);
     }
     elseif (isset ($convoArr['conversation']['convo_id']))
     {

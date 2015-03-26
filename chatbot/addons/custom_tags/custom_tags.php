@@ -25,7 +25,8 @@ include('code_tag/code_tag.php');
 
 /*
  * function parse_php_tag
- * Parses the custom <php> tag
+ * Parses the custom <php> tag - Please note that this function is currently NOT
+ * complete. It's mearly a placeholder, to illustrate how custom tag functions work.
  * @param (array) $convoArr
  * @param (SimpleXMLelement) $element
  * @param (string) $parentName
@@ -33,15 +34,6 @@ include('code_tag/code_tag.php');
  * @return (string) $response_string
  */
 
-  /**
-   * Function parse_php_tag
-   *
-   * * @param $convoArr
-   * @param $element
-   * @param $parentName
-   * @param $level
-   * @return array|string
-   */
   function parse_php_tag($convoArr, $element, $parentName, $level)
 {
   runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing custom PHP tag.', 2);
@@ -58,6 +50,69 @@ include('code_tag/code_tag.php');
   $response_string = implode_recursive(' ', $response);
   // do something here
   return $response_string;
+}
+
+/*
+ * function parse_math_tag
+ * Parses the custom <math> tag
+ * Tag syntax: <math>{operator} {operand1} {operand2}
+ * the operator can be one of four string values: ADD, SUBTRACT, MULTIPLY and DIVIDE.
+ * Both operands must be numeric
+ * @param (array) $convoArr
+ * @param (SimpleXMLelement) $element
+ * @param (string) $parentName
+ * @param (int) $level
+ * @return (string) $out
+ */
+
+  function parse_math_tag($convoArr, simpleXMLElement $element, $parentName, $level)
+{
+  $response = array();
+  $children = $element->children();
+  if (!empty ($children))
+  {
+    foreach ($children as $child)
+    {
+      $response[] = parseTemplateRecursive($convoArr, $child, $level + 1);
+    }
+  }
+  else
+  {
+    $response[] = (string) $element;
+  }
+  $response_string = implode_recursive(' ', $response);
+  // do something here
+  runDebug(__FILE__, __FUNCTION__, __LINE__,"String to process: $response_string", 4);
+  list($operator, $operand1, $operand2) = explode(' ', $response_string,3);
+  $operatorArray = array('ADD','SUBTRACT','MULTIPLY','DIVIDE');
+  switch (true)
+  {
+    case (!in_array(strtoupper($operator),$operatorArray)):
+    return 'Invalid math function!';
+    break;
+    case (!is_numeric($operand1)):
+    return "$operand1 is not a number!";
+    break;
+    case (!is_numeric($operand2)):
+    return "$operand2 is not a number!";
+    break;
+  }
+  switch ($operator)
+  {
+    case 'ADD':
+    $out = $operand1 + $operand2;
+    break;
+    case 'SUBTRACT':
+    $out = $operand1 - $operand2;
+    break;
+    case 'MULTIPLY':
+    $out = $operand1 * $operand2;
+    break;
+    case 'DIVIDE':
+    $out = $operand1 / $operand2;
+    break;
+  }
+  return $out;
 }
 
   /**

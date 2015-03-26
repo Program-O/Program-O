@@ -123,8 +123,6 @@
     }
     $searchTerms = (!empty ($searchTerms)) ? implode(" AND ", $searchTerms) : "TRUE";
     $countSQL = "SELECT count(id) FROM `aiml` WHERE `bot_id` = ? AND ($searchTerms)";
-    error_log("SQL = $countSQL\n", 3, _LOG_PATH_ . 'searchSQL.txt');
-    error_log("Search terms = " . print_r($searchParams, true) . "\n", 3, _LOG_PATH_ . 'searchSQL.txt');
     $count = db_fetch($countSQL, $searchParams, __FILE__, __FUNCTION__, __LINE__);
     $total = $count['count(id)'];
     $limit = ($limit >= $total) ? $total - 1 - (($total - 1) % $groupSize) : $limit;

@@ -26,14 +26,36 @@
   $dupPS = "$path_separator$path_separator";
   $session_dir = str_replace($dupPS, $path_separator, $session_dir); // remove double path separators when necessary
   $writeCheckArray = array('config' => _CONF_PATH_, 'debug' => _DEBUG_PATH_, 'logs' => _LOG_PATH_);
+  $errFlag = false;
 
   foreach ($writeCheckArray as $key => $folder)
   {
     if (!is_writable($folder))
     {
-      $errorMessage .= "<p class='red bold'>The $key folder cannot be written to, or does not exist. Please correct this before you continue.</p>\n";
+      $errFlag = true;
+      $errorMessage .= <<<endWarning
+      <p class="red bold">
+        The $key folder cannot be written to, or does not exist. Please correct this before you continue.
+      </p>
+endWarning;
     }
   }
+  $additionalInfo = <<<endInfo
+      <p>
+        This is usually a permissions issue, and most often occurs with Linux-based systems. Check
+        file/folder permissions for the following directories:
+        <ul>
+          <li>The base install folder (where you unzipped or uploaded the script to)</li>
+          <li>admin</li>
+          <li>config</li>
+          <li>chatbot/debug</li>
+        </ul>
+        Permissions for these folders should be 0755. If they are not, then you need to change that. If you
+        have trouble with this, or have questions, please let us know on the
+        <a href="http://forum.program-o.com">Program O forums</a>.
+      </p>
+endInfo;
+  if ($errFlag) $errorMessage .= $additionalInfo;
   define('SECTION_START', '<!-- Section [section] Start -->'); # search params for start and end of sections
   define('SECTION_END', '<!-- Section [section] End -->'); # search params for start and end of sections
   define('PHP_SELF', $_SERVER['SCRIPT_NAME']); # This is more secure than $_SERVER['PHP_SELF'], and returns more or less the same thing
@@ -190,7 +212,7 @@ endPage;
       {
         try
         {
-          $sql = "DROP TABLE IF EXISTS `srai_lookup`; CREATE TABLE IF NOT EXISTS `srai_lookup` (`id` int(11) NOT NULL AUTO_INCREMENT, `bot_id` int(11) NOT NULL, `pattern` text NOT NULL, `template_id` int(11) NOT NULL, PRIMARY KEY (`id`), KEY `pattern` (`pattern`(64)) COMMENT 'Search against this for performance boost') ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1 ;";
+          $sql = "DROP TABLE IF EXISTS `srai_lookup`; CREATE TABLE IF NOT EXISTS `srai_lookup` (`id` int(11) NOT NULL AUTO_INCREMENT, `bot_id` int(11) NOT NULL, `pattern` text NOT NULL, `template_id` int(11) NOT NULL, PRIMARY KEY (`id`), KEY `pattern` (`pattern`(64)) COMMENT 'Search against this for performance boost') ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1;";
           $sth = $dbConn->prepare($sql);
           $sth->execute();
         }
@@ -209,7 +231,7 @@ endPage;
     $sth = $dbConn->prepare($sql);
     $sth->execute();
     $result = $sth->fetchAll();
-    if (count($result) ==0)
+    if (count($result) == 0)
     {
       $sql_template = "
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
