@@ -139,8 +139,8 @@
     //add any pre-processing addons
 
     $rawSay = $say;
-    //$say = normalize_text($say);
     $say = run_pre_input_addons($convoArr, $say);
+    $say = normalize_text($say);
     /** @noinspection PhpUndefinedVariableInspection */
     $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $bot_id;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $bot_id . "\nFormat: " . $form_vars['format'], 2);
