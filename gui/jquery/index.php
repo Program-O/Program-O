@@ -174,7 +174,7 @@
           var user = $('#say').val();
           $('.usersay').text(user);
           var formdata = $("#talkform").serialize();
-          $('#say').val('')
+          $('#say').val('');
           $('#say').focus();
           $.post('<?php echo $url ?>', formdata, function(data){
             var b = data.botsay;
