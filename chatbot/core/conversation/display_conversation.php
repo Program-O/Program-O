@@ -198,11 +198,13 @@
         $display = str_replace(']]>', '', $display);
         break;
       case 'xml' :
-        header("Content-type: text/xml; charset=utf-8");
+        header("Content-type: text/plain; charset=utf-8", false);
+        header("Access-Control-Allow-Origin: *", false);
         echo $display;
         break;
       case 'json' :
-        header("Content-type: text/plain; charset=utf-8");
+        header("Content-type: text/plain; charset=utf-8", false);
+        header("Access-Control-Allow-Origin: *", false);
         echo $display;
         break;
       default :
