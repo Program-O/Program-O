@@ -202,6 +202,7 @@ endScript;
       {
         foreach ($aiml->category as $category)
         {
+          $topic = "";
           $fullCategory = $category->asXML();
           $pattern = trim($category->pattern);
           $pattern = str_replace("'", ' ', $pattern);
