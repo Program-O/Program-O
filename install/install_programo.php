@@ -22,7 +22,7 @@
   $errorMessage .= $no_unicode_message;
   require_once ('install_config.php');
   $dirArray = glob(_ADMIN_PATH_ . "ses_*",GLOB_ONLYDIR);
-  $session_dir = (empty($dirArray)) ? 'ses_' . md5(time()) : $dirArray[0];
+  $session_dir = (empty($dirArray)) ? 'ses_' . md5(time()) : basename($dirArray[0]);
   $dupPS = "$path_separator$path_separator";
   $session_dir = str_replace($dupPS, $path_separator, $session_dir); // remove double path separators when necessary
   $writeCheckArray = array('config' => _CONF_PATH_, 'debug' => _DEBUG_PATH_, 'logs' => _LOG_PATH_);
