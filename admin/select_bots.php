@@ -327,7 +327,7 @@ VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,
     ':debugemail'         => $debugemail,
     ':debugshow'          => $debugshow,
     ':debugmode'          => $debugmode,
-    ':aiml_pattern'       => $aiml_pattern,
+    ':aiml_pattern'       => $default_aiml_pattern,
     ':error_response'     => $error_response
   );
   $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
