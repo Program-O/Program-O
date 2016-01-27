@@ -41,11 +41,7 @@
           use the links above or to the left to perform administrative tasks,
           as needed.
         </p>
-        <div id="rssContainer">
-         <div id="rssTitle">Latest News from Program-O.com</div>
-         <div id="rssOutput">[rssOutput]</div>
-        </div>
+
 endMain;
-  $mainContent = str_replace('[rssOutput]', getRSS(), $mainContent);
 
 ?>

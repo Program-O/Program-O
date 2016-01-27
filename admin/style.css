@@ -753,12 +753,7 @@ dl.codebox dd span {padding-left: 7px;}
 .syntaxkeyword {color: #060;}
 .syntaxstring {color: #D00;}
 
-blockquote.uncited {
-  background: #EEE url(http://forum.program-o.com/styles/prosilver/theme/images/quote.gif) no-repeat top left;
-  padding: 12px;
-  border: 1px solid #ccc;
-  width: auto;
-}
+
 
 #report_message {
   width: 99%;

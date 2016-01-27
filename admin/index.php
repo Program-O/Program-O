@@ -217,22 +217,7 @@
    */
   function makeTopLinks() {
     $out = array(
-                         array(
-                               '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="index.php?page=main"',
-                               '[linkOnclick]' => '',
-                               '[linkAlt]' => ' alt="Home"',
-                               '[linkTitle]' => ' title="Home"',
-                               '[linkLabel]' => 'Home'
-                               ),
-                         array(
-                               '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="'.NEWS_URL.'"',
-                               '[linkOnclick]' => '',
-                               '[linkAlt]' => ' alt="Get the latest news from the Program O website"',
-                               '[linkTitle]' => ' title="Get the latest news from the Program O website"',
-                               '[linkLabel]' => 'News'
-                               ),
+
                          array(
                                '[linkClass]' => ' class="[curClass]"',
                                '[linkHref]' => ' href="'.DOCS_URL.'"',
@@ -243,7 +228,7 @@
                                ),
                          array(
                                '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="index.php?page=bugs"',
+                               '[linkHref]' => ' href="https://github.com/Program-O/Program-O/issues"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="Bug reporting"',
                                '[linkTitle]' => ' title="Bug reporting"',
@@ -257,14 +242,14 @@
                                '[linkTitle]' => ' title="Get bot statistics"',
                                '[linkLabel]' => 'Stats'
                                ),
-                         array(
+                         /*array(
                                '[linkClass]' => ' class="[curClass]"',
                                '[linkHref]' => ' href="index.php?page=support"',
                                '[linkOnclick]' => '',
                                '[linkAlt]' => ' alt="Get support for Program O"',
                                '[linkTitle]' => ' title="Get support for Program O"',
                                '[linkLabel]' => 'Support'
-                               ),
+                               ),*/
                          array(
                                '[linkClass]' => '',
                                '[linkHref]' => ' href="index.php?page=logout"',
@@ -417,64 +402,7 @@
     return $out;
   }
 
-  /**
-   * Function getRSS
-   *
-   * * @param string $feed
-   * @return string
-   */
-  function getRSS($feed = 'RSS') {
-    global $template;
-    switch ($feed) {
-      case 'support':
-      $feedURL = SUP_URL;
-      break;
-      default:
-      $feedURL = RSS_URL;
-    }
-    $failed = 'The RSS Feed is not currently available. We apologise for the inconvenience.';
-    $out = '';
-    $msg = '';
-    if (function_exists('curl_init')) {
-      $ch = curl_init($feedURL);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
-      curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-      curl_setopt($ch, CURLOPT_HEADER, 0);
-      $data = curl_exec($ch);
-      curl_close($ch);
-      if (false === $data or empty($data)) return $failed;
-      try
-      {
-        libxml_use_internal_errors(true);
-        $rss = new SimpleXmlElement($data, LIBXML_NOCDATA);
-      }
-      catch (exception $e)
-      {
-        $rss = false;
-        error_log('RSS load failed. Error: ' . $e->getMessage() . PHP_EOL,3,_LOG_PATH_ . 'rss.error.log');
-        return $failed;
-      }
-      if($rss) {
-        $items = $rss->channel->item;
-        foreach ($items as $item) {
-          $title = htmlentities($item->title);
-          $link = $item->link;
-          $published_on = $item->pubDate;
-          $description = $item->description;
-          $out .= "<h3><a target=\"_blank\" href=\"$link\">$title</a></h3>\n";
-          $out .= "<p>$description</p>";
-        }
-      }
-      else {
-        $out = $failed;
-      }
-    }
-    else {
-      $out = $failed;
-    }
-    return $out;
-  }
+
 
   /**
    * Function getCurrentVersion
