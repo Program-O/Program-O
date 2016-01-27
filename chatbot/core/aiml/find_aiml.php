@@ -46,32 +46,15 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making a like pattern to use in the sql", 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Transforming $field: " . print_r($sentence, true), 4);
-    $sql_like_pattern = "\n";
-    $i = 0;
+    
     //if the sentence is contained in an array extract the actual text sentence
     if (is_array($sentence))
     {
       $sentence = implode_recursive(' ', $sentence, __FILE__, __FUNCTION__, __LINE__);
     }
-    $words = explode(" ", $sentence);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "word list:\n" . print_r($words, true), 4);
-    $count_words = count($words) - 1;
-    $first_word = $words[0];
-    $last_word = $words[$count_words];
-    $tmpLike = '';
-    //$sql_like_pattern .= " `$field` like '$first_word % $last_word'";// OR `$field` like '$first_word %' OR `$field` like '% $last_word'";
-    $sql_like_pattern .= "  `$field` like '$first_word % $last_word' OR\n";
-    $sql_like_pattern .= "  `$field` like '$first_word %' OR\n";
-    $mid_lp = "`$field` like '$first_word %'";
-    foreach ($words as $word)
-    {
-      if ($word == $first_word or $word == $last_word) continue;
-      $mid_lp = str_replace(' %', " $word %", $mid_lp);
-      $sql_like_pattern .= "  $mid_lp OR\n";
-    }
-    runDebug(__FILE__, __FUNCTION__, __LINE__,"mid_lp = $mid_lp", 4);
-/*
-*/
+
+    $sql_like_pattern = "\n '$sentence' like REPLACE(`$field`, '*', '%') OR \n";
+    
     runDebug(__FILE__, __FUNCTION__, __LINE__, "returning like pattern:\n$sql_like_pattern", 4);
     return rtrim($sql_like_pattern) . '     ';
   }
