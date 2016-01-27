@@ -107,12 +107,22 @@
   $upperScripts    = '';
   $extraCSS = '';
 
+
+    //if we get to the login page and we are still actually logged in
+    //just destroy the session to prevent weirdness
+    if($curPage == 'login' && !empty($_SESSION['poadmin']['logged_in'])){
+        $_SESSION = array();
+    }
+
   $_SESSION['poadmin']['curPage'] = $curPage;
   ($curPage != 'logout' || $curPage == 'login') ? include ("$curPage.php") : false;
 
   $bot_format_link = (!empty($bot_format)) ? "&amp;format=$bot_format" : '';
   $curPage = (isset($curPage)) ? $curPage : 'main';
   $upperScripts .= ($hide_logo == 'HideLogoCSS') ? $template->getSection('HideLogoCSS') : '';
+
+
+
 
   # Build page content from the template
 
@@ -242,14 +252,6 @@
                                '[linkTitle]' => ' title="Get bot statistics"',
                                '[linkLabel]' => 'Stats'
                                ),
-                         /*array(
-                               '[linkClass]' => ' class="[curClass]"',
-                               '[linkHref]' => ' href="index.php?page=support"',
-                               '[linkOnclick]' => '',
-                               '[linkAlt]' => ' alt="Get support for Program O"',
-                               '[linkTitle]' => ' title="Get support for Program O"',
-                               '[linkLabel]' => 'Support'
-                               ),*/
                          array(
                                '[linkClass]' => '',
                                '[linkHref]' => ' href="index.php?page=logout"',
