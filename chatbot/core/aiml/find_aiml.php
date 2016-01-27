@@ -897,24 +897,24 @@
     {
     //if there is one word do this
       $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
-  $sql_bot_select AND
+  $sql_bot_select AND (
   `pattern` = '_' OR
   `pattern` = '*' OR
   `pattern` = '$lookingfor' OR
   `pattern` = '$default_aiml_pattern'
-   $topic_select order by `topic` desc, `id` asc, `pattern` asc;";
+  ) $topic_select order by `topic` desc, `id` asc, `pattern` asc;";
     }
     else
     {
     //otherwise do this
       $sql_add = make_like_pattern($lookingfor, 'pattern');
       $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
-  $sql_bot_select AND
+  $sql_bot_select AND (
   `pattern` = '_' OR
   `pattern` = '*' OR
   `pattern` = '$lookingfor' OR $sql_add
   `pattern` = '$default_aiml_pattern'
-  $topic_select
+  ) $topic_select
   order by `topic` desc, `id` asc, `pattern` asc;";
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);
