@@ -142,8 +142,8 @@
     <h3>Program O XML GUI</h3>
     <p>
       This is a simple example of how to access the Program O chatbot using the JSON API. Feel free to change the HTML
-      code for this page to suit your specific needs. For more advanced uses, please visit the <a href="http://www.forum.program-o.com/">
-      Program O Forums</a> to ask for assistance.
+      code for this page to suit your specific needs. For more advanced uses, please visit us at <a href="http://www.program-o.com/">
+        Program O</a>.
     </p>
     <div class="clearthis"></div>
     <div class="centerthis">
