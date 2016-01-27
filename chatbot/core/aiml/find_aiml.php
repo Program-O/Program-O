@@ -887,7 +887,7 @@
     }
     if (!empty($storedtopic))
     {
-      $topic_select = "AND `topic`='' OR\n  `topic`='$storedtopic'";
+      $topic_select = "AND (`topic`='' OR `topic`='$storedtopic')";
     }
     else
     {
