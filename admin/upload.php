@@ -221,7 +221,7 @@ endScript;
             ':pattern' => $pattern,
             ':that' => $that,
             ':template' => $template,
-            ':topic' => $topic,
+            ':topic' => '',
             ':fileName' => $fileName
           );
         }
