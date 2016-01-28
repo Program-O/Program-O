@@ -974,33 +974,29 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
     $fileName = (string) $element['filename'];
     if (empty($fileName)) // enclosed text is the category to add to the DB
     {
-      $category     = $element->category;
-      $catXML       = new SimpleXMLElement('<category/>');
-      $pattern      = parseTemplateRecursive($convoArr, $category->pattern, $level + 1);
+      $category = $element->category;
+
+      $pattern = parseTemplateRecursive($convoArr, $category->pattern, $level + 1);
       $pattern = implode_recursive(' ', $pattern, __FILE__, __FUNCTION__, __LINE__);
       $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
+
       $thatpattern = (string)$category->that;
-      $template    = $category->template->asXML();
-      $template = substr($template, 10);
-      $tplLen = strlen($template);
-      $template = substr($template,0,$tplLen - 11);
-      $template = str_replace('<text>', '', $template);
-      $template = str_replace('</text>', '', $template);
-      $template_eval = $category->template->eval;
-      if (!empty($template_eval))
-      {
-        $parsed_template_eval = parse_eval_tag($convoArr, $template_eval, 'learn_template', $level + 1);
-        $template = preg_replace('~<eval>(.*?)</eval>~i', $parsed_template_eval, $template);
-      }
+
+      $parsed_template = parseTemplateRecursive($convoArr, $category->template, $level + 1);
+      $parsed_template = implode_recursive(' ', $parsed_template, __FILE__, __FUNCTION__, __LINE__);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsed LEARN template: ' . $parsed_template, 2);
+
+      $catXML = new SimpleXMLElement('<category/>');
       $catXML->addChild('pattern', $pattern);
-      if (!empty($thatpattern)) $catXML->addChild('that', $thatpattern);
-      $catXML->addChild('template', $template);
+      if (!empty($thatpattern))
+        $catXML->addChild('that', $thatpattern);
+      $catXML->addChild('template', $parsed_template);
       $category = $catXML->asXML();
       $category = trim(str_replace('<?xml version="1.0"?>', '', $category));
       $sqlAdd = str_replace('[aiml]', $category, $sqlTemplate);
       $sqlAdd = str_replace('[pattern]', $pattern, $sqlAdd);
       $sqlAdd = str_replace('[that]', $thatpattern, $sqlAdd);
-      $sqlAdd = str_replace('[template]', $template, $sqlAdd);
+      $sqlAdd = str_replace('[template]', $parsed_template, $sqlAdd);
       $sql .= $sqlAdd;
       
       $sth = $dbConn->prepare($sql);
@@ -1039,12 +1035,15 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
         }
       }
     }
-    if ($failure) trigger_error($failure);
-    else
-    {
+
+    if ($failure) {
+      trigger_error($failure);
+    }
+    else {
       $sql = str_replace($remove, '', $sql);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding AIML to the DB. SQL:\n$sql", 3);
     }
+
     return '';
   }
 
