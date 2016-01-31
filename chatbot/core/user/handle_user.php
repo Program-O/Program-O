@@ -78,6 +78,7 @@ function intisaliseUser($convoArr)
   //db globals
   global $dbConn,$dbn, $bot_id, $unknown_user;
   $convo_id = $convoArr['conversation']['convo_id'];
+  $username = !empty($convoArr['conversation']['user_name']) ? $convoArr['conversation']['user_name'] : $unknown_user;
   $sr = "";
   $sa = "";
   $sb = "unknown browser";
@@ -93,9 +94,8 @@ function intisaliseUser($convoArr)
   if(isset($_SERVER['HTTP_USER_AGENT'])){
     $sb = $_SERVER['HTTP_USER_AGENT'];
   }
-
   $sql = "INSERT INTO `$dbn`.`users` (`id`, `user_name`, `session_id`, `bot_id`, `chatlines` ,`ip` ,`referer` ,`browser` ,`date_logged_on` ,`last_update`, `state`)
-  VALUES ( NULL , '$unknown_user', '$convo_id', $bot_id, '0', '$sa', '$sr', '$sb', CURRENT_TIMESTAMP , CURRENT_TIMESTAMP, '')";
+  VALUES ( NULL , '$username', '$convo_id', $bot_id, '0', '$sa', '$sr', '$sb', CURRENT_TIMESTAMP , CURRENT_TIMESTAMP, '')";
 
   $sth = $dbConn->prepare($sql);
   $sth->execute();
@@ -108,7 +108,7 @@ function intisaliseUser($convoArr)
   
     //add the username to the client properties....
   $sql = "INSERT INTO `$dbn`.`client_properties` (`id`,`user_id`,`bot_id`,`name`,`value`)
-  VALUES ( NULL , '$user_id', $bot_id, 'name', '$unknown_user')";
+  VALUES ( NULL , '$user_id', $bot_id, 'name', '$username')";
 
   $sth = $dbConn->prepare($sql);
   $sth->execute();
