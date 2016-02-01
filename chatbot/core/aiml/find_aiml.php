@@ -62,16 +62,47 @@
     //$sql_like_pattern .= " `$field` like '$first_word % $last_word'";// OR `$field` like '$first_word %' OR `$field` like '% $last_word'";
     $sql_like_pattern .= "  `$field` like '$first_word % $last_word' OR\n";
     $sql_like_pattern .= "  `$field` like '$first_word %' OR\n";
-    $mid_lp = "`$field` like '$first_word %'";
-    foreach ($words as $word)
-    {
-      if ($word == $first_word or $word == $last_word) continue;
-      $mid_lp = str_replace(' %', " $word %", $mid_lp);
-      $sql_like_pattern .= "  $mid_lp OR\n";
+
+
+    $wordsArr = explode(" ",$sentence);
+    $totalWordCount = count($wordsArr);
+
+    for($i=0;$i<$totalWordCount;$i++){
+
+
+      $twoUp = $i+2;
+      $oneUp = $i+1;
+      $oneDown = $i-1;
+
+
+      if(isset($wordsArr[$twoUp])){
+
+        $middleWord = $wordsArr[$oneUp];
+        $likePatternArr[] = "(`$field` LIKE '% ".$middleWord." %')";
+      }
+
+      if($oneDown>=0){
+        $likePatternOneArr = $wordsArr;
+        $likePatternOneArr[$i]='%';
+        $likePatternOne = implode(' ',$likePatternOneArr);
+
+        $likePatternArr[] = "(`$field` LIKE '". trim(strstr($likePatternOne,'%',true))." %')";
+      }
+
+
+      if($oneUp<$totalWordCount){
+        $likePatternOneArr = $wordsArr;
+        $likePatternOneArr[$i]='%';
+        $likePatternOne = implode(' ',$likePatternOneArr);
+
+        $likePatternArr[] = "(`$field` LIKE '". trim(strstr($likePatternOne,'%',false))."' )";
+      }
+
     }
-    runDebug(__FILE__, __FUNCTION__, __LINE__,"mid_lp = $mid_lp", 4);
-/*
-*/
+
+    $newSqlPatterns = implode(' OR ', $likePatternArr).' OR ';
+    $sql_like_pattern .= $newSqlPatterns;
+
     runDebug(__FILE__, __FUNCTION__, __LINE__, "returning like pattern:\n$sql_like_pattern", 4);
     return rtrim($sql_like_pattern) . '     ';
   }
@@ -917,6 +948,8 @@
   ) $topic_select
   order by `topic` desc, `id` asc, `pattern` asc;";
     }
+
+
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Match AIML sql: $sql", 3);
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $num_rows = count($result);
