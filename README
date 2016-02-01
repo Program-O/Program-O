@@ -1,7 +1,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.4.8
   * FILE: README
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -9,7 +9,6 @@
   ***************************************/
 
   ***NEWS:*** Program O version 2.4.6 introduces changes to the config file, so will require at least an overlay install.
-  Please see http://blog.program-o.com/2014/12/program-o-2-4-6-available-bug-fixes-security-enhancements/ for more details.
 
 Introduction
 ---------------------------------------------------------
@@ -48,9 +47,7 @@ your chatbot from version 1 to version 2, you will need to save your AIML files 
 current chatbot, perform a "clean install" of Program O, and then upload the AIML files
 to the new installation. With the release of Program O version 2.2, the differences
 in structure and functionality between version 1 and version 2 became too great to
-continue supporting the transition. If you need assistance with the process of migrating
-from version 1 to version 2.2+ of Program O, please contact us on the Program O forums
-at http://www.program-o.com/forum/
+continue supporting the transition.
 
 Clean install
 ---------------------------------------------------------

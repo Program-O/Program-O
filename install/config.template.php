@@ -2,10 +2,10 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.4.8
   * FILE: config/global_config.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 12-09-2014
+  * DATE: FEB 01 2016
   * DETAILS: this file is the ONLY configuration file for the bot and bot admin
   ***************************************/
   //------------------------------------------------------------------------
@@ -247,10 +247,7 @@
   //------------------------------------------------------------------------
   // Set Program O Website URLs
   //------------------------------------------------------------------------
-  define('DOCS_URL',   'http://www.program-o.com/ns/faq/');
-  define('NEWS_URL',   'http://blog.program-o.com/');
-  define('RSS_URL',    'http://blog.program-o.com/feed/');
-  define('SUP_URL' ,   'http://forum.program-o.com/syndication.php');
+  define('DOCS_URL',   'https://github.com/Program-O/Program-O/wiki');
   define('FORUM_URL',  'http://forum.program-o.com/');
   define('BUGS_EMAIL', 'bugs@program-o.com');
 

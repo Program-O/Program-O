@@ -2,10 +2,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.4.8
   * FILE: install_programo.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 02-13-2013
+  * DATE: FEB 01 2016
   * DETAILS: Program O's Automatic install script
   ***************************************/
   session_name('PGO_install');
@@ -51,8 +51,8 @@ endWarning;
           <li>chatbot/debug</li>
         </ul>
         Permissions for these folders should be 0755. If they are not, then you need to change that. If you
-        have trouble with this, or have questions, please let us know on the
-        <a href="http://forum.program-o.com">Program O forums</a>.
+        have trouble with this, or have questions, please visit us at
+        <a href="http://www.program-o.com">Program O</a>.
       </p>
 endInfo;
   if ($errFlag) $errorMessage .= $additionalInfo;

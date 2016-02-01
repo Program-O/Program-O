@@ -1,14 +1,18 @@
   /***************************************
    * http://www.program-o.com
    * PROGRAM O
-   * Version: 2.4.7
+   * Version: 2.4.8
    * FILE: CHANGELOG
    * AUTHOR: Elizabeth Perreau and Dave Morton
-   * DATE: MAY 17TH 2014
+   * DATE: FEB 01 2016
    * DETAILS: Describes the version changes in Program O
    */
 
 Version History:
+2.4.8   House Keeping
+            1.) Removed dead links from the admin area and obsolete information pages
+            2.) Merge pull requests including topic upload fix and an expansion to the make_like_pattern()
+
 
 2.4.7   Security fixes
             1.) Added XSS and CSRF attack prevention to the code-base

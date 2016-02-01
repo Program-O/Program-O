@@ -1,10 +1,10 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.4.8
   * FILE: style.css
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 10-26-2014
+  * DATE: FEB 01 2016
   * DETAILS: sets the CSS styling for the admin pages
   ***************************************/
 
@@ -753,12 +753,7 @@ dl.codebox dd span {padding-left: 7px;}
 .syntaxkeyword {color: #060;}
 .syntaxstring {color: #D00;}
 
-blockquote.uncited {
-  background: #EEE url(http://forum.program-o.com/styles/prosilver/theme/images/quote.gif) no-repeat top left;
-  padding: 12px;
-  border: 1px solid #ccc;
-  width: auto;
-}
+
 
 #report_message {
   width: 99%;
