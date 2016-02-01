@@ -2,10 +2,10 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.7
+    * Version: 2.4.8
     * FILE: find_aiml.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
-    * DATE: 12-01-2014
+    * DATE: FEB 01 2016
     * DETAILS: Contains functions that find and score the most likely AIML match from the database
     ***************************************/
 

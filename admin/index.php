@@ -2,10 +2,10 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.4.8
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 05-11-2013
+  * DATE: FEB 01 2016
   * DETAILS: Gateway to the admin functions for the script
   ***************************************/
 

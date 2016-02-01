@@ -3,10 +3,10 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.7
+    * Version: 2.4.8
     * FILE: parse_aiml_as_xml.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
-    * DATE: 12-01-2014
+    * DATE: FEB 01 2016
     * DETAILS: Handles the parsing of AIML code as XML
     ***************************************/
 

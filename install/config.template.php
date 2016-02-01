@@ -2,10 +2,10 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.4.8
   * FILE: config/global_config.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 12-09-2014
+  * DATE: FEB 01 2016
   * DETAILS: this file is the ONLY configuration file for the bot and bot admin
   ***************************************/
   //------------------------------------------------------------------------

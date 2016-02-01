@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.4.8
   * FILE: clear.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 12-12-2014

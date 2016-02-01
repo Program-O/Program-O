@@ -3,10 +3,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.4.8
   * FILE: upload.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 12-11-2014
+  * DATE: FEB 01 2016
   * DETAILS: Provides functionality to upload AIML files to a chatbot's database
   ***************************************/
   ini_set('memory_limit', '128M');

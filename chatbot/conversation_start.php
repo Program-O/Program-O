@@ -3,10 +3,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.4.8
   * FILE: chatbot/conversation_start.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 17TH 2014
+  * DATE: FEB 01 2016
   * DETAILS: this file is the landing page for all calls to access the bots
   ***************************************/
 

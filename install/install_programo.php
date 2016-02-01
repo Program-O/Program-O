@@ -2,10 +2,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.4.8
   * FILE: install_programo.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 02-13-2013
+  * DATE: FEB 01 2016
   * DETAILS: Program O's Automatic install script
   ***************************************/
   session_name('PGO_install');
