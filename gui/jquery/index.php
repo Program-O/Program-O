@@ -26,7 +26,8 @@
 */
 
   $display = "The URL for the API is currently set as:<br />\n$url.<br />\n";
-  $display .= 'Please make sure that you edit this file to change the value of the variable $url in this file to reflect the correct URL address of your chatbot, and to remove this message.' . PHP_EOL;
+  $display .= 'Test this to make sure it is correct by <a href="'.$url.'?say=hello">clicking here</a>. Then remove this message from gui/jquery/index.php' . PHP_EOL;
+  $display .= 'And don\'t forget to upload your AIML files in the admin area otherwise you will not get a response!'. PHP_EOL;
   #$display = '';
 
   /**
@@ -176,7 +177,7 @@
           var formdata = $("#talkform").serialize();
           $('#say').val('');
           $('#say').focus();
-          $.post('<?php echo $url ?>', formdata, function(data){
+          $.get('<?php echo $url ?>', formdata, function(data){
             var b = data.botsay;
             if (b.indexOf('[img]') >= 0) {
               b = showImg(b);
