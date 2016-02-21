@@ -22,7 +22,6 @@
   $convo_id = session_id();
   $format = (!empty($form_vars['format'])) ? $form_vars['format'] : 'html';
 ?>
-
 <!DOCTYPE html>
 <html>
   <head>

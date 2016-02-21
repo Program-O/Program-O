@@ -44,6 +44,3 @@
     exit;
   }
   header("Location: $pageBack");
-
-?>
-
