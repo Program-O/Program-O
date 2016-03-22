@@ -41,8 +41,8 @@
   //open db connection
   $dbConn = db_open();
   //initialise globals
-  //$convoArr = array();
-  $convoArr = intialise_convoArray($convoArr);
+  $convoArr = array();
+  //$convoArr = intialise_convoArray($convoArr);
   $new_convo_id = false;
   $old_convo_id = false;
   $say = '';
