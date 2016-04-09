@@ -18,6 +18,7 @@
     $msg = save($action);
   }
 
+
   $id = (isset($post_vars['id']) and $action != 'Add') ? $post_vars['id'] : getNextID();
   $id = ($id <= 0) ? getNextID() : $id;
   if (isset($post_vars['memberSelect'])) {
@@ -56,8 +57,8 @@
   $mainTitle         = "Modify Admin Account Data [helpLink]";
 
   $members_list_form = str_replace('[adminList]', $AdminsOpts, $members_list_form);
-  $mainContent       = str_replace('[members_content]', $membersForm, $mainContent);
   $mainContent       = str_replace('[showHelp]', $showHelp, $mainContent);
+  $mainContent       = str_replace('[members_content]', $membersForm, $mainContent);
   $mainContent       = str_replace('[members_list_form]', $members_list_form, $mainContent);
   $mainContent       = str_replace('[user_name]', $user_name, $mainContent);
   $mainContent       = str_replace('[action]', $action, $mainContent);

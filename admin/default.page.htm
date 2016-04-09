@@ -497,18 +497,24 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section ClearShowHelp Start -->
 [blank]            <div id="showHelp">
               <h3>Help...</h3>
-              <dd>This help panel is under construction.</dd>
+<dd>This area allows you remove individual or ALL aiml entries for a specific bot.</dd>
+<dd>Ideal if you want to start again with a blank chatbot and repopulate via the upload panel.</dd>
+<dd><strong>BUT BE WARNED:</strong> This operation can not be undone so use with care.</dd>
+    <dd>--Ensure that the current bot is the correct bot.</dd>
+    <dd>--Select 'Clear categories from this AIML file' and choose the aiml file from the drop down.</dd>
+    <dd>--Or select 'Clear ALL AIML categories (Purge database)'.</dd>
+    <dd>--Then press 'Submit' to delete the entries for that file.</dd>
             </div>
 <!-- Section ClearShowHelp End -->
 <!-- Section MembersShowHelp Start -->
-[blank]            <div id="showHelp">
-              <h3>Help...</h3>
-              <dd> This part is still under construction.</dd>
-              <dd></dd>
-              <dd></dd>
-              <dd></dd>
-              <br />
-            </div>
+[blank]           <div id="showHelp">
+    <h3>Help...</h3>
+    <dd>This area allows you edit or add users to the admin account area.</dd>
+    <dd>--Select a current user.</dd>
+    <dd>--Or enter the details for a new user.</dd>
+    <dd>--Then press 'Save' to update the user.</dd>
+    <dd>--Or press 'Delete' to remove the user.</dd>
+</div>
 <!-- Section MembersShowHelp End -->
 <!-- Section UploadShowHelp Start -->
 [blank]            <div id="showHelp">
@@ -646,7 +652,7 @@ between the start and end section tags are the only parts of the template that a
         </div>
 <!-- Section DbStats End -->
 <!-- Section MembersMain Start -->
-[blank]          <div id="membersForm" class="fullWidth noBorder">
+[blank]<div id="membersForm" class="fullWidth noBorder">
             <p>
               Here's where you add, remove or edit admin accounts.
             </p>
@@ -980,13 +986,13 @@ between the start and end section tags are the only parts of the template that a
 [blank]    <script type="text/javascript">
       function showMe() {
         var sh = document.getElementById('showHelp');
-        var tf = document.getElementById('downloadForm');
+        var tf = document.getElementById('membersForm');
         sh.style.display = 'block';
         tf.style.display = 'none';
       }
       function hideMe() {
         var sh = document.getElementById('showHelp');
-        var tf = document.getElementById('downloadForm');
+        var tf = document.getElementById('membersForm');
         sh.style.display = 'none';
         tf.style.display = 'block';
       }
