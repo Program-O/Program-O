@@ -16,7 +16,7 @@
   {
   //load shared files
     $thisFile = __FILE__;
-    require_once ('../config/global_config.php');
+    require_once('../config/global_config.php');
     require_once (_LIB_PATH_ . 'PDO_functions.php');
     require_once (_LIB_PATH_ . 'error_functions.php');
     $session_name = 'PGO_Admin';

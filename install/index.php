@@ -12,7 +12,7 @@
   $thisFile = __FILE__;
   if (!file_exists('../config/global_config.php'))
     header('location: install_programo.php');
-  require_once ('../config/global_config.php');
+  require_once('../config/global_config.php');
   if (!defined('SCRIPT_INSTALLED')) header('location: install_programo.php');
   //header('Location: ' . _ADMIN_URL_);
 ?>

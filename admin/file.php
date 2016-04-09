@@ -12,7 +12,7 @@
   $thisFile = __FILE__;
   if (!file_exists('../config/global_config.php'))
     header('location: ../install/install_programo.php');
-  require_once ('../config/global_config.php');
+  require_once('../config/global_config.php');
   // set up error logging and display
   ini_set('log_errors', true);
   ini_set('error_log', _LOG_PATH_ . 'admin.error.log');

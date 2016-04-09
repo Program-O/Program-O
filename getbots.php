@@ -13,7 +13,7 @@
   $script_start = $time_start;
   $last_timestamp = $time_start;
   $thisFile = __FILE__;
-  require_once ("config/global_config.php");
+  require_once("config/global_config.php");
   //load shared files
   require_once(_LIB_PATH_ . 'PDO_functions.php');
   include_once (_LIB_PATH_ . "error_functions.php");
