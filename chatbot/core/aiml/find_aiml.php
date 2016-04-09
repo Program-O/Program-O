@@ -135,6 +135,9 @@
 
   function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
   {
+
+
+
     global $error_response;
     $lookingfor_lc = make_lc($lookingfor);
     $current_topic = get_topic($convoArr);
@@ -159,6 +162,11 @@
     //loop through the results array
     runDebug(__FILE__, __FUNCTION__, __LINE__,'Blue 5 to Blue leader. Starting my run now!', 4);
     $i = 0;
+
+    echo "<pre>";
+    print_r($allrows);
+    echo "</pre>";
+
     foreach ($allrows as $all => $subrow)
     {
       //get the pattern
@@ -177,14 +185,22 @@
       #Check for a matching topic
       $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($aiml_topic) : '';
 
-      switch (true) {
-        case ($aiml_topic == ''):
-        case ($aiml_topic == $current_topic_lc):
-        case (!empty($aiml_topic_wildcards)):
-          $topicMatch = true;
-          break;
-        default:
-          $topicMatch = false;
+      if ($aiml_topic == '')
+      {
+        $topicMatch = TRUE;
+      }
+      elseif (($aiml_topic == $current_topic_lc))
+      {
+        $topicMatch = TRUE;
+      }
+      elseif (!empty($aiml_topic_wildcards))
+      {
+        preg_match($aiml_topic_wildcards, $current_topic_lc, $matches);
+        $topicMatch = (count($matches) > 0) ? true : false;
+      }
+      else
+      {
+        $topicMatch = FALSE;
       }
       # check for a matching pattern
       preg_match($aiml_pattern_wildcards, $lookingfor, $matches);
@@ -192,9 +208,7 @@
 
       # look for a thatpattern match
       $aiml_thatpattern_wildcards = (!empty($aiml_thatpattern)) ? build_wildcard_RegEx($aiml_thatpattern) : '';
-      $aiml_thatpattern_wc_matches = (!empty($aiml_thatpattern_wildcards)) ?
-        preg_match_all($aiml_thatpattern_wildcards,$current_thatpattern) :
-        0;
+      $aiml_thatpattern_wc_matches = (!empty($aiml_thatpattern_wildcards)) ? preg_match_all($aiml_thatpattern_wildcards,$current_thatpattern) : 0;
 
       switch (true) {
         case ($aiml_thatpattern_wc_matches > 0):
@@ -248,6 +262,10 @@
       }
       $i++;
     }
+    echo "<pre>";
+    print_r($tmp_rows);
+    echo "</pre>";
+
     $rrCount = count($relevantRow);
     if ($rrCount == 0)
     {
@@ -261,7 +279,9 @@
       $relevantRow[$i]['score'] = 0;
     }
     sort2DArray("show top scoring aiml matches", $relevantRow, "good matches", 1, 10);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "IAMHERE", 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Found " . count($relevantRow) . " relevant rows", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($relevantRow,true), 4);
     //file_put_contents(_LOG_PATH_ . 'relevantRow.txt', print_r($relevantRow, true));
     return $relevantRow;
   }
@@ -822,6 +842,7 @@
     $raw_that = (isset ($convoArr['that'])) ? print_r($convoArr['that'], true) : '';
     //check if match in user defined aiml
     $allrows = find_userdefined_aiml($convoArr);
+
     //if there is no match in the user defined aiml table
     if ((!isset ($allrows)) || (count($allrows) <= 0))
     {
