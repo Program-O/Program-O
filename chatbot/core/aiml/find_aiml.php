@@ -163,10 +163,6 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__,'Blue 5 to Blue leader. Starting my run now!', 4);
     $i = 0;
 
-    echo "<pre>";
-    print_r($allrows);
-    echo "</pre>";
-
     foreach ($allrows as $all => $subrow)
     {
       //get the pattern
@@ -262,9 +258,7 @@
       }
       $i++;
     }
-    echo "<pre>";
-    print_r($tmp_rows);
-    echo "</pre>";
+
 
     $rrCount = count($relevantRow);
     if ($rrCount == 0)
@@ -279,9 +273,7 @@
       $relevantRow[$i]['score'] = 0;
     }
     sort2DArray("show top scoring aiml matches", $relevantRow, "good matches", 1, 10);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "IAMHERE", 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Found " . count($relevantRow) . " relevant rows", 4);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($relevantRow,true), 4);
     //file_put_contents(_LOG_PATH_ . 'relevantRow.txt', print_r($relevantRow, true));
     return $relevantRow;
   }
