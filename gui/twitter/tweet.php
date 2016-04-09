@@ -158,7 +158,3 @@
       }
       return trim($text);
     }
-  ?>
-
-
-
