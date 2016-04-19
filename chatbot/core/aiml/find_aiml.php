@@ -57,6 +57,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "word list:\n" . print_r($words, true), 4);
     $count_words = count($words) - 1;
     $first_word = $words[0];
+    if ($count_words == 0) return " `$field` like '$first_word'\n";
     $last_word = $words[$count_words];
     $tmpLike = '';
     //$sql_like_pattern .= " `$field` like '$first_word % $last_word'";// OR `$field` like '$first_word %' OR `$field` like '% $last_word'";
@@ -105,7 +106,7 @@
     $sql_like_pattern .= $newSqlPatterns;
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "returning like pattern:\n$sql_like_pattern", 4);
-    return rtrim($sql_like_pattern) . '     ';
+    return rtrim($sql_like_pattern, ' OR ') . '     ';
   }
 
   /**
