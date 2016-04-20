@@ -954,7 +954,7 @@
   $sql_bot_select AND (
   `pattern` = '_' OR
   `pattern` = '*' OR
-  `pattern` = '$lookingfor' OR $sql_add
+  `pattern` = '$lookingfor' OR $sql_add OR
   `pattern` = '$default_aiml_pattern'
   $thatPatternSQL
   ) $topic_select
@@ -990,7 +990,7 @@
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Error: FOUND NO AIML matches in DB", 1);
       $allrows[$i]['aiml_id'] = "-1";
-      $allrows[$i]['bot_id'] = "-1";
+      $allrows[$i]['bot_id'] = $bot_id;
       $allrows[$i]['pattern'] = "no results";
       $allrows[$i]['thatpattern'] = '';
       $allrows[$i]['topic'] = '';
