@@ -12,10 +12,12 @@
   require_once('../config/global_config.php');
   chdir(__DIR__);
   error_reporting(E_ALL);
-  ini_set('display_errors', true);
+  ini_set('display_errors', 0);
+  ini_set('error_log', _LOG_PATH_ . 'validate_aiml.error.log');
   $status = '';
   $displayAIML = '';
   $ip = $_SERVER['REMOTE_ADDR'];
+  $ip = ($ip == '::1') ? 'localhost' : $ip;
   if (!empty ($_FILES))
   {
     $uploadDir = _UPLOAD_PATH_;

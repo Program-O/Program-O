@@ -235,10 +235,11 @@ endScript;
     }
     catch (Exception $e)
     {
-    //$trace = print_r($e->getTrace(), true);
+    $trace = $e->getTraceAsString();
     //exit($e->getMessage() . ' at line ' . $e->getLine());
       $msg = $e->getMessage() . ' at line ' . $e->getLine() . "<br>\n";
       //trigger_error("Trace:\n$trace");
+      error_log("Trace:\n$trace", 3, _LOG_PATH_ . "error.upload.$fileName.log");
       //file_put_contents(_LOG_PATH_ . 'error.trace.log', $trace . "\nEnd Trace\n\n", FILE_APPEND);
       $success = false;
       $_SESSION['failCount']++;

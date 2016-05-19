@@ -96,6 +96,7 @@
   $bot_unknown_user = $unknown_user;
   
   $inputs='';
+  $aiml_count = 'no';
   $form = $template->getSection('SelectBotForm');
   $sel_session = '';
   $sel_db = '';
@@ -194,7 +195,7 @@
   else {
     $bot_id = '';
     $bot_parent_id = 0;
-    $bot_name = '';
+    $bot_name = 'new or unnamed bot';
     $bot_desc = '';
     $bot_active = '';
     $action = "add";
