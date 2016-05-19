@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.8
+  * Version: 2.5.3
   * FILE: chatbot/core/conversation/display_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014

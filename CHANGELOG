@@ -1,7 +1,7 @@
   /***************************************
    * http://www.program-o.com
    * PROGRAM O
-   * Version: 2.4.8
+   * Version: 2.5.3
    * FILE: CHANGELOG
    * AUTHOR: Elizabeth Perreau and Dave Morton
    * DATE: FEB 01 2016
@@ -9,7 +9,7 @@
    */
 
 Version History:
-2.4.8   House Keeping
+2.5.3   House Keeping
             1.) Removed dead links from the admin area and obsolete information pages
             2.) Merge pull requests including topic upload fix and an expansion to the make_like_pattern()
 

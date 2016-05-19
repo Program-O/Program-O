@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.4.8
+  * Version: 2.5.3
   * FILE: spell_checker/spell_checker.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014

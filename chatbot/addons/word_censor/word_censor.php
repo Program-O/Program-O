@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.4.8
+  * Version: 2.5.3
   * FILE: word_censor/word_censor.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
