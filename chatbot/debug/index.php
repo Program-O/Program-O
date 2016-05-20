@@ -22,6 +22,7 @@
     include_once (_LIB_PATH_ . "error_functions.php");
     ini_set('error_log', _LOG_PATH_ . 'debug.reader.error.log');
   }
+  $session_lifetime = 86400; // 24 hours, expressed in seconds
   $now_playing = '';
   $server_name = filter_input(INPUT_SERVER,'SERVER_NAME');
   $session_cookie_path = str_replace("http://$server_name", '', _DEBUG_URL_);

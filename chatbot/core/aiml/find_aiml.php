@@ -331,7 +331,7 @@
     $direct_word_match        = 2;
     $underscore_word_match    = 25;
     $star_word_match          = 1;
-    $rejected                 = -1;
+    $rejected                 = -1000;
 
     # loop through all relevant results
     foreach ($allrows as $all => $subrow)
@@ -442,14 +442,20 @@
         }
 
         # 3c.) thatpattern star matches
-        else
-        {
+        elseif (strstr($category_thatpattern_lc, '*') !== false) {
             $regEx = str_replace(array('*','_'), '(.*)', $category_thatpattern);
             if (preg_match("/$regEx/", $that))
             {
               $current_score += $thatpattern_star_match;
               $track_matches .= 'thatpattern match with star, ';
             }
+        }
+        
+        #3d.) no match at all
+        else {
+          $current_score = $rejected;
+          $track_matches .= 'no thatpattern match at all, ';
+          runDebug(__FILE__, __FUNCTION__, __LINE__, "Matching '$that_lc' with '$category_thatpattern_lc' failed. Drat!'", 4);
         }
       } # end thatpattern testing
 
@@ -611,6 +617,7 @@
   **/
   function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
   {
+    global $bot_id;
     $bestResponse = array();
     $last_high_score = 0;
     $tmpArr = array();
@@ -635,6 +642,17 @@
     }
     //there may be any number of results with the same score so pick any random one
     $bestResponse = (count($tmpArr) > 0) ? $tmpArr[array_rand($tmpArr)] : false;
+    if (!$bestResponse) {
+      $bestResponse = array(
+        'aiml_id' => -1,
+        'bot_id' => $bot_id,
+        'pattern' => 'no results',
+        'thatpattern' => '',
+        'topic' => '',
+        'score' => 0,
+        'track_score' => 'No Match Found!',
+      );
+    }
     if (false !== $bestResponse) $bestResponse['template'] = get_winning_category($convoArr, $bestResponse['aiml_id']);
     $cRes = count($tmpArr);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Best Responses: " . print_r($tmpArr, true), 4);
