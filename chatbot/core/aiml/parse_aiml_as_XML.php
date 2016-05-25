@@ -742,7 +742,7 @@
           $testVarValue = (isset($attr['value'])) ? (string)$attr['value'] : '';
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Pick Value = '$testVarValue'", 4);
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $testVarValue (condition value) is equal to $test_value (Client Property).", 4);
-          if (strtolower($testVarValue) == strtolower($test_value))
+          if (_strtolower($testVarValue) == _strtolower($test_value))
           {
             runDebug(__FILE__, __FUNCTION__, __LINE__,'Pick XML = ' . $pick->asXML(), 4);
             break;
