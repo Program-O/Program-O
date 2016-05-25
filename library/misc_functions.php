@@ -18,7 +18,6 @@
    * @param array $params
    * @return mixed|string (string) $out - The returned value from the curl_exec() call.
    */
-
   function get_cURL($url, $options = array(), $params = array())
   {
     $failed = 'Cannot process CURL call.'; // This will need to be changed, at some point.
@@ -42,6 +41,30 @@
       return $data;
     }
     else return $failed;
+  }
+
+  /**
+   * function _strtolower
+   * Performs multibyte or standard lowercase conversion of a string,
+   * based on configuration.
+   *
+   * @param string $text The string to convert.
+   * @return string The input string converted to lower case.
+   */
+  function _strtolower($text) {
+    return (IS_MB_ENABLED) ? mb_strtolower($text) : strtolower($text);
+  }
+
+  /**
+   * function _strtoupper
+   * Performs multibyte or standard uppercase conversion of a string,
+   * based on configuration.
+   *
+   * @param string $text The string to convert.
+   * @return string The string converted to upper case.
+   */
+  function _strtoupper($text) {
+    return (IS_MB_ENABLED) ? mb_strtoupper($text) : strtoupper($text);
   }
 
   /**
