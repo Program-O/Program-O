@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.5.3
+  * Version: 2.5.4
   * FILE: allowedVars.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 01-19-2015
