@@ -137,7 +137,7 @@
   function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
   {
     global $error_response;
-    $lookingfor_lc = make_lc($lookingfor);
+    $lookingfor_lc = _strtolower($lookingfor);
     $current_topic = get_topic($convoArr);
     $current_thatpattern = (isset ($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
     //file_put_contents(_LOG_PATH_ . 'allrows.txt', print_r($allrows, true));
@@ -163,17 +163,17 @@
     foreach ($allrows as $all => $subrow)
     {
       //get the pattern
-      $aiml_pattern = make_lc($subrow['pattern']);
+      $aiml_pattern = _strtolower($subrow['pattern']);
       $aiml_pattern_wildcards = build_wildcard_RegEx($aiml_pattern);
-      $default_pattern_lc = make_lc($default_pattern);
+      $default_pattern_lc = _strtolower($default_pattern);
 
       //get the that pattern
-      $aiml_thatpattern = make_lc($subrow['thatpattern']);
-      $current_thatpattern = make_lc($current_thatpattern);
+      $aiml_thatpattern = _strtolower($subrow['thatpattern']);
+      $current_thatpattern = _strtolower($current_thatpattern);
       //get topic pattern
       $topicMatch = FALSE;
-      $aiml_topic = make_lc(trim($subrow['topic']));
-      $current_topic_lc = make_lc($current_topic);
+      $aiml_topic = _strtolower(trim($subrow['topic']));
+      $current_topic_lc = _strtolower($current_topic);
 
       #Check for a matching topic
       $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($aiml_topic) : '';
@@ -343,13 +343,13 @@
       $check_pattern_words  = true;
 
       # make it all lower case, to make it easier to test, and do it using mbstring functions if possible
-      $category_pattern_lc     = make_lc($category_pattern);
-      $category_thatpattern_lc = make_lc($category_thatpattern);
-      $category_topic_lc       = make_lc($category_topic);
-      $default_pattern_lc      = make_lc($default_pattern);
-      $pattern_lc              = make_lc($pattern);
-      $topic_lc                = make_lc($topic);
-      $that_lc                 = make_lc($that);
+      $category_pattern_lc     = _strtolower($category_pattern);
+      $category_thatpattern_lc = _strtolower($category_thatpattern);
+      $category_topic_lc       = _strtolower($category_topic);
+      $default_pattern_lc      = _strtolower($default_pattern);
+      $pattern_lc              = _strtolower($pattern);
+      $topic_lc                = _strtolower($topic);
+      $that_lc                 = _strtolower($that);
 
       // Start scoring here
       $current_score = 0;
@@ -450,7 +450,7 @@
               $track_matches .= 'thatpattern match with star, ';
             }
         }
-        
+
         #3d.) no match at all
         else {
           $current_score = $rejected;
@@ -510,8 +510,8 @@
       if ($check_pattern_words && $category_pattern_lc != $default_pattern_lc)
       {
         # 5a.) first, a little setup
-        $pattern_lc = make_lc($pattern);
-        $category_pattern_lc = make_lc($category_pattern);
+        $pattern_lc = _strtolower($pattern);
+        $category_pattern_lc = _strtolower($category_pattern);
         $pattern_words = explode(" ", $pattern_lc);
 
         # 5b.) break the input pattern into an array of individual words and iterate through the array
@@ -1034,9 +1034,3 @@
     $retval = ($num_rows == 0) ? '' : $row['value'];
     return $retval;
   }
-
-  function make_lc($txt)
-  {
-    return (IS_MB_ENABLED) ? mb_strtolower($txt) : strtolower($txt);
-  }
-
