@@ -741,8 +741,8 @@
           runDebug(__FILE__, __FUNCTION__, __LINE__,'Current pick attributes = ' . print_r($attr, true), 4);
           $testVarValue = (isset($attr['value'])) ? (string)$attr['value'] : '';
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Pick Value = '$testVarValue'", 4);
-          runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $testVarValue (condition value) is equal to $test_value (Client Property).", 4);
-          if (_strtolower($testVarValue) == _strtolower($test_value))
+          runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $test_value (Client Property) matches $testVarValue (condition value).", 4);
+          if (aiml_pattern_match($testVarValue, $test_value))
           {
             runDebug(__FILE__, __FUNCTION__, __LINE__,'Pick XML = ' . $pick->asXML(), 4);
             break;

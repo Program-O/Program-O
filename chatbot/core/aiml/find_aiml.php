@@ -287,6 +287,22 @@
   }
 
   /**
+   * Performs a pattern matching pass on an input string, checking
+   * whether it matches a given pattern based on the AIML specification.
+   *
+   * @param string $pattern Pattern to match.
+   * @param string $input Input string to check.
+   * @return bool True if the string matches the pattern, false otherwise.
+   **/
+  function aiml_pattern_match($pattern, $input) {
+    if(empty($input))
+      return false;
+
+    $pattern_regex = build_wildcard_RegEx(_strtolower($pattern));
+    return preg_match($pattern_regex, _strtolower($input)) === 1;
+  }
+
+  /**
    * Takes all the relevant sql results and scores them to find the most likely match with the aiml
    *
    * @param array  $convoArr
