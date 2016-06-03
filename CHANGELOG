@@ -1,7 +1,7 @@
   /***************************************
    * http://www.program-o.com
    * PROGRAM O
-   * Version: 2.5.3
+   * Version: 2.5.4
    * FILE: CHANGELOG
    * AUTHOR: Elizabeth Perreau and Dave Morton
    * DATE: FEB 01 2016
@@ -9,6 +9,12 @@
    */
 
 Version History:
+2.5.4   Multiple bug fixes
+            1.) Fixed a bug in the function that parses the `<condition>` tag that failed to properly normalize multi-byte strings. Thanks to @LorenzCK for this fix!
+            2.) Fixed a bug in the function that scores AIML categories that use the `<that>` tag that was allowing incorrect categories to be selected.
+            3.) Corrected several typos and uninitiated variables that were silently creating errors.
+            4.) Updated version information in 62 files throughout the script.
+2.4.9 - 2.5.3 - Changes "slipped through the cracks" - oops?
 2.4.8   House Keeping
             1.) Removed dead links from the admin area and obsolete information pages
             2.) Merge pull requests including topic upload fix and an expansion to the make_like_pattern()

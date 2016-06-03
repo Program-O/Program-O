@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.5.3
+    * Version: 2.5.4
     * FILE: download.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 12-08-2014

@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.5.3
+    * Version: 2.5.4
     * FILE: find_aiml.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: FEB 01 2016
@@ -136,8 +136,11 @@
 
   function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
   {
+
+
+
     global $error_response;
-    $lookingfor_lc = make_lc($lookingfor);
+    $lookingfor_lc = _strtolower($lookingfor);
     $current_topic = get_topic($convoArr);
     $current_thatpattern = (isset ($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
     //file_put_contents(_LOG_PATH_ . 'allrows.txt', print_r($allrows, true));
@@ -160,32 +163,41 @@
     //loop through the results array
     runDebug(__FILE__, __FUNCTION__, __LINE__,'Blue 5 to Blue leader. Starting my run now!', 4);
     $i = 0;
+
     foreach ($allrows as $all => $subrow)
     {
       //get the pattern
-      $aiml_pattern = make_lc($subrow['pattern']);
+      $aiml_pattern = _strtolower($subrow['pattern']);
       $aiml_pattern_wildcards = build_wildcard_RegEx($aiml_pattern);
-      $default_pattern_lc = make_lc($default_pattern);
+      $default_pattern_lc = _strtolower($default_pattern);
 
       //get the that pattern
-      $aiml_thatpattern = make_lc($subrow['thatpattern']);
-      $current_thatpattern = make_lc($current_thatpattern);
+      $aiml_thatpattern = _strtolower($subrow['thatpattern']);
+      $current_thatpattern = _strtolower($current_thatpattern);
       //get topic pattern
       $topicMatch = FALSE;
-      $aiml_topic = make_lc(trim($subrow['topic']));
-      $current_topic_lc = make_lc($current_topic);
+      $aiml_topic = _strtolower(trim($subrow['topic']));
+      $current_topic_lc = _strtolower($current_topic);
 
       #Check for a matching topic
       $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($aiml_topic) : '';
 
-      switch (true) {
-        case ($aiml_topic == ''):
-        case ($aiml_topic == $current_topic_lc):
-        case (!empty($aiml_topic_wildcards)):
-          $topicMatch = true;
-          break;
-        default:
-          $topicMatch = false;
+      if ($aiml_topic == '')
+      {
+        $topicMatch = TRUE;
+      }
+      elseif (($aiml_topic == $current_topic_lc))
+      {
+        $topicMatch = TRUE;
+      }
+      elseif (!empty($aiml_topic_wildcards))
+      {
+        preg_match($aiml_topic_wildcards, $current_topic_lc, $matches);
+        $topicMatch = (count($matches) > 0) ? true : false;
+      }
+      else
+      {
+        $topicMatch = FALSE;
       }
       # check for a matching pattern
       preg_match($aiml_pattern_wildcards, $lookingfor, $matches);
@@ -193,9 +205,7 @@
 
       # look for a thatpattern match
       $aiml_thatpattern_wildcards = (!empty($aiml_thatpattern)) ? build_wildcard_RegEx($aiml_thatpattern) : '';
-      $aiml_thatpattern_wc_matches = (!empty($aiml_thatpattern_wildcards)) ?
-        preg_match_all($aiml_thatpattern_wildcards,$current_thatpattern) :
-        0;
+      $aiml_thatpattern_wc_matches = (!empty($aiml_thatpattern_wildcards)) ? preg_match_all($aiml_thatpattern_wildcards,$current_thatpattern) : 0;
 
       switch (true) {
         case ($aiml_thatpattern_wc_matches > 0):
@@ -249,6 +259,8 @@
       }
       $i++;
     }
+
+
     $rrCount = count($relevantRow);
     if ($rrCount == 0)
     {
@@ -284,6 +296,22 @@
     $item = str_replace("()", '', $item);
     $matchme = "/^" . $item . "$/ui";
     return $matchme;
+  }
+
+  /**
+   * Performs a pattern matching pass on an input string, checking
+   * whether it matches a given pattern based on the AIML specification.
+   *
+   * @param string $pattern Pattern to match.
+   * @param string $input Input string to check.
+   * @return bool True if the string matches the pattern, false otherwise.
+   **/
+  function aiml_pattern_match($pattern, $input) {
+    if(empty($input))
+      return false;
+
+    $pattern_regex = build_wildcard_RegEx(_strtolower($pattern));
+    return preg_match($pattern_regex, _strtolower($input)) === 1;
   }
 
   /**
@@ -343,13 +371,13 @@
       $check_pattern_words  = true;
 
       # make it all lower case, to make it easier to test, and do it using mbstring functions if possible
-      $category_pattern_lc     = make_lc($category_pattern);
-      $category_thatpattern_lc = make_lc($category_thatpattern);
-      $category_topic_lc       = make_lc($category_topic);
-      $default_pattern_lc      = make_lc($default_pattern);
-      $pattern_lc              = make_lc($pattern);
-      $topic_lc                = make_lc($topic);
-      $that_lc                 = make_lc($that);
+      $category_pattern_lc     = _strtolower($category_pattern);
+      $category_thatpattern_lc = _strtolower($category_thatpattern);
+      $category_topic_lc       = _strtolower($category_topic);
+      $default_pattern_lc      = _strtolower($default_pattern);
+      $pattern_lc              = _strtolower($pattern);
+      $topic_lc                = _strtolower($topic);
+      $that_lc                 = _strtolower($that);
 
       // Start scoring here
       $current_score = 0;
@@ -450,7 +478,7 @@
               $track_matches .= 'thatpattern match with star, ';
             }
         }
-        
+
         #3d.) no match at all
         else {
           $current_score = $rejected;
@@ -510,8 +538,8 @@
       if ($check_pattern_words && $category_pattern_lc != $default_pattern_lc)
       {
         # 5a.) first, a little setup
-        $pattern_lc = make_lc($pattern);
-        $category_pattern_lc = make_lc($category_pattern);
+        $pattern_lc = _strtolower($pattern);
+        $category_pattern_lc = _strtolower($category_pattern);
         $pattern_words = explode(" ", $pattern_lc);
 
         # 5b.) break the input pattern into an array of individual words and iterate through the array
@@ -841,6 +869,7 @@
     $raw_that = (isset ($convoArr['that'])) ? print_r($convoArr['that'], true) : '';
     //check if match in user defined aiml
     $allrows = find_userdefined_aiml($convoArr);
+
     //if there is no match in the user defined aiml table
     if ((!isset ($allrows)) || (count($allrows) <= 0))
     {
@@ -1034,9 +1063,3 @@
     $retval = ($num_rows == 0) ? '' : $row['value'];
     return $retval;
   }
-
-  function make_lc($txt)
-  {
-    return (IS_MB_ENABLED) ? mb_strtolower($txt) : strtolower($txt);
-  }
-
