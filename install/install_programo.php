@@ -15,7 +15,7 @@
   $fatalError = '';
   $myPHP_Version = (float) phpversion();
   $pdoSupport = (class_exists('PDO'));
-  If ($myPHP_Version < 5.2) $fatalError .= "<p class='red bold'>We're sorry, but Program O requires PHP version 5.2 or greater to function. Please ask your hosting provider to upgrade.</p>";
+  If ($myPHP_Version < 5.3) $fatalError .= "<p class='red bold'>We're sorry, but Program O requires PHP version 5.3.0 or greater to function. Please ask your hosting provider to upgrade.</p>";
   If (!$pdoSupport) $fatalError .= "<p class='red bold'>Support for PHP Data Objects (PDO) was not detected! This is required for Program O to function. Please ask your hosting provider to upgrade.</p>";
   $no_unicode_message = (function_exists('mb_check_encoding')) ? '' : "<p class=\"red bold\">Warning! Unicode Support is not available on this server. Non-English languages will not display properly. Please ask your hosting provider to enable the PHP mbstring extension to correct this.</p>\n";
   $errorMessage = (!empty ($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';

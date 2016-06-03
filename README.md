@@ -5,13 +5,19 @@ Readme info:
 - Authors: Elizabeth Perreau and Dave Morton
 - Date: May 17th 2014
 
-**NEWS:** Program O version 2.4.6 introduces changes to the config file, so will require at least an overlay install.
+**NEWS:** Nothing new to report, really. Just got tired of seeing "news" about version 2.4.6 here, which was over a year old.
 
 ## Introduction
 
 Program O is an AIML interpretor written in PHP, and uses a MySQL database to store
 chatbot information, including the AIML files used to formulate the chatbot's responses.
 
+## System Requirements
+
+Program O requires PHP version 5.3.0 or higher to function. This is, to our knowledge,
+the only "hard" requirement in place. The script has been tested with various server
+software, including Apache 1.3 and IIS on Windows Millenia machines, with MySQL server
+versions of 5.0 and above.
 
 ## Configuration
 
