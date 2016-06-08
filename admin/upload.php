@@ -3,10 +3,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.5.4
   * FILE: upload.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 12-11-2014
+  * DATE: FEB 01 2016
   * DETAILS: Provides functionality to upload AIML files to a chatbot's database
   ***************************************/
   ini_set('memory_limit', '128M');
@@ -222,7 +222,7 @@ endScript;
             ':pattern' => $pattern,
             ':that' => $that,
             ':template' => $template,
-            ':topic' => $topic,
+            ':topic' => '',
             ':fileName' => $fileName
           );
         }
@@ -236,10 +236,11 @@ endScript;
     }
     catch (Exception $e)
     {
-    //$trace = print_r($e->getTrace(), true);
+    $trace = $e->getTraceAsString();
     //exit($e->getMessage() . ' at line ' . $e->getLine());
       $msg = $e->getMessage() . ' at line ' . $e->getLine() . "<br>\n";
       //trigger_error("Trace:\n$trace");
+      error_log("Trace:\n$trace", 3, _LOG_PATH_ . "error.upload.$fileName.log");
       //file_put_contents(_LOG_PATH_ . 'error.trace.log', $trace . "\nEnd Trace\n\n", FILE_APPEND);
       $success = false;
       $_SESSION['failCount']++;

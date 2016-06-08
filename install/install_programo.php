@@ -2,10 +2,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.5.4
   * FILE: install_programo.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 02-13-2013
+  * DATE: FEB 01 2016
   * DETAILS: Program O's Automatic install script
   ***************************************/
   session_name('PGO_install');
@@ -15,23 +15,22 @@
   $fatalError = '';
   $myPHP_Version = (float) phpversion();
   $pdoSupport = (class_exists('PDO'));
-  If ($myPHP_Version < 5.2) $fatalError .= "<p class='red bold'>We're sorry, but Program O requires PHP version 5.2 or greater to function. Please ask your hosting provider to upgrade.</p>";
+  If ($myPHP_Version < 5.3) $fatalError .= "<p class='red bold'>We're sorry, but Program O requires PHP version 5.3.0 or greater to function. Please ask your hosting provider to upgrade.</p>";
   If (!$pdoSupport) $fatalError .= "<p class='red bold'>Support for PHP Data Objects (PDO) was not detected! This is required for Program O to function. Please ask your hosting provider to upgrade.</p>";
   $no_unicode_message = (function_exists('mb_check_encoding')) ? '' : "<p class=\"red bold\">Warning! Unicode Support is not available on this server. Non-English languages will not display properly. Please ask your hosting provider to enable the PHP mbstring extension to correct this.</p>\n";
   $errorMessage = (!empty ($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';
   $errorMessage .= $no_unicode_message;
   require_once ('install_config.php');
   $dirArray = glob(_ADMIN_PATH_ . "ses_*",GLOB_ONLYDIR);
-  $session_dir = (empty($dirArray)) ? 'ses_' . md5(time()) : $dirArray[0];
+  $session_dir = (empty($dirArray)) ? 'ses_' . md5(time()) : basename($dirArray[0]);
   $dupPS = "$path_separator$path_separator";
   $session_dir = str_replace($dupPS, $path_separator, $session_dir); // remove double path separators when necessary
+  define('_SESSION_PATH_', _ADMIN_PATH_ . $session_dir . DIRECTORY_SEPARATOR);
   $writeCheckArray = array('config' => _CONF_PATH_, 'debug' => _DEBUG_PATH_, 'logs' => _LOG_PATH_);
   $errFlag = false;
 
-  foreach ($writeCheckArray as $key => $folder)
-  {
-    if (!is_writable($folder))
-    {
+  foreach ($writeCheckArray as $key => $folder) {
+    if (!is_writable($folder)) {
       $errFlag = true;
       $errorMessage .= <<<endWarning
       <p class="red bold">
@@ -51,8 +50,8 @@ endWarning;
           <li>chatbot/debug</li>
         </ul>
         Permissions for these folders should be 0755. If they are not, then you need to change that. If you
-        have trouble with this, or have questions, please let us know on the
-        <a href="http://forum.program-o.com">Program O forums</a>.
+        have trouble with this, or have questions, please visit us at
+        <a href="http://www.program-o.com">Program O</a>.
       </p>
 endInfo;
   if ($errFlag) $errorMessage .= $additionalInfo;
@@ -68,8 +67,7 @@ endInfo;
   $page = (isset ($_REQUEST['page'])) ? $_REQUEST['page'] : 1;
   $action = (isset ($_REQUEST['action'])) ? $_REQUEST['action'] : '';
   $message = '';
-  if (!empty ($action))
-  {
+  if (!empty ($action)) {
     $message = $action($page);
   }
   $pageTemplate = 'Container';
@@ -110,16 +108,13 @@ endPage;
    * @param bool $notFoundReturn
    * @return string
    */
-  function getSection($sectionName, $page_template, $notFoundReturn = true)
-  {
+  function getSection($sectionName, $page_template, $notFoundReturn = true) {
     $sectionStart = str_replace('[section]', $sectionName, SECTION_START);
     $sectionStartLen = strlen($sectionStart);
     $sectionEnd = str_replace('[section]', $sectionName, SECTION_END);
     $startPos = strpos($page_template, $sectionStart, 0);
-    if ($startPos === false)
-    {
-      if ($notFoundReturn)
-      {
+    if ($startPos === false) {
+      if ($notFoundReturn) {
         return '';
       }
       else
@@ -139,8 +134,7 @@ endPage;
    *
    * @return string
    */
-  function Save()
-  {
+  function Save() {
     global $page_template, $error_response, $session_dir;
     $tagSearch = array();
     $varReplace = array();
@@ -155,16 +149,14 @@ endPage;
     ksort($myPostVars);
     $configContents = file_get_contents(_INSTALL_PATH_ . 'config.template.php');
     $configContents = str_replace('[session_dir]', $session_dir, $configContents);
-    if (!file_exists(_ADMIN_PATH_ . $session_dir))
-    {
+    if (!file_exists(_SESSION_PATH_)) {
       // Create the sessions folder, and set permissions
-      mkdir(_ADMIN_PATH_ . $session_dir, 0755);
+      mkdir(_SESSION_PATH_, 0755);
 
       // Place an empty index file in the sessions folder to prevent direct access to the folder from a web browser
-      file_put_contents(_ADMIN_PATH_ . $session_dir . DIRECTORY_SEPARATOR . 'index.html', '');
+      file_put_contents(_SESSION_PATH_ . 'index.html', '');
     }
-    foreach ($myPostVars as $key => $value)
-    {
+    foreach ($myPostVars as $key => $value) {
       $tagSearch[] = "[$key]";
       $varReplace[] = $value;
     }
@@ -180,44 +172,36 @@ endPage;
       $dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       $dbConn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
-    catch (Exception $e)
-    {
+    catch (Exception $e) {
       header('Content-type: text/plain');
       var_dump($e);
       exit('Cannot connect to the database! ' . $e->getMessage());
-
     }
 
     $sql = "show tables;";
     $sth = $dbConn->prepare($sql);
     $sth->execute();
     $row = $sth->fetch();
-    if (empty ($row))
-    {
+    if (empty ($row)) {
       $sql = file_get_contents('new.sql');
       $sth = $dbConn->prepare($sql);
       $sth->execute();
       $affectedRows = $sth->rowCount();
     }
-    else
-    { // Let's make sure that the srai lookup table exists
-      try
-      {
+    else { // Let's make sure that the srai lookup table exists
+      try {
         $sql = 'select bot_id from srai_lookup;';
         $sth = $dbConn->prepare($sql);
         $sth->execute();
         $result = $sth->fetchAll();
       }
-      catch(Exception $e)
-      {
-        try
-        {
+      catch(Exception $e) {
+        try {
           $sql = "DROP TABLE IF EXISTS `srai_lookup`; CREATE TABLE IF NOT EXISTS `srai_lookup` (`id` int(11) NOT NULL AUTO_INCREMENT, `bot_id` int(11) NOT NULL, `pattern` text NOT NULL, `template_id` int(11) NOT NULL, PRIMARY KEY (`id`), KEY `pattern` (`pattern`(64)) COMMENT 'Search against this for performance boost') ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1;";
           $sth = $dbConn->prepare($sql);
           $sth->execute();
         }
-        catch(Exception $e)
-        {
+        catch(Exception $e) {
           $errorMessage .= 'Could not add SRAI lookup table! Error is: ' . $e->getMessage();
         }
       }
@@ -231,8 +215,7 @@ endPage;
     $sth = $dbConn->prepare($sql);
     $sth->execute();
     $result = $sth->fetchAll();
-    if (count($result) == 0)
-    {
+    if (count($result) == 0) {
       $sql_template = "
 INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
 VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[save_state]',
@@ -254,15 +237,13 @@ VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_pare
       $sql = str_replace('[debugmode]', $myPostVars['debug_mode'], $sql);
       $sql = str_replace('[error_response]', $error_response, $sql);
       $sql = str_replace('[aiml_pattern]', $pattern, $sql);
-      try
-      {
+      try {
         $sth = $dbConn->prepare($sql);
         $sth->execute();
         $affectedRows = $sth->rowCount();
         $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new bot!';
       }
-      catch(Exception $e)
-      {
+      catch(Exception $e) {
         $errorMessage .= $e->getMessage();
       }
     }
@@ -273,24 +254,20 @@ VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_pare
     $sth = $dbConn->prepare($sql);
     $sth->execute();
     $result = $sth->fetchAll();
-    if (count($result) == 0)
-    {
+    if (count($result) == 0) {
       $sql = "insert ignore into `myprogramo` (`id`, `user_name`, `password`, `last_ip`) values(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
-      try
-      {
+      try {
         $sth = $dbConn->prepare($sql);
         $sth->execute();
         $affectedRows = $sth->rowCount();
         $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new Admin!';
       }
-      catch(Exception $e)
-      {
+      catch(Exception $e) {
         $errorMessage .= $e->getMessage();
       }
     }
 
-    if (empty($errorMessage))
-    {
+    if (empty($errorMessage)) {
       $out = getSection('InstallComplete', $page_template);
     }
     else $out = getSection('InstallError', $page_template);

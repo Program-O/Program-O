@@ -145,11 +145,11 @@ between the start and end section tags are the only parts of the template that a
             <form id="fm-form" method="post" action="index.php?page=login" >
               <div class="row center">
                 <label for="user_name">Username:</label>
-                <input name="user_name" id="user_name" type="text" maxlength="20" size="15"/>
+                <input name="user_name" id="user_name" type="text" maxlength="255" size="15"/>
               </div>
               <div class="row">
                 <label for="pw">Password:</label>
-                <input name="pw" id="pw" type="password" maxlength="20" size="15"/><br />
+                <input name="pw" id="pw" type="password" autocomplete="off" maxlength="255" size="15"/><br />
               </div>
               <div class="row">
                 <input value="Submit" type="submit" />
@@ -497,18 +497,24 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section ClearShowHelp Start -->
 [blank]            <div id="showHelp">
               <h3>Help...</h3>
-              <dd>This help panel is under construction.</dd>
+<dd>This area allows you remove individual or ALL aiml entries for a specific bot.</dd>
+<dd>Ideal if you want to start again with a blank chatbot and repopulate via the upload panel.</dd>
+<dd><strong>BUT BE WARNED:</strong> This operation can not be undone so use with care.</dd>
+    <dd>--Ensure that the current bot is the correct bot.</dd>
+    <dd>--Select 'Clear categories from this AIML file' and choose the aiml file from the drop down.</dd>
+    <dd>--Or select 'Clear ALL AIML categories (Purge database)'.</dd>
+    <dd>--Then press 'Submit' to delete the entries for that file.</dd>
             </div>
 <!-- Section ClearShowHelp End -->
 <!-- Section MembersShowHelp Start -->
-[blank]            <div id="showHelp">
-              <h3>Help...</h3>
-              <dd> This part is still under construction.</dd>
-              <dd></dd>
-              <dd></dd>
-              <dd></dd>
-              <br />
-            </div>
+[blank]           <div id="showHelp">
+    <h3>Help...</h3>
+    <dd>This area allows you edit or add users to the admin account area.</dd>
+    <dd>--Select a current user.</dd>
+    <dd>--Or enter the details for a new user.</dd>
+    <dd>--Then press 'Save' to update the user.</dd>
+    <dd>--Or press 'Delete' to remove the user.</dd>
+</div>
 <!-- Section MembersShowHelp End -->
 <!-- Section UploadShowHelp Start -->
 [blank]            <div id="showHelp">
@@ -646,7 +652,7 @@ between the start and end section tags are the only parts of the template that a
         </div>
 <!-- Section DbStats End -->
 <!-- Section MembersMain Start -->
-[blank]          <div id="membersForm" class="fullWidth noBorder">
+[blank]<div id="membersForm" class="fullWidth noBorder">
             <p>
               Here's where you add, remove or edit admin accounts.
             </p>
@@ -820,11 +826,6 @@ between the start and end section tags are the only parts of the template that a
               add or remove a chatbot. You don't have to worry about duplicates because the script starts by
               emptying the lookup table first, and then uses a routine that rejects duplicates on a per-bot basis.
             </p>
-            <p>
-              If you have any suggestions regarding functionality that you would like to see here, please post them
-              to the <a href="http://www.program-o.com/forum/viewforum.php?f=18" target="_blank">Feature Requests</a>
-              portion of the forums. Thanks.
-            </p>
             <p class="center bold">This section is still under construction. Please bear with us as we expand and grow.</p>
 <!-- Section SRAI_lookup End -->
 <!-- Section EditAIMLForm Start -->
@@ -884,7 +885,7 @@ between the start and end section tags are the only parts of the template that a
 [blank]          <div class="yui3-skin-sam editaiml-table">
             <div class='search-msg'></div>
           </div>
-          <script src="http://yui.yahooapis.com/3.18.0/build/yui/yui-min.js"></script>
+          <script src="scripts/yui-min.js"></script>
           <script src="scripts/editAiml.js"></script>
 <!-- Section EditAimlPage End -->
 <!-- Section DataTable Start -->
@@ -985,13 +986,13 @@ between the start and end section tags are the only parts of the template that a
 [blank]    <script type="text/javascript">
       function showMe() {
         var sh = document.getElementById('showHelp');
-        var tf = document.getElementById('downloadForm');
+        var tf = document.getElementById('membersForm');
         sh.style.display = 'block';
         tf.style.display = 'none';
       }
       function hideMe() {
         var sh = document.getElementById('showHelp');
-        var tf = document.getElementById('downloadForm');
+        var tf = document.getElementById('membersForm');
         sh.style.display = 'none';
         tf.style.display = 'block';
       }

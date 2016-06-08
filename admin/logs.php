@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.5.4
   * FILE: logs.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 12-12-2014

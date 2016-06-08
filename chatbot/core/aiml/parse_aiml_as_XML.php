@@ -3,10 +3,10 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.7
+    * Version: 2.5.4
     * FILE: parse_aiml_as_xml.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
-    * DATE: 12-01-2014
+    * DATE: FEB 01 2016
     * DETAILS: Handles the parsing of AIML code as XML
     ***************************************/
 
@@ -137,7 +137,7 @@
    * @param int              $level
    * @return string
    */
-  function parseTemplateRecursive($convoArr, SimpleXMLElement $element, $level = 0)
+  function parseTemplateRecursive(&$convoArr, SimpleXMLElement $element, $level = 0)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Recursively parsing the AIML template.', 2);
     $HTML_tags = array('a', 'abbr', 'acronym', 'address', 'applet', 'area', 'b', 'bdo', 'big', 'blockquote', 'br', 'button', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir', 'div', 'dl', 'dt', 'em', 'fieldset', 'font', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'iframe', 'img', 'ins', 'kbd', 'label', 'legend', 'ol', 'object', 's', 'script', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'tt', 'u', 'ul');
@@ -414,11 +414,12 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "var_name = $var_name and is type: $vn_type", 4);
     if ($var_name == 'name')
     {
+      $convoArr['client_properties'][$var_name] = $var_value;
       $user_name = $var_value;
       $escaped_var_value = $var_value;
       $sql = "UPDATE `$dbn`.`users` set `user_name` = '$escaped_var_value' where `id` = $user_id;";
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Updating user name in the DB. SQL:\n$sql", 3);
-      
+
       $sth = $dbConn->prepare($sql);
       $sth->execute();
 
@@ -432,7 +433,7 @@
         $tmp_name = $row['user_name'];
         runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for the user's name is $tmp_name.", 4);
       }
-      
+
     }
     else $convoArr['client_properties'][$var_name] = $var_value;
     $lc_var_name = (IS_MB_ENABLED) ? mb_strtolower($var_name) : strtolower($var_name);
@@ -459,7 +460,7 @@
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Value found for $var_name. Updating the table to  $var_value.", 4);
     }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving to DB - SQL:\n$sql", 3);
-    
+
     $sth = $dbConn->prepare($sql);
     $sth->execute();
 
@@ -467,6 +468,7 @@
     $response = $var_value;
     $convoArr['client_properties'][$var_name] = $var_value;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Value for $var_name has ben set. Returning $var_value.", 4);
+    $convoArr['client_properties']['test']='passed';
     return $response;
   }
 
@@ -739,8 +741,8 @@
           runDebug(__FILE__, __FUNCTION__, __LINE__,'Current pick attributes = ' . print_r($attr, true), 4);
           $testVarValue = (isset($attr['value'])) ? (string)$attr['value'] : '';
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Pick Value = '$testVarValue'", 4);
-          runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $testVarValue (condition value) is equal to $test_value (Client Property).", 4);
-          if (strtolower($testVarValue) == strtolower($test_value))
+          runDebug(__FILE__, __FUNCTION__, __LINE__,"Checking to see if $test_value (Client Property) matches $testVarValue (condition value).", 4);
+          if (aiml_pattern_match($testVarValue, $test_value))
           {
             runDebug(__FILE__, __FUNCTION__, __LINE__,'Pick XML = ' . $pick->asXML(), 4);
             break;
@@ -974,35 +976,31 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
     $fileName = (string) $element['filename'];
     if (empty($fileName)) // enclosed text is the category to add to the DB
     {
-      $category     = $element->category;
-      $catXML       = new SimpleXMLElement('<category/>');
-      $pattern      = parseTemplateRecursive($convoArr, $category->pattern, $level + 1);
+      $category = $element->category;
+
+      $pattern = parseTemplateRecursive($convoArr, $category->pattern, $level + 1);
       $pattern = implode_recursive(' ', $pattern, __FILE__, __FUNCTION__, __LINE__);
       $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
+
       $thatpattern = (string)$category->that;
-      $template    = $category->template->asXML();
-      $template = substr($template, 10);
-      $tplLen = strlen($template);
-      $template = substr($template,0,$tplLen - 11);
-      $template = str_replace('<text>', '', $template);
-      $template = str_replace('</text>', '', $template);
-      $template_eval = $category->template->eval;
-      if (!empty($template_eval))
-      {
-        $parsed_template_eval = parse_eval_tag($convoArr, $template_eval, 'learn_template', $level + 1);
-        $template = preg_replace('~<eval>(.*?)</eval>~i', $parsed_template_eval, $template);
-      }
+
+      $parsed_template = parseTemplateRecursive($convoArr, $category->template, $level + 1);
+      $parsed_template = implode_recursive(' ', $parsed_template, __FILE__, __FUNCTION__, __LINE__);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsed LEARN template: ' . $parsed_template, 2);
+
+      $catXML = new SimpleXMLElement('<category/>');
       $catXML->addChild('pattern', $pattern);
-      if (!empty($thatpattern)) $catXML->addChild('that', $thatpattern);
-      $catXML->addChild('template', $template);
+      if (!empty($thatpattern))
+        $catXML->addChild('that', $thatpattern);
+      $catXML->addChild('template', $parsed_template);
       $category = $catXML->asXML();
       $category = trim(str_replace('<?xml version="1.0"?>', '', $category));
       $sqlAdd = str_replace('[aiml]', $category, $sqlTemplate);
       $sqlAdd = str_replace('[pattern]', $pattern, $sqlAdd);
       $sqlAdd = str_replace('[that]', $thatpattern, $sqlAdd);
-      $sqlAdd = str_replace('[template]', $template, $sqlAdd);
+      $sqlAdd = str_replace('[template]', $parsed_template, $sqlAdd);
       $sql .= $sqlAdd;
-      
+
       $sth = $dbConn->prepare($sql);
       $sth->execute();
 
@@ -1039,12 +1037,15 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
         }
       }
     }
-    if ($failure) trigger_error($failure);
-    else
-    {
+
+    if ($failure) {
+      trigger_error($failure);
+    }
+    else {
       $sql = str_replace($remove, '', $sql);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding AIML to the DB. SQL:\n$sql", 3);
     }
+
     return '';
   }
 

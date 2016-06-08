@@ -3,10 +3,10 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.5.4
   * FILE: chatbot/conversation_start.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: MAY 17TH 2014
+  * DATE: FEB 01 2016
   * DETAILS: this file is the landing page for all calls to access the bots
   ***************************************/
 
@@ -14,7 +14,7 @@
   $script_start = $time_start;
   $last_timestamp = $time_start;
   $thisFile = __FILE__;
-  require_once ("../config/global_config.php");
+  require_once("../config/global_config.php");
   //load shared files
   require_once(_LIB_PATH_ . 'PDO_functions.php');
   include_once (_LIB_PATH_ . "error_functions.php");
@@ -41,8 +41,8 @@
   //open db connection
   $dbConn = db_open();
   //initialise globals
-  //$convoArr = array();
-  $convoArr = intialise_convoArray($convoArr);
+  $convoArr = array();
+  //$convoArr = intialise_convoArray($convoArr);
   $new_convo_id = false;
   $old_convo_id = false;
   $say = '';
@@ -94,7 +94,7 @@
       $_SESSION = array();
       $user_id = (isset($convoArr['conversation']['user_id'])) ? $convoArr['conversation']['user_id'] : -1;
       $sql = "delete from `$dbn`.`client_properties` where `user_id` = $user_id;";
-      
+
       $sth = $dbConn->prepare($sql);
       $sth->execute();
 
@@ -146,6 +146,11 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $bot_id . "\nFormat: " . $form_vars['format'], 2);
     //get the stored vars
     $convoArr = read_from_session();
+    if (!empty($form_vars['name']))
+    {
+      $convoArr['conversation']['user_name'] = $user_name = $form_vars['name'];
+    }
+
     $convoArr = load_default_bot_values($convoArr);
     //now overwrite with the recieved data
     $convoArr = check_set_convo_id($convoArr);

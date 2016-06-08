@@ -2,7 +2,7 @@
   /***************************************
    * http://www.program-o.com
    * PROGRAM O
-   * Version: 2.4.7
+   * Version: 2.5.4
    * FILE: select_bots.php
    * AUTHOR: Elizabeth Perreau and Dave Morton
    * DATE: 12-09-2014
@@ -96,6 +96,7 @@
   $bot_unknown_user = $unknown_user;
   
   $inputs='';
+  $aiml_count = 'no';
   $form = $template->getSection('SelectBotForm');
   $sel_session = '';
   $sel_db = '';
@@ -194,7 +195,7 @@
   else {
     $bot_id = '';
     $bot_parent_id = 0;
-    $bot_name = '';
+    $bot_name = 'new or unnamed bot';
     $bot_desc = '';
     $bot_active = '';
     $action = "add";
@@ -327,7 +328,7 @@ VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,
     ':debugemail'         => $debugemail,
     ':debugshow'          => $debugshow,
     ':debugmode'          => $debugmode,
-    ':aiml_pattern'       => $aiml_pattern,
+    ':aiml_pattern'       => $default_aiml_pattern,
     ':error_response'     => $error_response
   );
   $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);

@@ -2,10 +2,10 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.5.4
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 07-23-2013
+  * DATE: FEB 01 2016
   * DETAILS: This is the interface for the Program O JSON API
   ***************************************/
   $cookie_name = 'Program_O_JSON_GUI';
@@ -26,7 +26,8 @@
 */
 
   $display = "The URL for the API is currently set as:<br />\n$url.<br />\n";
-  $display .= 'Please make sure that you edit this file to change the value of the variable $url in this file to reflect the correct URL address of your chatbot, and to remove this message.' . PHP_EOL;
+  $display .= 'Test this to make sure it is correct by <a href="'.$url.'?say=hello">clicking here</a>. Then remove this message from gui/jquery/index.php' . PHP_EOL;
+  $display .= 'And don\'t forget to upload your AIML files in the admin area otherwise you will not get a response!'. PHP_EOL;
   #$display = '';
 
   /**
@@ -123,8 +124,8 @@
     <h3>Program O XML GUI</h3>
     <p class="center">
       This is a simple example of how to access the Program O chatbot using the JSON API. Feel free to change the HTML
-      code for this page to suit your specific needs. For more advanced uses, please visit the <a href="http://www.forum.program-o.com/">
-      Program O Forums</a> to ask for assistance.
+      code for this page to suit your specific needs. For more advanced uses, please visit us at <a href="http://www.program-o.com/">
+      Program O</a>.
     </p>
     <hr class="center">
     <p class="center">
@@ -174,9 +175,9 @@
           var user = $('#say').val();
           $('.usersay').text(user);
           var formdata = $("#talkform").serialize();
-          $('#say').val('')
+          $('#say').val('');
           $('#say').focus();
-          $.post('<?php echo $url ?>', formdata, function(data){
+          $.get('<?php echo $url ?>', formdata, function(data){
             var b = data.botsay;
             if (b.indexOf('[img]') >= 0) {
               b = showImg(b);

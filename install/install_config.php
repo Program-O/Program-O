@@ -2,10 +2,10 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.4.7
+* Version: 2.5.4
 * FILE: config/install_config.php
 * AUTHOR: Elizabeth Perreau and Dave Morton AND DAVE MORTON
-* DATE: MAY 17TH 2014
+* DATE: FEB 01 2016
 * DETAILS: this file is a stripped down, "install" version of the config file,
 * and as such, only has the most minimal settings within it. The install script
 *  will create a full and complete config file during the install process
@@ -17,7 +17,7 @@
     chdir( dirname ( __FILE__ ) );
     $thisConfigFolder = dirname( realpath( __FILE__ ) ) . DIRECTORY_SEPARATOR;
     $thisConfigParentFolder = preg_replace( '~[/\\\\][^/\\\\]*[/\\\\]$~' , DIRECTORY_SEPARATOR , $thisConfigFolder);
-    $baseURL = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
+    $baseURL = '//' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
     $docRoot = $_SERVER['DOCUMENT_ROOT'];
 
     define("_BASE_DIR_", $thisConfigParentFolder);

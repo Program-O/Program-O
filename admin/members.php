@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.4.7
+    * Version: 2.5.4
     * FILE: members.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 12-12-2014
@@ -17,6 +17,7 @@
   if (!empty($post_vars)) {
     $msg = save($action);
   }
+
 
   $id = (isset($post_vars['id']) and $action != 'Add') ? $post_vars['id'] : getNextID();
   $id = ($id <= 0) ? getNextID() : $id;
@@ -56,8 +57,8 @@
   $mainTitle         = "Modify Admin Account Data [helpLink]";
 
   $members_list_form = str_replace('[adminList]', $AdminsOpts, $members_list_form);
-  $mainContent       = str_replace('[members_content]', $membersForm, $mainContent);
   $mainContent       = str_replace('[showHelp]', $showHelp, $mainContent);
+  $mainContent       = str_replace('[members_content]', $membersForm, $mainContent);
   $mainContent       = str_replace('[members_list_form]', $members_list_form, $mainContent);
   $mainContent       = str_replace('[user_name]', $user_name, $mainContent);
   $mainContent       = str_replace('[action]', $action, $mainContent);

@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.5.4
   * FILE: gui/plain/index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -12,7 +12,7 @@
   $display = "";
   $thisFile = __FILE__;
   if (!file_exists('../../config/global_config.php')) header('Location: ../../install/install_programo.php');
-  require_once ('../../config/global_config.php');
+  require_once('../../config/global_config.php');
   require_once ('../chatbot/conversation_start.php');
   $get_vars = (!empty($_GET)) ? filter_input_array(INPUT_GET) : array();
   $post_vars = (!empty($_POST)) ? filter_input_array(INPUT_POST) : array();
@@ -22,7 +22,6 @@
   $convo_id = session_id();
   $format = (!empty($form_vars['format'])) ? $form_vars['format'] : 'html';
 ?>
-
 <!DOCTYPE html>
 <html>
   <head>

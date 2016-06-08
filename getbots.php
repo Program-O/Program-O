@@ -2,7 +2,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.5.4
   * FILE: getbots.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -13,7 +13,7 @@
   $script_start = $time_start;
   $last_timestamp = $time_start;
   $thisFile = __FILE__;
-  require_once ("config/global_config.php");
+  require_once("config/global_config.php");
   //load shared files
   require_once(_LIB_PATH_ . 'PDO_functions.php');
   include_once (_LIB_PATH_ . "error_functions.php");

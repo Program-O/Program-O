@@ -12,6 +12,7 @@ admin/downloads/*
 admin/ses*
 config/global_config.php
 config/global_config*.php
+global_config.php
 config/uploads/*
 chatbot/debug/*.txt
 gui/jquery/gui.php

@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.5.4
   * FILE: chatbot/core/conversation/display_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -196,19 +196,18 @@
       case 'html' :
         $display = str_ireplace('<![CDATA[', '', $display);
         $display = str_replace(']]>', '', $display);
+        echo trim($display);
         break;
       case 'xml' :
         header("Content-type: text/plain; charset=utf-8", false);
         header("Access-Control-Allow-Origin: *", false);
-        echo $display;
+        echo trim($display);
         break;
       case 'json' :
         header("Content-type: text/plain; charset=utf-8", false);
         header("Access-Control-Allow-Origin: *", false);
-        echo $display;
+        echo trim($display);
         break;
       default :
     }
   }
-
-?>

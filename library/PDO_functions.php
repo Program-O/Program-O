@@ -2,7 +2,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.5.4
   * FILE: library/PDO_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -130,7 +130,7 @@
     {
       $pdoError = print_r($dbConn->errorInfo(), true);
       $psError  = print_r($sth->errorInfo(), true);
-      error_log("bad SQL encountered in file $file, line #$line. SQL:\n$sql\nPDO Error:\n$pdoError\nSTH Error:\n$psError\nEsception Message:\n" . $e->getMessage(), 3, _LOG_PATH_ . 'db_write.txt');
+      error_log("bad SQL encountered in file $file, line #$line. SQL:\n$sql\nPDO Error:\n$pdoError\nSTH Error:\n$psError\nException Message:\n" . $e->getMessage() . "\n", 3, _LOG_PATH_ . 'db_write.txt');
       runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while writing to the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
       return false;
     }

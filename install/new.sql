@@ -323,11 +323,10 @@ CREATE TABLE IF NOT EXISTS `users` (
   `referer` text NOT NULL,
   `browser` text NOT NULL,
   `date_logged_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_update` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_update` timestamp NULL DEFAULT NULL,
   `state` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
 -- --------------------------------------------------------
 
 --

@@ -3,7 +3,7 @@
   /* * *************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.4.7
+  * Version: 2.5.4
   * FILE: editAiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-26-2014
@@ -16,7 +16,7 @@
   {
   //load shared files
     $thisFile = __FILE__;
-    require_once ('../config/global_config.php');
+    require_once('../config/global_config.php');
     require_once (_LIB_PATH_ . 'PDO_functions.php');
     require_once (_LIB_PATH_ . 'error_functions.php');
     $session_name = 'PGO_Admin';
