@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `aiml_userdefined` (
   `pattern` text NOT NULL,
   `thatpattern` text NOT NULL,
   `template` text NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `user_id` text NOT NULL,
   `bot_id` int(11) NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)

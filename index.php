@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.0
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-13-2013
@@ -15,6 +15,7 @@
   # No config exists we will run install
     header('location: install/install_programo.php');
   }
+  elseif (file_exists('patch.php')) require_once ('patch.php');
   else
   {
     $get_vars = filter_input_array(INPUT_GET);

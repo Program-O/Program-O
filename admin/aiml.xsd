@@ -1,0 +1,938 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="aiml.dtd" xmlns:wmh="http://www.wmhelp.com/2003/eGenerator" elementFormDefault="qualified" targetNamespace="aiml.dtd">
+  <xs:element name="aiml">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="category"/>
+        <xs:element ref="topic"/>
+      </xs:choice>
+      <xs:attribute name="version" type="xs:string" use="required"/>
+      <xs:attribute name="xmlns" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="topic">
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded">
+        <xs:element ref="category"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="category">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="pattern"/>
+        <xs:sequence minOccurs="0">
+          <xs:element ref="that"/>
+        </xs:sequence>
+        <xs:element ref="template"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pattern">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="bot"/>
+        <xs:element ref="eval"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="template">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sentence">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="formal">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="lowercase">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="set">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="think">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="br">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="get">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="random">
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded">
+        <xs:element ref="li"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="li">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+      <xs:attribute name="name" type="xs:string"/>
+      <xs:attribute name="value" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="srai">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="star">
+    <xs:complexType>
+      <xs:attribute name="index" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="a">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+      <xs:attribute name="href" type="xs:string" use="required"/>
+      <xs:attribute name="target" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="person">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+      <xs:attribute name="index" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="person2">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+      <xs:attribute name="index" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ul">
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded">
+        <xs:element ref="li"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="p" type="xs:string"/>
+  <xs:element name="bot">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="that">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="eval"/>
+      </xs:choice>
+      <xs:attribute name="index" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="condition">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+      <xs:attribute name="name" type="xs:string"/>
+      <xs:attribute name="value" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sr">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="oob">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="star"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="dial">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="srai"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="dialcontact">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="star"/>
+        <xs:element ref="get"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="learn">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="category"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="eval">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="thatstar">
+    <xs:complexType>
+      <xs:attribute name="index" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="map">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="star"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="search">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="star"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sms">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="recipient"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="message"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="recipient">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="srai"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="message">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="star"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="input">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="index" type="xs:string"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="img">
+    <xs:complexType>
+      <xs:attribute name="src" type="xs:string" use="required"/>
+      <xs:attribute name="alt" type="xs:string"/>
+      <xs:attribute name="title" type="xs:string"/>
+      <xs:attribute name="width" type="xs:string"/>
+      <xs:attribute name="height" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="id">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="response">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="index" type="xs:string"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="request">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="index" type="xs:string"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="uppercase">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="set"/>
+        <xs:element ref="think"/>
+        <xs:element ref="br"/>
+        <xs:element ref="get"/>
+        <xs:element ref="random"/>
+        <xs:element ref="li"/>
+        <xs:element ref="srai"/>
+        <xs:element ref="star"/>
+        <xs:element ref="a"/>
+        <xs:element ref="person"/>
+        <xs:element ref="person2"/>
+        <xs:element ref="ul"/>
+        <xs:element ref="p"/>
+        <xs:element ref="bot"/>
+        <xs:element ref="that"/>
+        <xs:element ref="condition"/>
+        <xs:element ref="sr"/>
+        <xs:element ref="oob"/>
+        <xs:element ref="dial"/>
+        <xs:element ref="dialcontact"/>
+        <xs:element ref="learn"/>
+        <xs:element ref="eval"/>
+        <xs:element ref="thatstar"/>
+        <xs:element ref="map"/>
+        <xs:element ref="search"/>
+        <xs:element ref="sms"/>
+        <xs:element ref="recipient"/>
+        <xs:element ref="message"/>
+        <xs:element ref="input"/>
+        <xs:element ref="img"/>
+        <xs:element ref="id"/>
+        <xs:element ref="response"/>
+        <xs:element ref="request"/>
+        <xs:element ref="uppercase"/>
+        <xs:element ref="date"/>
+        <xs:element ref="topicstar"/>
+        <xs:element ref="thastar"/>
+        <xs:element ref="size"/>
+        <xs:element ref="battery"/>
+        <xs:element ref="em"/>
+        <xs:element ref="sentence"/>
+        <xs:element ref="formal"/>
+        <xs:element ref="lowercase"/>
+        <xs:element ref="version"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="version">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="date">
+    <xs:complexType>
+      <xs:attribute name="format" type="xs:string"/>
+      <xs:attribute name="locale" type="xs:string"/>
+      <xs:attribute name="timezone" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="topicstar">
+    <xs:annotation>
+      <xs:documentation>ATTLIST date format CDATA #REQUIRED</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="index" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="thastar">
+    <xs:complexType>
+      <xs:attribute name="index" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="size">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="battery">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="em" type="xs:string"/>
+</xs:schema>

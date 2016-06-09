@@ -1,21 +1,35 @@
   /***************************************
    * http://www.program-o.com
    * PROGRAM O
-   * Version: 2.5.4
+   * Version: 2.6.0
    * FILE: CHANGELOG
    * AUTHOR: Elizabeth Perreau and Dave Morton
-   * DATE: FEB 01 2016
+   * DATE: JUN 08 2016
    * DETAILS: Describes the version changes in Program O
    */
 
 Version History:
-2.5.4   Multiple bug fixes
+2.6.0   Restructure the aiml_userdefined Table, Other Fixes and Changes
+            1.) Changed the structure of the aiml_userdefined table to correct a bug where the user ID didn't match
+                the current user, even though the conversation ID was the same
+            2.) Created an XML Schema file for AIML in preparation for later changes to be implemented with the AIML
+                validation script
+            3.) Improved the internal documentation for the file PDO_functions.php as part of an ongoing effort to
+                update and improve all internal documentation
+
+**While this version includes changes to the structure of the database, a patch file is included that will make the
+necessary changes so that a clean install should not be required. Please note, however, that it will empty all entries
+in the affected table (aiml_userdefined). This is a necessary step**
+
+2.5.4   Multiple Bug Fixes and Changes
             1.) Fixed a bug in the function that parses the `<condition>` tag that failed to properly normalize multi-byte strings. Thanks to @LorenzCK for this fix!
             2.) Fixed a bug in the function that scores AIML categories that use the `<that>` tag that was allowing incorrect categories to be selected.
             3.) Corrected several typos and uninitiated variables that were silently creating errors.
             4.) Updated version information in 62 files throughout the script.
+
 2.4.9 - 2.5.3 - Changes "slipped through the cracks" - oops?
-2.4.8   House Keeping
+
+2.4.8   Housekeeping
             1.) Removed dead links from the admin area and obsolete information pages
             2.) Merge pull requests including topic upload fix and an expansion to the make_like_pattern()
 
@@ -47,7 +61,7 @@ Version History:
                 (or problems with the session save path not being set in the PHP config) for those who
                 have been experiencing login problems due to sessions not being saved.
 
-2.4.4   Multiple bug fixes, consolidated SELECT type DB queries into calls to teo functions
+2.4.4   Multiple bug fixes, consolidated SELECT type DB queries into calls to two functions
             1.) Fixed a bug in the core code that allowed fatal errors to be generated if the variable
                 bot_id is empty or not set
             2.) Fixed a bug in the new Search/Edit AIML admin page that caused only the default chatbot's

@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.5.4
+    * Version: 2.6.0
     * FILE: find_aiml.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: FEB 01 2016
@@ -824,19 +824,20 @@
     $i = 0;
     $allrows = array();
     $bot_id = $convoArr['conversation']['bot_id'];
-    $user_id = $convoArr['conversation']['user_id'];
+    $c_id = $convoArr['conversation']['convo_id'];
     $lookingfor = $convoArr['aiml']['lookingfor'];
     //build sql
     $sql = "SELECT * FROM `$dbn`.`aiml_userdefined` WHERE
     `bot_id` = '$bot_id' AND
-    (`user_id` = '$user_id' OR `user_id` = '-1') AND
+    (`user_id` = '$c_id' OR `user_id` = '-1') AND
     `pattern` = '$lookingfor'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined SQL: $sql", 3);
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $num_rows = count($result);
     //if there is a result get it
-    if (($result) && ($num_rows > 0))
-    {
+    if (($result) && ($num_rows > 0)) {
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Results returned: ' . print_r($row, true), 3);
+
     //loop through results
       foreach ($result as $row)
       {

@@ -2,7 +2,7 @@
 /***************************************
 * www.program-o.com
 * PROGRAM O 
-* Version: 2.5.4
+* Version: 2.6.0
 * FILE: chatbot/addons/load_addons.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 17TH 2014

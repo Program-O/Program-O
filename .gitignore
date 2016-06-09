@@ -25,6 +25,7 @@ makeBuild.php
 #################
 
 *.flist
+prev*~.php
 
 #################
 ## Eclipse

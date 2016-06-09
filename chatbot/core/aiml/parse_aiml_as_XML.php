@@ -3,7 +3,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.5.4
+    * Version: 2.6.0
     * FILE: parse_aiml_as_xml.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: FEB 01 2016
