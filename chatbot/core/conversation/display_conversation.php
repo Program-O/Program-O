@@ -199,11 +199,13 @@
         echo trim($display);
         break;
       case 'xml' :
-        header("Content-type: text/xml; charset=utf-8");
+        header("Content-type: text/xml; charset=utf-8", false);
+        header("Access-Control-Allow-Origin: *", false);
         echo trim($display);
         break;
       case 'json' :
-        header("Content-type: text/plain; charset=utf-8");
+        header("Content-type: text/plain; charset=utf-8", false);
+        header("Access-Control-Allow-Origin: *", false);
         echo trim($display);
         break;
       default :

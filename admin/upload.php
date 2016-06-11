@@ -216,6 +216,7 @@ endScript;
             }
           }
         }
+        $topic = '';
         if (!empty ($aiml->category))
         {
           foreach ($aiml->category as $category)
