@@ -1,12 +1,10 @@
-  /***************************************
-   * http://www.program-o.com
-   * PROGRAM O
-   * Version: 2.6.1
-   * FILE: CHANGELOG
-   * AUTHOR: Elizabeth Perreau and Dave Morton
-   * DATE: JUN 08 2016
-   * DETAILS: Describes the version changes in Program O
-   */
+# [Program O](http://www.program-o.com)
+
+CHANGELOG info:
+- Version: 2.6.1
+- Authors: Elizabeth Perreau and Dave Morton
+- Date: June 11th 2016
+
 
 Version History:
 2.6.1   AIML Validation Change
