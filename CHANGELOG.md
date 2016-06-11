@@ -1,13 +1,16 @@
 # [Program O](http://www.program-o.com)
 
-CHANGELOG info:
+##CHANGELOG info:
+
 - Version: 2.6.1
 - Authors: Elizabeth Perreau and Dave Morton
 - Date: June 11th 2016
 
 
-Version History:
+##Version History:
+
 2.6.1   AIML Validation Change
+
 1. Changed the validation method in admin/validateAIML.php from using XML DocType Declaration (DTD)
     to XML Schema (XSD). This allows the validation script to check for improper characters in both
     `<pattern>` and `<that>` tags, which has been a real issue in the past
@@ -15,6 +18,7 @@ Version History:
     required to validate the files before uploading them. You now cannot upload invalid AIML files.
 
 2.6.0   Restructure the aiml_userdefined Table, Other Fixes and Changes
+
 1. Changed the structure of the aiml_userdefined table to correct a bug where the user ID didn't match
     the current user, even though the conversation ID was the same
 2. Created an XML Schema file for AIML in preparation for later changes to be implemented with the AIML
@@ -27,6 +31,7 @@ necessary changes so that a clean install should not be required. Please note, h
 in the affected table (aiml_userdefined). This is a necessary step**
 
 2.5.4   Multiple Bug Fixes and Changes
+
 1. Fixed a bug in the function that parses the `<condition>` tag that failed to properly normalize multi-byte strings. Thanks to @LorenzCK for this fix!
 2. Fixed a bug in the function that scores AIML categories that use the `<that>` tag that was allowing incorrect categories to be selected.
 3. Corrected several typos and uninitiated variables that were silently creating errors.
@@ -35,15 +40,18 @@ in the affected table (aiml_userdefined). This is a necessary step**
 2.4.9 - 2.5.3 - Changes "slipped through the cracks" - oops?
 
 2.4.8   Housekeeping
+
 1. Removed dead links from the admin area and obsolete information pages
 2. Merge pull requests including topic upload fix and an expansion to the make_like_pattern()
 
 
 2.4.7   Security fixes
+
 1. Added XSS and CSRF attack prevention to the code-base
     **Please note that this bug fix affects the config file, so will require a reinstall of the script**
 
 2.4.6   Bug fixes, refined the admin login routines
+
 1. Added code to the install script that detects the current session path, creating a new,
     uniquely named folder for the session files if one does not currently exist.
 2. Fixed a bug with the Search/Edit AIML admin page that prevented any AIML categories from
@@ -61,12 +69,14 @@ in the affected table (aiml_userdefined). This is a necessary step**
     this wih a selectbox in an AJAX driven chatbot interface page.
 
 2.4.5   Relocated the session save path
+
 1. Moved the session save path from the server default to a new folder. this increases
     security for those on shared hosts, and ensures that there are no permissions problems
     (or problems with the session save path not being set in the PHP config) for those who
     have been experiencing login problems due to sessions not being saved.
 
 2.4.4   Multiple bug fixes, consolidated SELECT type DB queries into calls to two functions
+
 1. Fixed a bug in the core code that allowed fatal errors to be generated if the variable
     bot_id is empty or not set
 2. Fixed a bug in the new Search/Edit AIML admin page that caused only the default chatbot's
@@ -78,6 +88,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
 5. Changed the download admin page to enable downloading multiple files as a zip arcvhive.
 
 2.4.3   Multiple bug fixes, started adding internal documentation with descriptions
+
 1. Fixed a bug in the XML GUI that was creating fatal errors when called from the admin page
 2. Fixed bugs in the functions that parse SRAI, SR and CONDITION tags
 3. Corrected a bug where certain admin pages didn't display if a new chatbot was created but not saved.
@@ -87,6 +98,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
     with the generation of the above mentioned external documentation.
 
 2.4.2   Added Local AIML Validation and SRAI Lookup Admin
+
 1. Added a "local" AIML validator script, specifically designed to validate
     AIML files for Program O and Pandorabots.
 2. Added a new page to the admin to work with the new SRAI lookup table. For
@@ -99,6 +111,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
     new limit is 255 characters, instead of the previous 10.
 
 2.4.1   Complete refactor for PDO support, added SRAI lookup
+
 1. Refactored the code that deals with DB access to completely remove the
     last of the mysql_* functions, including "fallback support".
 2. Added an additional table to the database to handle looking up previously
@@ -111,6 +124,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
     completed.
 
 2.4.0   Conditional PDO support added, major bug fixes
+
 1. Added PDO support for PHP versions that support it (and have it enabled),
     with a fallback to the original MySQL functions if no PDO support is detected
 2. Finally found the problem with template-side <that> tags not being displayed
@@ -126,12 +140,14 @@ in the affected table (aiml_userdefined). This is a necessary step**
     log entries.
 
 2.3.1   Bug fixes, repaired missing table columns
+
 1. Corrected a bug in the function parse_learn_tag that prevented new data from being
     inserted into the aiml_userdefined table
 2. Added a column in the aiml_userdefined table that was missing, which was also
     preventing new data from being added.
 
 2.3.0   Minor DB refactor, in preparation for version 2.5
+
 1. removed the last of the PHP code columns from the database
 2. added an unknown_user field to the bots table, allowing per-bot settings for what the
     will call someone they don't know
@@ -143,18 +159,21 @@ in the affected table (aiml_userdefined). This is a necessary step**
 7. other miscellaneous minor bug fixes
 
 2.2.2   Bug Fixes/versioning refactor
+
 1. Fixed a bug that prevented proper implementation of template-side <that> tags
 2. updated and corrected the script version in all files that contain version information
 3. implemented functionality that sets the scripts internal version based on the contents
     of version.txt, rather than hard-coding it
 
 2.2.1   Major bug fixes
+
 1. Fixed a bug that was mangling Unicode characters while removing punctuation
 2. Fixed a bug where the chatbot's debug level wasn't being used
 3. re-wrote several functions to be more efficient
 
 
 2.2.0   Foreign Langague Support
+
 1. Program O now support foreign languages! YEEHAAAA
 2. Tested against, Russian, Arabic, Turkish, French, Thai, Greek, Chinese
 3. Converted all character coding both internal and external to UTF-8
@@ -163,6 +182,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
 
 
 2.1.5   Bug fixes/merge to "Master" branch
+
 1. Corrected a bug that improperly ordered the collections of words gathered in <pattern> and <that> tags
 2. Corrected multiple minor bugs in the Download script that affected the use of said downloaded AIML
     files with Pandorabots.
@@ -178,6 +198,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
 7. Other minor cosmetic changes and typo corrections that didn't affect functionality.
 
 2.1.4   Bug fixes & minor styling/feature changes
+
 1. Fixed several bugs that arose from the database refactor.
 2. Fixed the long-standing bug that caused the script to create a new user
     instead of just updating the current user when they typed in the phrase
@@ -192,6 +213,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
     the Support tab of the admin pages.
 
 2.1.3   Added the last of the AIML tag functions/Refactored the DB/Multiple Bug Fixes
+
 1. Added functions for the remaining AIML tags:
         <thatstar>
         <topicstar>
@@ -212,6 +234,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
     above listed changes.
 
 2.1.2   Added more AIML tag functions/Script Streamlining
+
 1. Added functions for the following AIML tags:
        <condition>
        <system>
@@ -220,12 +243,14 @@ in the affected table (aiml_userdefined). This is a necessary step**
     and streamlining code wherever possible.
 
 2.1.1   Added functions for some AIML tags
+
 1. Added functions for the following AIML tags:
         <gender>
         <person>
         <person2>
 
 2.1.0   Major revision change / Bug fixes
+
 1. Altered the way that client properties are handled, by storing them in a table
     in the DB, rather than keeping them in an element of the conversation array.
 2. Removed the AIML to PHP code functions, replacing it with an XML parser to
@@ -238,10 +263,12 @@ in the affected table (aiml_userdefined). This is a necessary step**
         tags. The file TODO lists all of the tags that are still not handled.
 
 2.0.9   Feature Update
+
 1. Added a function to the admin page to poll GitHub for the current release version, and notify
     the botmaster if a new version is available, providing a link to the latest version.
 
 2.0.8   Performed the following upgrades/fixes:
+
 1. Added version information to the admin page. so that botmasters can see at a glance which version
     they're using. This is a prelude to a new "version check" feature that I'm working on.
 2. Corrected a bug where changing the bot's default page format wasn't being reflected in the config
@@ -249,6 +276,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
     the case, you shouldn't be relying on the default chatbot page anyway.
 
 2.0.7   Two major changes, this time:
+
 1. Removed some settings from the install script that had been causing new chatbots to
   fail to respond. These settings are still available in the admin pages, but during installation
   are given default values.
@@ -257,6 +285,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
   but a 2MB ZIP file can hold a LOT of AIML files.
 
 2.0.6   Performed the following upgrades/fixes:
+
 1. Corrected typographical errors in several files, both in the admin pages, and in the config files.
 2. Consolidated error logging, adding a /logs/ folder to the base directory. Error logs are
   also named for the pages where the errors occur. (e.g. admin.error.log for the admin pages,
@@ -268,6 +297,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
           For further assistance, please check out the Program O Support Forums.
 
 2.0.5   Bug fixes
+
 1. Fixed a bug where uploaded AIML files were not being added to the DB, even if they passed validation.
 2. Added the variable $default_charset to allow character encoding other than UTF-8 for both AIML files
     and chatbot pages.
