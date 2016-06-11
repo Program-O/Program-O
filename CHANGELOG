@@ -9,6 +9,13 @@
    */
 
 Version History:
+2.6.1   AIML Validation Change
+            1.) Changed the validation method in admin/validateAIML.php from using XML DocType Declaration (DTD)
+                to XML Schema (XSD). This allows the validation script to check for improper characters in both
+                `<pattern>` and `<that>` tags, which has been a real issue in the past
+            2.) Incorporated the same validation method into the AIML upload script, so that you are not now
+                required to validate the files before uploading them. You now cannot upload invalid AIML files.
+
 2.6.0   Restructure the aiml_userdefined Table, Other Fixes and Changes
             1.) Changed the structure of the aiml_userdefined table to correct a bug where the user ID didn't match
                 the current user, even though the conversation ID was the same
