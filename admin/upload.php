@@ -169,7 +169,7 @@ endScript;
         $status = "File $fileName is <strong>NOT</strong> valid!<br />\n";
         $msg .= upload_libxml_display_errors($status);
       }
-      elseif (!$xml->schemaValidate('aiml2.xsd')) {
+      elseif (!$xml->schemaValidate('aiml.xsd')) {
         $msg = '<b>A total of [count] error[plural] been found in this document.</b><br>';
         // $xmlErrCount
         $status = upload_libxml_display_errors($status);
@@ -490,7 +490,7 @@ endScript;
     file_put_contents(_LOG_PATH_ . 'upload.xml.txt', print_r($xml, true));
     global $validationStatus;
     $out = true;
-    if (!$xml->schemaValidate('aiml2.xsd')) {
+    if (!$xml->schemaValidate('aiml.xsd')) {
       $validationStatus = get_errors();
       $out = false;
     }

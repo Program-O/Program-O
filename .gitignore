@@ -14,6 +14,7 @@ config/global_config.php
 config/global_config*.php
 global_config.php
 admin/uploads/*
+!admin/uploads/index.html
 chatbot/debug/*.txt
 gui/jquery/gui.php
 logs/*.log

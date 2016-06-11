@@ -3,7 +3,7 @@
     * http://www.program-o.com
     * PROGRAM O
     * Version: 2.6.1
-    * FILE: validateAIML_XSD.php
+    * FILE: validateAIML.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 06-02-2014
     * DETAILS: Validates uploaded AIML files
@@ -13,14 +13,14 @@
   chdir(__DIR__);
   error_reporting(E_ALL);
   ini_set('display_errors', 0);
-  ini_set('error_log', _LOG_PATH_ . 'validateAIML_XSD.error.log');
+  ini_set('error_log', _LOG_PATH_ . 'validateAIML.error.log');
   $status = '';
   $displayAIML = '';
   $ip = $_SERVER['REMOTE_ADDR'];
   $ip = ($ip == '::1') ? 'localhost' : $ip;
   if (!empty ($_FILES))
   {
-    $uploadDir = _UPLOAD_PATH_;
+    $uploadDir = 'uploads/';
     //chdir($uploadDir);
     if (!file_exists("$uploadDir$ip")) mkdir("$uploadDir$ip");
 
@@ -31,8 +31,13 @@
     libxml_use_internal_errors(true);
     $tmpFile = str_replace('../', '', $_FILES['uploaded']['tmp_name']);
     if (move_uploaded_file($tmpFile, $target)) {
-      $aimlFile = trim(file_get_contents($target));
-      $aimlFile = str_replace(' xmlns="http://alicebot.org/2001/AIML-1.0.1"', '', $aimlFile); // remove the namespace declaration
+      $aimlContent = trim(file_get_contents($target));
+      $validAIMLHeader = '<?xml version="1.0" encoding="[charset]"?>
+<aiml version="1.0.1" xmlns="http://www.alicebot.org/TR/2001/WD-aiml">';
+      $validAIMLHeader = str_replace('[charset]', $charset, $validAIMLHeader);
+      $aimlTagStart = stripos($aimlContent, '<aiml', 0);
+      $aimlTagEnd = strpos($aimlContent, '>', $aimlTagStart) + 1;
+      $aimlFile = $validAIMLHeader . substr($aimlContent, $aimlTagEnd);
       $fileName = basename($_FILES['uploaded']['name']);
       //$xml->preserveWhiteSpace = true;
       //$xml->formatOutput = true;
@@ -139,7 +144,7 @@
       accept them, so if your AIML file fails validation for <b>ONLY</b> having HTML tags, you're still ok.
     </p>
     <div class="center">
-      <form enctype="multipart/form-data" action="validateAIML_XSD.php" method="post">
+      <form enctype="multipart/form-data" action="validateAIML.php" method="post">
         Please choose a file: <input name="uploaded" type="file" tabindex="1" />&nbsp;&nbsp;
         <input type="submit" value="Validate" /><br>
       </form>
