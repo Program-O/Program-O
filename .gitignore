@@ -13,7 +13,7 @@ admin/ses*
 config/global_config.php
 config/global_config*.php
 global_config.php
-config/uploads/*
+admin/uploads/*
 chatbot/debug/*.txt
 gui/jquery/gui.php
 logs/*.log
@@ -26,6 +26,7 @@ makeBuild.php
 
 *.flist
 prev*~.php
+~*.*
 
 #################
 ## Eclipse

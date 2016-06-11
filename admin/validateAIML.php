@@ -2,8 +2,8 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.6.0
-    * FILE: validateAIML.php
+    * Version: 2.6.1
+    * FILE: validateAIML_XSD.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: 06-02-2014
     * DETAILS: Validates uploaded AIML files
@@ -13,7 +13,7 @@
   chdir(__DIR__);
   error_reporting(E_ALL);
   ini_set('display_errors', 0);
-  ini_set('error_log', _LOG_PATH_ . 'validate_aiml.error.log');
+  ini_set('error_log', _LOG_PATH_ . 'validateAIML_XSD.error.log');
   $status = '';
   $displayAIML = '';
   $ip = $_SERVER['REMOTE_ADDR'];
@@ -27,61 +27,34 @@
     $tf = basename($_FILES['uploaded']['name']);
     $tf = str_replace(' ', '_', $tf);
     $target = $uploadDir . $ip . '/' . $tf;
+    libxml_clear_errors();
     libxml_use_internal_errors(true);
     $tmpFile = str_replace('../', '', $_FILES['uploaded']['tmp_name']);
-    if (move_uploaded_file($tmpFile, $target))
-    {
+    if (move_uploaded_file($tmpFile, $target)) {
       $aimlFile = trim(file_get_contents($target));
-      //$aimlFile = str_replace('><', ">\n<", $aimlFile);
+      $aimlFile = str_replace(' xmlns="http://alicebot.org/2001/AIML-1.0.1"', '', $aimlFile); // remove the namespace declaration
       $fileName = basename($_FILES['uploaded']['name']);
-      $xml = new DOMDocument('1.0', 'utf-8');
       //$xml->preserveWhiteSpace = true;
       //$xml->formatOutput = true;
-
-      if (!$xml->loadXML($aimlFile))
+      $aimlArray = explode("\n", $aimlFile);
+      array_unshift($aimlArray,null);
+      unset($aimlArray[0]);
+      foreach ($aimlArray as $line => $content)
       {
+        $content = trim($content);
+        $displayAIML .= "    <div class=\"source\" id=\"line$line\"><pre>$line | " . htmlentities($content) . "</pre></div>\n";
+      }
+      $xml = new DOMDocument('1.0', 'utf-8');
+      if (!$xml->loadXML($aimlFile)) {
         $status = "File $fileName is <strong>NOT</strong> valid!<br />\n";
         libxml_display_errors();
       }
-      else
-      {
-        $xpath = new DOMXPath($xml);
-        foreach ($xpath->query('//comment()') as $comment) {
-          //$comment->parentNode->removeChild($comment);
-        }
-
-        $rootTag = $xml->documentElement;
-        $rootVersion = $rootTag->getAttribute('%version%');
-        if (empty($rootVersion)) $rootTag->setAttribute('version', '1.0.1');
-        $creator = new DOMImplementation();
-        $docType = $creator->createDocumentType('aiml', '', 'aiml.dtd');
-        $aiml = $creator->createDocument('', '', $docType);
-        $aiml->formatOutput = true;
-        $aiml->preserveWhiteSpace = false;
-        $aimlContent = $xml->getElementsByTagName('aiml')->item(0);
-        //
-        $newNode = $aiml->importNode($aimlContent, true);
-        $aiml->appendChild($newNode);
-        // make the new AIML file
-        $tmpContent = $aiml->saveXML();
-        $aimlArray = explode("\n", $aimlFile);
-        array_unshift($aimlArray,null);
-        unset($aimlArray[0]);
-        foreach ($aimlArray as $line => $content)
-        {
-          $content = trim($content);
-          $displayAIML .= "    <div class=\"source\" id=\"line$line\"><pre>$line | " . htmlentities($content) . "</pre></div>\n";
-        }
-
-        if (!$aiml->validate())
-        {
-          $status = "File $fileName is <strong>NOT</strong> valid!<br />\n";
-          libxml_display_errors();
-        }
-        else
-        {
-          $status = "File $fileName is valid.<br />\n";
-        }
+      elseif (!$xml->schemaValidate('aiml.xsd')) {
+        $status = '<b>A total of [count] error[plural] been found in this document.</b>';
+        libxml_display_errors();
+      }
+      else {
+        $status = "File $fileName is valid.<br />\n";
       }
     }
   }
@@ -92,8 +65,7 @@
    * * @param $error
    * @return string
    */
-  function libxml_display_error($error)
-  {
+  function libxml_display_error($error) {
     global $aimlArray;
     $errorLine = $error->line;
     $errorXML = htmlentities(@$aimlArray[$errorLine]);
@@ -124,11 +96,16 @@
   {
     global $status;
     $errors = libxml_get_errors();
+    $count = 0;
     foreach ($errors as $error)
     {
       $status .= libxml_display_error($error) . "<br />\n";
+      $count++;
     }
     libxml_clear_errors();
+    $plural = ($count > 1) ? 's have' : ' has';
+    $status = str_replace('[count]', $count, $status);
+    $status = str_replace('[plural]', $plural, $status);
   }
 
 ?>
@@ -162,7 +139,7 @@
       accept them, so if your AIML file fails validation for <b>ONLY</b> having HTML tags, you're still ok.
     </p>
     <div class="center">
-      <form enctype="multipart/form-data" action="validateAIML.php" method="post">
+      <form enctype="multipart/form-data" action="validateAIML_XSD.php" method="post">
         Please choose a file: <input name="uploaded" type="file" tabindex="1" />&nbsp;&nbsp;
         <input type="submit" value="Validate" /><br>
       </form>
