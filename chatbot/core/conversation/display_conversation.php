@@ -196,7 +196,6 @@
       case 'html' :
         $display = str_ireplace('<![CDATA[', '', $display);
         $display = str_replace(']]>', '', $display);
-        echo trim($display);
         break;
       case 'xml' :
         header("Content-type: text/xml; charset=utf-8", false);
