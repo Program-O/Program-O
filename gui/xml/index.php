@@ -50,7 +50,7 @@ end_display;
   $post_vars = filter_input_array(INPUT_POST, $options);
   $get_vars = filter_input_array(INPUT_GET, $options);
   $request_vars = array_merge((array)$get_vars, (array)$post_vars);
-  echo ("<!-- POST vars:\n" . print_r($_POST, true) . "\nGET vars:\n" . print_r($_GET, true) . "\$request_vars:\n" . print_r($request_vars, true) . "\n-->\n");
+  //echo ("<!-- POST vars:\n" . print_r($_POST, true) . "\nGET vars:\n" . print_r($_GET, true) . "\$request_vars:\n" . print_r($request_vars, true) . "\n-->\n");
   $convo_id = (isset ($request_vars['convo_id'])) ? $request_vars['convo_id'] : get_convo_id();
   $bot_id = (isset ($request_vars['bot_id'])) ? $request_vars['bot_id'] : 1;
   if (!empty ($post_vars))
