@@ -112,9 +112,9 @@
   * @return (string) $botsay
   */
   function getReply($convo_id, $usersay) {
-    global $path_to_bot, $bot_id;
+    global $chatbot_endpoint, $bot_id;
     $botsay = '';
-    $request_url = $path_to_bot . "?say=" . urlencode($usersay) . "&convo_id=" . $convo_id . "&bot_id=$bot_id&format=xml";
+    $request_url = $chatbot_endpoint . "?say=" . urlencode($usersay) . "&convo_id=$convo_id&bot_id=$bot_id&format=xml";
     $conversation = @ simplexml_load_file($request_url, "SimpleXmlElement", LIBXML_NOERROR + LIBXML_ERR_FATAL + LIBXML_ERR_NONE);
     if ((@ $conversation) && (count(@ $conversation) > 0)) {
       $botsay = (string) $conversation->chat->line[0]->response;

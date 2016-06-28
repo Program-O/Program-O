@@ -53,8 +53,7 @@ end_display;
   //echo ("<!-- POST vars:\n" . print_r($_POST, true) . "\nGET vars:\n" . print_r($_GET, true) . "\$request_vars:\n" . print_r($request_vars, true) . "\n-->\n");
   $convo_id = (isset ($request_vars['convo_id'])) ? $request_vars['convo_id'] : get_convo_id();
   $bot_id = (isset ($request_vars['bot_id'])) ? $request_vars['bot_id'] : 1;
-  if (!empty ($post_vars))
-  {
+  if (!empty ($post_vars)) {
     $options = array(
       CURLOPT_USERAGENT => 'Program_O_XML_API',
       CURLOPT_RETURNTRANSFER => true,
@@ -66,32 +65,34 @@ end_display;
     curl_setopt($ch, CURLOPT_POSTFIELDS, $request_vars);
     $data = curl_exec($ch);
     curl_close($ch);
-    $xml = new SimpleXMLElement($data);
-    $display = '';
-    $success = $xml->status->success;
-    if (isset($xml->status->message))
-    {
-      $message = (string) $xml->status->message;
-      $display = 'There was an error in the script. Message = ' . $message;
-    }
-    else
-    {
-      $user_name = (string) $xml->user_name;
-      $bot_name = (string) $xml->bot_name;
-      $chat = $xml->chat;
-      $lines = $chat->xpath('line');
-      foreach ($lines as $line)
-      {
-        $input = (string) $line->input;
-        $response = (string) $line->response;
-        $tmp_row = str_replace('[user_name]', $user_name, $display_template);
-        $tmp_row = str_replace('[bot_name]', $bot_name, $tmp_row);
-        $tmp_row = str_replace('[input]', $input, $tmp_row);
-        $tmp_row = str_replace('[response]', $response, $tmp_row);
-        $display .= $tmp_row;
+    try {
+      $xml = new SimpleXMLElement($data);
+      $display = '';
+      $success = $xml->status->success;
+      if (isset($xml->status->message)) {
+        $message = (string) $xml->status->message;
+        $display = 'There was an error in the script. Message = ' . $message;
+      }
+      else {
+        $user_name = (string) $xml->user_name;
+        $bot_name = (string) $xml->bot_name;
+        $chat = $xml->chat;
+        $lines = $chat->xpath('line');
+        foreach ($lines as $line) {
+          $input = (string) $line->input;
+          $response = (string) $line->response;
+          $tmp_row = str_replace('[user_name]', $user_name, $display_template);
+          $tmp_row = str_replace('[bot_name]', $bot_name, $tmp_row);
+          $tmp_row = str_replace('[input]', $input, $tmp_row);
+          $tmp_row = str_replace('[response]', $response, $tmp_row);
+          $display .= $tmp_row;
+        }
       }
     }
-
+    catch (Exception $e) {
+      $display = 'You can\'t have a conversation without saying something. Please try again.';
+      error_log('$data = ' . print_r($data, true), 3, '../../logs/XML.GUI.error.log');
+    }
   }
 
   /**
