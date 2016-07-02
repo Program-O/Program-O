@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.1
+  * Version: 2.6.2
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
@@ -50,12 +50,14 @@
   $bot_name = '<b class="red">not selected</b>';
   $hide_logo = '';
   $curPage = '';
-
+  $branch = (!empty($_SESSION['useBranch'])) ? $_SESSION['useBranch'] : 'master';
   // Begin script execution
   $thisPath = dirname(__FILE__);
   $template = new Template("$thisPath/default.page.htm");
-  $githubVersion = getCurrentVersion();
-  $version = ($githubVersion == VERSION) ? 'Program O version ' . VERSION : 'Program O ' . $githubVersion . ' is now available. <a href="https://github.com/Program-O/Program-O/archive/master.zip">Click here</a> to download it.';
+  $githubVersion = getCurrentVersion($branch);
+  $upToDate = 'Program O version ' . VERSION . ': ' . ucfirst($branch) . ' branch';
+  $newVersionAvailable = 'Program O ' . $githubVersion . ' is now available for the ' . ucfirst($branch) . ' branch. <a href="https://github.com/Program-O/Program-O/archive/' . $branch . '.zip">Click here</a> to download it.';
+  $version = ($githubVersion <= VERSION) ? $upToDate : $newVersionAvailable;
   $dbConn = db_open();
   if ($get_vars['page'] == 'logout') logout();
   $logged_in = getLoginStatus();
@@ -105,8 +107,7 @@
   $headerTitle     = '';
   $pageTitle       = 'My-Program O - Login';
   $upperScripts    = '';
-  $extraCSS = '';
-
+  $extraCSS        = '';
 
     //if we get to the login page and we are still actually logged in
     //just destroy the session to prevent weirdness
@@ -135,6 +136,15 @@
   $errMsgClass   = (!empty($msg)) ? "ShowError" : "HideError";
   $errMsgStyle   = $template->getSection($errMsgClass);
   $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
+  switch ($branch) {
+    case 'master':
+      $bSelOptD = '';
+      $bSelOptM = ' selected="selected"';
+    break;
+    default:
+      $bSelOptD = ' selected="selected"';
+      $bSelOptM = '';
+  }
   $searches = array(
                     '[charset]'         => $charset,
                     '[myPage]'          => $curPage,
@@ -168,6 +178,9 @@
                     '[noRightNav]'      => $noRightNav,
                     '[noLeftNav]'       => $noLeftNav,
                     '[version]'         => $version,
+                    '[branch]'          => ucfirst($branch),
+                    '[bSelOptD]'        => $bSelOptD,
+                    '[bSelOptM]'        => $bSelOptM,
                     '[bot_format_link]' => $bot_format_link,
                    );
   foreach ($searches as $search => $replace) {
@@ -399,7 +412,23 @@
                        '[linkAlt]' => ' alt="open the page for [curBot] in a new tab/window"',
                        '[linkTitle]' => ' title="open the page for [curBot2] in a new tab/window"',
                        '[linkLabel]' => 'Talk to [curBot]'
-                 )
+                 ),
+                 array(
+                       '[linkClass]' => '',
+                       '[linkHref]' => ' href="' . _BASE_URL_ . 'chatbot/debug/"',
+                       '[linkOnclick]' => ' target="_blank"',
+                       '[linkAlt]' => ' alt="View the Debug Files"',
+                       '[linkTitle]' => ' title="View the debug files in a new tab/window"',
+                       '[linkLabel]' => 'View the Debug Files'
+                 ),
+                 array(
+                       '[linkClass]' => '',
+                       '[linkHref]' => ' href="../logs/"',
+                       '[linkOnclick]' => ' target="_blank"',
+                       '[linkAlt]' => ' alt="View the Logs"',
+                       '[linkTitle]' => ' title="View the logs in a new tab/window"',
+                       '[linkLabel]' => 'View the Logs'
+                 ),
     );
     return $out;
   }
@@ -412,10 +441,11 @@
    *
    * @return bool|mixed|string
    */
-  function getCurrentVersion()
+  function getCurrentVersion($branch)
   {
-    if(isset($_SESSION['GitHubVersion'])) return $_SESSION['GitHubVersion'];
-    $url = 'https://api.github.com/repos/Program-O/Program-O/contents/version.txt';
+    $versionURLtemplate = 'https://raw.githubusercontent.com/Program-O/Program-O/[branch]/version.txt';
+    $url = str_replace('[branch]', $branch, $versionURLtemplate);
+    file_put_contents("../logs/index.getCurrentVersion.branch_url.txt", print_r($url, true));
     $out = false;
     if (function_exists('curl_init'))
     {
@@ -425,16 +455,8 @@
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($ch, CURLOPT_USERAGENT, 'Program-O/Program-O');
       $out = curl_exec($ch);
-      //if (false === $out) trigger_error('Not sure what it is, but there\'s a problem with checking the current version on GitHub. Maybe this will help: "' . curl_error($ch) . '"');
+      if (false === $out) trigger_error('Not sure what it is, but there\'s a problem with checking the current version on GitHub. Maybe this will help: "' . curl_error($ch) . '"');
       curl_close($ch);
-      if (false === $out) return VERSION;
-      $repoArray = json_decode($out, true);
-      //save_file(_LOG_PATH_ . 'repoArray.txt', print_r($repoArray, true));
-      if (!isset($repoArray['content'])) return VERSION;
-      $versionB64 = $repoArray['content'];
-      $version = base64_decode($versionB64);
-      #save_file(_DEBUG_PATH_ . 'version.txt', "out = " . print_r($out, true) . "\r\nVersion = $versionB64 = $version");
-      $out = $version;
     }
     $_SESSION['GitHubVersion'] = $out;
     return ($out !== false) ? $out : VERSION;

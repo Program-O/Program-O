@@ -2,12 +2,26 @@
 
 ##CHANGELOG info:
 
-- Version: 2.6.1
+- Version: 2.6.2
 - Authors: Elizabeth Perreau and Dave Morton
 - Date: June 11th 2016
 
 
 ##Version History:
+
+2.6.2   Add Option to Update From DEV Branch, Other Features/Bug Fixes
+
+1. Added an option in the Select Bot panel to allow checking for version updates from either the
+   MASTER or DEV branches, giving botmasters the ability to more readily use new features/fixes
+   that haven't yet made it into the stable release.
+2. Added links to the admin nav panel to the debug and logs folders, making it easier to access
+   both debug files and error logs, directly from the admin page. These folders require admin
+   level access to be able to view the files themselves, so the information in these files is
+   still safe from unauthorized access.
+3. (still in development) Transitioned from YUI to jQuery for the Search/Edit AIML page, both for
+   consistency, and to correct an intermittent bug that prevents some edited AIML categories from
+   being saved. *NOTE* - This CHANGELOG entry is just a placeholder for now, but the feature/bug
+   fix described should be made available soon.
 
 2.6.1   AIML Validation Change
 

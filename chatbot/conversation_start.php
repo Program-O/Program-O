@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.1
+  * Version: 2.6.2
   * FILE: chatbot/conversation_start.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
@@ -37,7 +37,6 @@
   //------------------------------------------------------------------------
   // set to the user defined error handler
   set_error_handler("myErrorHandler");
-  $say = '';
   //open db connection
   $dbConn = db_open();
   //initialise globals
@@ -167,6 +166,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Debug level = $debug_level", 0);
     $debug_level = isset($convoArr['conversation']['debug_level']) ? $convoArr['conversation']['debug_level'] : $debug_level;
     runDebug(__FILE__, __FUNCTION__, __LINE__,"Debug level = $debug_level", 0);
+    $convoArr['conversation']['rawSay'] = $rawSay;
     if (!isset ($convoArr['conversation']['totallines']))
     {
     //load the chatbot configuration for a new user
@@ -196,8 +196,11 @@
   }
   else
   {
+    $convoArr = intialise_convoArray($convoArr);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation intialised waiting user", 2);
-    $convoArr['send_to_user'] = '';
+    $convoArr['send_to_user'] = 'User input not detected.';
+    $cva = print_r($convoArr, true);
+    error_log("Convo Array:\n$cva", 3, _LOG_PATH_ . 'convoArr.txt');
   }
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
   $dbConn = db_close();

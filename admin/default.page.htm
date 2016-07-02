@@ -306,6 +306,19 @@ between the start and end section tags are the only parts of the template that a
               </select>
             </span></td>
           </tr>
+          <tr>
+            <td>
+              <label for="useBranch">
+                <span class="label">GitHub Branch to Check for Updates</span><span class="big red bold">*</span>
+              </label>
+            </td>
+            <td>
+              <select name="useBranch" id="useBranch">
+                <option value="master"[bSelOptM]>Master</option>
+                <option value="dev"[bSelOptD]>Development</option>
+              </select>
+            </td>
+          </tr>
           </table>
         </div>
         <input type="hidden" id="bot_id" name="bot_id" value="[bot_id]"/>
@@ -313,6 +326,9 @@ between the start and end section tags are the only parts of the template that a
           <input type="submit" name="action" id="action" value="[action]"/>
         </div>
       </form>
+      <div class="note">
+        <span class="big red bold">*</span>Chooses the update branch on GitHub to check against the current install's version.
+      </div>
     <!--/fieldset-->
 <!-- Section SelectBotForm End -->
 <!-- Section FormRow Start -->
@@ -882,12 +898,74 @@ between the start and end section tags are the only parts of the template that a
           </div>
 <!-- Section StatsPage End -->
 <!-- Section EditAimlPage Start -->
+[blank]          <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+          <div class="holder">
+            <table id="AIML">
+              <thead>
+                <tr>
+                  <th data-class-name="hidden">ID</th>
+                  <th title="Sort by User input">Pattern</th>
+                  <th title="Sort by Previous bot response">thatpattern</th>
+                  <th title="Sort by Bot response">Template</th>
+                  <th title="Sort by Topic">Topic</th>
+                  <th title="Sort by File">Filename</th>
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                  <td>&nbsp;</td>
+                  <td>
+                    <textarea rows="1" placeholder="User input"></textarea>
+                  </td>
+                  <td>
+                    <textarea rows="1" placeholder="Previous bot Response"></textarea>
+                  </td>
+                  <td>
+                    <textarea rows="1" placeholder="Bot response"></textarea>
+                  </td>
+                  <td>
+                    <textarea rows="1" placeholder="Topic"></textarea>
+                  </td>
+                  <td><button>Save</button></td>
+                </tr>
+              </tfoot>
+            </table>
+            <div class='search-msg'></div>
+          </div>
+          <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+          <script type="text/javascript" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+          <script type="text/javascript">
+            $(function(){
+              $('#AIML').DataTable({
+                'severSide': true,
+                'paging': true,
+                'scrollY':        '500px',
+                'scrollCollapse': true,
+                'ajax': {
+                  'url': 'editAIML.php?action=search',
+                  'dataSrc': 'data'
+                },
+/*
+                'columns': [ //id, pattern, thatpattern, template, topic, filename
+                  {data: 'id', class: 'hidden'},
+                  {data: 'pattern'},
+                  {data: 'thatpattern'},
+                  {data: 'template'},
+                  {data: 'topic'},
+                  {data: 'filename'},
+                ]
+*/
+              });
+            });
+          </script>
+<!-- Section EditAimlPage End -->
+<!-- Section EditAimlPage_old Start -->
 [blank]          <div class="yui3-skin-sam editaiml-table">
             <div class='search-msg'></div>
           </div>
           <script src="scripts/yui-min.js"></script>
           <script src="scripts/editAiml.js"></script>
-<!-- Section EditAimlPage End -->
+<!-- Section EditAimlPage_old End -->
 <!-- Section DataTable Start -->
 [blank]      <div class="editaiml-table">
         <div class='search-msg'></div>
