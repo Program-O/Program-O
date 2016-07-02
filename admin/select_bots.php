@@ -2,7 +2,7 @@
   /***************************************
    * http://www.program-o.com
    * PROGRAM O
-   * Version: 2.6.1
+   * Version: 2.6.2
    * FILE: select_bots.php
    * AUTHOR: Elizabeth Perreau and Dave Morton
    * DATE: 12-09-2014
@@ -233,7 +233,7 @@
    */
   function updateBotSelection()
   {
-    global $dbConn, $msg, $format, $post_vars;
+    global $dbConn, $msg, $format, $post_vars, $branch;
     $logFile = _LOG_URL_ . 'admin.error.log';
     $msg = '';
     $bot_id = $post_vars['bot_id'];
@@ -241,7 +241,7 @@
     $result = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $sql = '';
     $params = array();
-    $skipVars = array('bot_id', 'action');
+    $skipVars = array('bot_id', 'action', 'useBranch');
     foreach($post_vars as $key => $value)
     {
       if (in_array($key, $skipVars) || !isset($result[$key])) continue;
@@ -264,6 +264,11 @@
         trigger_error("There was a problem adding '$key' to the database. The value was '$value'.");
         //return $msg;
       }
+    }
+    elseif ($branch != $post_vars['useBranch']) {
+      $branch = $post_vars['useBranch'];
+      $_SESSION['useBranch'] = $post_vars['useBranch'];
+      unset($_SESSION['GitHubVersion']) ;
     }
     else
     {
@@ -442,7 +447,7 @@ endSQL;
    * @return void
    */
   function changeBot() {
-  global $dbConn, $msg, $bot_id, $post_vars;
+  global $dbConn, $msg, $bot_id, $post_vars, $branch;
   $botId = (isset($post_vars['bot_id'])) ? $post_vars['bot_id'] : $bot_id;
   
   if($post_vars['bot_id']!="new") {

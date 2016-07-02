@@ -1,7 +1,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.1
+  * Version: 2.6.2
   * FILE: style.css
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
@@ -850,6 +850,10 @@ label { cursor: pointer; }
   float: left;
   text-align: left;
 }
-
+.note {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+}
 
 
