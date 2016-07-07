@@ -18,10 +18,9 @@
    both debug files and error logs, directly from the admin page. These folders require admin
    level access to be able to view the files themselves, so the information in these files is
    still safe from unauthorized access.
-3. (still in development) Transitioned from YUI to jQuery for the Search/Edit AIML page, both for
-   consistency, and to correct an intermittent bug that prevents some edited AIML categories from
-   being saved. *NOTE* - This CHANGELOG entry is just a placeholder for now, but the feature/bug
-   fix described should be made available soon.
+3. Transitioned from YUI to jQuery for the Search/Edit AIML page, both for consistency, and to
+   correct an intermittent bug (issue #140) that prevents some edited AIML categories from being
+   saved.
 
 2.6.1   AIML Validation Change
 

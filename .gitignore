@@ -16,6 +16,9 @@ admin/uploads/*
 chatbot/debug/*.txt
 logs/*.log
 logs/*.txt
+backups
+backups/*
+admin/scripts/old
 
 #################
 ## WeBuilder/ Rapid PHP

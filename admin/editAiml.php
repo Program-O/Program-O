@@ -3,7 +3,7 @@
   /* * *************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.1
+  * Version: 2.6.2
   * FILE: editAiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-26-2014
@@ -12,8 +12,7 @@
   $post_vars = filter_input_array(INPUT_POST);
   $get_vars = filter_input_array(INPUT_GET);
   $form_vars = array_merge((array) $post_vars, (array) $get_vars);
-  if (isset ($get_vars['action']))
-  {
+  if (isset ($get_vars['action'])) {
   //load shared files
     $thisFile = __FILE__;
     require_once('../config/global_config.php');
@@ -22,37 +21,32 @@
     $session_name = 'PGO_Admin';
     session_name($session_name);
     session_start();
+    file_put_contents(_LOG_PATH_ . "editAIML.main.request.txt", print_r($_REQUEST, true));
     $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
-    if (empty ($_SESSION) || !isset ($_SESSION['poadmin']['uid']) || $_SESSION['poadmin']['uid'] == "")
-    {
+    if (empty ($_SESSION) || !isset ($_SESSION['poadmin']['uid']) || $_SESSION['poadmin']['uid'] == "") {
       error_log('Session vars: ' . print_r($_SESSION, true), 3, _LOG_PATH_ . 'session.txt');
       exit (json_encode(array('error' => "No session found")));
     }
     // Open the DB
     $dbConn = db_open();
+    $action = $get_vars['action'];
+    switch ($action) {
+      case 'search':
+        $group = (isset ($get_vars['group'])) ? $get_vars['group'] : 1;
+        exit (runSearch());
+      break;
+      case 'add':
+        exit (insertAIML());
+      break;
+      case 'update':
+        exit (updateAIML());
+      break;
+      case 'del':
+        exit (delAIML($get_vars['id']));
+      break;
+    }
   }
-  if ((isset ($get_vars['action'])) && ($get_vars['action'] == "search"))
-  {
-    $group = (isset ($get_vars['group'])) ? $get_vars['group'] : 1;
-    exit (runSearch());
-  }
-  elseif ((isset ($get_vars['action'])) && ($get_vars['action'] == "add"))
-  {
-    exit (insertAIML());
-  }
-  elseif ((isset ($get_vars['action'])) && ($get_vars['action'] == "update"))
-  {
-    exit (updateAIML());
-  }
-  elseif ((isset ($get_vars['action'])) && ($get_vars['action'] == "del") && (isset ($get_vars['id'])) && ($get_vars['id'] != ""))
-  {
-    exit (delAIML($get_vars['id']));
-  }
-  else
-  {
-    $mainContent = $template->getSection('EditAimlPage');
-  }
-
+  else $mainContent = $template->getSection('EditAimlPage');
   $topNav = $template->getSection('TopNav');
   $leftNav = $template->getSection('LeftNav');
   $rightNav = $template->getSection('RightNav');
@@ -66,7 +60,9 @@
   $noRightNav = $template->getSection('NoRightNav');
   $headerTitle = 'Actions:';
   $pageTitle = 'My-Program O - Search/Edit AIML';
-  $mainTitle = 'Search/Edit AIML';
+  $mainTitle = 'Search/Edit AIML' . $template->getSection('HelpLink');
+  $showHelp = $template->getSection('editAIMLShowHelp');
+  $mainContent = str_replace('[showHelp]', $showHelp, $mainContent);
 
   /**
   * Function delAIML
@@ -74,15 +70,17 @@
   * * @param $id
   * @return string
   */
-  function delAIML($id)
-  {
+  function delAIML($id) {
+    $msg = "ID = $id";
+/*
     if ($id != "")
     {
-      $sql = "DELETE FROM `aiml` WHERE `id` = '$id' LIMIT 1";
-      $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
+      $sql = "DELETE FROM `aiml` WHERE `id` = :id LIMIT 1";
+      $params = array(':id' => $id);
+      $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
       if ($affectedRows == 0)
       {
-        $msg = 'Error AIML couldn\'t be deleted - no changes made.</div>';
+        $msg = 'Error: AIML couldn\'t be deleted - no changes made.';
       }
       else
       {
@@ -91,8 +89,9 @@
     }
     else
     {
-      $msg = 'Error AIML couldn\'t be deleted - no changes made.';
+      $msg = 'Error: AIML couldn\'t be deleted. No ID supplied. - no changes made.';
     }
+ */
     return $msg;
   }
 
@@ -102,9 +101,9 @@
   *
   * @return mixed|string
   */
-  function runSearch()
-  {
+  function runSearch() {
     global $bot_id, $form_vars, $dbConn, $group;
+    file_put_contents(_LOG_PATH_ . 'runSearch.form_vars.txt', print_r($form_vars, true) . "\n", FILE_APPEND);
     $groupSize = 10;
     $limit = ($group - 1) * $groupSize;
     $limit = ($limit < 0) ? 0 : $limit;
@@ -122,14 +121,27 @@
       }
     }
     $searchTerms = (!empty ($searchTerms)) ? implode(" AND ", $searchTerms) : "TRUE";
-    $countSQL = "SELECT count(id) FROM `aiml` WHERE `bot_id` = ? AND ($searchTerms)";
+    $countSQL = "SELECT count(id) FROM `aiml` WHERE `bot_id` = ? AND ($searchTerms);";
     $count = db_fetch($countSQL, $searchParams, __FILE__, __FUNCTION__, __LINE__);
     $total = $count['count(id)'];
-    $limit = ($limit >= $total) ? $total - 1 - (($total - 1) % $groupSize) : $limit;
+    //$limit = ($limit >= $total) ? $total - 1 - (($total - 1) % $groupSize) : $limit;
     $order = isset ($form_vars['sort']) ? $form_vars['sort'] . " " . $form_vars['sortOrder'] : "id";
-    $sql = "SELECT id, topic, filename, pattern, template, thatpattern FROM `aiml` " . "WHERE `bot_id` = ? AND ($searchTerms) order by $order limit $limit, $groupSize;";
+    $sql = "SELECT id, pattern, thatpattern, template, topic, filename FROM `aiml` " . "WHERE `bot_id` = ? AND ($searchTerms) order by $order limit $limit, $groupSize;";// limit $limit
+    file_put_contents(_LOG_PATH_ . 'runSearch.sql.txt', print_r($sql, true));
     $result = db_fetchAll($sql, $searchParams, __FILE__, __FUNCTION__, __LINE__);
-    $out = array("results" => $result, "total_records" => $total, "start_index" => 0, "page" => ($limit / $groupSize) + 1, "page_size" => $groupSize);
+    $out = array(
+      'draw' => $form_vars['draw'],
+      'recordsTotal' => count($result),
+      'recordsFiltered' => 25,
+      'data' => array()
+    );
+    foreach ($result as $index => $row) {
+      $row['template'] = htmlentities($row['template']);
+      $out['data'][] = array_values($row);
+      //$vals['DT_RowId'] = $row['id'];
+    }
+    file_put_contents(_LOG_PATH_ . 'editAIML.runSearch.out.txt', print_r($out, true));
+    file_put_contents(_LOG_PATH_ . 'editAIML.runSearch.out.json.txt', json_encode($out));
     return json_encode($out);
   }
 
@@ -139,8 +151,7 @@
   *
   * @return string
   */
-  function updateAIML()
-  {
+  function updateAIML() {
     global $post_vars, $dbConn;
     $template = trim($post_vars['template']);
     $pattern = (IS_MB_ENABLED) ? mb_strtoupper(trim($post_vars['pattern'])) : strtoupper(trim($post_vars['pattern']));
@@ -183,8 +194,7 @@
   *
   * @return string
   */
-  function insertAIML()
-  {
+  function insertAIML() {
   //db globals
     global $msg, $post_vars, $dbConn, $bot_id;
     $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";

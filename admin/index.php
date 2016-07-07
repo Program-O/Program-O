@@ -27,6 +27,11 @@
   require_once(_LIB_PATH_ . 'template.class.php');
   require_once(_ADMIN_PATH_ . 'allowedPages.php');
 
+  $branches = array(
+    'master' => 'Master',
+    'dev'    => 'Development'
+  );
+
   // Set session parameters
   $session_name = 'PGO_Admin';
   session_name($session_name);
@@ -55,9 +60,12 @@
   $thisPath = dirname(__FILE__);
   $template = new Template("$thisPath/default.page.htm");
   $githubVersion = getCurrentVersion($branch);
-  $upToDate = 'Program O version ' . VERSION . ': ' . ucfirst($branch) . ' branch';
-  $newVersionAvailable = 'Program O ' . $githubVersion . ' is now available for the ' . ucfirst($branch) . ' branch. <a href="https://github.com/Program-O/Program-O/archive/' . $branch . '.zip">Click here</a> to download it.';
-  $version = ($githubVersion <= VERSION) ? $upToDate : $newVersionAvailable;
+  $upToDate = '<strong>Program O</strong><br>Current Local Version: ' . VERSION . '<br>Current GitHub Version: ' . $githubVersion . '<br>Current Branch: ' . $branches[$branch];
+  $newVersionAvailable = "Program O $githubVersion is now available for the "
+    . $branches[$branch] . ' branch. <a href="https://github.com/Program-O/Program-O/archive/' . $branch
+    . '.zip">Click here</a> to download it.<br> (You are currently using version ' . VERSION . ' of the '
+    . $branches[$branch] . ' branch)';
+  $version = (compareVersions(VERSION, $githubVersion) >= 0) ? $upToDate : $newVersionAvailable;
   $dbConn = db_open();
   if ($get_vars['page'] == 'logout') logout();
   $logged_in = getLoginStatus();
@@ -178,7 +186,7 @@
                     '[noRightNav]'      => $noRightNav,
                     '[noLeftNav]'       => $noLeftNav,
                     '[version]'         => $version,
-                    '[branch]'          => ucfirst($branch),
+                    '[branch]'          => $branches[$branch],
                     '[bSelOptD]'        => $bSelOptD,
                     '[bSelOptM]'        => $bSelOptM,
                     '[bot_format_link]' => $bot_format_link,
@@ -445,7 +453,7 @@
   {
     $versionURLtemplate = 'https://raw.githubusercontent.com/Program-O/Program-O/[branch]/version.txt';
     $url = str_replace('[branch]', $branch, $versionURLtemplate);
-    file_put_contents("../logs/index.getCurrentVersion.branch_url.txt", print_r($url, true));
+    //file_put_contents("../logs/index.getCurrentVersion.branch_url.txt", print_r($url, true));
     $out = false;
     if (function_exists('curl_init'))
     {
@@ -548,3 +556,37 @@
   {
     return (isset($_SESSION['poadmin']['logged_in']) && $_SESSION['poadmin']['logged_in'] === true) ? true : false;
   }
+
+  /**
+   * function compareVersions
+   *
+   * Compares the current Program O install's version to the version on GitHub
+   *
+   * @param (string) $cv - The current Program O version
+   *
+   * @param (string) $gv - The current GitHub version of Program O
+   *
+   * @return (int) $out
+   */
+  function compareVersions($cv, $gv) {
+    //cv = current version, gv = github version
+    @list($cmv, $csv, $cb) = explode('.', $cv);
+    $cvTotal = $cmv + ($csv / 10) + ($cb / 100);
+    @list($gmv, $gsv, $gb) = explode('.', $gv);
+    $gvTotal = $gmv + ($gsv / 10) + ($gb / 100);
+    switch (true) {
+      case ($cvTotal < $gvTotal): $out = -1;
+    break;
+      case ($cvTotal == $gvTotal): $out = 0;
+    break;
+    default: $out = 1;
+    }
+    return $out;
+  }
+
+
+
+
+
+
+

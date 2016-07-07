@@ -7,260 +7,226 @@
  * DATE: 05-11-2013
  * DETAILS: UI for aiml edition
  ***************************************/
-YUI().use("datatable-base", "datatable-message", "datatable-sort", "datatable-mutable",
-    "datatable-datasource", "datasource-io", "datasource-jsonschema", "paginator",
-    "overlay", "event-valuechange", function(Y) {
-
-        var currentEditionCell, currentRequest, table, Paginator, paginator,
-            dataSource, overlay, filterTimer, saveTimer,
-            fields = ['topic', 'thatpattern', 'pattern', 'template', 'filename'],
-            url = "editAiml.php";
-
-        // Create a widget to render pages (1 2 3 ... 4 5 6 ... 80 81 82)
-        Paginator = Y.Base.create('my-paginator', Y.Widget, [Y.Paginator], {
-            renderUI: function() {
-                var numbers = '', i, LIMIT = 4,
-                    page = this.get("page"),
-                    totalPages = this.get('totalPages');
-
-                for (i = 1; i <= totalPages; i++) {                             // Render pagination links
-                    if (i < LIMIT || i > totalPages - LIMIT
-                        || (i > page - LIMIT && i < page + LIMIT)) {
-                        numbers += '<a href="#" ' + ((page === i) ? "class='selected' " : "") + 'data-page="' + i + '">' + i + '</a>, ';
-                    }
-                    else if (i === LIMIT || i === totalPages - LIMIT) {
-                        numbers += " ... ";
-                    }
+            var draw = 1;
+            var group = 1;
+            var scrollY;
+            var table;
+            $(function(){
+              $('#showHelp').hide();
+              $('#AIML').on('click', '.editable textarea', function(e){
+                e.stopPropagation();
+              });
+              $('#AIML').on('blur', '.editable textarea', function(e){
+                e.stopPropagation();
+                var rowID = $(this).attr('data-rowID');
+                var fieldName = $(this).attr('data-fieldName');
+                var oldData = $(this).attr('data-oldData');
+                var curData = $(this).val();
+                console.log('current data =', curData, ', old data =', oldData);
+                var dataText = $('<div>').html(oldData).text();
+                if (oldData == curData || curData == dataText) return cancelEdit($(this));
+                else if (typeof oldData !== 'undefined'){
+                  console.log('current data =', curData);
+                  console.log('old data =', oldData);
+                  return saveEdit($(this));
                 }
-                var li = numbers.lastIndexOf(', ');
-                numbers = numbers.substring(0, li);
-                this.get('boundingBox').setContent(numbers);
-            },
-            bindUI: function() {
-                this.get('boundingBox').delegate('click', function(e) {         // let's not go to the page, just update internally
-                    e.halt(true);
-                    load(parseInt(e.currentTarget.getAttribute("data-page")));
-                }, 'a', this);
-                this.after(['pageChange', "totalItemsChange", "itemsPerPage"], this.renderUI);
-            }
-        });
-
-        // Render pagination
-        paginator = new Paginator().render(".editaiml-table");
-
-        // Create a datasource for json data
-        dataSource = new Y.DataSource.IO({source: url + "?action=search"})
-            .plug(Y.Plugin.DataSourceJSONSchema, {
-                schema: {
-                    metaFields: {result: "results", totalItems: "total_records", start_index: "start_index", page: "page", page_size: "page_size"},
-                    resultListLocator: "results",
-                    resultFields: ["id", "thatpattern", "pattern", "template", "topic", "filename"]
-                }
-            });
-
-        // Render the table
-        table = new Y.DataTable({
-            width: "99.7%",
-            columns: [
-              {
-                label: " ",
-                className: "delete-row",
-                allowHTML: true,
-                emptyCellValue: '<div class="delete-row" title="Delete This Row">&nbsp;</div>'
-              },
-              {key: "topic", label: "Topic", sortable: true},
-              {key: "thatpattern", label: "Previous bot response", sortable: true},
-              {key: "pattern", label: "User input", sortable: true},
-              {key: "template", label: "Bot response", sortable: true},
-              {key: "filename", label: "File", sortable: true}
-            ]
-          })
-          .plug(Y.Plugin.DataTableDataSource, {datasource: dataSource})
-          .render(".editaiml-table");
-
-        // Reload table every time it's sorted
-        table.after("sort", load);
-
-        // Append filters
-        table.get("boundingBox").one("thead").append("<tr><th class='yui3-datatable-header yui3-datatable-cell'></th>"
-            + Y.Array.map(fields, function(i) {
-                return "<th class='yui3-datatable-header yui3-datatable-cell'><input placeholder='filter' class='filter-" + i + "'/></th>";
-            }).join("") + "</tr>");
-
-        // Filters changed event
-        Y.one(".editaiml-table").delegate("valueChange", function() {
-            filterTimer && filterTimer.cancel();
-            filterTimer = Y.later(400, this, load);
-        }, "th input");
-
-        // Handle row deletion
-        table.get("boundingBox").delegate("click", function(e) {
-            var delRow = confirm('Are you sure you want to delete this row? you can\'t take it back if you change your mind!');
-            if (!delRow) return false;
-            var row = table.getRecord(e.currentTarget);
-            table.removeRow(row);
-            e.halt(true);
-            Y.io(url + "?action=del&id=" + row.get("id"), {
-                on: {
-                    failure: function() {
-                        alert("An error occured deleting row, please reload page");
-                    }
-                }
-            });
-        }, "td.delete-row");
-
-        // Field edition
-        table.get("boundingBox").delegate("click", function(e) {
-            overlay.setStdModContent('body', "<textarea>" + e.currentTarget.getContent() + "</textarea>");
-            currentEditionCell = e.currentTarget;
-            alignOverlay(e.currentTarget);
-            overlay.get("boundingBox").one("textarea").select().focus();
-        }, "td.yui3-datatable-cell");
-
-        overlay = new Y.Overlay({
-            zIndex: 10,
-            visible: false
-        }).render();
-
-        overlay.get("boundingBox").delegate("valueChange", function() {
-            var key = table.getColumn(currentEditionCell).key,
-                value = this.one("textarea").get("value");
-
-            if (key === "topic" || key === "thatpattern" || key === "pattern") {
-                value = value.toUpperCase();
-            }
-
-            table.getRecord(currentEditionCell).set(key, value);
-            alignOverlay(currentEditionCell);                                   // Align the overlay again since the size of the cell may have changed
-            currentEditionCell.modified = true;
-
-            saveTimer && saveTimer.cancel();
-            saveTimer = Y.later(2000, this, save, [currentEditionCell]);        // Save changes after 2 sec without activity
-        }, "textarea");
-        overlay.get("boundingBox").delegate("blur", function() {                // Or if the textarea is unfocused
-            save(currentEditionCell);
-            overlay.hide();
-        }, "textarea");
-
-        function save(cell) {
-            if (cell.modified) {
-                cell.modified = false;
-                Y.one(".search-msg").setContent("Saving...");
-                Y.io(url + "?action=update", {
-                    method: 'POST',
-                    data: table.getRecord(currentEditionCell).toJSON(),
-                    on: {
-                        success: function() {
-                            Y.one(".search-msg").setContent("Changes saved");
-                        },
-                        failure: onError
-                    }
+                else return cancelEdit($(this));
+              });
+              $('#AIML').on('click', '.editable', function(e){
+                console.log('Clicked!');
+                var cellID = $(this).closest('tr').attr('id');
+                var rawClass = $(this).attr('class');
+                var cellClass = rawClass.replace(' editable', '').replace(' sorting_1', '');
+                console.log('Cell class =', cellClass);
+                var editCell = buildTA($(this), cellClass, $(this).html());
+                editCell.focus();
+                editCell.on('keyup', function(e){
+                  if (e.keyCode == 27) cancelEdit($(this));
                 });
-            }
-        }
-
-        function onError(e) {
-            alert("Error saving object. Please reload page.");
-            console && console.log(e);
-        }
-
-        function alignOverlay(cell) {
-            overlay.setAttrs({
-                align: {
-                    node: cell,
-                    points: ["tl", "tl"]
-                },
-                width: cell.getComputedStyle("width"),
-                height: cell.getComputedStyle("height")
-            }).show();
-        }
-
-        function load(page) {
-            overlay.hide();
-            table.set("data", null).showMessage("loadingMessage");
-
-            if (Y.DataSource.Local.transactions[currentRequest]) {              // Abort any existing request
-                Y.DataSource.Local.transactions[currentRequest].abort();
-                Y.DataSource.Local.transactions[currentRequest] = null;         // @hack Remove reference since YUI won't do it
-            }
-
-            var sortBy = table.get("sortBy") ? "&sort=" + Y.Object.keys(table.get("sortBy")[0])[0]
-                + "&sortOrder=" + (Y.Object.values(table.get("sortBy")[0])[0] === 1 ? "DESC" : "ASC") : "",
-                filters = Y.Array.map(fields, function(i) {
-                    return "&" + i + "=" + Y.one(".filter-" + i).get("value");
-                }).join("");
-
-            currentRequest = table.datasource.load({
-                request: "&group=" + (Y.Lang.isNumber(page) ? page : paginator.get("page"))
-                    + filters + sortBy,
-                callback: {
-                    success: function(e) {
-                        table.datasource.onDataReturnInitializeTable(e);
-                        paginator.set('page', e.response.meta.page)
-                            .set('itemsPerPage', e.response.meta.page_size)
-                            .set("totalItems", e.response.meta.totalItems);
-                    },
-                    failure: function(e) {
-                        if (e.data && e.data.status) {                          // Do not stop for canceled requests
-                            table.showMessage('Error getting data: ' + e.response || e);
-                        }
-                    }
-                }
+              });
+              table = buildTable();
+              $(window).on('resize', function(){
+                if (typeof table === 'undefined') table = buildTable();
+                scrollY = changeHeight();
+                $('.holder').height(scrollY);
+                table.draw();
+              });
+              $('.search-input-text').on( 'keyup click', function () {
+                var i = $(this).data('column');
+                var v = $(this).val();
+                table.columns(i).search(v).draw();
+              });
+              $('#addNewCat').on('submit', function(e){
+                e.preventDefault();
+                var fd = $(this).serialize();
+                console.log('Form Data =', fd);
+                $.ajax({
+                  url: 'editAJAX.php',
+                  type: 'post',
+                  dataType: 'text',
+                  data: fd,
+                  success: function(data) {
+                    $('#errMsg').html('<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>').show();
+                    $('<span>').html(data).appendTo('#errMsg');
+                    table.draw();
+                    setTimeout(hideMsg, 3000);
+                    $('#btnClearNewCat').click();
+                  },
+                });
+              });
             });
-        }
 
-        // @hack Modified to allow transaction id retrieval (to abort them later
-        Y.Plugin.DataTableDataSource.prototype.load = function(config) {
-            config = config || {};
-            config.request = config.request || this.get("initialRequest");
-            config.callback = config.callback || {
-                success: Y.bind(this.onDataReturnInitializeTable, this),
-                failure: Y.bind(this.onDataReturnInitializeTable, this),
-                argument: this.get("host").get("state") //TODO
-            };
-
-            var ds = (config.datasource || this.get("datasource"));
-            if (ds) {
-                return ds.sendRequest(config);                                  // Added return
+            function showHide() {
+              $('#showHelp').toggle();
             }
-        };
 
-        // Insert new aiml
-        table.get("boundingBox").one("table").append("<tfoot>"
-            + "<tr><td></td><td colspan='5' style='padding-top:2px'>Teach new knowledge</td></tr>"
-            + "<tr><td></td><td><textarea rows='1' placeholder='Topic'></textarea></td>"
-            + "<td><textarea rows='1' placeholder='Previous bot response'></textarea></td>"
-            + "<td><textarea rows='1' placeholder='User input'></textarea></td>"
-            + "<td><textarea rows='1' placeholder='Bot response'></textarea></td>"
-            + "<td><button>Save</button></td></tr>"
-            + "</tfoot>");
-        table.get("boundingBox").delegate("click", function() {
-            var texts = Y.all("tfoot textarea");
-            if (texts.item(2).get("value") === "" || texts.item(3).get("value") === "") {
-                alert("You must enter a user input and bot response.");
-                return;
+            function hideMsg() {
+              $('#errMsg').fadeOut();
             }
-            Y.one(".search-msg").setContent("Saving...");
-            Y.io(url + "?action=add", {
-                method: 'POST',
+
+            function cancelEdit(ele) {
+              console.log('Cancelling the edit.');
+              var rowID = ele.attr('data-rowID');
+              var fieldName = ele.attr('data-fieldName');
+              var oldData = ele.attr('data-oldData');
+              ele.parent().empty().html(oldData);
+            }
+
+            function saveEdit(ele) {
+              console.log('Saving the edit.');
+              var rowID = ele.attr('data-rowID');
+              var fieldName = ele.attr('data-fieldName');
+              // insert the new value into the current cell
+              var curVal = ele.val();
+              ele.parent().text(curVal);
+              var row = $('#' + rowID);
+              var pattern = row.find('.pattern').text();
+              var thatpattern = row.find('.thatpattern').text();
+              var template = row.find('.template').text();
+              var topic = row.find('.topic').text();
+              var filename = row.find('.filename').text();
+              // Now gether all of the fields and send the updated information
+              $.ajax({
+                url: 'editAJAX.php',
+                type: 'post',
+                dataType: 'text',
                 data: {
-                    topic: texts.item(0).get("value"),
-                    thatpattern: texts.item(1).get("value"),
-                    pattern: texts.item(2).get("value"),
-                    template: texts.item(3).get("value")
+                  action: 'update',
+                  id: rowID,
+                  pattern: pattern,
+                  thatpattern: thatpattern,
+                  template: template,
+                  topic: topic,
+                  filename: filename,
                 },
-                on: {
-                    success: function() {
-                        load(paginator.get("totalPages"));
-                        Y.one(".search-msg").setContent("All changes saved");
-                    },
-                    failure: onError
+                success: function(data) {
+                  $('#errMsg').empty().html('<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>').show();
+                  $('<pre>').html(data).appendTo('#errMsg');
+                  console.log('Foo!');
+                  setTimeout(hideMsg, 3000);
+                  table.draw();
                 }
-            });
-            texts.set("value", "");
-        }, "button");
+              });
+            }
 
-        // Load the first page
-        load(1);
-    });
-    
+            function buildTA(ele, eleName, data) {
+              rowID = ele.closest('tr').attr('id');
+              var w = ele.width() - 6;
+              var name = eleName.replace(' ', '');
+              var dataText = $('<div>').html(data).text();
+              var field = $('<textarea>').attr('name', name).val(dataText).css({width: w + 'px',height: '100%', marginLeft: '-16px', marginTop: '3px'});
+              field.attr('data-fieldName', name);
+              field.attr('data-rowID', rowID);
+              field.attr('data-oldData', data);
+              ele.empty().append(field);
+              return field;
+            }
+
+            function deleteRow(ele) {
+              console.log('Delete Event Detected!');
+              var verify = confirm('Are you sure that you wish to delete this row of data? This action cannot be undone!');
+              if (!verify) return false;
+              var id = ele.closest('tr').attr('id');
+              console.log('ID =', id);
+              $.ajax({
+                url: 'editAJAX.php',
+                type:'post',
+                dataType: 'text',
+                data: {
+                  action: 'del',
+                  id: id
+                },
+                success: function(data) {
+                  $('#errMsg').empty().html('<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>').show();
+                  $('<span>').html(data).appendTo('#errMsg');
+                  setTimeout(hideMsg, 3000);
+                  table.draw();
+                },
+              });
+            }
+
+            function changeHeight() {
+              return $(window).height() * 0.4;
+            }
+
+            function buildTable() {
+              scrollY = changeHeight();
+              var table = $('#AIML').DataTable({
+                processing: true,
+                serverSide: true,
+                paging: true,
+                scrollX: true,
+                scrollY:        scrollY,
+                //scrollCollapse: true,
+                autoWidth: false,
+                order: [1, 'asc'],
+                ajax: 'editAJAX.php',
+                columns: [
+                  {
+                    data: 0,
+                    searchable: false,
+                    orderable: false,
+                    width: '35px',
+                    render: function(){
+                      return '<div class="deleteRow" onclick="deleteRow($(this))" title="Delete this row"><br>Delete</div>';
+                    },
+                  },
+                  {
+                    data: 'pattern',
+                    className: 'pattern editable',
+                    searchable: true,
+                    orderable: true,
+                    width: '10%',
+                  },
+                  {
+                    data: 'thatpattern',
+                    className: 'thatpattern editable',
+                    searchable: true,
+                    orderable: true,
+                    width: '10%',
+                  },
+                  {
+                    data: 'template',
+                    className: 'template editable',
+                    searchable: true,
+                    orderable: true,
+                    width: '55%',
+                  },
+                  {
+                    data: 'topic',
+                    className: 'topic editable',
+                    searchable: true,
+                    orderable: true,
+                    width: '10%',
+                  },
+                  {
+                    data: 'filename',
+                    className: 'filename editable',
+                    searchable: true,
+                    orderable: true,
+                    width: '10%',
+                  }
+                ]
+              });
+              return table;
+            }
