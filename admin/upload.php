@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.2
+  * Version: 2.6.3
   * FILE: upload.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
@@ -290,8 +290,7 @@ endScript;
     {
       $msg = 'The file was too large.';
     }
-    else
-      if ($_FILES['aimlfile']['error'] !== UPLOAD_ERR_OK)
+    elseif ($_FILES['aimlfile']['error'] !== UPLOAD_ERR_OK)
       {
       // There was a PHP error
         $msg = 'There was an error uploading.';

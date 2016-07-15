@@ -2,12 +2,35 @@
 
 ##CHANGELOG info:
 
-- Version: 2.6.2
+- Version: 2.6.3
 - Authors: Elizabeth Perreau and Dave Morton
 - Date: June 11th 2016
 
 
 ##Version History:
+
+2.6.3   New Features!
+
+1. We expanded upon the success of the jQuery-based Search/Edit page and incorporated the new
+   design into the srai_lookup page. Now botmasters can add, edit and delete entries in the
+   srai_lookup table to better help with performance of their chatbots.
+
+2. Improved the algorithm that initially populates the srai_lookup table so that simple wildcards
+   are included in the search. This added more than 30% additional entries to the table. Between
+   this improvement and the ability to edit directly what is already in the table, botmasters can
+   expect to see as much as a 65-70% improvement in bot response times.
+
+3. We had to fall back on not checking for "valid text" (e.g. just letters, numbers, spaces and
+   the two wildcards) within `<pattern>` and `<that>` tags due to a conflict with PHP's XML
+   parsing and validating functions not being compatible with XML Schema 1.1 specifications, so
+   it's now up to the botmaster to make sure that no punctuation is included within these AIML
+   tags.
+
+4. Corrected some minor visual bugs in the CSS for both the Search/Edit page and the srai_lookup
+   page that was causing some slight alignment issues.
+
+5. Resigned the parse_learn_tag() and parse_eval_tag() functions to make them work properly, based
+   on papers at [alicebot.org](http://www.alicebot.org/) that describe how they are implemented.
 
 2.6.2   Add Option to Update From DEV Branch, Other Features/Bug Fixes
 

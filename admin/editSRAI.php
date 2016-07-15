@@ -4,7 +4,7 @@
   * http://www.program-o.com
   * PROGRAM O
   * Version: 2.6.3
-  * FILE: editAiml.php
+  * FILE: editSRAI.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 05-26-2014
   * DETAILS: Search the AIML table of the DB for desired categories
@@ -13,6 +13,14 @@
   require_once('../config/global_config.php');
   require_once (_LIB_PATH_ . 'PDO_functions.php');
   require_once (_LIB_PATH_ . 'error_functions.php');
+
+  $e_all = defined('E_DEPRECATED') ? E_ALL & ~E_DEPRECATED : E_ALL;
+  error_reporting($e_all);
+  ini_set('log_errors', true);
+  ini_set('error_log', _LOG_PATH_ . 'editSRAI.error.log');
+  ini_set('html_errors', false);
+  ini_set('display_errors', false);
+
   $session_name = 'PGO_Admin';
   session_name($session_name);
   session_start();
@@ -27,37 +35,37 @@
   $action = (isset($form_vars['action'])) ? $form_vars['action'] : 'runSearch';
   switch ($action) {
     case 'add':
-      exit (insertAIML());
+      exit (insertSRAI());
     break;
     case 'update':
-      exit (updateAIML());
+      exit (updateSRAI());
     break;
     case 'del':
-      exit (delAIML($form_vars['id']));
+      exit (delSRAI($form_vars['id']));
     break;
     default:
       exit (runSearch());
   }
 
   /**
-  * Function delAIML
+  * Function delSRAI
   *
   * * @param $id
   * @return string
   */
-  function delAIML($id) {
+  function delSRAI($id) {
     if ($id != "") {
-      $sql = "DELETE FROM `aiml` WHERE `id` = '$id' LIMIT 1";
+      $sql = "DELETE FROM `srai_lookup` WHERE `id` = '$id' LIMIT 1";
       $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
       if ($affectedRows == 0) {
-        $msg = 'Error AIML couldn\'t be deleted - no changes made.</div>';
+        $msg = 'Error SRAI couldn\'t be deleted - no changes made.</div>';
       }
       else {
-        $msg = 'AIML has been deleted.';
+        $msg = 'Lookup entry has been deleted.';
       }
     }
     else {
-      $msg = 'Error AIML couldn\'t be deleted - no changes made.';
+      $msg = 'Error" Lookup entry couldn\'t be deleted - no changes made.';
     }
     return $msg;
   }
@@ -71,7 +79,7 @@
   function runSearch() {
     global $bot_id, $form_vars, $dbConn, $group;
     extract($form_vars);
-    $search_fields = array('topic', 'filename', 'pattern', 'template', 'thatpattern');
+    $search_fields = array('id', 'bot_id', 'pattern', 'template_id');
     $searchTerms = array();
     $searchParams = array($bot_id);
     $where = array();
@@ -82,7 +90,6 @@
         $tmpSearch = $column['search']['value'];
         $tmpSearch = str_replace('_', '\\_', $tmpSearch);
         $tmpSearch = str_replace('%', '\\$', $tmpSearch);
-        //if ($tmpSearch == '_') $tmpSearch = '\\_';
         $tmpName = $column['data'];
         $addWhere = "`$tmpName` like '%$tmpSearch%'";
        $where[] = $addWhere;
@@ -101,10 +108,11 @@
     }
     $orderBy = implode(', ', $oBy);
     if (empty($oBy)) $orderBy = 'id';
-    $countSQL = "SELECT count(id) FROM `aiml` WHERE `bot_id` = ? AND ($searchTerms);";
+    $countSQL = "SELECT count(id) FROM `srai_lookup` WHERE `bot_id` = ? AND ($searchTerms);";
     $count = db_fetch($countSQL, $searchParams, __FILE__, __FUNCTION__, __LINE__);
     $total = $count['count(id)'];
-    $sql = "SELECT id, pattern, thatpattern, template, topic, filename FROM `aiml` " . "WHERE `bot_id` = $bot_id AND ($searchTerms) order by $orderBy limit $start, $length;";
+    $sql = "SELECT id, bot_id, pattern, template_id FROM `srai_lookup` " . "WHERE `bot_id` = $bot_id AND ($searchTerms) order by $orderBy limit $start, $length;";
+    file_put_contents(_LOG_PATH_ . "editSRAI.runSearch.sql.txt", print_r($sql, true));
     $result = db_fetchAll($sql, $searchParams, __FILE__, __FUNCTION__, __LINE__);
     $out = array(
       'draw' => $draw,
@@ -112,91 +120,103 @@
       'recordsFiltered' =>  $total,
       'data' => array()
     );
+    //file_put_contents(_LOG_PATH_ . "editSRAI.runSearch.out1.txt", print_r($out, true));
     if (empty($result)) exit(json_encode($out));
     foreach ($result as $index => $row) {
-      $row['template'] = htmlentities($row['template']);
+      $row['template_id'] = htmlentities($row['template_id']);
       $row['DT_RowId'] = $row['id'];
       $out['data'][] = $row;
     }
+    file_put_contents(_LOG_PATH_ . "editSRAI.runSearch.out.txt", print_r($out, true));
     return json_encode($out);
   }
 
   /**
-  * Function updateAIML
+  * Function updateSRAI
   *
   *
   * @return string
   */
-  function updateAIML() {
+  function updateSRAI() {
     global $form_vars, $dbConn;
-    $template = trim($form_vars['template']);
-    $filename = trim($form_vars['filename']);
-    $pattern = (IS_MB_ENABLED) ? mb_strtoupper(trim($form_vars['pattern'])) : strtoupper(trim($form_vars['pattern']));
-    $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper(trim($form_vars['thatpattern'])) : strtoupper(trim($form_vars['thatpattern']));
-    $topic = (IS_MB_ENABLED) ? mb_strtoupper(trim($form_vars['topic'])) : strtoupper(trim($form_vars['topic']));
     $id = trim($form_vars['id']);
-    if (($template == "") || ($pattern == "") || ($id == "")) {
-      $msg = 'Please make sure you have entered a user input and bot response ';
+    $bot_id = trim($form_vars['bot_id']);
+    $pattern = (IS_MB_ENABLED) ? mb_strtoupper(trim($form_vars['pattern'])) : strtoupper(trim($form_vars['pattern']));
+    $template_id = trim($form_vars['template_id']);
+    if (empty($bot_id) ||empty($pattern) ||empty($template_id)) {
+      $msg = 'Please make sure that no fields are empty.([fields])';
+      $fArray = [];
+      switch (true) {
+        case (empty($bot_id)): $fields[] = 'bot_id';
+        case (empty($pattern)): $fields[] = 'pattern';
+        case (empty($template_id)): $fields[] = 'template_id';
+      }
+      $fields = implode(', ', $fArray);
+      $msg = str_replace('[fields]', $fieelds, $msg);
     }
     else {
-      $sql = "UPDATE `aiml` SET `pattern`=?,`thatpattern`=?,`template`=?,`topic`=?,`filename`=? WHERE `id`=? LIMIT 1";
+      $params = array(
+        ':id' => $id,
+        ':bot_id' => $bot_id,
+        ':pattern' => $pattern,
+        ':template_id' => $template_id
+      );
+      $sql = "UPDATE `srai_lookup` SET `bot_id` = :bot_id, `pattern` = :pattern, `template_id` = :template_id WHERE `id` = :id;";
       $sth = $dbConn->prepare($sql);
       try {
-        $sth->execute(array($pattern, $thatpattern, $template, $topic, $filename, $id));
+        $sth->execute($params);
       }
       catch (Exception $e) {
-        header("HTTP/1.0 500 Internal Server Error");
-        throw ($e);
+        return 'Something went wrong! Error: ' . $e->getMessage();
       }
       $affectedRows = $sth->rowCount();
       if ($affectedRows > 0) {
-        $msg = 'AIML Updated.';
+        $msg = 'SRAI Updated.';
       }
       else {
-        $msg = 'There was an error updating the AIML - no changes made.';
+        $msg = 'There was an error updating the SRAI - no changes made.';
       }
     }
     return $msg;
   }
 
   /**
-  * Function insertAIML
+  * Function insertSRAI
   *
   *
   * @return string
   */
-  function insertAIML() {
+  function insertSRAI() {
   //db globals
-    global $msg, $form_vars, $dbConn, $bot_id;
-    $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
-    $aimltemplate = trim($form_vars['template']);
+    global $msg, $form_vars, $dbConn;
+    $bot_id = trim($form_vars['bot_id']);
     $pattern = trim($form_vars['pattern']);
     $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
-    $thatpattern = trim($form_vars['thatpattern']);
-    $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper($thatpattern) : strtoupper($thatpattern);
-    $aiml = str_replace('[pattern]', $pattern, $aiml);
-    $aiml = (empty ($thatpattern)) ? str_replace('[thatpattern]', "<that>$thatpattern</that>", $aiml) : $aiml;
-    $aiml = str_replace('[template]', $aimltemplate, $aiml);
-    $topic = trim($form_vars['topic']);
-    $topic = (IS_MB_ENABLED) ? mb_strtoupper($topic) : strtoupper($topic);
-    if (($pattern == "") || ($aimltemplate == "")) {
-      $msg = 'You must enter a user input and bot response.';
+    $template_id = trim($form_vars['template_id']);
+    $sql = 'INSERT INTO `srai_lookup` (`id`, `bot_id`, `pattern`, `template_id`) VALUES (NULL, :bot_id, :pattern, :template_id);';
+    $params = array(
+      ':bot_id' => $bot_id,
+      ':pattern' => $pattern,
+      ':template_id' => $template_id
+    );
+    if ((empty($bot_id) ||empty($pattern) ||empty($template_id)) ) {
+      $msg = 'No fields can be empty.';
     }
     else {
-      $sth = $dbConn->prepare("INSERT INTO `aiml` (`id`,`bot_id`, `aiml`, `pattern`,`thatpattern`,`template`,`topic`,`filename`) " . "VALUES (NULL, ?, ?, ?, ?, ?, ?,'admin_added.aiml')");
+      //$sth = $dbConn->prepare('INSERT INTO `srai_lookup` (`id`,`bot_id` `pattern`,`template_id`) VALUES (NULL, :bot_id, :pattern, :template_id);');
+      $sth = $dbConn->prepare($sql);
       try {
-        $sth->execute(array($bot_id, $aiml, $pattern, $thatpattern, $aimltemplate, $topic));
+        $sth->execute($params);
       }
       catch (Exception $e) {
-        header("HTTP/1.0 500 Internal Server Error");
-        throw ($e);
+        return 'Something went wrong! Error: ' . $e->getMessage();
       }
       $affectedRows = $sth->rowCount();
       if ($affectedRows > 0) {
-        $msg = "AIML added.";
+        $msg = "SRAI added.";
       }
       else {
-        $msg = "AIML not updated - no changes made.";
+        $msg = "SRAI not updated - no changes made.";
       }
     }
     return $msg;
@@ -216,6 +236,7 @@
         default:
         $out = filter_var_array($formVars, $options, false);
       }
+      file_put_contents(_LOG_PATH_ . "editSRAI.clean_inputs.formVars.txt", print_r($formVars, true) . "\n---------------\n", FILE_APPEND);
       return $out;
     }
 

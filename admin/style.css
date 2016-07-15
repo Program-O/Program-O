@@ -1,7 +1,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.2
+  * Version: 2.6.3
   * FILE: style.css
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
@@ -861,12 +861,12 @@ label { cursor: pointer; }
 }
 
 input.search-input-text, textarea.newCat {
-  width: 100%;
+  width: 99%;
   padding: 3px;
   box-sizing: border-box;
 }
 #AIML_filter { display: none; }
-#AIML td, #AIML th { border: 1px solid #999; }
+#AIML td, #AIML th, #SRAI_LOOKUP td, #SRAI_LOOKUP th { border: 1px solid #999; }
 .deleteRow {
   margin: 0 auto;
   width: 32px;
@@ -874,6 +874,9 @@ input.search-input-text, textarea.newCat {
   background: url(images/del.png) no-repeat 50% 50%;
   cursor: pointer;
 }
+.w80 { width: 80%; }
+.m0a { margin: 0 auto }
+.mb5 { margin-bottom: 5px; }
 .dataTables_wrapper .dataTables_paginate .paginate_button { padding: 0; }
 
 #newCatTable {

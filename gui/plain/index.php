@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.2
+  * Version: 2.6.3
   * FILE: gui/plain/index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -67,10 +67,23 @@
         padding: 5px;
         border-radius: 5px;
       }
+      #convo_id {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border: 1px solid red;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-shadow: 2px 2px 2px 0 #808080;
+        padding: 5px;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body onload="document.getElementById('say').focus()">
     <h3>Program O Example GUI Page - HTML</h3>
+    <!-- The DIV below is for debugging purposes, and can be safely removed, if desired. -->
+    <div id="convo_id">Conversion ID: <?php echo $convo_id;?></div>
     <form name="chatform" method="post" action="index.php#end" onsubmit="if(document.getElementById('say').value == '') return false;">
       <div id="input">
         <label for="say">Say:</label>

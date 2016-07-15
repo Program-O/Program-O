@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.2
+  * Version: 2.6.3
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
@@ -118,7 +118,17 @@
       hr.center {
         margin: 0 auto;
       }
-
+      #convo_id {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border: 1px solid red;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-shadow: 2px 2px 2px 0 #808080;
+        padding: 5px;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body>
@@ -132,6 +142,8 @@
     <p class="center">
       Please check out the Multi-bot example GUI <a href="multibot_gui_with_chatlog.php">here</a>.
     </p>
+    <!-- The DIV below is for debugging purposes, and can be safely removed, if desired. -->
+    <div id="convo_id">Conversion ID: <?php echo $convo_id;?></div>
     <div class="centerthis">
       <div class="rightside">
       <div class="manspeech">

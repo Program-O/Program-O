@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.6.2
+  * Version: 2.6.3
   * FILE: chatbot/core/conversation/intialise_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -400,7 +400,7 @@
       ':bot_id' => $bot_id,
     );
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving conservation SQL: $sql", 3);
-    file_put_contents(_LOG_PATH_ . 'init_convo.log_convo.sql.txt', print_r($sql, true) . "\nParams = " . print_r($params, true) . "\n");
+    //file_put_contents(_LOG_PATH_ . 'init_convo.log_convo.sql.txt', print_r($sql, true) . "\nParams = " . print_r($params, true) . "\n");
     
     $sth = $dbConn->prepare($sql);
     $sth->execute($params);

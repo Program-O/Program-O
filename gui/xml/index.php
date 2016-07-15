@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.2
+  * Version: 2.6.3
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 07-23-2013
@@ -151,10 +151,23 @@ end_display;
         padding: 5px;
         border-radius: 5px;
       }
+      #convo_id {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border: 1px solid red;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-shadow: 2px 2px 2px 0 #808080;
+        padding: 5px;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body onload="document.forms[0].say.focus();">
     <h3>Program O XML GUI</h3>
+    <!-- The DIV below is for debugging purposes, and can be safely removed, if desired. -->
+    <div id="convo_id">Conversion ID: <?php echo $convo_id;?></div>
     <form accept-charset="utf-8" method="post" action="index.php">
       <p>
         <input type="text" name="say" id="say" size="70" />

@@ -3,7 +3,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.6.2
+    * Version: 2.6.3
     * FILE: parse_aiml_as_xml.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: FEB 01 2016
@@ -629,8 +629,18 @@
   function parse_srai_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SRAI tag.', 2);
+    $starArray = ['~<star[ ]?/>~i', '~<star index="\d+"[ ]?\/>~'];
+    $elementXML = $element->asXML();
+    //$srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $response = run_srai($convoArr, $srai);
+    $srai_new  = (strstr($elementXML, '<star') !== false) ?
+      preg_replace($starArray, '*', $elementXML) :
+      $srai;
+    $srai_new  = preg_replace('~<[\/]?text>~i', '', $srai_new );
+    $srai_new  = preg_replace('~<[\/]?srai>~i', '', $srai_new );
+    file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai_new.txt", print_r($srai_new, true) . "\n", FILE_APPEND);
+    file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai.txt", print_r($srai, true) . "\n", FILE_APPEND);
+    $response = run_srai($convoArr, $srai_new);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 4);
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     return $response_string;
@@ -956,6 +966,16 @@
   /**
    * Parses the 'extended' AIML <learn> tag
    *
+   * The <learn> tag, just like the <think> tag, has the feature of suppressing output,
+   * but has the added task of "storing" the enclosed AIML actegory for future use.
+   * Thus, this function needs to prepare it's contents for addition to the aiml_userdefined
+   * table for the intended chatbot.
+   *
+   * If the AIML category contains an <eval> tag, only the contents of that tag are parsed as
+   * AIML. the rest is stored in the table as is. Generally speaking, the <pattern> and <that>
+   * tags will most often contain <eval> tags, though they COULD appear within <template> tags
+   * as well.
+   *
    * @param array $convoArr
    * @param SimpleXMLElement $element
    * @param string $parentName
@@ -968,101 +988,80 @@
     global $dbn, $dbConn;
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
-    $sqlTemplate = "insert into `$dbn`.`aiml_userdefined` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `user_id`)
-values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id');";
+    $convo_id = $convoArr['conversation']['convo_id'];
+    $params = [];
     $sql = '';
     $failure = false;
-    $remove = array('<text>', '</text>');
-    $fileName = (string) $element['filename'];
-    if (empty($fileName)) // enclosed text is the category to add to the DB
-    {
-      $category = $element->category;
+    $category = $element->category;
+    $aiml = $category->asXML();
+    $params[':aiml'] = $aiml;
+    $catXpath = $element->xpath('//eval');
 
-      $pattern = parseTemplateRecursive($convoArr, $category->pattern, $level + 1);
-      $pattern = implode_recursive(' ', $pattern, __FILE__, __FUNCTION__, __LINE__);
-      $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
+    // pull out the necessary info to save to the DB
 
-      $thatpattern = (string)$category->that;
+    // pattern
+   $pattern = $category->pattern;
+    $patternEvalXpath = $pattern->xpath('//eval');
+    $patternText = $pattern->asXML();
+    $pattern2store = (!empty($patternEvalXpath)) ?
+      quickParseEval($convoArr, $patternText, 'pattern', 0) :
+      $patternText;
+    $params[':pattern'] = $pattern2store;
 
-      $parsed_template = parseTemplateRecursive($convoArr, $category->template, $level + 1);
-      $parsed_template = implode_recursive(' ', $parsed_template, __FILE__, __FUNCTION__, __LINE__);
-      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsed LEARN template: ' . $parsed_template, 2);
+    // thatpattern
+    $thatpattern = $category->that;
+    $thatpatternEvalXpath = $thatpattern->xpath('//eval');
+    $thatpatternText = $thatpattern->asXML();
+    $thatpattern2store = (!empty($thatpatternEvalXpath)) ?
+      quickParseEval($convoArr, $thatpatternText, 'that', 0) :
+      $thatpatternText;
+    $params[':thatpattern'] = $thatpattern2store;
 
-      $catXML = new SimpleXMLElement('<category/>');
-      $catXML->addChild('pattern', $pattern);
-      if (!empty($thatpattern))
-        $catXML->addChild('that', $thatpattern);
-      $catXML->addChild('template', $parsed_template);
-      $category = $catXML->asXML();
-      $category = trim(str_replace('<?xml version="1.0"?>', '', $category));
-      $sqlAdd = str_replace('[aiml]', $category, $sqlTemplate);
-      $sqlAdd = str_replace('[pattern]', $pattern, $sqlAdd);
-      $sqlAdd = str_replace('[that]', $thatpattern, $sqlAdd);
-      $sqlAdd = str_replace('[template]', $parsed_template, $sqlAdd);
-      $sql .= $sqlAdd;
+    // template
+    $curTemplate = $category->template;
+    $templateEvalXpath = $curTemplate->xpath('//eval');
+    $templateText = $curTemplate->asXML();
+    $template2store = (!empty($templateEvalXpath)) ?
+      quickParseEval($convoArr, $templateText, 'template', 0) :
+      $templateText;
+    $params[':template'] = $template2store;
 
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-
-    }
-    else
-    {
-      $uploaded_file = _UPLOAD_PATH_ . $fileName;
-      if (!file_exists($uploaded_file)) $failure = "File $fileName does not exist in the upload path!";
-      else
-      {
-        $aiml = simplexml_load_file($uploaded_file);
-        if (!$aiml) $failure = "Could not parse file $uploaded_file as XML!";
-        else
-        {
-          foreach ($aiml->topic as $topic)
-          {
-            $topicName = (string)$topic['name'];
-            foreach ($topic as $category)
-            {
-              $catXML  = $category->asXML();
-              $pattern = $category->pattern->asXML();
-              $thatpattern = $category->that->asXML();
-              $template = $category->template->asXML();
-
-              $sqlAdd = str_replace('[aiml]', $catXML, $sqlTemplate);
-              $sqlAdd = str_replace('[pattern]', $pattern, $sqlAdd);
-              $sqlAdd = str_replace('[that]', $thatpattern, $sqlAdd);
-              $sqlAdd = str_replace('[template]', $template, $sqlAdd);
-              $sqlAdd = str_replace('[topic]', $topicName, $sqlAdd);
-              $sqlAdd = str_replace('[fileName]', $fileName, $sqlAdd);
-              $sql .= $sqlAdd;
-            }
-          }
-        }
-      }
-    }
-
-    if ($failure) {
-      trigger_error($failure);
-    }
-    else {
-      $sql = str_replace($remove, '', $sql);
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding AIML to the DB. SQL:\n$sql", 3);
-    }
-
+    $sql = 'insert into `aiml_userdefined` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `user_id`)
+      values (
+        NULL,
+        :bot_id,
+        :aiml,
+        :pattern,
+        :thatpattern,
+        :template,
+        :user_id
+      );';
+    $params[':bot_id'] = $bot_id;
+    $params[':user_id'] = $convo_id;
+    $testSQL = str_replace(array_keys($params), array_values($params), $sql);
+    $sth = $dbConn->prepare($sql);
+    $sth->execute($params);
     return '';
   }
 
   /**
    * Parses the 'extended' AIML <eval> tag
+   * NOTE: The <eval> tag is intended to allow the parsing of it's contents within the confines
+   * of a <learn> tag, so what was here before is completely opposite to what it should have been
+   *
+   * I'll be fixing that now.
    *
    * @param array $convoArr
    * @param SimpleXMLElement $element
    * @param string $parentName
    * @param int $level
-   * @return array|string
+   * @return string
    */
   function parse_eval_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an EVAL tag.', 2);
-    $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    // do something here
+    $responseArray = parseTemplateRecursive($convoArr, $element, $level);
+    $response_string = implode_recursive(' ', $responseArray, __FILE__, __FUNCTION__, __LINE__);
     return $response_string;
   }
 
@@ -1102,4 +1101,35 @@ values (NULL, $bot_id, '[aiml]', '[pattern]', '[that]', '[template]', '$user_id'
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     // do something here
     return $response_string;
+  }
+
+  function quickParseEval(&$convoArr, $elementText, $parentName, $level = 0) {
+    $search = '~<eval>.*?</eval>~';
+    $remove = array('<text>', '</text>', "<$parentName>", "</$parentName>");
+    preg_match_all($search, $elementText, $matches);
+    $found = $matches[0];
+    $replace = [];
+    foreach ($found as $match) {
+      $curEval = new SimpleXMLElement($match);
+      if (count($curEval->children()) == 0) {
+        $replace[] = $match;
+      }
+      else {
+        $curResponse = [];
+        foreach($curEval->children() as $childNode) {
+          $curParent = $childNode->xpath('..')[0]->getName();
+          $curName = $curEval->getName();
+          $curFunc = "parse_$curName" . '_tag';
+          if (function_exists($curFunc)) {
+            $curResponse[] = $curFunc($convoArr,$childNode, $curParent, 0);
+          }
+          else $curResponse[] = $childNode->asXML();
+        }
+        $replace[] = implode_recursive(' ', $curResponse, __FILE__, __FUNCTION__, __LINE__);
+      }
+    }
+    $newElementText = str_replace($found, $replace, $elementText);
+    $newElementText = str_replace($remove, '', $newElementText);
+    $elementText = str_replace($remove, '', $elementText);
+    return $newElementText;
   }

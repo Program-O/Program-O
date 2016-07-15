@@ -13,10 +13,10 @@
             var table;
             $(function(){
               $('#showHelp').hide();
-              $('#AIML').on('click', '.editable textarea', function(e){
+              $('#SRAI_LOOKUP').on('click', '.editable textarea', function(e){
                 e.stopPropagation();
               });
-              $('#AIML').on('blur', '.editable textarea', function(e){
+              $('#SRAI_LOOKUP').on('blur', '.editable textarea', function(e){
                 e.stopPropagation();
                 var rowID = $(this).attr('data-rowID');
                 var fieldName = $(this).attr('data-fieldName');
@@ -32,7 +32,7 @@
                 }
                 else return cancelEdit($(this));
               });
-              $('#AIML').on('click', '.editable', function(e){
+              $('#SRAI_LOOKUP').on('click', '.editable', function(e){
                 console.log('Clicked!');
                 var cellID = $(this).closest('tr').attr('id');
                 var rawClass = $(this).attr('class');
@@ -61,7 +61,7 @@
                 var fd = $(this).serialize();
                 console.log('Form Data =', fd);
                 $.ajax({
-                  url: 'editAJAX.php',
+                  url: 'editSRAI.php',
                   type: 'post',
                   dataType: 'text',
                   data: fd,
@@ -100,24 +100,20 @@
               var curVal = ele.val();
               ele.parent().text(curVal);
               var row = $('#' + rowID);
+              var bot_id = row.find('.bot_id').text();
               var pattern = row.find('.pattern').text();
-              var thatpattern = row.find('.thatpattern').text();
-              var template = row.find('.template').text();
-              var topic = row.find('.topic').text();
-              var filename = row.find('.filename').text();
+              var template_id = row.find('.template_id').text();
               // Now gether all of the fields and send the updated information
               $.ajax({
-                url: 'editAJAX.php',
+                url: 'editSRAI.php',
                 type: 'post',
                 dataType: 'text',
                 data: {
                   action: 'update',
                   id: rowID,
+                  bot_id: bot_id,
                   pattern: pattern,
-                  thatpattern: thatpattern,
-                  template: template,
-                  topic: topic,
-                  filename: filename,
+                  template_id: template_id,
                 },
                 success: function(data) {
                   $('#errMsg').empty().html('<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>').show();
@@ -149,7 +145,7 @@
               var id = ele.closest('tr').attr('id');
               console.log('ID =', id);
               $.ajax({
-                url: 'editAJAX.php',
+                url: 'editSRAI.php',
                 type:'post',
                 dataType: 'text',
                 data: {
@@ -171,7 +167,7 @@
 
             function buildTable() {
               scrollY = changeHeight();
-              var table = $('#AIML').DataTable({
+              var table = $('#SRAI_LOOKUP').DataTable({
                 processing: true,
                 serverSide: true,
                 paging: true,
@@ -180,7 +176,7 @@
                 //scrollCollapse: true,
                 autoWidth: false,
                 order: [1, 'asc'],
-                ajax: 'editAJAX.php',
+                ajax: 'editSRAI.php',
                 columns: [
                   {
                     data: 'id',
@@ -192,39 +188,25 @@
                     },
                   },
                   {
+                    data: 'bot_id',
+                    className: 'bot_id editable',
+                    searchable: true,
+                    orderable: true,
+                    width: '20%',
+                  },
+                  {
                     data: 'pattern',
                     className: 'pattern editable',
                     searchable: true,
                     orderable: true,
-                    width: '10%',
+                    width: '20%',
                   },
                   {
-                    data: 'thatpattern',
-                    className: 'thatpattern editable',
-                    searchable: true,
-                    orderable: true,
-                    width: '10%',
-                  },
-                  {
-                    data: 'template',
-                    className: 'template editable',
+                    data: 'template_id',
+                    className: 'template_id editable',
                     searchable: true,
                     orderable: true,
                     width: '55%',
-                  },
-                  {
-                    data: 'topic',
-                    className: 'topic editable',
-                    searchable: true,
-                    orderable: true,
-                    width: '10%',
-                  },
-                  {
-                    data: 'filename',
-                    className: 'filename editable',
-                    searchable: true,
-                    orderable: true,
-                    width: '10%',
                   }
                 ]
               });

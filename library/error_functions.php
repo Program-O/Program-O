@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.2
+  * Version: 2.6.3
   * FILE: library/error_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -370,4 +370,10 @@
     save_file($trace_file, $content, $append);
   }
 
-?>
+  function wildcard_handler($errNum, $errMsg, $errFile, $errLine, $errContext) {
+    $saveContent = "An error (Number $errNum, $errMsg) was caught in file $errFile, line $errLine. The following variableis what you are looking for:\n";
+    $saveContent .= print_r($errContext['aiml_pattern_wildcards'], true) . "\n---------------------------------------------------------------\n";
+    save_file(_LOG_PATH_ . 'wildcard_errors.txt', $saveContent, true);
+    die('Check the logs!');
+  }
+

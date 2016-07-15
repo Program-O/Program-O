@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema
-                      xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                      targetNamespace="http://www.alicebot.org/TR/2001/WD-aiml"
-                      xmlns:aiml="http://www.alicebot.org/TR/2001/WD-aiml"
-                      elementFormDefault="qualified">   <!--  -->
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.alicebot.org/TR/2001/WD-aiml"
+  xmlns:aiml="http://www.alicebot.org/TR/2001/WD-aiml"
+  elementFormDefault="qualified">
   <xs:element name="aiml">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -32,21 +32,16 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:simpleType name="InputPatternType">
-    <xs:restriction base="xs:string">
-      <xs:pattern value="[\w| |_|\*]*"/>
-    </xs:restriction>
-  </xs:simpleType>
+  <xs:complexType name="InputPatternType">
+  </xs:complexType>
   <xs:element name="pattern">
     <xs:complexType mixed="true">
-      <xs:simpleContent>
-        <xs:extension base="aiml:InputPatternType">
-          <!-- <xs:choice minOccurs="0" maxOccurs="unbounded">
-            <xs:element ref="aiml:bot"/>
-            <xs:element ref="aiml:eval"/>
-          </xs:choice> -->
-        </xs:extension>
-      </xs:simpleContent>
+      <xs:sequence>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="aiml:bot"/>
+          <xs:element ref="aiml:eval"/>
+        </xs:choice>
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="that">

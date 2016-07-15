@@ -3,7 +3,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.6.2
+    * Version: 2.6.3
     * FILE: main.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: FEB 01 2016

@@ -3,13 +3,14 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.2
+  * Version: 2.6.3
   * FILE: chatbot/conversation_start.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
   * DETAILS: this file is the landing page for all calls to access the bots
   ***************************************/
 
+  set_time_limit(0);
   $time_start = microtime(true);
   $script_start = $time_start;
   $last_timestamp = $time_start;
@@ -67,7 +68,7 @@
   $form_vars = array_merge((array)$form_vars_get, (array)$form_vars_post);
   if (!isset($form_vars['say']))
   {
-    error_log('Empty input! form vars = ' . print_r($form_vars, true) . PHP_EOL, 3, _LOG_PATH_ . 'debug_formvars.txt');
+    //error_log('Empty input! form vars = ' . print_r($form_vars, true) . PHP_EOL, 3, _LOG_PATH_ . 'debug_formvars.txt');
     $form_vars['say'] = '';
   }
   $say = ($say !== '') ? $say : trim($form_vars['say']);
@@ -200,7 +201,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation intialised waiting user", 2);
     $convoArr['send_to_user'] = 'User input not detected.';
     $cva = print_r($convoArr, true);
-    error_log("Convo Array:\n$cva", 3, _LOG_PATH_ . 'convoArr.txt');
+    //error_log("Convo Array:\n$cva", 3, _LOG_PATH_ . 'convoArr.txt');
   }
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
   $dbConn = db_close();
