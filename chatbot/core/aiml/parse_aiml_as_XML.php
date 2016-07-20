@@ -629,7 +629,10 @@
   function parse_srai_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SRAI tag.', 2);
-    $starArray = ['~<star[ ]?/>~i', '~<star index="\d+"[ ]?\/>~'];
+    $starArray = array(
+      '~<star[\s]?/>~i',
+      '~<star index="\d+"[\s]?\/>~'
+    );
     $elementXML = $element->asXML();
     //$srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
@@ -989,7 +992,7 @@
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $convo_id = $convoArr['conversation']['convo_id'];
-    $params = [];
+    $params = array();
     $sql = '';
     $failure = false;
     $category = $element->category;
@@ -1108,16 +1111,17 @@
     $remove = array('<text>', '</text>', "<$parentName>", "</$parentName>");
     preg_match_all($search, $elementText, $matches);
     $found = $matches[0];
-    $replace = [];
+    $replace = array();
     foreach ($found as $match) {
       $curEval = new SimpleXMLElement($match);
       if (count($curEval->children()) == 0) {
         $replace[] = $match;
       }
       else {
-        $curResponse = [];
+        $curResponse = array();
         foreach($curEval->children() as $childNode) {
-          $curParent = $childNode->xpath('..')[0]->getName();
+          $tcp = $childNode->xpath('..');
+          $curParent = $tcp[0]->getName();
           $curName = $curEval->getName();
           $curFunc = "parse_$curName" . '_tag';
           if (function_exists($curFunc)) {
