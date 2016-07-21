@@ -61,7 +61,7 @@
 {
   global $dbConn;
   // <srai>XEDUCATELANG <star index="1"/> XSPLIT <star index="2"/> XSPLIT <star index="3"/>XSPLIT</srai>
-  $starArray = ['~<star[ ]?/>~i', '~<star index="\d+"[ ]?\/>~'];
+  $starArray = array('~<star[ ]?/>~i', '~<star index="\d+"[ ]?\/>~');
   $msg = '';
   $timeStart = microtime(true);
   // Drop the index on the table srai_lookup to speed things up
@@ -114,7 +114,7 @@
   save_file(_LOG_PATH_ . 'srai_lookup.patterns.txt', print_r($patterns, true));
   $patternSQL = 'select id from aiml where pattern = :pattern and bot_id = :bot_id order by id limit 1;';
   $patternSTH = $dbConn->prepare($patternSQL);
-  $lookups = [];
+  $lookups = array();
   foreach ($patterns as $id => $row)
   {
     foreach ($row as $pattern)

@@ -22,22 +22,22 @@
                 var fieldName = $(this).attr('data-fieldName');
                 var oldData = $(this).attr('data-oldData');
                 var curData = $(this).val();
-                console.log('current data =', curData, ', old data =', oldData);
+                //console.log('current data =', curData, ', old data =', oldData);
                 var dataText = $('<div>').html(oldData).text();
                 if (oldData == curData || curData == dataText) return cancelEdit($(this));
                 else if (typeof oldData !== 'undefined'){
-                  console.log('current data =', curData);
-                  console.log('old data =', oldData);
+                  //console.log('current data =', curData);
+                  //console.log('old data =', oldData);
                   return saveEdit($(this));
                 }
                 else return cancelEdit($(this));
               });
               $('#SRAI_LOOKUP').on('click', '.editable', function(e){
-                console.log('Clicked!');
+                //console.log('Clicked!');
                 var cellID = $(this).closest('tr').attr('id');
                 var rawClass = $(this).attr('class');
                 var cellClass = rawClass.replace(' editable', '').replace(' sorting_1', '');
-                console.log('Cell class =', cellClass);
+                //console.log('Cell class =', cellClass);
                 var editCell = buildTA($(this), cellClass, $(this).html());
                 editCell.focus();
                 editCell.on('keyup', function(e){
@@ -59,7 +59,7 @@
               $('#addNewCat').on('submit', function(e){
                 e.preventDefault();
                 var fd = $(this).serialize();
-                console.log('Form Data =', fd);
+                //console.log('Form Data =', fd);
                 $.ajax({
                   url: 'editSRAI.php',
                   type: 'post',
@@ -85,7 +85,7 @@
             }
 
             function cancelEdit(ele) {
-              console.log('Cancelling the edit.');
+              //console.log('Cancelling the edit.');
               var rowID = ele.attr('data-rowID');
               var fieldName = ele.attr('data-fieldName');
               var oldData = ele.attr('data-oldData');
@@ -93,7 +93,7 @@
             }
 
             function saveEdit(ele) {
-              console.log('Saving the edit.');
+              //console.log('Saving the edit.');
               var rowID = ele.attr('data-rowID');
               var fieldName = ele.attr('data-fieldName');
               // insert the new value into the current cell
@@ -118,9 +118,9 @@
                 success: function(data) {
                   $('#errMsg').empty().html('<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>').show();
                   $('<pre>').html(data).appendTo('#errMsg');
-                  console.log('Foo!');
+                  //console.log('Foo!');
                   setTimeout(hideMsg, 3000);
-                  table.draw();
+                  table.draw(false);
                 }
               });
             }
@@ -139,11 +139,11 @@
             }
 
             function deleteRow(ele) {
-              console.log('Delete Event Detected!');
+              //console.log('Delete Event Detected!');
               var verify = confirm('Are you sure that you wish to delete this row of data? This action cannot be undone!');
               if (!verify) return false;
               var id = ele.closest('tr').attr('id');
-              console.log('ID =', id);
+              //console.log('ID =', id);
               $.ajax({
                 url: 'editSRAI.php',
                 type:'post',
@@ -156,7 +156,7 @@
                   $('#errMsg').empty().html('<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>').show();
                   $('<span>').html(data).appendTo('#errMsg');
                   setTimeout(hideMsg, 3000);
-                  table.draw();
+                  table.draw(false);
                 },
               });
             }
@@ -182,7 +182,7 @@
                     data: 'id',
                     searchable: true,
                     orderable: true,
-                    width: '35px',
+                    width: '10%',
                     render: function(data, type, full, meta){
                       return 'ID: ' + data + '<br><div class="deleteRow" onclick="deleteRow($(this))" title="Delete this row"><br>Delete</div>';
                     },
@@ -192,21 +192,21 @@
                     className: 'bot_id editable',
                     searchable: true,
                     orderable: true,
-                    width: '20%',
+                    width: '15%',
                   },
                   {
                     data: 'pattern',
                     className: 'pattern editable',
                     searchable: true,
                     orderable: true,
-                    width: '20%',
+                    width: '60%',
                   },
                   {
                     data: 'template_id',
                     className: 'template_id editable',
                     searchable: true,
                     orderable: true,
-                    width: '55%',
+                    width: '15%',
                   }
                 ]
               });

@@ -186,7 +186,7 @@
                     data: 'id',
                     searchable: true,
                     orderable: true,
-                    width: '35px',
+                    width: '15%',
                     render: function(data, type, full, meta){
                       return 'ID: ' + data + '<br><div class="deleteRow" onclick="deleteRow($(this))" title="Delete this row"><br>Delete</div>';
                     },
@@ -196,35 +196,47 @@
                     className: 'pattern editable',
                     searchable: true,
                     orderable: true,
-                    width: '10%',
+                    width: '15%',
+                    render: function(data, type, full, meta){
+                      return '<pre>' + data + '</pre>';
+                    },
                   },
                   {
                     data: 'thatpattern',
                     className: 'thatpattern editable',
                     searchable: true,
                     orderable: true,
-                    width: '10%',
+                    width: '15%',
+                    render: function(data, type, full, meta){
+                      return '<pre>' + data + '</pre>';
+                    },
                   },
                   {
                     data: 'template',
                     className: 'template editable',
                     searchable: true,
                     orderable: true,
-                    width: '55%',
+                    width: '25%',
+                    render: function(data, type, full, meta){
+                      return '<pre>' + data + '</pre>';
+                    },
                   },
                   {
                     data: 'topic',
                     className: 'topic editable',
                     searchable: true,
                     orderable: true,
-                    width: '10%',
+                    width: '15%',
+                    render: function(data, type, full, meta){
+                      return '<pre>' + data + '</pre>';
+                    },
                   },
                   {
                     data: 'filename',
                     className: 'filename editable',
                     searchable: true,
                     orderable: true,
-                    width: '10%',
+                    width: '15%',
                   }
                 ]
               });

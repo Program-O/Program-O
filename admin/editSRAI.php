@@ -78,6 +78,7 @@
   */
   function runSearch() {
     global $bot_id, $form_vars, $dbConn, $group;
+    file_put_contents(_LOG_PATH_ . "editSRAI.runSearch.form_vars.txt", print_r($form_vars, true));
     extract($form_vars);
     $search_fields = array('id', 'bot_id', 'pattern', 'template_id');
     $searchTerms = array();
@@ -145,7 +146,7 @@
     $template_id = trim($form_vars['template_id']);
     if (empty($bot_id) ||empty($pattern) ||empty($template_id)) {
       $msg = 'Please make sure that no fields are empty.([fields])';
-      $fArray = [];
+      $fArray = array();
       switch (true) {
         case (empty($bot_id)): $fields[] = 'bot_id';
         case (empty($pattern)): $fields[] = 'pattern';
