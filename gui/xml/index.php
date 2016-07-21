@@ -17,6 +17,7 @@
     ini_set('html_errors', false);
     ini_set('display_errors', false);
 
+  require_once('parseBBCode.php');
   // Experimental code
   $base_URL  = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
   $this_path = str_replace(DIRECTORY_SEPARATOR, '/', realpath(dirname(__FILE__)));  // The current location of this file, normalized to use forward slashes
@@ -94,6 +95,7 @@ end_display;
       error_log('$data = ' . print_r($data, true), 3, '../../logs/XML.GUI.error.log');
     }
   }
+  $display = checkForParsing($display); // comment out this line to disable BBCode parsing for this page
 
   /**
    * Function get_convo_id
