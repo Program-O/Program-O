@@ -899,4 +899,7 @@ input.search-input-text, textarea.newCat {
 .w40 { width: 40%; }
 .w50 { width: 50%; }
 
-
+.editable {
+  text-indent: 0;
+  padding: 3px 5px !important;
+}

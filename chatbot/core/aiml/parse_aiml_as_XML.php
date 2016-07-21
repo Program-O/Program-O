@@ -629,10 +629,7 @@
   function parse_srai_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SRAI tag.', 2);
-    $starArray = array(
-      '~<star[\s]?/>~i',
-      '~<star index="\d+"[\s]?\/>~'
-    );
+    $starArray = array('~<star[ ]?/>~i','~<star index="\d+"[ ]?\/>~');
     $elementXML = $element->asXML();
     //$srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
