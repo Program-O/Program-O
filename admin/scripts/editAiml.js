@@ -122,9 +122,9 @@
                 success: function(data) {
                   $('#errMsg').empty().html('<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>').show();
                   $('<pre>').html(data).appendTo('#errMsg');
-                  console.log('Foo!');
+                  //console.log('Foo!');
                   setTimeout(hideMsg, 3000);
-                  table.draw();
+                  table.draw(false);
                 }
               });
             }

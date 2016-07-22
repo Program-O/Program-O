@@ -78,7 +78,7 @@
   */
   function runSearch() {
     global $bot_id, $form_vars, $dbConn, $group;
-    file_put_contents(_LOG_PATH_ . "editSRAI.runSearch.form_vars.txt", print_r($form_vars, true));
+    //file_put_contents(_LOG_PATH_ . "editSRAI.runSearch.form_vars.txt", print_r($form_vars, true));
     extract($form_vars);
     $search_fields = array('id', 'bot_id', 'pattern', 'template_id');
     $searchTerms = array();
@@ -113,7 +113,7 @@
     $count = db_fetch($countSQL, $searchParams, __FILE__, __FUNCTION__, __LINE__);
     $total = $count['count(id)'];
     $sql = "SELECT id, bot_id, pattern, template_id FROM `srai_lookup` " . "WHERE `bot_id` = $bot_id AND ($searchTerms) order by $orderBy limit $start, $length;";
-    file_put_contents(_LOG_PATH_ . "editSRAI.runSearch.sql.txt", print_r($sql, true));
+    //file_put_contents(_LOG_PATH_ . "editSRAI.runSearch.sql.txt", print_r($sql, true));
     $result = db_fetchAll($sql, $searchParams, __FILE__, __FUNCTION__, __LINE__);
     $out = array(
       'draw' => $draw,
@@ -128,7 +128,7 @@
       $row['DT_RowId'] = $row['id'];
       $out['data'][] = $row;
     }
-    file_put_contents(_LOG_PATH_ . "editSRAI.runSearch.out.txt", print_r($out, true));
+    //file_put_contents(_LOG_PATH_ . "editSRAI.runSearch.out.txt", print_r($out, true));
     return json_encode($out);
   }
 
@@ -237,7 +237,7 @@
         default:
         $out = filter_var_array($formVars, $options, false);
       }
-      file_put_contents(_LOG_PATH_ . "editSRAI.clean_inputs.formVars.txt", print_r($formVars, true) . "\n---------------\n", FILE_APPEND);
+      //file_put_contents(_LOG_PATH_ . "editSRAI.clean_inputs.formVars.txt", print_r($formVars, true) . "\n---------------\n", FILE_APPEND);
       return $out;
     }
 
