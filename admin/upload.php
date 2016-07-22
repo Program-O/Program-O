@@ -247,6 +247,29 @@ endScript;
         }
         if (!empty($params))
         {
+          $topic = "";
+          $fullCategory = $category->asXML();
+          $pattern = trim($category->pattern);
+          $pattern = str_replace("'", ' ', $pattern);
+          $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
+          $that = $category->that;
+          $template = $category->template->asXML();
+          //strip out the <template> tags, as they aren't needed
+          $template = substr($template, 10);
+          $tLen = strlen($template);
+          $template = substr($template, 0, $tLen - 11);
+          $template = trim($template);
+          # Strip CRLF and LF from category (Windows/mac/*nix)
+          $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
+          $params[] = array(
+            ':bot_id' => $bot_id,
+            ':aiml' => $aiml_add,
+            ':pattern' => $pattern,
+            ':that' => $that,
+            ':template' => $template,
+            ':topic' => '',
+            ':fileName' => $fileName
+          );
           $rowCount = db_write($sql, $params, true, __FILE__, __FUNCTION__, __LINE__);
           $success = ($rowCount !== false) ? true : false;
         }

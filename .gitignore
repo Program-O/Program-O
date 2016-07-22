@@ -5,6 +5,10 @@
 !admin/downloads
 admin/downloads/*
 !admin/downloads/index.html
+admin/scripts/old
+!admin/uploads
+admin/uploads/*
+!admin/uploads/index.html
 admin/ses*
 admin/editAIML.htm
 config/global_config.php
