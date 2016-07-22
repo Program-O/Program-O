@@ -9,6 +9,10 @@ admin/unused/*
 !admin/downloads
 admin/downloads/*
 !admin/downloads/index.html
+admin/scripts/old
+!admin/uploads
+admin/uploads/*
+!admin/uploads/index.html
 admin/ses*
 config/global_config.php
 config/global_config*.php
