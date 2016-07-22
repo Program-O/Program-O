@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.3
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
@@ -12,6 +12,7 @@
   $botId = filter_input(INPUT_GET, 'bot_id');
   $convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : jq_get_convo_id();
   $bot_id = (isset($_COOKIE['bot_id'])) ? $_COOKIE['bot_id'] :($botId !== false && $botId !== null) ? $botId : 1;
+  if (is_nan($bot_id) || empty($bot_id)) $bot_id = 1;
   setcookie('bot_id', $bot_id);
   // Experimental code
   $base_URL  = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
@@ -117,11 +118,21 @@
       hr.center {
         margin: 0 auto;
       }
-
+      #convo_id {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border: 1px solid red;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-shadow: 2px 2px 2px 0 #808080;
+        padding: 5px;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body>
-    <h3>Program O XML GUI</h3>
+    <h3>Program O JSON GUI</h3>
     <p class="center">
       This is a simple example of how to access the Program O chatbot using the JSON API. Feel free to change the HTML
       code for this page to suit your specific needs. For more advanced uses, please visit us at <a href="http://www.program-o.com/">
@@ -131,6 +142,8 @@
     <p class="center">
       Please check out the Multi-bot example GUI <a href="multibot_gui_with_chatlog.php">here</a>.
     </p>
+    <!-- The DIV below is for debugging purposes, and can be safely removed, if desired. -->
+    <div id="convo_id">Conversion ID: <?php echo $convo_id;?></div>
     <div class="centerthis">
       <div class="rightside">
       <div class="manspeech">

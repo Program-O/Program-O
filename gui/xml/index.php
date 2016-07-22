@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.3
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 07-23-2013
@@ -17,6 +17,7 @@
     ini_set('html_errors', false);
     ini_set('display_errors', false);
 
+  require_once('parseBBCode.php');
   // Experimental code
   $base_URL  = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
   $this_path = str_replace(DIRECTORY_SEPARATOR, '/', realpath(dirname(__FILE__)));  // The current location of this file, normalized to use forward slashes
@@ -50,11 +51,10 @@ end_display;
   $post_vars = filter_input_array(INPUT_POST, $options);
   $get_vars = filter_input_array(INPUT_GET, $options);
   $request_vars = array_merge((array)$get_vars, (array)$post_vars);
-  echo ("<!-- POST vars:\n" . print_r($_POST, true) . "\nGET vars:\n" . print_r($_GET, true) . "\$request_vars:\n" . print_r($request_vars, true) . "\n-->\n");
+  //echo ("<!-- POST vars:\n" . print_r($_POST, true) . "\nGET vars:\n" . print_r($_GET, true) . "\$request_vars:\n" . print_r($request_vars, true) . "\n-->\n");
   $convo_id = (isset ($request_vars['convo_id'])) ? $request_vars['convo_id'] : get_convo_id();
   $bot_id = (isset ($request_vars['bot_id'])) ? $request_vars['bot_id'] : 1;
-  if (!empty ($post_vars))
-  {
+  if (!empty ($post_vars)) {
     $options = array(
       CURLOPT_USERAGENT => 'Program_O_XML_API',
       CURLOPT_RETURNTRANSFER => true,
@@ -66,33 +66,36 @@ end_display;
     curl_setopt($ch, CURLOPT_POSTFIELDS, $request_vars);
     $data = curl_exec($ch);
     curl_close($ch);
-    $xml = new SimpleXMLElement($data);
-    $display = '';
-    $success = $xml->status->success;
-    if (isset($xml->status->message))
-    {
-      $message = (string) $xml->status->message;
-      $display = 'There was an error in the script. Message = ' . $message;
-    }
-    else
-    {
-      $user_name = (string) $xml->user_name;
-      $bot_name = (string) $xml->bot_name;
-      $chat = $xml->chat;
-      $lines = $chat->xpath('line');
-      foreach ($lines as $line)
-      {
-        $input = (string) $line->input;
-        $response = (string) $line->response;
-        $tmp_row = str_replace('[user_name]', $user_name, $display_template);
-        $tmp_row = str_replace('[bot_name]', $bot_name, $tmp_row);
-        $tmp_row = str_replace('[input]', $input, $tmp_row);
-        $tmp_row = str_replace('[response]', $response, $tmp_row);
-        $display .= $tmp_row;
+    try {
+      $xml = new SimpleXMLElement($data);
+      $display = '';
+      $success = $xml->status->success;
+      if (isset($xml->status->message)) {
+        $message = (string) $xml->status->message;
+        $display = 'There was an error in the script. Message = ' . $message;
+      }
+      else {
+        $user_name = (string) $xml->user_name;
+        $bot_name = (string) $xml->bot_name;
+        $chat = $xml->chat;
+        $lines = $chat->xpath('line');
+        foreach ($lines as $line) {
+          $input = (string) $line->input;
+          $response = (string) $line->response;
+          $tmp_row = str_replace('[user_name]', $user_name, $display_template);
+          $tmp_row = str_replace('[bot_name]', $bot_name, $tmp_row);
+          $tmp_row = str_replace('[input]', $input, $tmp_row);
+          $tmp_row = str_replace('[response]', $response, $tmp_row);
+          $display .= $tmp_row;
+        }
       }
     }
-
+    catch (Exception $e) {
+      $display = 'You can\'t have a conversation without saying something. Please try again.';
+      error_log('$data = ' . print_r($data, true), 3, '../../logs/XML.GUI.error.log');
+    }
   }
+  $display = checkForParsing($display); // comment out this line to disable BBCode parsing for this page
 
   /**
    * Function get_convo_id
@@ -150,10 +153,23 @@ end_display;
         padding: 5px;
         border-radius: 5px;
       }
+      #convo_id {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border: 1px solid red;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-shadow: 2px 2px 2px 0 #808080;
+        padding: 5px;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body onload="document.forms[0].say.focus();">
     <h3>Program O XML GUI</h3>
+    <!-- The DIV below is for debugging purposes, and can be safely removed, if desired. -->
+    <div id="convo_id">Conversion ID: <?php echo $convo_id;?></div>
     <form accept-charset="utf-8" method="post" action="index.php">
       <p>
         <input type="text" name="say" id="say" size="70" />

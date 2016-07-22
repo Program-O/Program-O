@@ -2,7 +2,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.3
   * FILE: config/global_config.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
@@ -39,7 +39,7 @@
   define('_LIB_URL_', _BASE_URL_ . 'library/');
   define('_ADDONS_PATH_', _BASE_PATH_ . 'chatbot' . $path_separator . 'addons' . $path_separator);
   define('_CONF_PATH_', _BASE_PATH_ . 'config' . $path_separator);
-  define('_UPLOAD_PATH_', _CONF_PATH_ . 'uploads' . $path_separator);
+  define('_UPLOAD_PATH_', _ADMIN_PATH_ . 'uploads' . $path_separator);
   define('_LOG_PATH_', _BASE_PATH_ . 'logs' . $path_separator);
   define('_LOG_URL_', _BASE_URL_ . 'logs/');
   define('_DEBUG_PATH_', _BASE_PATH_ . 'chatbot' . $path_separator.'debug' . $path_separator);

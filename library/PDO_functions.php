@@ -2,7 +2,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.3
   * FILE: library/PDO_functions.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -83,6 +83,18 @@
     }
   }
 
+  /*
+   * function db_fetchAll
+   * Fetches rows of data from the database
+   *
+   * @param (string) $sql - The SQL query to execute
+   * @param (mixed) $params - either an array of placeholder/value pairs, or null, for no parameters
+   * @param (string) $file - the path/filename of the file that the function call originated in
+   * @param (string) $function - the name of the function that the function call originated in
+   * @param (string) $line - the line number of the originating function call
+   *
+   * @return (mixed) $out - Either an array of data from the DB query, or false, if the query fails
+   */
   function db_fetchAll($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown')
   {
     global $dbConn;
@@ -102,6 +114,18 @@
     }
   }
 
+  /**
+   * function db_write
+   * write to the database
+   *
+   * @param (string) $sql - The SQL query to execute
+   * @param (mixed) $params - either an array of placeholder/value pairs, or null, for no parameters
+   * @param (string) $file - the path/filename of the file that the function call originated in
+   * @param (string) $function - the name of the function that the function call originated in
+   * @param (string) $line - the line number of the originating function call
+   *
+   * @return (mixed) $out - Either the number of rows affected by the DB query
+   */
   function db_write($sql, $params = null, $multi = false, $file = 'unknown', $function = 'unknown', $line = 'unknown')
   {
     global $dbConn;
@@ -135,4 +159,6 @@
       return false;
     }
   }
+
+
 

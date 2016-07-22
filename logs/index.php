@@ -2,7 +2,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.3
   * FILE: index.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: 02-15-2013
@@ -22,6 +22,7 @@
     include_once (_LIB_PATH_ . "error_functions.php");
     ini_set('error_log', _LOG_PATH_ . 'log.reader.error.log');
   }
+  $session_lifetime = 86400; // 24 hours, expressed in seconds
   $now_playing = '';
   $server_name = filter_input(INPUT_SERVER,'SERVER_NAME', FILTER_SANITIZE_STRING);
   $session_cookie_path = str_replace("http://$server_name", '', _LOG_URL_);
@@ -83,7 +84,7 @@
     $iframeURL = (!empty($post_vars['file'])) ? $post_vars['file'] : 'about:blank';
     $now_playing = ($iframeURL == 'about:blank') ? 'Viewer is empty' : "<strong>Viewing Log File: $iframeURL</strong>";
     $optionTemplate = '        <option[fileSelected] value="[file]">[file]</option>' . "\n";
-    $fileList = glob(_LOG_PATH_ . '*.log');
+    $fileList = glob(_LOG_PATH_ . "{*.log,*.txt}", GLOB_BRACE);
     usort(
       $fileList,
       create_function('$b,$a', 'return filemtime($a) - filemtime($b);')

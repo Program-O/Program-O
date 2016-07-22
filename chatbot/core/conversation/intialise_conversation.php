@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.3
   * FILE: chatbot/core/conversation/intialise_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -367,6 +367,7 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Saving the conversation to the DB.', 2);
     //clean and set
     $usersay = $convoArr['aiml']['user_raw'];
+    $usersay = $convoArr['conversation']['rawSay'];
     $usersay = str_replace("'", "\'", $usersay);
     $botsay = $convoArr['aiml']['parsed_template'];
     $botsay = str_replace("'", "\'", $botsay);
@@ -384,17 +385,25 @@
     )
     VALUES (
       NULL ,
-      '$usersay',
-      '$botsay',
-      '$user_id',
-      '$convo_id',
-      '$bot_id',
+      :usersay,
+      :botsay,
+      :user_id,
+      :convo_id,
+      :bot_id,
       CURRENT_TIMESTAMP
     )";
+    $params = array(
+      ':usersay' => $usersay,
+      ':botsay' => $botsay,
+      ':user_id' => $user_id,
+      ':convo_id' => $convo_id,
+      ':bot_id' => $bot_id,
+    );
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving conservation SQL: $sql", 3);
+    //file_put_contents(_LOG_PATH_ . 'init_convo.log_convo.sql.txt', print_r($sql, true) . "\nParams = " . print_r($params, true) . "\n");
     
     $sth = $dbConn->prepare($sql);
-    $sth->execute();
+    $sth->execute($params);
 
     return $convoArr;
   }

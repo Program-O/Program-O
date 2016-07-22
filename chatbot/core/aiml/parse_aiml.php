@@ -3,7 +3,7 @@
   /***************************************
   * www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.3
   * FILE: chatbot/core/aiml/parse_aiml.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -592,11 +592,11 @@
     $aiml = $aiml;
     $pattern = $pattern . " ";
     $template = $template . " ";
-    $u_id = $convoArr['conversation']['user_id'];
+    $convo_id = $convoArr['conversation']['convo_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
     $sql = "INSERT INTO `$dbn`.`aiml_userdefined`
         VALUES
-        (NULL, '$aiml','$pattern','$template','$u_id','$bot_id',NOW())";
+        (NULL, '$aiml','$pattern','$template','$convo_id','$bot_id',NOW())";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Make learn SQL: $sql", 3);
     
     $sth = $dbConn->prepare($sql);
@@ -619,7 +619,7 @@
   function math_functions($operator, $num_1, $num_2 = "")
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running system tag math $num_1 $operator $num_2", 4);
-    $operator = (IS_MB_ENABLED) ? mb_strtolower($operator) : strtolower($operator);
+    $operator = _strtolower($operator);
     switch ($operator)
     {
       case "add" :

@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.3
   * FILE: chatbot/core/conversation/display_conversation.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: MAY 17TH 2014
@@ -191,15 +191,14 @@
   function display_conversation($convoArr)
   {
     $display = $convoArr['send_to_user'];
-    $format =(isset($convoArr['conversation']['format'])) ? strtolower(trim($convoArr['conversation']['format'])) : 'html';
+    $format = (isset($convoArr['conversation']['format'])) ? strtolower(trim($convoArr['conversation']['format'])) : 'html';
     switch ($format) {
       case 'html' :
         $display = str_ireplace('<![CDATA[', '', $display);
         $display = str_replace(']]>', '', $display);
-        echo trim($display);
         break;
       case 'xml' :
-        header("Content-type: text/plain; charset=utf-8", false);
+        header("Content-type: text/xml; charset=utf-8", false);
         header("Access-Control-Allow-Origin: *", false);
         echo trim($display);
         break;

@@ -2,12 +2,13 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.3
   * FILE: install_programo.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
   * DETAILS: Program O's Automatic install script
   ***************************************/
+  if (file_exists('../patch.php')) unlink('../patch.php'); // If this is a fresh install, we need not patch the DB
   session_name('PGO_install');
   session_start();
   $thisFile = __FILE__;

@@ -306,6 +306,19 @@ between the start and end section tags are the only parts of the template that a
               </select>
             </span></td>
           </tr>
+          <tr>
+            <td>
+              <label for="useBranch">
+                <span class="label">GitHub Branch to Check for Updates</span><span class="big red bold">*</span>
+              </label>
+            </td>
+            <td>
+              <select name="useBranch" id="useBranch">
+                <option value="master"[bSelOptM]>Master</option>
+                <option value="dev"[bSelOptD]>Development</option>
+              </select>
+            </td>
+          </tr>
           </table>
         </div>
         <input type="hidden" id="bot_id" name="bot_id" value="[bot_id]"/>
@@ -313,6 +326,9 @@ between the start and end section tags are the only parts of the template that a
           <input type="submit" name="action" id="action" value="[action]"/>
         </div>
       </form>
+      <div class="note">
+        <span class="big red bold">*</span>Chooses the update branch on GitHub to check against the current install's version.
+      </div>
     <!--/fieldset-->
 <!-- Section SelectBotForm End -->
 <!-- Section FormRow Start -->
@@ -494,6 +510,44 @@ between the start and end section tags are the only parts of the template that a
               <br />--You can find alot of information on the net about writing well formed aiml.<br />--If you want to learn more about writing AIML <a href="http://www.alicebot.org/documentation/aiml-primer.html" target="_new" class="hbox">start here</a>
             </div>
 <!-- Section TeachShowHelp End -->
+<!-- Section editAIMLShowHelp Start -->
+[blank]            <div id="showHelp">
+              <h2>Help...</h2>
+              <h3>General/Searching</h3>
+              <dd>
+                Using the search/edit page is fairly straightforward. The page displays all of the available categories for the selected chatbot 10
+                categories at a time by default, with options for displaying more, via a selectbox in the upper lef corner of the main panel, up to 100
+                categories max. If the chatbot has more than 100 categories total in the database, there is a set of links for additional pages in the
+                lower right corner of the panel, so that all stored AIML categories are accessible. The categories can be sorted by any of the visible
+                fields, simply by clicking on the header titles along the top of the table.
+              </dd>
+              <dd>
+                In order to quickly find the AIML category that you're looking for, simply use the search boxes along the top, just below the field titles.
+                Any combination of search fields can be used at any time to help narrow the search.
+              </dd>
+              <dd></dd>
+              <br />
+              <h3>Editing</h3>
+              <dd>
+                Editing can be accomplished by simply clicking on the desired field and changing the contents of that field to suit your needs. You can
+                cancel the edit at any time by pressing the Escape ([ESC]) key, or by "clicking off" the field without making any changes. To save your
+                edit, simply "click off" the field once you're satisfied with the changes you've made. Please note, however, that the new AIML code that
+                was saved is <strong>NOT</strong> checked for valid AIML code prior to saving, so it's up to you to make sure that the edited code is
+                valid.
+              </dd>
+              <dd></dd>
+              <br />
+              <h3>Deleting a Category (row)</h3>
+              <dd>
+                In order to delete an AIML category from the database, simply locate it using the search functionality, then click on the DELETE icon
+                (<img src="images/del.png" width="15" height="15" alt="">) to the left of the category. You will get a confirmation dialog prior to the
+                deletion. <strong class="red">WARNING!</strong> Once you confirm that you want to delete the category, there is no going back! once deleted
+                that AIML category is gone, and can only be "brought back" by creating a new one in it's place.
+              </dd>
+              <dd></dd>
+              <br />--You can find alot of information on the net about writing well formed aiml.<br />--If you want to learn more about writing AIML <a href="http://www.alicebot.org/documentation/aiml-primer.html" target="_new" class="hbox">start here</a>
+            </div>
+<!-- Section editAIMLShowHelp End -->
 <!-- Section ClearShowHelp Start -->
 [blank]            <div id="showHelp">
               <h3>Help...</h3>
@@ -760,104 +814,120 @@ between the start and end section tags are the only parts of the template that a
           </table>
             </form>
 <!-- Section UploadAIMLForm End -->
-<!-- Section SearchAIMLForm Start -->
-[blank]            <form id="search" action="index.php?page=search" method="post">
-              <fieldset>
-                <div class="row">
-                  <label for="search_topic"><span class="twentyPercent">Search Topic: </span></label>
-                  <span class="eightyPercent"><input name="search_topic" id="search_topic" class="wide" /></span>
-                </div>
-                <div class="row">
-                  <label for="search_pattern"><span class="twentyPercent">Search Pattern: </span></label>
-                  <span class="eightyPercent"><input name="search_pattern" id="search_pattern" class="wide" /></span>
-                </div>
-                <div class="row">
-                  <label for="search_that"><span class="twentyPercent">Search 'That': </span></label>
-                  <span class="eightyPercent"><input name="search_that" id="search_that" class="wide" /></span>
-                </div>
-                <div class="row">
-                  <label for="search_template"><span class="twentyPercent">Search Template: </span></label>
-                  <span class="eightyPercent"><input name="search_template" id="search_template" class="wide" /></span>
-                </div>
-                <div class="row">
-                  <label for="search_filename"><span class="twentyPercent">Search FileName: </span></label>
-                  <span class="eightyPercent"><input name="search_filename" id="search_filename" class="wide" /></span>
-                </div>
-                <div class="row center">
-                  <strong>TIP: </strong>Use % as a wildcard along with your search word/phrase to improve chances of
-                  finding what you're looking for (e.g. "I % you", "%hot" or "%live%")
-                </div>
-                <div class="row">
-                  <input type="submit" name="action" id="action" value="search"/>
-                </div>
-              </fieldset>
+<!-- Section editSRAIPage Start -->
+[blank]          <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+          <style type="text/css">
+            .dataTables_wrapper .dataTables_paginate .paginate_button  { padding: 0; }
+            table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td { padding: 1px 2px 1px 0; }
+            input.search-input-text { margin-left: -14px; }
+            #showHelp { top: -15px; }
+          </style>
+          <div class="row center">
+            The SRAI lookup table currently contains [row_count] entries for the chatbot named "[bot_name]".
+          </div>
+          <p>
+            <a href="?page=srai_lookup&amp;action=fillLookup">Fill Lookup Table</a>&nbsp;(See the HELP link for details)
+          </p>
+          <hr class="w80 m0a mb5">
+          <div class="holder">
+            <table id="SRAI_LOOKUP" class="datatable-table">
+              <thead>
+                <tr>
+                  <th title="Sort by Table ID">ID</th>
+                  <th title="Sort by Bot ID">Bot ID</th>
+                  <th title="Sort by Pattern">Pattern</th>
+                  <th title="Sort by Template ID">Template ID</th>
+                </tr>
+              </thead>
+              <thead>
+                <tr class="filters">
+                  <th id="f_id"><input type="text" data-column="0"  class="search-input-text" placeholder="ID Search"></th>
+                  <th id="f_bot_id"><input type="text" data-column="1"  class="search-input-text" placeholder="bot ID Search"></th>
+                  <th id="f_pattern"><input type="text" data-column="2"  class="search-input-text" placeholder="pattern Search"></th>
+                  <th id="f_template_id"><input type="text" data-column="3"  class="search-input-text" placeholder="template ID Search"></th>
+                </tr>
+              </thead>
+            </table>
+            <form id="addNewCat">
+              <table id="newCatTable">
+                  <tr>
+                    <td colspan="4" class="center bold">Add New SRAI Entry:</td>
+                  </tr>
+                  <tr>
+                     <td class="w5">
+                       <input id="btnClearNewCat" name="" type="reset" value="Clear Form">
+                     </td>
+                    <td class="w15">
+                      <textarea name="bot_id" rows="2" placeholder="Bot ID" class="newCat"></textarea>
+                    </td>
+                    <td class="w55">
+                      <textarea name="pattern" rows="2" placeholder="Pattern" class="newCat"></textarea>
+                    </td>
+                    <td class="w15">
+                      <textarea name="template_id" rows="2" placeholder="Template ID" class="newCat"></textarea>
+                    </td>
+                   <td class="w10">
+                     <input id="btnSaveNewCat" name="" type="submit" value="Save Category">
+                     <input type="hidden" name="action" value="add" />
+                   </td>
+                  </tr>
+              </table>
             </form>
-<!-- Section SearchAIMLForm End -->
-<!-- Section SRAI_lookup Start -->
-[blank]            <div class="row center">
-              The SRAI lookup table currently contains [row_count] entries for [bot_name].
+            <div class='search-msg'></div>
+          </div>
+[showHelp]
+          <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+          <script type="text/javascript" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+          <script type="text/javascript" src="scripts/editSRAI.js"></script>
+<!-- Section editSRAIPage End -->
+<!-- Section editSRAIShowHelp Start -->
+[blank]            <div id="showHelp">
+              <h2>Help...</h2>
+              <h3>General</h3>
+              <dd>
+                The "Fill Lookup Table" link runs a script that searches the entire AIML table for SRAI calls for every chatbot
+                and stores valid entries (along with the bot ID and the IDs of categories with matching patterns)
+                into a special lookup table. The chatbot engine then uses this lookup table to select the proper
+                response for that SRAI call without having to search through the entire database for a "best match".
+                This can improve performance by as much as 70% for each SRAI call made that is in the lookup table.
+                Since the script runs for all current chatbots, you only have to run it once for all of your bots.
+                Just remember to run it again if you make any significant changes to your AIML, especially if you
+                add or remove a chatbot. You don't have to worry about duplicates because the script starts by
+                emptying the lookup table first, and then uses a routine that rejects duplicates on a per-bot basis.
+              </dd>
+              <dd>
+                The table and forms on the page are to help with searching for, editing, and inserting new entries within the
+                srai_lookup table. These aids are here mainly because the script that automatically inserts entries into
+                the table is far from perfect, and can often miss entries due to SRAI calls that contain other AIML tags.
+                The use of these tools requires a great deal of knowledge regarding the content of the chatbot's AIML, and
+                should be used with caution until you become proficient with the ins and outs of your chatbot's AIML code.
+              </dd>
+              <h3>Warning:</h3>
+              <dd>
+                Please note that if you have any manually edited entries in the srai_lookup table and run the script to
+                populate the table anew, all of those manually added entries will be lost. So before you run the script
+                to repopulate the table, you should use a database manager (such as phpMyAdmin) to back up those entries.
+              </dd>
+              <br />
+              <h3>Editing</h3>
+              <dd>
+                Editing can be accomplished by simply clicking on the desired field and changing the contents of that field to suit your needs. You can
+                cancel the edit at any time by pressing the Escape ([ESC]) key, or by "clicking off" the field without making any changes. To save your
+                edit, simply "click off" the field once you're satisfied with the changes you've made. Please note, however, that the new AIML code that
+                was saved is <strong>NOT</strong> checked for valid AIML code prior to saving, so it's up to you to make sure that the edited code is
+                valid.
+              </dd>
+              <dd></dd>
+              <br />
+              <h3>Deleting a Category (row)</h3>
+              <dd>
+                In order to delete an SRAI entry from the database, simply locate it using the search functionality, then click on the DELETE icon
+                (<img src="images/del.png" width="15" height="15" alt="">) to the left of the category. You will get a confirmation dialog prior to the
+                deletion. <strong class="red">WARNING!</strong> Once you confirm that you want to delete the category, there is no going back! once deleted
+                that AIML category is gone, and can only be "brought back" by creating a new one in it's place.
+              </dd>
             </div>
-            <!-- <form id="search" action="index.php?page=srai_lookup" method="post">
-              <fieldset>
-                <div class="row">
-                  <label for="search_pattern"><span class="twentyPercent">Search Pattern: </span></label>
-                  <span class="eightyPercent"><input name="search_pattern" id="search_pattern" class="wide" /></span>
-                </div>
-                <div class="row center">
-                  <strong>TIP: </strong>Use % as a wildcard along with your search word/phrase to improve chances of
-                  finding what you're looking for (e.g. "I % you", "%hot" or "%live%")
-                </div>
-                <div class="row">
-                  <input type="submit" name="action" id="action" value="search"/>
-                </div>
-              </fieldset>
-            </form> -->
-            <p>
-              <a href="?page=srai_lookup&amp;action=fillLookup">Fill Lookup Table</a><br>
-            </p>
-            <p>
-              The link above runs a script that searches the entire AIML table for SRAI calls for every chatbot
-              and stores valid entries (along with the bot ID and the ID's of categories with matching patterns)
-              into a special lookup table. The chatbot engine then uses this lookup table to select the proper
-              response for that SRAI call without having to search through the entire database for a "best match".
-              This can improve performance by as much as 70% for each SRAI call made that is in the lookup table.
-              Since the script runs for all current chatbots, you only have to run it once for all of your bots.
-              Just remember to run it again if you make any significant changes to your AIML, especially if you
-              add or remove a chatbot. You don't have to worry about duplicates because the script starts by
-              emptying the lookup table first, and then uses a routine that rejects duplicates on a per-bot basis.
-            </p>
-            <p class="center bold">This section is still under construction. Please bear with us as we expand and grow.</p>
-<!-- Section SRAI_lookup End -->
-<!-- Section EditAIMLForm Start -->
-          <form id="edit" action="index.php?page=search" method="post">
-            <fieldset>
-              <div class="row fm-opt">
-                <label for="topic"><span class="twentyPercent">Topic: </span></label>
-                <span class="eightyPercent"><input type="text" id="topic" name="topic" value="[topic]" class="wide" /></span>
-              </div>
-              <div class="row fm-opt">
-                <label for="thatpattern"><span class="twentyPercent">Previous Response ('that'): </span></label>
-                <span class="eightyPercent"><input type="text" id="thatpattern" name="thatpattern"  value="[thatpattern]" class="wide" /></span>
-              </div>
-              <div class="row fm-opt">
-                <label for="pattern"><span class="twentyPercent">User Input: </span></label>
-                <span class="eightyPercent"><input type="text" id="pattern" name="pattern"  value="[pattern]" class="wide" /></span>
-              </div>
-              <div class="row fm-opt">
-                <label for="template"><span class="twentyPercent">Bot Response: </span></label>
-                <span class="eightyPercent"><textarea id="template" name="template" class="wide" />[template]</textarea></span>
-              </div>
-              <div class="row fm-opt">
-                <label for="filename"><span class="twentyPercent">Filename: </span></label>
-                <span class="eightyPercent"><input type="text" id="filename" name="filename"  value="[filename]" class="wide" /></span>
-              </div>
-              <div id="row fm-submit" class="fm-req">
-                <input type="hidden" name="id" id="id" value="[id]"/>
-                <input type="submit" name="action" id="action" value="update"/>
-              </div>
-            </fieldset>
-          </form>
-<!-- Section EditAIMLForm End -->
+<!-- Section editSRAIShowHelp End -->
 <!-- Section StatsPage Start -->
 [blank]          <div id="nocol">
             <h2>[bot_name]'s Stats</h2>
@@ -882,11 +952,71 @@ between the start and end section tags are the only parts of the template that a
           </div>
 <!-- Section StatsPage End -->
 <!-- Section EditAimlPage Start -->
-[blank]          <div class="yui3-skin-sam editaiml-table">
+[blank]          <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+          <style type="text/css">
+            .dataTables_wrapper .dataTables_paginate .paginate_button  { padding: 0; }
+            table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td { padding: 1px 2px 1px 0; }
+            input.search-input-text { margin-left: -14px; }
+            #showHelp { top: -15px; }
+          </style>
+          <div class="holder">
+            <table id="AIML" class="datatable-table">
+              <thead>
+                <tr>
+                  <th title="Sort by Table ID">ID</th>
+                  <th title="Sort by User input">Pattern</th>
+                  <th title="Sort by Previous bot response">thatpattern</th>
+                  <th title="Sort by Bot response">Template</th>
+                  <th title="Sort by Topic">Topic</th>
+                  <th title="Sort by File">Filename</th>
+                </tr>
+              </thead>
+              <thead>
+                <tr class="filters">
+                  <th id="f_id"><input type="text" data-column="0"  class="search-input-text" placeholder="ID Search"></th>
+                  <th id="f_pattern"><input type="text" data-column="1"  class="search-input-text" placeholder="pattern Search"></th>
+                  <th id="f_thatpattern"><input type="text" data-column="2"  class="search-input-text" placeholder="thatpattern Search"></th>
+                  <th id="f_template"><input type="text" data-column="3"  class="search-input-text" placeholder="template Search"></th>
+                  <th id="f_topic"><input type="text" data-column="4"  class="search-input-text" placeholder="topic Search"></th>
+                  <th id="f_filename"><input type="text" data-column="5"  class="search-input-text" placeholder="filename Search"></th>
+                </tr>
+              </thead>
+            </table>
+            <form id="addNewCat">
+              <table id="newCatTable">
+                  <tr>
+                    <td colspan="6" class="center bold">Add new AIML Category:</td>
+                  </tr>
+                  <tr>
+                     <td class="w5">
+                       <input id="btnClearNewCat" name="" type="reset" value="Clear Form">
+                     </td>
+                    <td class="w15">
+                      <textarea name="pattern" rows="2" placeholder="User input" class="newCat"></textarea>
+                    </td>
+                    <td class="w15">
+                      <textarea name="thatpattern" rows="2" placeholder="Previous bot Response" class="newCat"></textarea>
+                    </td>
+                    <td>
+                      <textarea name="template" rows="2" placeholder="Bot response" class="newCat"></textarea>
+                    </td>
+                    <td class="w15">
+                      <textarea name="topic" rows="2" placeholder="Topic" class="newCat"></textarea>
+                    </td>
+                   <td class="w10">
+                     <input id="btnSaveNewCat" name="" type="submit" value="Save Category">
+                     <input type="hidden" name="filename" value="admin_added.aiml" />
+                     <input type="hidden" name="action" value="add" />
+                   </td>
+                  </tr>
+              </table>
+            </form>
             <div class='search-msg'></div>
           </div>
-          <script src="scripts/yui-min.js"></script>
-          <script src="scripts/editAiml.js"></script>
+[showHelp]
+          <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+          <script type="text/javascript" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+          <script type="text/javascript" src="scripts/editAiml.js"></script>
 <!-- Section EditAimlPage End -->
 <!-- Section DataTable Start -->
 [blank]      <div class="editaiml-table">
@@ -904,32 +1034,6 @@ between the start and end section tags are the only parts of the template that a
           </table>
         </div>
 <!-- Section DataTable End -->
-<!-- Section DataTableScript Start -->
-[blank]    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script type="text/javascript" src="//cdn.datatables.net/1.10.3/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="scripts/jeditable.js"></script>
-    <script type="text/javascript" src="scripts/jquery.datatable.editable.js"></script>
-    <script type="text/javascript">
-      $(function(){
-        $('#[table_id] thead th.search').each( function () {
-          var title = $(this).text();
-          $(this).html( '<input type="text" placeholder="Search ' + title + '" />' );
-        });
-        var editOptions = {
-          sUpdateURL: 'seTest.php?action=test',
-        };
-        var tableOptions = {
-          scrollY: '340','bPaginate': true,
-          'sDom': 'lpit'
-        };
-        var table = $('#[table_id]').dataTable(tableOptions).makeEditable(editOptions);//
-      });
-    </script>
-<!-- Section DataTableScript End -->
-<!-- Section DataTableCSS Start -->
-<link rel="stylesheet" href="datatables.css" type="text/css">
-[blank]
-<!-- Section DataTableCSS End -->
 <!-- Section DownloadForm Start -->
 [blank]          <div id="downloadFormMulti" class="fullWidth noBorder downloadForms">
             <div class="row center">Please select the AIML files you wish to download from the selections below.</div>
@@ -1098,7 +1202,7 @@ between the start and end section tags are the only parts of the template that a
             <td>
               <p class="indent">
                 Answer the question you see in the image on the left into the text area
-                below. We are looking for a one word answer (no numbers). Sry, but bots are not allowed.
+                below. We are looking for a one word answer (no numbers). Sorry, but bots are not allowed.
               </p>
               <input name="captcha" type="text">
             </td>
@@ -1117,51 +1221,3 @@ between the start and end section tags are the only parts of the template that a
         }
       </script>
 <!-- Section BugForm End -->
-<!-- Section SearchTable Start -->
-[blank]          <p>Use the handy table below to both search and edit your AIML categories.</p>
-<!-- Section SearchTable End -->
-<!-- Section SearchScripts Start -->
-[blank]    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.5/css/jquery.dataTables.css" />
-    <style type="text/css">tfoot {display: table-header-group;}</style>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script type="text/javascript" src="//cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="scripts/jeditable.js"></script>
-    <script type="text/javascript" src="scripts/jquery.datatable.editable.js"></script>
-    <script type="text/javascript">
-      $(function() {
-        // Setup - add a text input to each footer cell
-/*
-*/
-        $('#tblAIML tfoot th').each( function () {
-          var title = $('#tblAIML thead th').eq($(this).index()).text();
-          $(this).html('<input type="text" placeholder="Search '+title+'" />' );
-        });
-        // DataTable
-        var table = $('#tblAIML').dataTable({
-          'columns': [
-            {'width': '10%'},
-            {'width': '10%'},
-            {'width': '10%'},
-            {'width': '70%'},
-            {'width': '10%'}
-          ],
-          'iDisplayLength': 10,
-          'pagingType': 'full_numbers',
-          'sDom': 'lrpit',
-          'processing': true,
-          'serverSide': true,
-          'ajax': 'ajax.php',
-          'sServerMethod': 'POST'
-        }).makeEditable();
-        // Apply the search
-        var tableAPI = table.api();
-        tableAPI.columns().eq(0).each( function(colIdx) {
-          $('input', tableAPI.column(colIdx).footer()).on('keyup change', function() {
-            tableAPI.column(colIdx).search(this.value).draw();
-          });
-        });
-/*
-*/
-      });
-    </script>
-<!-- Section SearchScripts End -->

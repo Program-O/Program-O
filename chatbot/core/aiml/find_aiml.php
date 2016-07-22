@@ -2,7 +2,7 @@
   /***************************************
     * http://www.program-o.com
     * PROGRAM O
-    * Version: 2.5.4
+    * Version: 2.6.3
     * FILE: find_aiml.php
     * AUTHOR: Elizabeth Perreau and Dave Morton
     * DATE: FEB 01 2016
@@ -133,12 +133,8 @@
    * @return array
    **/
 
-
   function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
   {
-
-
-
     global $error_response;
     $lookingfor_lc = _strtolower($lookingfor);
     $current_topic = get_topic($convoArr);
@@ -200,12 +196,15 @@
         $topicMatch = FALSE;
       }
       # check for a matching pattern
+      //save_file(_LOG_PATH_ . 'aiml_pattern_wildcards.txt', print_r($aiml_pattern_wildcards, true) . "\n", true);
+      set_error_handler('wildcard_handler',E_ALL);
       preg_match($aiml_pattern_wildcards, $lookingfor, $matches);
+      restore_error_handler();
       $aiml_patternmatch = (count($matches) > 0) ? true : false;
 
       # look for a thatpattern match
       $aiml_thatpattern_wildcards = (!empty($aiml_thatpattern)) ? build_wildcard_RegEx($aiml_thatpattern) : '';
-      $aiml_thatpattern_wc_matches = (!empty($aiml_thatpattern_wildcards)) ? preg_match_all($aiml_thatpattern_wildcards,$current_thatpattern) : 0;
+      $aiml_thatpattern_wc_matches = (!empty($aiml_thatpattern_wildcards)) ? preg_match_all($aiml_thatpattern_wildcards,$current_thatpattern, $matches) : 0;
 
       switch (true) {
         case ($aiml_thatpattern_wc_matches > 0):
@@ -824,26 +823,29 @@
     $i = 0;
     $allrows = array();
     $bot_id = $convoArr['conversation']['bot_id'];
-    $user_id = $convoArr['conversation']['user_id'];
+    $c_id = $convoArr['conversation']['convo_id']; //$convoArr['conversation'][''];user_id
     $lookingfor = $convoArr['aiml']['lookingfor'];
     //build sql
     $sql = "SELECT * FROM `$dbn`.`aiml_userdefined` WHERE
     `bot_id` = '$bot_id' AND
-    (`user_id` = '$user_id' OR `user_id` = '-1') AND
+    (`user_id` = '$c_id' OR `user_id` = '-1') AND
     `pattern` = '$lookingfor'";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined SQL: $sql", 3);
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $num_rows = count($result);
     //if there is a result get it
-    if (($result) && ($num_rows > 0))
-    {
+    if (($result) && ($num_rows > 0)) {
+      runDebug(__FILE__, __FUNCTION__, __LINE__, 'Results returned: ' . print_r($result, true), 3);
+
     //loop through results
       foreach ($result as $row)
       {
+        $allrows['aiml_id'] = $row['id'];
+        $allrows['score'] = 300 - $i; // since this is user defined AIML code, score it high, but each succesive entry gets one less score.
         $allrows['pattern'] = $row['pattern'];
-        $allrows['thatpattern'] = $row['thatpattern'];
+        $allrows['thatpattern'] = (isset($row['thatpattern'])) ? $row['thatpattern'] : '';
         $allrows['template'] = $row['template'];
-        $allrows['topic'] = $row['topic'];
+        $allrows['topic'] = ''; // User defined AIML has no topic.
         $i++;
       }
     }
@@ -891,8 +893,8 @@
     $convoArr['aiml']['template'] = $allrows['template'];
     $convoArr['aiml']['html_template'] = '';
     $convoArr['aiml']['topic'] = $allrows['topic'];
-    $convoArr['aiml']['score'] = $allrows['score'];
-    $convoArr['aiml']['aiml_id'] = $allrows['aiml_id'];
+    $convoArr['aiml']['score'] = (isset($allrows['score'])) ? $allrows['score'] : 0;
+    $convoArr['aiml']['aiml_id'] = (isset($allrows['aiml_id'])) ? $allrows['aiml_id'] : -1;
     //return
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Will be parsing id:" . $allrows['aiml_id'] . " (" . $allrows['pattern'] . ")", 4);
     return $convoArr;
@@ -979,7 +981,7 @@
     }
     else
     {
-      $topic_select = '';
+      $topic_select = "AND `topic`=''";
     }
     if ($word_count == 1)
     {

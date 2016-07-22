@@ -2,10 +2,6 @@
 ## Program O
 #################
 
-admin/*.log
-admin/skins
-admin/unused
-admin/unused/*
 !admin/downloads
 admin/downloads/*
 !admin/downloads/index.html
@@ -14,21 +10,27 @@ admin/scripts/old
 admin/uploads/*
 !admin/uploads/index.html
 admin/ses*
+admin/editAIML.htm
 config/global_config.php
 config/global_config*.php
 global_config.php
-config/uploads/*
+!admin/uploads
+admin/uploads/*
+!admin/uploads/index.html
 chatbot/debug/*.txt
-gui/jquery/gui.php
 logs/*.log
 logs/*.txt
-makeBuild.php
+backups
+backups/*
+admin/scripts/old
 
 #################
 ## WeBuilder/ Rapid PHP
 #################
 
 *.flist
+prev*~.php
+~*.*
 
 #################
 ## Eclipse

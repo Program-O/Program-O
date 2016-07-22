@@ -1,7 +1,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.3
   * FILE: style.css
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
@@ -145,6 +145,10 @@ span.eightyPercent textarea.wide { width: 67%; min-height: 150px; margin: 0; flo
   color: red;
   /*font-size: large;
   font-weight: bold;*/
+}
+.pink {
+  background-color: pink !important;
+  color: black;
 }
 .orange { background-color: transparent; color: orange }
 .small {
@@ -399,14 +403,13 @@ span.eightyPercent textarea.wide { width: 67%; min-height: 150px; margin: 0; flo
 }
 #main_content {
   position: absolute;
-  top: 55px;
-  bottom: 5px;
+  top: 50px;
+  bottom: 0;
   left: 0;
   right: 0;
   text-indent: 1em;
   overflow: auto;
-  padding-top: 5px;
-  padding-left: 5px;
+  padding: 0 5px;
   background-color: #FFFFCC;
   z-index: 3;
 /*
@@ -521,6 +524,7 @@ border:none;
   right: 5px;
   z-index: 5;
   background-color: #FFFFCC;
+  background-color: transparent;
 }
 #showHelp {
   position: absolute;
@@ -850,6 +854,52 @@ label { cursor: pointer; }
   float: left;
   text-align: left;
 }
+.note {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+}
 
+input.search-input-text, textarea.newCat {
+  width: 99%;
+  padding: 3px;
+  box-sizing: border-box;
+}
+#AIML_filter { display: none; }
+#AIML td, #AIML th, #SRAI_LOOKUP td, #SRAI_LOOKUP th { border: 1px solid #999; }
+.deleteRow {
+  margin: 0 auto;
+  width: 32px;
+  height: 32px;
+  background: url(images/del.png) no-repeat 50% 50%;
+  cursor: pointer;
+}
+.w80 { width: 80%; }
+.m0a { margin: 0 auto }
+.mb5 { margin-bottom: 5px; }
+.dataTables_wrapper .dataTables_paginate .paginate_button { padding: 0; }
 
+#newCatTable {
+  width: 95%;
+  margin: 0 auto;
+}
+/*#newCatTable td { border: 1px solid black; }*/
+#newCatTable input[type="submit"] #newCatTable button { width: auto; }
+#newCatTable textarea {
+  width: 100%;
+  margin: 0 auto;
+}
 
+.w5 { width: 5%; }
+.w10 { width: 10%; }
+.w15 { width: 15%; }
+.w20 { width: 20%; }
+.w25 { width: 25%; }
+.w30 { width: 30%; }
+.w40 { width: 40%; }
+.w50 { width: 50%; }
+
+.editable {
+  text-indent: 0;
+  padding: 3px 5px !important;
+}

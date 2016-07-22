@@ -3,7 +3,7 @@
   /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.5.4
+  * Version: 2.6.3
   * FILE: upload.php
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
@@ -13,6 +13,11 @@
   ini_set('max_execution_time', '0');
   ini_set('display_errors', false);
   ini_set('log_errors', true);
+  chdir(_ADMIN_PATH_);
+
+  $validationStatus = '';
+  $msg = '';
+  $xmlErrCount = 0;
   libxml_use_internal_errors(true);
   $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
   $msg = (array_key_exists('aimlfile', $_FILES)) ? processUpload() : '';
@@ -121,10 +126,10 @@ endScript;
   */
   function parseAIML($fn, $aimlContent, $from_zip = false)
   {
-    global $dbConn, $post_vars;
+    global $dbConn, $post_vars, $msg;
     if (empty ($aimlContent))
       return "File $fn was empty!";
-    global $dbConn, $debugmode, $bot_id, $charset;
+    global $dbConn, $debugmode, $bot_id, $charset, $xmlErrCount;
     $fileName = basename($fn);
     $success = false;
     $topic = '';
@@ -147,42 +152,85 @@ endScript;
     /*       and replacing them with our own tags          */
     /*******************************************************/
     $validAIMLHeader = '<?xml version="1.0" encoding="[charset]"?>
-<!DOCTYPE aiml PUBLIC "-//W3C//DTD Specification Version 1.0//EN" "http://www.program-o.com/xml/aiml.dtd">
-<aiml version="1.0.1" xmlns="http://alicebot.org/2001/AIML-1.0.1">';
+<aiml version="1.0.1" xmlns="http://www.alicebot.org/TR/2001/WD-aiml">';
     $validAIMLHeader = str_replace('[charset]', $charset, $validAIMLHeader);
     $aimlTagStart = stripos($aimlContent, '<aiml', 0);
     $aimlTagEnd = strpos($aimlContent, '>', $aimlTagStart) + 1;
     $aimlFile = $validAIMLHeader . substr($aimlContent, $aimlTagEnd);
+    //file_put_contents(_LOG_PATH_ . 'upload.aiml.txt', print_r($aimlFile, true));
     $tmpDir = _UPLOAD_PATH_ . 'tmp' . DIRECTORY_SEPARATOR;
     if (!file_exists($tmpDir)) mkdir($tmpDir, 0755);
     save_file(_UPLOAD_PATH_ . 'tmp/' . $fileName, $aimlFile);
-    try
-    {
+    try {
+      libxml_clear_errors();
       libxml_use_internal_errors(true);
-      $xml = new DOMDocument();
-      $xml->loadXML($aimlFile);
-      $aiml = new SimpleXMLElement($xml->saveXML());
-      $rowCount = 0;
-      $_SESSION['failCount'] = 0;
-      $params = array();
-      if (!empty ($aiml->topic))
-      {
-        foreach ($aiml->topic as $topicXML)
+      $xml = new DOMDocument('1.0', 'utf-8');
+      if (!$xml->loadXML(trim($aimlFile))) { // $aimlContent
+        $status = "File $fileName is <strong>NOT</strong> valid!<br />\n";
+        $msg .= upload_libxml_display_errors($status);
+      }
+      elseif (!$xml->schemaValidate('aiml.xsd')) {
+        $msg = '<b>A total of [count] error[plural] been found in this document.</b><br>';
+        // $xmlErrCount
+        $status = upload_libxml_display_errors($status);
+        $plural = ($xmlErrCount !== 1) ? 's have' : ' has';
+        $msg = str_replace('[count]', $xmlErrCount, $msg);
+        $msg = str_replace('[plural]', $plural, $msg);
+        $msg .= $status;
+      }
+      else {
+        $aiml = new SimpleXMLElement($xml->saveXML());
+        $rowCount = 0;
+        $_SESSION['failCount'] = 0;
+        $params = array();
+        if (!empty ($aiml->topic))
         {
-        # handle any topic tag(s) in the file
-          $topicAttributes = $topicXML->attributes();
-          $topic = $topicAttributes['name'];
-          foreach ($topicXML->category as $category)
+          foreach ($aiml->topic as $topicXML)
+          {
+          # handle any topic tag(s) in the file
+            $topicAttributes = $topicXML->attributes();
+            $topic = $topicAttributes['name'];
+            foreach ($topicXML->category as $category)
+            {
+              $fullCategory = $category->asXML();
+              $pattern = trim($category->pattern);
+              $pattern = str_replace("'", ' ', $pattern);
+              $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
+              $that = $category->that;
+              $that = (IS_MB_ENABLED) ? mb_strtoupper($that) : strtoupper($that);
+              $template = $category->template->asXML();
+              $template = str_replace('<template>', '', $template);
+              $template = str_replace('</template>', '', $template);
+              $template = trim($template);
+              # Strip CRLF and LF from category (Windows/mac/*nix)
+              $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
+              $params[] = array(
+                ':bot_id' => $bot_id,
+                ':aiml' => $aiml_add,
+                ':pattern' => $pattern,
+                ':that' => $that,
+                ':template' => $template,
+                ':topic' => $topic,
+                ':fileName' => $fileName
+              );
+            }
+          }
+        }
+        $topic = '';
+        if (!empty ($aiml->category))
+        {
+          foreach ($aiml->category as $category)
           {
             $fullCategory = $category->asXML();
             $pattern = trim($category->pattern);
             $pattern = str_replace("'", ' ', $pattern);
             $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
             $that = $category->that;
-            $that = (IS_MB_ENABLED) ? mb_strtoupper($that) : strtoupper($that);
             $template = $category->template->asXML();
-            $template = str_replace('<template>', '', $template);
-            $template = str_replace('</template>', '', $template);
+            //strip out the <template> tags, as they aren't needed
+            $template = substr($template, 10);
+            $tLen = strlen($template);
+            $template = substr($template, 0, $tLen - 11);
             $template = trim($template);
             # Strip CRLF and LF from category (Windows/mac/*nix)
             $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
@@ -192,15 +240,12 @@ endScript;
               ':pattern' => $pattern,
               ':that' => $that,
               ':template' => $template,
-              ':topic' => $topic,
+              ':topic' => '',
               ':fileName' => $fileName
             );
           }
         }
-      }
-      if (!empty ($aiml->category))
-      {
-        foreach ($aiml->category as $category)
+        if (!empty($params))
         {
           $topic = "";
           $fullCategory = $category->asXML();
@@ -225,17 +270,13 @@ endScript;
             ':topic' => '',
             ':fileName' => $fileName
           );
+          $rowCount = db_write($sql, $params, true, __FILE__, __FUNCTION__, __LINE__);
+          $success = ($rowCount !== false) ? true : false;
         }
+        $msg = ($from_zip === true) ? '' : "Successfully added $fileName to the database.<br />\n";
       }
-      if (!empty($params))
-      {
-        $rowCount = db_write($sql, $params, true, __FILE__, __FUNCTION__, __LINE__);
-        $success = ($rowCount !== false) ? true : false;
-      }
-      $msg = ($from_zip === true) ? '' : "Successfully added $fileName to the database.<br />\n";
     }
-    catch (Exception $e)
-    {
+    catch (Exception $e) {
     $trace = $e->getTraceAsString();
     //exit($e->getMessage() . ' at line ' . $e->getLine());
       $msg = $e->getMessage() . ' at line ' . $e->getLine() . "<br>\n";
@@ -247,6 +288,10 @@ endScript;
       $errMsg = "There was a problem adding file $fileName to the database. Please refer to the message below to correct the problem and try again.<br>\n" . $e->getMessage();
       $msg .= upload_libxml_display_errors($errMsg);
     }
+/*
+      $xml->loadXML($aimlFile);
+      if (!validateAIML($xml)) $msg .= "File $fileName is not valid AIML. See errors, below.";
+*/
     return $msg;
   }
 
@@ -268,8 +313,7 @@ endScript;
     {
       $msg = 'The file was too large.';
     }
-    else
-      if ($_FILES['aimlfile']['error'] !== UPLOAD_ERR_OK)
+    elseif ($_FILES['aimlfile']['error'] !== UPLOAD_ERR_OK)
       {
       // There was a PHP error
         $msg = 'There was an error uploading.';
@@ -353,6 +397,7 @@ endScript;
   */
   function upload_libxml_display_errors($msg)
   {
+    global $xmlErrCount;
     $out = '';
     $errors = libxml_get_errors();
     foreach ($errors as $error)
@@ -371,6 +416,7 @@ endScript;
   */
   function upload_libxml_display_error($error)
   {
+    global $xmlErrCount;
     $out = "<br/>\n";
     switch ($error->level)
     {
@@ -390,6 +436,8 @@ endScript;
       $out .= " in <b>{$error->file}</b><br>\n";
     }
     $out .= " on line <b>{$error->line}</b><br>\n";
+    $xmlErrCount++;
+    file_put_contents('logs/xmlErrCount.txt', print_r($xmlErrCount, true) . "\n", FILE_APPEND);
     return "$out<br>\n";
   }
 
@@ -460,3 +508,65 @@ endScript;
     }
     return $out;
   }
+
+  function validateAIML($xml) {
+    file_put_contents(_LOG_PATH_ . 'upload.xml.txt', print_r($xml, true));
+    global $validationStatus;
+    $out = true;
+    if (!$xml->schemaValidate('aiml.xsd')) {
+      $validationStatus = get_errors();
+      $out = false;
+    }
+    return $out;
+  }
+
+  /**
+   * Function libxml_display_error
+   *
+   * * @param $error
+   * @return string
+   */
+  function libxml_display_error($error) {
+    global $aimlArray;
+    $errorLine = $error->line;
+    $errorXML = htmlentities(@$aimlArray[$errorLine]);
+    $return = "<hr>\n";
+    switch ($error->level)
+    {
+      case LIBXML_ERR_WARNING :
+        $return .= "<b>Warning {$error->code}</b>: ";
+        break;
+      case LIBXML_ERR_ERROR :
+        $return .= "<b>Error {$error->code}</b>: ";
+        break;
+      case LIBXML_ERR_FATAL :
+        $return .= "<b>Fatal Error {$error->code}</b>: ";
+        break;
+    }
+    $return .= trim($error->message);
+    if ($error->file)
+    {
+      $return .= " in <b>{$error->file}</b>";
+    }
+    $return .= " on line <a href=\"#line$errorLine\">$errorLine</a>, column {$error->column}\n";
+    $return .= "<br>$errorXML\n";
+    return $return;
+  }
+
+  function get_errors()
+  {
+    global $status;
+    $errors = libxml_get_errors();
+    $count = 0;
+    foreach ($errors as $error)
+    {
+      $status .= libxml_display_error($error) . "<br />\n";
+      $count++;
+    }
+    libxml_clear_errors();
+    $plural = ($count > 1) ? 's have' : ' has';
+    $status = str_replace('[count]', $count, $status);
+    $status = str_replace('[plural]', $plural, $status);
+  }
+
+
