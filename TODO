@@ -22,6 +22,11 @@
 
   4.) Add config options for enable/disable of BBCode, spell check and word censor addons
 
+  5.) Create configurable functionality to delete users and conversation entries that are
+      older than a given amount of time (defalts to 30 days)
+
+  6.) Add ability to delete selected files from both log and debug file viewers  
+
 
 
 

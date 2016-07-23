@@ -87,7 +87,7 @@
     $fileList = glob(_DEBUG_PATH_ . '*.txt');
     usort(
       $fileList,
-      create_function('$b,$a', 'return filemtime($a) - filemtime($b);')
+      function($a, $b) {return filemtime($a) - filemtime($b);}
     );
     $options = '';
     $postedFile = $post_vars['file'];
@@ -129,11 +129,12 @@
       </select> &nbsp; &nbsp;
 <?php echo $login_form ?> &nbsp; &nbsp;
     <a href="<?php echo _DEBUG_URL_ ?>">Reload the Page</a>
+    &nbsp; &nbsp; <a href="profile.php?file=<?php echo $postedFile ?>" target="fileViewer">Profile this debug file</a>
     </form>
     <br />
     <div id="now_playing"><?php echo $now_playing ?></div>
     <div id="viewer">
-      <iframe  width="99%" height="99%" src="<?php echo $iframeURL ?>"><h1>Access Denied!</h1></iframe>
+      <iframe name="fileViewer" width="99%" height="99%" src="<?php echo $iframeURL ?>"><h1>Access Denied!</h1></iframe>
     </div>
   </body>
 </html>
