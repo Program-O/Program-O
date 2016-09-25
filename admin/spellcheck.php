@@ -310,8 +310,8 @@ endScript;
   
   $sql    = "SELECT * FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
   $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-  $uc_missspelling = _strtoupper($row['missspelling']);
-  $uc_correction = _strtoupper($row['correction']);
+  $uc_missspelling = (IS_MB_ENABLED) ? mb_strtoupper($row['missspelling']) : strtoupper($row['missspelling']);
+  $uc_correction = (IS_MB_ENABLED) ? mb_strtoupper($row['correction']) : strtoupper($row['correction']);
   $form   = str_replace('[id]', $row['id'], $form);
   $form   = str_replace('[missspelling]', $uc_missspelling, $form);
   $form   = str_replace('[correction]', $uc_correction, $form);

@@ -113,7 +113,7 @@
       $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
       foreach ($result as $row)
       {
-        $pattern = _strtoupper($row['pattern']);
+        $pattern = (IS_MB_ENABLED) ? mb_strtoupper($row['pattern']) : strtoupper($row['pattern']);
         $template = str_replace("\r\n", '', $row['template']);
         $template = str_replace("\n", '', $row['template']);
         $newLine = str_replace('[pattern]', $pattern, $categoryTemplate);
@@ -133,7 +133,7 @@
     $dom->loadXML(trim($fileContent));
     $fileContent = $dom->saveXML();
     $outFile = ltrim($fileContent, "\n\r\n");
-    $outFile =(IS_MB_ENABLED) ? mb_convert_encoding($outFile, 'UTF-8') : $outFile;
+    $outFile = mb_convert_encoding($outFile, 'UTF-8');
     return $outFile;
   }
 

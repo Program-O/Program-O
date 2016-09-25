@@ -244,14 +244,11 @@
     global $new_convo_id, $old_convo_id;
     $session_id = ($new_convo_id === false) ? session_id() : $new_convo_id;
     $myFile = _DEBUG_PATH_ . $session_id . '.txt';
-    $log = str_replace(array("\r\n", "\n"), PHP_EOL, $log);
-/*
     if (!IS_WINDOWS)
     {
       $log = str_replace("\n", "\r\n", $log);
       $log = str_replace("\r\r", "\r", $log);
     }
-*/
     file_put_contents($myFile, $log);
   }
 

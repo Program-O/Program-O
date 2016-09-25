@@ -28,8 +28,7 @@
                 else if (typeof oldData !== 'undefined'){
                   console.log('current data =', curData);
                   console.log('old data =', oldData);
-                  saveEdit($(this));
-                  return false;
+                  return saveEdit($(this));
                 }
                 else return cancelEdit($(this));
               });
@@ -50,12 +49,12 @@
                 if (typeof table === 'undefined') table = buildTable();
                 scrollY = changeHeight();
                 $('.holder').height(scrollY);
-                table.draw(false);
+                table.draw();
               });
               $('.search-input-text').on( 'keyup click', function () {
                 var i = $(this).data('column');
                 var v = $(this).val();
-                table.columns(i).search(v).draw(false);
+                table.columns(i).search(v).draw();
               });
               $('#addNewCat').on('submit', function(e){
                 e.preventDefault();
@@ -69,7 +68,7 @@
                   success: function(data) {
                     $('#errMsg').html('<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>').show();
                     $('<span>').html(data).appendTo('#errMsg');
-                    table.draw(false);
+                    table.draw();
                     setTimeout(hideMsg, 3000);
                     $('#btnClearNewCat').click();
                   },
@@ -161,7 +160,7 @@
                   $('#errMsg').empty().html('<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>').show();
                   $('<span>').html(data).appendTo('#errMsg');
                   setTimeout(hideMsg, 3000);
-                  table.draw(false);
+                  table.draw();
                 },
               });
             }

@@ -54,14 +54,14 @@
    */
   function spell_check($word, $bot_id)
   {
-    //runDebug(__FILE__, __FUNCTION__, __LINE__, "Preforming a spel chek on $word.", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Preforming a spel chek on $word.", 2);
     global $dbConn, $dbn, $spellcheck_common_words;
     if (strstr($word, "'")) $word = str_replace("'", ' ', $word);
-    $test_word = _strtolower($word);
+    $test_word = (IS_MB_ENABLED) ? mb_strtolower($word) : strtolower($word);
     if (!isset($_SESSION['spellcheck'])) load_spelling_list();
     if (in_array($test_word, $spellcheck_common_words))
     {
-      //runDebug(__FILE__, __FUNCTION__, __LINE__, "The word '$word' is a common word. Returning without checking.", 4);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "The word '$word' is a common word. Returning without checking.", 4);
       return $word;
     }
     if (in_array($test_word, array_keys($_SESSION['spellcheck'])))
@@ -71,21 +71,40 @@
     }
     else
     {
-      //runDebug(__FILE__, __FUNCTION__, __LINE__,'Spelling check passed.', 4);
+      runDebug(__FILE__, __FUNCTION__, __LINE__,'Spelling check passed.', 4);
       $corrected_word = $word;
     }
-    switch ($word){
-      case _strtolower($word):
-        $corrected_word = _strtolower($corrected_word);
-      break;
-      case _strtoupper($word):
-        $corrected_word = _strtoupper($corrected_word);
-      break;
-      case _title_case($word):
-        $corrected_word = _title_case($corrected_word);
-      break;
-      default:
+    if (IS_MB_ENABLED)
+    {
+      switch ($word){
+        case mb_strtolower($word):
+        $corrected_word = mb_strtolower($corrected_word);
+        break;
+        case mb_strtoupper($word):
+        $corrected_word = mb_strtoupper($corrected_word);
+        break;
+        case mb_convert_case($word, MB_CASE_TITLE):
+        $corrected_word = mb_convert_case($corrected_word, MB_CASE_TITLE);
+        break;
+        default:
       }
+    }
+    else
+    {
+      switch ($word){
+        case strtolower($word):
+        $corrected_word = strtolower($corrected_word);
+        break;
+        case strtoupper($word):
+        $corrected_word = strtoupper($corrected_word);
+        break;
+        case ucfirst($word):
+        $corrected_word = ucfirst($corrected_word);
+        break;
+        default:
+      }
+    }
+  //set in global config file
     return $corrected_word;
   }
 
@@ -108,10 +127,12 @@
     {
       foreach ($result as $row)
       {
-        $missspelling = _strtolower($row['missspelling']);
+        $missspelling = (IS_MB_ENABLED) ? mb_strtolower($row['missspelling']) : strtolower($row['missspelling']);
         $correction = $row['correction'];
         $_SESSION['spellcheck'][$missspelling] = $correction;
       }
     }
     
   }
+
+?>

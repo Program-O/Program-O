@@ -284,8 +284,10 @@ endScript;
     foreach ($result as $row)
     {
       $i++;
-      $word_to_censor = _strtoupper($row['word_to_censor']);
-      $replace_with = _strtoupper($row['replace_with']);
+      $word_to_censor = (IS_MB_ENABLED) ? mb_strtoupper($row['word_to_censor']) :
+                        strtoupper($row['word_to_censor']);
+      $replace_with = (IS_MB_ENABLED) ? mb_strtoupper($row['replace_with']) : strtoupper($row
+                      ['replace_with']);
       $id = $row['censor_id'];
       $group = round(($id / 50));
       $action =
@@ -331,8 +333,10 @@ endScript;
     $form = $template->getSection('EditWordCensorForm');
     $sql = "SELECT * FROM `wordcensor` WHERE `censor_id` = '$id' LIMIT 1";
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-    $uc_word_to_censor = _strtoupper($row['word_to_censor']);
-    $uc_replace_with = _strtoupper($row['replace_with']);
+    $uc_word_to_censor = (IS_MB_ENABLED) ? mb_strtoupper($row['word_to_censor']) :
+                         strtoupper($row['word_to_censor']);
+    $uc_replace_with = (IS_MB_ENABLED) ? mb_strtoupper($row['replace_with']) : strtoupper(
+                       $row['replace_with']);
     $form = str_replace('[censor_id]', $row['censor_id'], $form);
     $form = str_replace('[word_to_censor]', $uc_word_to_censor, $form);
     $form = str_replace('[replace_with]', $uc_replace_with, $form);

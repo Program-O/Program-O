@@ -13,11 +13,6 @@
   require_once('../config/global_config.php');
   require_once (_LIB_PATH_ . 'PDO_functions.php');
   require_once (_LIB_PATH_ . 'error_functions.php');
-  require_once (_LIB_PATH_ . 'misc_functions.php');
-  ini_set('log_errors', true);
-  ini_set('error_log', _LOG_PATH_ . 'editAJAX.error.log');
-  ini_set('html_errors', false);
-  ini_set('display_errors', false);
   $session_name = 'PGO_Admin';
   session_name($session_name);
   session_start();
@@ -136,9 +131,9 @@
     global $form_vars, $dbConn;
     $template = trim($form_vars['template']);
     $filename = trim($form_vars['filename']);
-    $pattern = _strtoupper(trim($form_vars['pattern']));
-    $thatpattern = _strtoupper(trim($form_vars['thatpattern']));
-    $topic = _strtoupper(trim($form_vars['topic']));
+    $pattern = (IS_MB_ENABLED) ? mb_strtoupper(trim($form_vars['pattern'])) : strtoupper(trim($form_vars['pattern']));
+    $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper(trim($form_vars['thatpattern'])) : strtoupper(trim($form_vars['thatpattern']));
+    $topic = (IS_MB_ENABLED) ? mb_strtoupper(trim($form_vars['topic'])) : strtoupper(trim($form_vars['topic']));
     $id = trim($form_vars['id']);
     if (($template == "") || ($pattern == "") || ($id == "")) {
       $msg = 'Please make sure you have entered a user input and bot response ';
@@ -176,14 +171,14 @@
     $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
     $aimltemplate = trim($form_vars['template']);
     $pattern = trim($form_vars['pattern']);
-    $pattern = _strtoupper($pattern);
+    $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
     $thatpattern = trim($form_vars['thatpattern']);
-    $thatpattern = _strtoupper($thatpattern);
+    $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper($thatpattern) : strtoupper($thatpattern);
     $aiml = str_replace('[pattern]', $pattern, $aiml);
     $aiml = (empty ($thatpattern)) ? str_replace('[thatpattern]', "<that>$thatpattern</that>", $aiml) : $aiml;
     $aiml = str_replace('[template]', $aimltemplate, $aiml);
     $topic = trim($form_vars['topic']);
-    $topic = _strtoupper($topic);
+    $topic = (IS_MB_ENABLED) ? mb_strtoupper($topic) : strtoupper($topic);
     if (($pattern == "") || ($aimltemplate == "")) {
       $msg = 'You must enter a user input and bot response.';
     }
