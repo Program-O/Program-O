@@ -193,6 +193,9 @@
                     searchable: true,
                     orderable: true,
                     width: '15%',
+                    render: function(data, type, full, meta){
+                      return '<pre>' + data + '</pre>';
+                    },
                   },
                   {
                     data: 'pattern',
@@ -200,6 +203,9 @@
                     searchable: true,
                     orderable: true,
                     width: '60%',
+                    render: function(data, type, full, meta){
+                      return '<pre>' + data + '</pre>';
+                    },
                   },
                   {
                     data: 'template_id',
@@ -207,6 +213,9 @@
                     searchable: true,
                     orderable: true,
                     width: '15%',
+                    render: function(data, type, full, meta){
+                      return '<pre>' + data + '</pre>';
+                    },
                   }
                 ]
               });

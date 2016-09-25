@@ -102,7 +102,7 @@
   if (!empty($say))
   {
     // Chect to see if the user is clearing properties
-    $lc_say = (IS_MB_ENABLED) ? mb_strtolower($say) : strtolower($say);
+    $lc_say = _strtolower($say);
     if ($lc_say == 'clear properties')
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Clearing client properties and starting over.", 4);

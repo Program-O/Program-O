@@ -20,7 +20,9 @@
   {
     global $botsay, $error_response;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the AIML template as XML", 2);
-    $template = add_text_tags($convoArr['aiml']['template']);
+    $template = remove_comment_tags($convoArr['aiml']['template']);
+    $template = add_text_tags($template);
+    $template = restore_comment_tags($template);
     try
     {
       $aimlTemplate = new SimpleXMLElement($template, LIBXML_NOCDATA);
@@ -41,6 +43,38 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Completed parsing the template. The bot will say: $botsay", 4);
     return $convoArr;
   }
+
+  /**
+   * function remove_comment_tags
+   *
+   * Removes comment tags from AIML templates so they won't screw up adding text tags
+   *
+   * @param $text
+   *
+   * @return sring
+   */
+
+   function remove_comment_tags($text) {
+       $out = str_replace('<!-- ', '[PGOcomment]', $text);
+       $out = str_replace(' -->', '[/PGOcomment]', $out);
+       return $out;
+   }
+
+  /**
+   * function restore_comment_tags
+   *
+   * Restores comment tags from AIML templates so they won't screw up adding text tags
+   *
+   * @param $text
+   *
+   * @return sring
+   */
+
+   function restore_comment_tags($text) {
+       $out = str_replace('[PGOcomment]', '<!-- ', $text);
+       $out = str_replace('[/PGOcomment]', ' -->', $out);
+       return $out;
+   }
 
   /**
    * Wraps mixed content XML with <text></text> tags, allowing full use of PHP's SimpleXML functions
@@ -436,7 +470,7 @@
 
     }
     else $convoArr['client_properties'][$var_name] = $var_value;
-    $lc_var_name = (IS_MB_ENABLED) ? mb_strtolower($var_name) : strtolower($var_name);
+    $lc_var_name = _strtolower($var_name);
     if ($lc_var_name == 'topic') $convoArr['topic'][1] = $var_value;
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$sql", 3);
@@ -554,7 +588,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'PARSING AN UPPERCASE TAG.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $response_string = (IS_MB_ENABLED) ? mb_strtoupper($response_string) : strtoupper($response_string);
+    $response_string = _strtoupper($response_string);
     return ltrim($response_string, ' ');
   }
 
@@ -588,12 +622,16 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SENTENCE tag.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+    $lc_response_string = _strtolower($response_string);
+    $response = _strtoupper(_substr($lc_response_string, 0, 1)) . _substr($lc_response_string, 1);
+/*
     if (IS_MB_ENABLED)
     {
       $response_string = mb_strtolower($response_string);
       $response = mb_strtoupper(mb_substr($response_string, 0, 1)) . mb_substr($response_string, 1);
     }
     else $response = ucfirst(strtolower($response_string));
+*/
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 4);
     return $response;
   }
@@ -612,7 +650,7 @@
     global $charset;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing A Formal Tag.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $response = (IS_MB_ENABLED) ? mb_convert_case($response_string, MB_CASE_TITLE, $charset) : ucwords(strtolower($response_string));
+    $response = _convert_case($response_string);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 4);
     return $response;
   }
