@@ -13,6 +13,7 @@
   require_once('../config/global_config.php');
   require_once (_LIB_PATH_ . 'PDO_functions.php');
   require_once (_LIB_PATH_ . 'error_functions.php');
+  require_once (_LIB_PATH_ . 'misc_functions.php');
 
   $e_all = defined('E_DEPRECATED') ? E_ALL & ~E_DEPRECATED : E_ALL;
   error_reporting($e_all);
@@ -142,7 +143,7 @@
     global $form_vars, $dbConn;
     $id = trim($form_vars['id']);
     $bot_id = trim($form_vars['bot_id']);
-    $pattern = (IS_MB_ENABLED) ? mb_strtoupper(trim($form_vars['pattern'])) : strtoupper(trim($form_vars['pattern']));
+    $pattern = _strtoupper(trim($form_vars['pattern']));
     $template_id = trim($form_vars['template_id']);
     if (empty($bot_id) ||empty($pattern) ||empty($template_id)) {
       $msg = 'Please make sure that no fields are empty.([fields])';
@@ -192,7 +193,7 @@
     global $msg, $form_vars, $dbConn;
     $bot_id = trim($form_vars['bot_id']);
     $pattern = trim($form_vars['pattern']);
-    $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
+    $pattern = _strtoupper($pattern);
     $template_id = trim($form_vars['template_id']);
     $sql = 'INSERT INTO `srai_lookup` (`id`, `bot_id`, `pattern`, `template_id`) VALUES (NULL, :bot_id, :pattern, :template_id);';
     $params = array(

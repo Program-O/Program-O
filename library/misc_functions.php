@@ -16,6 +16,7 @@
    * @param (string) $url - The URL or IP address to access
    * @param array $options
    * @param array $params
+   *
    * @return mixed|string (string) $out - The returned value from the curl_exec() call.
    */
   function get_cURL($url, $options = array(), $params = array())
@@ -61,11 +62,42 @@
    * based on configuration.
    *
    * @param string $text The string to convert.
-   * @return string The string converted to upper case.
+   * @return string The string converted to UPPER CASE.
    */
   function _strtoupper($text) {
     return (IS_MB_ENABLED) ? mb_strtoupper($text) : strtoupper($text);
   }
+
+  /**
+   * function _title_case
+   *
+   * Performs multibyte or standard uppercase conversion of the first character of a string,
+   * based on configuration.
+   *
+   * @param string $text The string to convert.
+   * @return string The string converted to Title Case.
+   */
+  function  _title_case($text) {
+    global $charset;
+    return (IS_MB_ENABLED) ? mb_convert_case($text, MB_CASE_TITLE, $charset) : ucwords($text);
+  }
+
+  /**
+   * function _substr
+   *
+   * Gets the substring of either single byte or multi-byte strings by index and length, depending on configuration
+   *
+   * @param string $text
+   * @param string $start
+   * @param string $len
+   * @param string $encoding
+   *
+   * @return string
+   */
+   function _substr($text, $start, $len = null, $encoding = null) {
+     if ($encoding === null) $encoding = mb_internal_encoding();
+     return (IS_MB_ENABLED) ? mb_substr($text, $start, $len, $encoding) : substr($text, $start, $len);
+   }
 
   /**
    * function normalize_text
@@ -89,7 +121,7 @@
       $normalized_text = preg_replace('/(\d+)\/(\d+)/', '$1 DIVIDEDBY $2', $normalized_text);
       $normalized_text = preg_replace('/[[:punct:]]/uis', ' ', $normalized_text);
       $normalized_text = preg_replace('/\s\s+/', ' ', $normalized_text);
-      $normalized_text = (IS_MB_ENABLED) ? mb_strtoupper($normalized_text) : strtoupper($normalized_text);
+      $normalized_text = _strtoupper($normalized_text);
       $normalized_text = trim($normalized_text);
       runDebug(__FILE__, __FUNCTION__, __LINE__,"Normalization complete. Text = '$normalized_text'", 4);
       return $normalized_text;
@@ -127,6 +159,7 @@ endFooter;
     return false;
 /*
     This function is temporarily disabled until I can devise a better implementation of session handling
+
     global $session_lifetime;
     $session_files = glob(_SESSION_PATH_ . 'sess_*');
     foreach($session_files as $file)
@@ -135,4 +168,17 @@ endFooter;
       if ($lastAccessed < (time() - $session_lifetime)) unlink($file);
     }
 */
+  }
+
+  function addUnknownInput($convoArr, $input, $bot_id, $user_id) {
+    global $dbConn, $dbn;
+    $default_aiml_pattern = get_convo_var($convoArr, 'conversation', 'default_aiml_pattern');
+    if ($input == $default_aiml_pattern) return false;
+    $sql = "insert into `$dbn`.`$unknown_inputs` (`id`, `bot_id`, `input`, `user_id`, `timestamp`) values(null, :bot_id, :input, :user_id, CURRENT_TIMESTAMP);";
+    $params = array(
+      ':bot_id' => $bot_id,
+      ':input' => $input,
+      ':user_id' => $user_id,
+    );
+    $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
   }
