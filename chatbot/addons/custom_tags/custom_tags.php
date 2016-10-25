@@ -8,6 +8,7 @@
 * DATE: MAY 17TH 2014
 * DETAILS: this file contains the addon library to process the custom <code> tag
 ***************************************/
+define('_ADDONS_INCLUDE_PATH_', _ADDONS_PATH_ . "includes$path_separator");
 include('code_tag/code_tag.php');
 
 

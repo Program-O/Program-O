@@ -718,14 +718,8 @@
    * $convoArr['conversation']['bot_id'] = $convoArr['conversation']['bot_id']
    * $convoArr['that'][1][1] = get_convo_var($convoArr,'that','',1,1)
    */
-  function get_convo_var($convoArr, $index_1, $index_2 = '', $index_3 = '', $index_4 = '')
+  function get_convo_var($convoArr, $index_1, $index_2 = '~NULL~', $index_3 = 1, $index_4 = 1)
   {
-    if ($index_2 == '')
-      $index_2 = "~NULL~";
-    if ($index_3 == '')
-      $index_3 = 1;
-    if ($index_4 == '')
-      $index_4 = 1;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4]", 4);
     if ((isset ($convoArr[$index_1])) && (!is_array($convoArr[$index_1])) && ($convoArr[$index_1] != ''))
     {
@@ -935,7 +929,7 @@
     }
     if (!empty($storedtopic))
     {
-      $topic_select = "AND `topic`='$storedtopic'";
+      $topic_select = "AND (`topic`='$storedtopic' OR `topic`='')";
     }
     else
     {

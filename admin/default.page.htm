@@ -799,11 +799,15 @@ between the start and end section tags are the only parts of the template that a
               </td>
             </tr>
             <tr>
-              <td colspan="2">
+              <td>
                   <label for="bot_id">Apply this file to this bot: </label>
                   <select name="bot_id" id="bot_id" size="1">
 [all_bots]
                   </select>&nbsp; &nbsp;
+              </td>
+              <td>
+                  <input type="checkbox" id="skipVal" name="skipVal" value="1"/>&nbsp; &nbsp;
+                  <label for="skipVal">Skip AIML Validation for this file</label>
               </td>
             </tr>
             <tr>

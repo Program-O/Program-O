@@ -174,7 +174,7 @@ endFooter;
     global $dbConn, $dbn;
     $default_aiml_pattern = get_convo_var($convoArr, 'conversation', 'default_aiml_pattern');
     if ($input == $default_aiml_pattern) return false;
-    $sql = "insert into `$dbn`.`$unknown_inputs` (`id`, `bot_id`, `input`, `user_id`, `timestamp`) values(null, :bot_id, :input, :user_id, CURRENT_TIMESTAMP);";
+    $sql = "insert into `$dbn`.`unknown_inputs` (`id`, `bot_id`, `input`, `user_id`, `timestamp`) values(null, :bot_id, :input, :user_id, CURRENT_TIMESTAMP);";
     $params = array(
       ':bot_id' => $bot_id,
       ':input' => $input,

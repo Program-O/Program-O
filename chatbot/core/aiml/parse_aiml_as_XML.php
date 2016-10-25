@@ -257,7 +257,7 @@
     }
     else $index = 1;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "star index = $index.", 4);
-    $star = $convoArr['star'][(int) $index];
+    $star = $convoArr['aiml']['stars'][(int) $index];
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$star' to the response array.", 4);
     $response[] = $star;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Index value = $index, star value = $star", 4);
@@ -398,10 +398,10 @@
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $var_name = $element->attributes()->name;
-    $var_name = ($var_name == '*') ? $convoArr['star'][1] : $var_name;
+    $var_name = ($var_name == '*') ? $convoArr['aiml']['stars'][1] : $var_name;
     for ($n = 2; $n <= $remember_up_to; $n++) # index multiple star values
     {
-      $var_name = ($var_name == "*$n") ? $convoArr['star'][$n] : $var_name;
+      $var_name = ($var_name == "*$n") ? $convoArr['aiml']['stars'][$n] : $var_name;
     }
     if (empty ($var_name))
       $response = 'undefined';
@@ -439,10 +439,10 @@
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $var_name = (string)$element->attributes()->name;
-    $var_name = ($var_name == '*') ? $convoArr['star'][1] : $var_name;
+    $var_name = ($var_name == '*') ? $convoArr['aiml']['stars'][1] : $var_name;
     for ($n = 2; $n <= $remember_up_to; $n++) # index multiple star values
     {
-      $var_name = ($var_name == "*$n") ? $convoArr['star'][$n] : $var_name;
+      $var_name = ($var_name == "*$n") ? $convoArr['aiml']['stars'][$n] : $var_name;
     }
     $vn_type = gettype($var_name);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "var_name = $var_name and is type: $vn_type", 4);
@@ -535,10 +535,10 @@
     global $remember_up_to;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a BOT tag.', 2);
     $attributeName = (string)$element->attributes()->name;
-    $attributeName = ($attributeName == '*') ? $convoArr['star'][1] : $attributeName;
+    $attributeName = ($attributeName == '*') ? $convoArr['aiml']['stars'][1] : $attributeName;
     for ($n = 2; $n <= $remember_up_to; $n++) # index multiple star values
     {
-      $attributeName = ($attributeName == "*$n") ? $convoArr['star'][$n] : $attributeName;
+      $attributeName = ($attributeName == "*$n") ? $convoArr['aiml']['stars'][$n] : $attributeName;
     }
     $response = (!empty ($convoArr['bot_properties'][$attributeName])) ? $convoArr['bot_properties'][$attributeName] : 'undefined';
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning bot property $attributeName. Value = $response", 4);
@@ -696,7 +696,7 @@
   function parse_sr_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SR tag.', 4);
-    $response = run_srai($convoArr, $convoArr['star'][1]);
+    $response = run_srai($convoArr, $convoArr['aiml']['stars'][1]);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SR tag', 4);
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     return $response_string;
@@ -878,7 +878,7 @@
     $response_string = $element->asXML();
     $response_string = str_replace('<text>', '', $response_string);
     $response_string = str_replace('</text>', '', $response_string);
-    $star = (isset($convoArr['star'][1])) ? $convoArr['star'][1] : '';
+    $star = (isset($convoArr['aiml']['stars'][1])) ? $convoArr['aiml']['stars'][1] : '';
     if ($star != '') $response_string = str_replace('<star/>', $star, $response_string);
     return $response_string;
   }
@@ -1133,7 +1133,7 @@
         $response[] = (string) $element;
         break;
         default:
-        $response[] = $convoArr['star'][1];
+        $response[] = $convoArr['aiml']['stars'][1];
       }
     }
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);

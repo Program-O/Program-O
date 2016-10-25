@@ -54,7 +54,7 @@
    */
   function spell_check($word, $bot_id)
   {
-    //runDebug(__FILE__, __FUNCTION__, __LINE__, "Preforming a spel chek on $word.", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Preforming a spel chek on $word.", 2);
     global $dbConn, $dbn, $spellcheck_common_words;
     if (strstr($word, "'")) $word = str_replace("'", ' ', $word);
     $test_word = _strtolower($word);

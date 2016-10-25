@@ -77,7 +77,7 @@
 //-->
     </script>
 endScript;
-    $post_vars = filter_input_array(INPUT_POST);
+  $post_vars = filter_input_array(INPUT_POST);
   $XmlEntities = array('&amp;' => '&', '&lt;' => '<', '&gt;' => '>', '&apos;' => '\'', '&quot;' => '"',);
   $g_tagName = null;
   $aiml_sql = "";
@@ -126,17 +126,19 @@ endScript;
   */
   function parseAIML($fn, $aimlContent, $from_zip = false)
   {
-    global $dbConn, $post_vars, $msg;
-    if (empty ($aimlContent))
-      return "File $fn was empty!";
-    global $dbConn, $debugmode, $bot_id, $charset, $xmlErrCount;
+    global $dbConn, $msg, $debugmode, $bot_id, $charset, $xmlErrCount;
+    $post_vars = filter_input_array(INPUT_POST);
+    file_put_contents(_LOG_PATH_ . 'post_vars.txt', print_r($post_vars, true));
+    if (empty ($aimlContent)) return "File $fn was empty!";
+    $skipVal = (isset($post_vars['skipVal'])) ? true : false;
+    //trigger_error(() ? "true" : 'false');
     $fileName = basename($fn);
     $success = false;
     $topic = '';
     #Clear the database of the old entries
-    $sql = "DELETE FROM `aiml`  WHERE `filename` = :filename AND bot_id = :bot_id";
     if (isset ($post_vars['clearDB']))
     {
+      $sql = "DELETE FROM `aiml`  WHERE `filename` = :filename AND bot_id = :bot_id";
       $params  = array(':filename' => $fileName, ':bot_id' => $bot_id);
       $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
     }
@@ -161,6 +163,7 @@ endScript;
     $tmpDir = _UPLOAD_PATH_ . 'tmp' . DIRECTORY_SEPARATOR;
     if (!file_exists($tmpDir)) mkdir($tmpDir, 0755);
     save_file(_UPLOAD_PATH_ . 'tmp/' . $fileName, $aimlFile);
+    $status = '';
     try {
       libxml_clear_errors();
       libxml_use_internal_errors(true);
@@ -169,8 +172,8 @@ endScript;
         $status = "File $fileName is <strong>NOT</strong> valid!<br />\n";
         $msg .= upload_libxml_display_errors($status);
       }
-      elseif (!$xml->schemaValidate('aiml.xsd')) {
-        $msg = '<b>A total of [count] error[plural] been found in this document.</b><br>';
+      elseif (!$skipVal && !$xml->schemaValidate('aiml.xsd')) {
+        $msg = "<b>A total of [count] error[plural] been found in the file $fileName.</b><br>";
         // $xmlErrCount
         $status = upload_libxml_display_errors($status);
         $plural = ($xmlErrCount !== 1) ? 's have' : ' has';
@@ -437,7 +440,7 @@ endScript;
     }
     $out .= " on line <b>{$error->line}</b><br>\n";
     $xmlErrCount++;
-    file_put_contents('logs/xmlErrCount.txt', print_r($xmlErrCount, true) . "\n", FILE_APPEND);
+    file_put_contents(_LOG_PATH_ . 'xmlErrCount.txt', print_r($xmlErrCount, true) . "\n", FILE_APPEND);
     return "$out<br>\n";
   }
 

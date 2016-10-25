@@ -154,8 +154,8 @@
     }
     //add any pre-processing addons
 
-    $rawSay = $say;
     $say = run_pre_input_addons($convoArr, $say);
+    $rawSay = $say;
     $say = normalize_text($say);
     /** @noinspection PhpUndefinedVariableInspection */
     $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $bot_id;
@@ -195,6 +195,7 @@
     }
     $convoArr['aiml'] = array();
     //add the latest thing the user said
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"Say = $say: raw say = $rawSay", 0);
     $convoArr = add_new_conversation_vars($say, $convoArr);
 
     //parse the aiml

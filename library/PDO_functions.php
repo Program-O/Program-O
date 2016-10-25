@@ -129,6 +129,7 @@
   function db_write($sql, $params = null, $multi = false, $file = 'unknown', $function = 'unknown', $line = 'unknown')
   {
     global $dbConn;
+    $newLine = PHP_EOL;
     try
     {
       $sth = $dbConn->prepare($sql);
@@ -152,10 +153,30 @@
     }
     catch (Exception $e)
     {
+      $paramsText = print_r($params, true);
       $pdoError = print_r($dbConn->errorInfo(), true);
       $psError  = print_r($sth->errorInfo(), true);
-      error_log("bad SQL encountered in file $file, line #$line. SQL:\n$sql\nPDO Error:\n$pdoError\nSTH Error:\n$psError\nException Message:\n" . $e->getMessage() . "\n", 3, _LOG_PATH_ . 'db_write.txt');
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while writing to the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
+      $eMessage = $e->getMessage();
+      $errorMessage = <<<endMessage
+Bad SQL encountered in file $file, line #$line. SQL:
+$sql
+PDO Error:
+$pdoError
+PDOStatement Error:
+$psError
+Exception Message:
+$eMessage;
+Parameters:
+$paramsText
+endMessage;
+      error_log($errorMessage, 3, _LOG_PATH_ . 'db_write.txt');
+      $rdMessage = <<<endMessage
+An error was generated while writing to the database in file $file at line $line, in the function $function.
+SQL: $sql
+PDO error: $pdoError
+PDOStatement error: $psError
+endMessage;
+      runDebug(__FILE__, __FUNCTION__, __LINE__, $rdMessage, 0);
       return false;
     }
   }

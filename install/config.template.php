@@ -28,25 +28,29 @@
   // Define paths for include files
   //------------------------------------------------------------------------
 
-  define('_INC_PATH_', _BASE_PATH_ . $path_separator);
-  define('_ADMIN_PATH_', _BASE_PATH_ . 'admin' . $path_separator);
+  define('_ADMIN_PATH_',   _BASE_PATH_  . "admin$path_separator");
+  define('_BOTCORE_PATH_', _BASE_PATH_  . "chatbot{$path_separator}core$path_separator");
+  define('_LIB_PATH_',     _BASE_PATH_  . "library$path_separator");
+  define('_ADDONS_PATH_',  _BASE_PATH_  . "chatbot{$path_separator}addons$path_separator");
+  define('_CONF_PATH_',    _BASE_PATH_  . "config$path_separator");
+  define('_LOG_PATH_',     _BASE_PATH_  . "logs$path_separator");
+  define('_DEBUG_PATH_',   _BASE_PATH_  . "chatbot{$path_separator}debug$path_separator");
+  define('_INSTALL_PATH_', _BASE_PATH_  . "install$path_separator");
+  define('_CAPTCHA_PATH_', _ADMIN_PATH_ . "captcha-images$path_separator");
+  define('_UPLOAD_PATH_',  _ADMIN_PATH_ . "uploads$path_separator");
+  define('IS_WINDOWS',     (DIRECTORY_SEPARATOR == '/') ? false : true);
   #define('_SESSION_PATH_', _ADMIN_PATH_ . '[session_dir]' . $path_separator);
   # The above line is commented out till I can come up with a better implementation of session handling
-  define('_ADMIN_URL_', _BASE_URL_ . 'admin/');
-  define('_CAPTCHA_PATH_', _ADMIN_PATH_ . 'captcha-images' . $path_separator);
-  define('_BOTCORE_PATH_', _BASE_PATH_ . 'chatbot' . $path_separator . 'core' . $path_separator);
-  define('_LIB_PATH_', _BASE_PATH_ . 'library' . $path_separator);
-  define('_LIB_URL_', _BASE_URL_ . 'library/');
-  define('_ADDONS_PATH_', _BASE_PATH_ . 'chatbot' . $path_separator . 'addons' . $path_separator);
-  define('_CONF_PATH_', _BASE_PATH_ . 'config' . $path_separator);
-  define('_UPLOAD_PATH_', _ADMIN_PATH_ . 'uploads' . $path_separator);
-  define('_LOG_PATH_', _BASE_PATH_ . 'logs' . $path_separator);
-  define('_LOG_URL_', _BASE_URL_ . 'logs/');
-  define('_DEBUG_PATH_', _BASE_PATH_ . 'chatbot' . $path_separator.'debug' . $path_separator);
-  define('_DEBUG_URL_', _BASE_URL_ . 'chatbot/debug/');
-  define('_INSTALL_PATH_', _BASE_PATH_ . $path_separator.'install' . $path_separator);
+
+  //------------------------------------------------------------------------
+  // Define URL paths
+  //------------------------------------------------------------------------
+
+  define('_ADMIN_URL_',   _BASE_URL_ . 'admin/');
+  define('_LIB_URL_',     _BASE_URL_ . 'library/');
+  define('_LOG_URL_',     _BASE_URL_ . 'logs/');
+  define('_DEBUG_URL_',   _BASE_URL_ . 'chatbot/debug/');
   define('_INSTALL_URL_', _BASE_URL_ . 'install/');
-  define('IS_WINDOWS',(DIRECTORY_SEPARATOR == '/') ? false : true);
 
   //------------------------------------------------------------------------
   // Define constants for the current version of Program O, and for the OS name and version

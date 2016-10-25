@@ -24,6 +24,7 @@ function make_conversation($convoArr){
 	$convoArr['aiml']['lookingfor'] =  normalize_text($convoArr['user_say'][1]);
 	//find an aiml match in the db
 	$convoArr = get_aiml_to_parse($convoArr);
+    //file_put_contents(_LOG_PATH_ . 'convoArray.txt', print_r($convoArr, true));
 	$convoArr = parse_matched_aiml($convoArr,'normal');
 		
 	//parse the aiml to build a response

@@ -162,10 +162,13 @@
    */
   function add_new_conversation_vars($say, $convoArr)
   {
+    $rawSay = strip_tags($convoArr['conversation']['rawSay']);
+    $strippedSay = strip_tags($say);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "New conversation vars", 4);
     //put what the user has said on the front of the 'user_say' and 'input' subarray with a minimum clean to prevent injection
-    $convoArr = push_on_front_convoArr("user_say", strip_tags($say), $convoArr);
-    $convoArr['aiml']['user_raw'] = strip_tags($say);
+    $convoArr = push_on_front_convoArr("user_say", $strippedSay, $convoArr);
+    $convoArr['aiml']['user_raw'] = $rawSay;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "User RAW = {$convoArr['aiml']['user_raw']}, RAW say = {$convoArr['conversation']['rawSay']}");
     $convoArr = push_on_front_convoArr('input', $convoArr['aiml']['user_raw'], $convoArr);
     return $convoArr;
   }
