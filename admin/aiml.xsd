@@ -141,7 +141,6 @@
         <xs:element ref="aiml:dialcontact"/>
         <xs:element ref="aiml:learn"/>
         <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
         <xs:element ref="aiml:map"/>
         <xs:element ref="aiml:search"/>
         <xs:element ref="aiml:sms"/>
@@ -155,7 +154,7 @@
         <xs:element ref="aiml:uppercase"/>
         <xs:element ref="aiml:date"/>
         <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
+        <xs:element ref="aiml:thatstar"/>
         <xs:element ref="aiml:size"/>
         <xs:element ref="aiml:battery"/>
         <xs:element ref="aiml:em"/>
@@ -169,6 +168,8 @@
         <xs:element ref="aiml:php"/>
          <xs:element ref="aiml:math"/>
          <xs:element ref="aiml:google"/>
+         <xs:element ref="aiml:script"/>
+         <xs:element ref="aiml:font"/>
     </xs:choice>
   </xs:complexType>
 
@@ -571,9 +572,11 @@
   </xs:element>
   <xs:element name="get">
     <xs:complexType>
-      <xs:attribute name="name" type="xs:string" use="required"/>
+      <xs:attribute name="name" type="xs:string" />
+      <xs:attribute name="bot" type="xs:string" />
     </xs:complexType>
   </xs:element>
+  
   <xs:element name="random">
     <xs:complexType>
       <xs:sequence maxOccurs="unbounded">
@@ -587,6 +590,8 @@
       <xs:complexContent>
         <xs:extension base="aiml:Flow">
           <xs:attributeGroup ref="aiml:attrs"/>
+             <xs:attribute name="name" type="xs:string"/>
+			    <xs:attribute name="value" type="xs:string"/>
         </xs:extension>
       </xs:complexContent>      
     </xs:complexType>
@@ -616,11 +621,22 @@
         <xs:extension base="aiml:a.content">
           <xs:attributeGroup ref="aiml:attrs"/>
           <xs:attribute name="href" type="aiml:URI"/>
+			<xs:attribute name="target" type="aiml:FrameTarget"/>
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
   </xs:element>
   
+  <xs:simpleType name="FrameTarget">
+    <xs:annotation>
+      <xs:documentation>
+      render in this frame
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:NMTOKEN">
+      <xs:pattern value="_(blank|self|parent|top)|[A-Za-z]\c*"/>
+    </xs:restriction>
+  </xs:simpleType>  
   
   <xs:simpleType name="URI">
     <xs:restriction base="xs:anyURI"/>
@@ -655,8 +671,9 @@
   <xs:element name="script">
     <xs:complexType mixed="true">
       <xs:attribute name="id" type="xs:ID"/>
-      <xs:attribute name="type" use="required" type="aiml:ContentType"/>
+      <xs:attribute name="type"  type="aiml:ContentType"/>
       <xs:attribute name="src" type="aiml:URI"/>
+      <xs:attribute name="language"/>      
     </xs:complexType>
   </xs:element>  
  
@@ -683,7 +700,7 @@
            <xs:attributeGroup ref="aiml:attrs"/>
             <xs:attribute name="index" type="xs:string"/>
       </xs:extension>  
-      <xs:attribute name="index" type="xs:string"/>
+      </xs:complexContent>
     </xs:complexType>
   </xs:element>
   
@@ -863,11 +880,6 @@
     <xs:annotation>
       <xs:documentation>ATTLIST date format CDATA #REQUIRED</xs:documentation>
     </xs:annotation>
-    <xs:complexType>
-      <xs:attribute name="index" type="xs:string"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="thatstar">
     <xs:complexType>
       <xs:attribute name="index" type="xs:string"/>
     </xs:complexType>
