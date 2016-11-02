@@ -660,10 +660,15 @@
 
   <xs:element name="script">
     <xs:complexType mixed="true">
-      <xs:attribute name="id" type="xs:ID"/>
-      <xs:attribute name="type"  type="aiml:ContentType"/>
-      <xs:attribute name="src" type="aiml:URI"/>
-      <xs:attribute name="language"/>      
+        <xs:complexContent>
+         <xs:extension base="aiml:Flow">
+            <xs:attribute name="index" type="xs:string"/>
+            <xs:attribute name="id" type="xs:ID"/>
+      		<xs:attribute name="type"  type="aiml:ContentType"/>
+      		<xs:attribute name="src" type="aiml:URI"/>
+      		<xs:attribute name="language"/>      
+      	</xs:extension>
+      	</xs:complexContent>
     </xs:complexType>
   </xs:element>  
  
@@ -678,7 +683,6 @@
             <xs:attribute name="index" type="xs:string"/>
       </xs:extension>  
     </xs:complexContent>  
- 
     </xs:complexType>
   </xs:element>
   
