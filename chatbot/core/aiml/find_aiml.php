@@ -403,7 +403,7 @@
           if (strpos($category_topic, '_') !== false)
           {
             $regEx = str_replace('_','(.*)', $category_topic);
-            if ($regEx != $category_topic && preg_match("/$regEx/",$topic) === 1)
+            if ($regEx != $category_topic && preg_match("/$regEx/i",$topic) === 1)
             {
               $current_score += $topic_underscore_match;
               $track_matches .= 'topic match with underscore, ';
@@ -419,7 +419,7 @@
           else
           {
             $regEx = str_replace(array('*','_'), '(.*)', $category_topic);
-            if (preg_match("/$regEx/", $topic))
+            if (preg_match("/$regEx/i", $topic))
             {
               $current_score += $topic_star_match;
               $track_matches .= 'topic match with wildcards';
@@ -457,8 +457,8 @@
 
         # 3c.) thatpattern star matches
         elseif (strstr($category_thatpattern_lc, '*') !== false) {
-            $regEx = str_replace(array('*','_'), '(.*)', $category_thatpattern);
-            if (preg_match("/$regEx/", $that))
+            $regEx = str_replace('*', '(.*)', $category_thatpattern);
+            if (preg_match("/$regEx/i", $that))
             {
               $current_score += $thatpattern_star_match;
               $track_matches .= 'thatpattern match with star, ';
@@ -480,7 +480,7 @@
       {
         $regEx = str_replace('_','(.*)', $category_pattern);
         //save_file(_LOG_PATH_ . 'regex.txt', "$regEx\n", true);
-        if ($regEx != $category_pattern && preg_match("/$regEx/",$pattern) === 1)
+        if ($regEx != $category_pattern && preg_match("/$regEx/i",$pattern) === 1)
         {
           $current_score += $underscore_match;
           $track_matches .= 'pattern match with underscore, ';
@@ -505,7 +505,7 @@
           $track_matches .= 'pattern star match, ';
           $check_pattern_words = false;
         }
-        elseif ($regEx != $category_pattern && (($category_pattern != '*') || ($category_pattern != '_'))&& preg_match("/$regEx/", $pattern) != 0)
+        elseif ($regEx != $category_pattern && (($category_pattern != '*') || ($category_pattern != '_'))&& preg_match("/$regEx/i", $pattern) != 0)
         {
         }
       } # end pattern testing
