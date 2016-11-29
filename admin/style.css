@@ -102,7 +102,7 @@ span.eightyPercent textarea.wide { width: 67%; min-height: 150px; margin: 0; flo
   background-color: #FCC;
   color: black;
   vertical-align: middle;
-  text-align: center;
+  text-align: left;
   padding: 10px 40px 1px 10px;
   margin: 0 auto;
   display: none;

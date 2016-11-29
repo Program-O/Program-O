@@ -256,6 +256,7 @@
       $index = $element->attributes()->index;
     }
     else $index = 1;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Current AIML Array:\n" . print_r($convoArr['aiml'], true), 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "star index = $index.", 4);
     $star = $convoArr['aiml']['stars'][(int) $index];
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$star' to the response array.", 4);
@@ -664,13 +665,14 @@
    * @param int $level
    * @return string
    */
-  function parse_srai_tag($convoArr, $element, $parentName, $level)
+  function parse_srai_tag(&$convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SRAI tag.', 2);
     $starArray = array('~<star[ ]?/>~i','~<star index="\d+"[ ]?\/>~');
     $elementXML = $element->asXML();
     //$srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+    $convoArr['aiml']['srai_input'] = $srai;
     $srai_new  = (strstr($elementXML, '<star') !== false) ?
       preg_replace($starArray, '*', $elementXML) :
       $srai;
@@ -678,7 +680,9 @@
     $srai_new  = preg_replace('~<[\/]?srai>~i', '', $srai_new );
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai_new.txt", print_r($srai_new, true) . "\n", FILE_APPEND);
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai.txt", print_r($srai, true) . "\n", FILE_APPEND);
+    set_wildcards($convoArr, $srai_new, 'srai');
     $response = run_srai($convoArr, $srai_new);
+    //$response = run_srai($convoArr, $srai);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 4);
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     return $response_string;

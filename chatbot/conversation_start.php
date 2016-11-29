@@ -103,7 +103,7 @@
   {
     // Chect to see if the user is clearing properties
     $lc_say = _strtolower($say);
-    if ($lc_say == 'clear properties')
+    if ($lc_say == 'clear properties' || $lc_say == ':reset bot')
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Clearing client properties and starting over.", 4);
       $convoArr = read_from_session();

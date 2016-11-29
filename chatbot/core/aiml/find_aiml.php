@@ -861,11 +861,8 @@
       $allrows = unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor);
       //score the relevant matches
       $allrows = score_matches($convoArr, $allrows, $lookingfor);
-      //get the highest
+      //get the highest scoring row
       $allrows = get_highest_scoring_row($convoArr, $allrows, $lookingfor);
-      //READY FOR v2.5 do not uncomment will not work
-      //check if this is an unknown input and place in the unknown_inputs table if true
-      //check_and_add_unknown_inputs($allrows,$convoArr);
     }
     //Now we have the results put into the conversation array
     $convoArr['aiml']['pattern'] = $allrows['pattern'];

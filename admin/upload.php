@@ -17,8 +17,8 @@
 
   $validationStatus = '';
   $msg = '';
-  $xmlErrCount = 0;
   libxml_use_internal_errors(true);
+  $_SESSION['failCount'] = 0;
   $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
   $msg = (array_key_exists('aimlfile', $_FILES)) ? processUpload() : '';
   $upperScripts = <<<endScript
@@ -126,7 +126,7 @@ endScript;
   */
   function parseAIML($fn, $aimlContent, $from_zip = false)
   {
-    global $dbConn, $msg, $debugmode, $bot_id, $charset, $xmlErrCount;
+    global $dbConn, $msg, $debugmode, $bot_id, $charset;
     $post_vars = filter_input_array(INPUT_POST);
     file_put_contents(_LOG_PATH_ . 'post_vars.txt', print_r($post_vars, true));
     if (empty ($aimlContent)) return "File $fn was empty!";
@@ -169,22 +169,25 @@ endScript;
       libxml_use_internal_errors(true);
       $xml = new DOMDocument('1.0', 'utf-8');
       if (!$xml->loadXML(trim($aimlFile))) { // $aimlContent
-        $status = "File $fileName is <strong>NOT</strong> valid!<br />\n";
-        $msg .= upload_libxml_display_errors($status);
+        $msg = "File $fileName is <strong>NOT</strong> valid!<br />\n";
+        list($null, $status) = upload_libxml_display_errors($fileName);
+        $msg .= "$status<br>\n<hr>\n" ;
+        $msg = wordwrap($msg, 80, "<br>\n");
+        $_SESSION['failCount']++;
       }
       elseif (!$skipVal && !$xml->schemaValidate('aiml.xsd')) {
-        $msg = "<b>A total of [count] error[plural] been found in the file $fileName.</b><br>";
-        // $xmlErrCount
-        $status = upload_libxml_display_errors($status);
+        $msg = "<div class=\"center\"><b>A total of [count] error[plural] been found in the file $fileName.</b></div><br><br>\n";
+        $xmlErrCount = 0;
+        list($xmlErrCount, $status) = upload_libxml_display_errors($fileName);
         $plural = ($xmlErrCount !== 1) ? 's have' : ' has';
         $msg = str_replace('[count]', $xmlErrCount, $msg);
         $msg = str_replace('[plural]', $plural, $msg);
-        $msg .= $status;
+        $msg .= "$status\n<br>\n<hr>\n";
+        $_SESSION['failCount']++;
       }
       else {
         $aiml = new SimpleXMLElement($xml->saveXML());
         $rowCount = 0;
-        $_SESSION['failCount'] = 0;
         $params = array();
         if (!empty ($aiml->topic))
         {
@@ -289,7 +292,9 @@ endScript;
       $success = false;
       $_SESSION['failCount']++;
       $errMsg = "There was a problem adding file $fileName to the database. Please refer to the message below to correct the problem and try again.<br>\n" . $e->getMessage();
-      $msg .= upload_libxml_display_errors($errMsg);
+      list($null, $status) = upload_libxml_display_errors($fileName);
+      $_SESSION['failCount']++;
+      $msg .= $status;
     }
 /*
       $xml->loadXML($aimlFile);
@@ -398,17 +403,18 @@ endScript;
   * * @param $msg
   * @return string
   */
-  function upload_libxml_display_errors($msg)
+  function upload_libxml_display_errors($fileName)
   {
-    global $xmlErrCount;
     $out = '';
     $errors = libxml_get_errors();
+    $xmlErrCount = count($errors);
+    //file_put_contents(_LOG_PATH_ . "$fileName.$xmlErrCount.errors.txt", print_r($errors, true));
     foreach ($errors as $error)
     {
-      $out .= upload_libxml_display_error($error) . "<br />\n";
+      $out .= upload_libxml_display_error($error);
     }
     libxml_clear_errors();
-    return $msg . $out;
+    return array($xmlErrCount, $out);
   }
 
   /**
@@ -419,8 +425,7 @@ endScript;
   */
   function upload_libxml_display_error($error)
   {
-    global $xmlErrCount;
-    $out = "<br/>\n";
+    $out = "\n";
     switch ($error->level)
     {
       case LIBXML_ERR_WARNING :
@@ -433,15 +438,13 @@ endScript;
         $out .= "<b>Fatal Error {$error->code}</b>: ";
         break;
     }
-    $out .= trim($error->message);
-    if ($error->file)
-    {
-      $out .= " in <b>{$error->file}</b><br>\n";
-    }
-    $out .= " on line <b>{$error->line}</b><br>\n";
-    $xmlErrCount++;
-    file_put_contents(_LOG_PATH_ . 'xmlErrCount.txt', print_r($xmlErrCount, true) . "\n", FILE_APPEND);
-    return "$out<br>\n";
+    $m = $error->message;
+    $m = str_replace('{http://www.alicebot.org/TR/2001/WD-aiml}', '', $m);
+    $m = preg_replace("/Element '(.*?)'/", 'Element \'&lt;$1>\'', $m);
+    $m = wordwrap($m, 80, "<br>\n");
+    $l = number_format($error->line);
+    $out .= "$m on line $l.</strong><br>\n";
+    return "$out\n";
   }
 
   /**

@@ -20,10 +20,10 @@
     $baseURL = '//' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
     $docRoot = $_SERVER['DOCUMENT_ROOT'];
 
-    define("_BASE_DIR_", $thisConfigParentFolder);
+    define("_BASE_PATH_", $thisConfigParentFolder);
     $path_separator = DIRECTORY_SEPARATOR;
 
-    $thisFile = str_replace(_BASE_DIR_, '', $thisFile);
+    $thisFile = str_replace(_BASE_PATH_, '', $thisFile);
     $thisFile = str_replace($path_separator, '/', $thisFile);
     $baseURL = str_replace($thisFile, '', $baseURL);
     define("_BASE_URL_", $baseURL);
