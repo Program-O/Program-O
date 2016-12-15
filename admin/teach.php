@@ -82,14 +82,14 @@ endScript;
     $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
     $aimltemplate = trim($post_vars['template']);
     $pattern = trim($post_vars['pattern']);
-    $pattern = (IS_MB_ENABLED) ? mb_strtoupper($pattern) : strtoupper($pattern);
+    $pattern = _strtoupper($pattern);
     $thatpattern = trim($post_vars['thatpattern']);
-    $thatpattern = (IS_MB_ENABLED) ? mb_strtoupper($thatpattern) : strtoupper($thatpattern);
+    $thatpattern = _strtoupper($thatpattern);
     $aiml = str_replace('[pattern]', $pattern, $aiml);
     $aiml = (empty ($thatpattern)) ? str_replace('[thatpattern]', "<that>$thatpattern</that>", $aiml) : $aiml;
     $aiml = str_replace('[template]', $aimltemplate, $aiml);
     $topic = trim($post_vars['topic']);
-    $topic = (IS_MB_ENABLED) ? mb_strtoupper($topic) : strtoupper($topic);
+    $topic = _strtoupper($topic);
     $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
     if (($pattern == "") || ($aimltemplate == ""))
     {

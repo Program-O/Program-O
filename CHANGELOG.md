@@ -32,6 +32,14 @@
 5. Resigned the parse_learn_tag() and parse_eval_tag() functions to make them work properly, based
    on papers at [alicebot.org](http://www.alicebot.org/) that describe how they are implemented.
 
+6. Altered the first entry of all debugging modes to include relevant system specs (Program O
+   version, Server software type and version, OS and OS version, MySQL version and whether
+   Mulit-byte functions are enabled), making it easier to troubleshoot problems should any occur.
+
+7. Added a script to the  debug viewer that allows for primitive "profiling of the selected debug
+   file. this profiler  looks through all of the debug file's entries and gathers relevant
+   information, then orders that data by elapsed time, listing the longest elapsed times first.
+
 2.6.2   Add Option to Update From DEV Branch, Other Features/Bug Fixes
 
 1. Added an option in the Select Bot panel to allow checking for version updates from either the

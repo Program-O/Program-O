@@ -60,51 +60,35 @@
     if ($count_words == 0) return " `$field` like '$first_word'\n";
     $last_word = $words[$count_words];
     $tmpLike = '';
-    //$sql_like_pattern .= " `$field` like '$first_word % $last_word'";// OR `$field` like '$first_word %' OR `$field` like '% $last_word'";
     $sql_like_pattern .= "  `$field` like '$first_word % $last_word' OR\n";
     $sql_like_pattern .= "  `$field` like '$first_word %' OR\n";
-
-
     $wordsArr = explode(" ",$sentence);
     $totalWordCount = count($wordsArr);
     $likePatternArr = array();
-
-    for($i=0;$i<$totalWordCount;$i++){
-
-
-      $twoUp = $i+2;
-      $oneUp = $i+1;
-      $oneDown = $i-1;
-
-
+    for($i = 0; $i < $totalWordCount; $i++){
+      $twoUp = $i + 2;
+      $oneUp = $i + 1;
+      $oneDown = $i - 1;
       if(isset($wordsArr[$twoUp])){
-
         $middleWord = $wordsArr[$oneUp];
         $likePatternArr[] = "(`$field` LIKE '% ".$middleWord." %')";
       }
-
-      if($oneDown>=0){
+      if($oneDown >= 0){
         $likePatternOneArr = $wordsArr;
-        $likePatternOneArr[$i]='%';
+        $likePatternOneArr[$i] = '%';
         $likePatternOne = implode(' ',$likePatternOneArr);
-
         $likePatternArr[] = "(`$field` LIKE '". trim(strstr($likePatternOne,'%',true))." %')";
       }
-
-
       if($oneUp<$totalWordCount){
         $likePatternOneArr = $wordsArr;
-        $likePatternOneArr[$i]='%';
+        $likePatternOneArr[$i] = '%';
         $likePatternOne = implode(' ',$likePatternOneArr);
-
-        $likePatternArr[] = "(`$field` LIKE '". trim(strstr($likePatternOne,'%',false))."' )";
+        $likePatternArr[] = "(`$field` LIKE '". trim(strstr($likePatternOne, '%', false)) . "' )";
       }
-
     }
 
-    $newSqlPatterns = implode(' OR ', $likePatternArr).' OR ';
+    $newSqlPatterns = implode(' OR ', $likePatternArr) . ' OR ';
     $sql_like_pattern .= $newSqlPatterns;
-
     runDebug(__FILE__, __FUNCTION__, __LINE__, "returning like pattern:\n$sql_like_pattern", 4);
     return rtrim($sql_like_pattern, ' OR ') . '     ';
   }
@@ -140,22 +124,25 @@
     $current_topic = get_topic($convoArr);
     $current_thatpattern = (isset ($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
     //file_put_contents(_LOG_PATH_ . 'allrows.txt', print_r($allrows, true));
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Current THAT = $current_thatpattern", 1);
+    if(!empty($current_thatpattern)) runDebug(__FILE__, __FUNCTION__, __LINE__, "Current THAT = $current_thatpattern", 1);
     $default_pattern = $convoArr['conversation']['default_aiml_pattern'];
-    $relevantRow = array();
+    $tmp_rows = array();
+    $relevantRows = array();
     //if default pattern keep
     //if direct pattern match keep
     //if wildcard or direct pattern match and direct or wildcard thatpattern match keep
     //if wildcard pattern matches found aiml keep
     //the end......
     runDebug(__FILE__, __FUNCTION__, __LINE__, "NEW FUNC Searching through " . count($allrows) . " rows to unset bad matches", 4);
-    if (($allrows[0]['pattern'] == "no results") && (count($allrows) == 1))
-    {
+
+    // If no pattern was found, exit early
+    if (($allrows[0]['pattern'] == "no results") && (count($allrows) == 1)) {
       $tmp_rows[0] = $allrows[0];
       $tmp_rows[0]['score'] = 1;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning error as no results where found", 1);
       return $tmp_rows;
     }
+
     //loop through the results array
     runDebug(__FILE__, __FUNCTION__, __LINE__,'Blue 5 to Blue leader. Starting my run now!', 4);
     $i = 0;
@@ -254,28 +241,28 @@
       }
       if ($tmp_rows[$i]['score'] >= 0)
       {
-        $relevantRow[] = $subrow;
+        $relevantRows[] = $subrow;
       }
       $i++;
     }
 
 
-    $rrCount = count($relevantRow);
+    $rrCount = count($relevantRows);
     if ($rrCount == 0)
     {
       $i = 0;
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Error: FOUND NO AIML matches in DB", 1);
-      $relevantRow[$i]['aiml_id'] = "-1";
-      $relevantRow[$i]['bot_id'] = "-1";
-      $relevantRow[$i]['pattern'] = "no results";
-      $relevantRow[$i]['thatpattern'] = '';
-      $relevantRow[$i]['topic'] = '';
-      $relevantRow[$i]['score'] = 0;
+      $relevantRows[$i]['aiml_id'] = "-1";
+      $relevantRows[$i]['bot_id'] = "-1";
+      $relevantRows[$i]['pattern'] = "no results";
+      $relevantRows[$i]['thatpattern'] = '';
+      $relevantRows[$i]['topic'] = '';
+      $relevantRows[$i]['score'] = 0;
     }
-    sort2DArray("show top scoring aiml matches", $relevantRow, "good matches", 1, 10);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Found " . count($relevantRow) . " relevant rows", 4);
-    //file_put_contents(_LOG_PATH_ . 'relevantRow.txt', print_r($relevantRow, true));
-    return $relevantRow;
+    sort2DArray("show top scoring aiml matches", $relevantRows, "good matches", 1, 10);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Found " . count($relevantRows) . " relevant rows", 4);
+    //file_put_contents(_LOG_PATH_ . 'relevantRow.txt', print_r($relevantRows, true));
+    return $relevantRows;
   }
 
  /**
@@ -416,7 +403,7 @@
           if (strpos($category_topic, '_') !== false)
           {
             $regEx = str_replace('_','(.*)', $category_topic);
-            if ($regEx != $category_topic && preg_match("/$regEx/",$topic) === 1)
+            if ($regEx != $category_topic && preg_match("/$regEx/i",$topic) === 1)
             {
               $current_score += $topic_underscore_match;
               $track_matches .= 'topic match with underscore, ';
@@ -432,7 +419,7 @@
           else
           {
             $regEx = str_replace(array('*','_'), '(.*)', $category_topic);
-            if (preg_match("/$regEx/", $topic))
+            if (preg_match("/$regEx/i", $topic))
             {
               $current_score += $topic_star_match;
               $track_matches .= 'topic match with wildcards';
@@ -470,8 +457,8 @@
 
         # 3c.) thatpattern star matches
         elseif (strstr($category_thatpattern_lc, '*') !== false) {
-            $regEx = str_replace(array('*','_'), '(.*)', $category_thatpattern);
-            if (preg_match("/$regEx/", $that))
+            $regEx = str_replace('*', '(.*)', $category_thatpattern);
+            if (preg_match("/$regEx/i", $that))
             {
               $current_score += $thatpattern_star_match;
               $track_matches .= 'thatpattern match with star, ';
@@ -493,7 +480,7 @@
       {
         $regEx = str_replace('_','(.*)', $category_pattern);
         //save_file(_LOG_PATH_ . 'regex.txt', "$regEx\n", true);
-        if ($regEx != $category_pattern && preg_match("/$regEx/",$pattern) === 1)
+        if ($regEx != $category_pattern && preg_match("/$regEx/i",$pattern) === 1)
         {
           $current_score += $underscore_match;
           $track_matches .= 'pattern match with underscore, ';
@@ -518,7 +505,7 @@
           $track_matches .= 'pattern star match, ';
           $check_pattern_words = false;
         }
-        elseif ($regEx != $category_pattern && (($category_pattern != '*') || ($category_pattern != '_'))&& preg_match("/$regEx/", $pattern) != 0)
+        elseif ($regEx != $category_pattern && (($category_pattern != '*') || ($category_pattern != '_'))&& preg_match("/$regEx/i", $pattern) != 0)
         {
         }
       } # end pattern testing
@@ -606,7 +593,6 @@
     {
       if (isset ($subrow[$sortByItem]))
       {
-        //$tmpSortArr[$subrow[$sortByItem]] = $subrow[$sortByItem];
         $tmpSortArr[] = $subrow[$sortByItem];
       }
     }
@@ -732,14 +718,8 @@
    * $convoArr['conversation']['bot_id'] = $convoArr['conversation']['bot_id']
    * $convoArr['that'][1][1] = get_convo_var($convoArr,'that','',1,1)
    */
-  function get_convo_var($convoArr, $index_1, $index_2 = '', $index_3 = '', $index_4 = '')
+  function get_convo_var($convoArr, $index_1, $index_2 = '~NULL~', $index_3 = 1, $index_4 = 1)
   {
-    if ($index_2 == '')
-      $index_2 = "~NULL~";
-    if ($index_3 == '')
-      $index_3 = 1;
-    if ($index_4 == '')
-      $index_4 = 1;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4]", 4);
     if ((isset ($convoArr[$index_1])) && (!is_array($convoArr[$index_1])) && ($convoArr[$index_1] != ''))
     {
@@ -881,11 +861,8 @@
       $allrows = unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor);
       //score the relevant matches
       $allrows = score_matches($convoArr, $allrows, $lookingfor);
-      //get the highest
+      //get the highest scoring row
       $allrows = get_highest_scoring_row($convoArr, $allrows, $lookingfor);
-      //READY FOR v2.5 do not uncomment will not work
-      //check if this is an unknown input and place in the unknown_inputs table if true
-      //check_and_add_unknown_inputs($allrows,$convoArr);
     }
     //Now we have the results put into the conversation array
     $convoArr['aiml']['pattern'] = $allrows['pattern'];
@@ -901,34 +878,6 @@
   }
 
   /**
-  * function check_and_add_unknown_inputs()
-  * READY FOR v2.5
-  * This function adds inputs without a response to the unknown_inputs table
-  * @param array $allrows - the highest scoring return rows
-  * @param array $convoArr - conversation array
-  * @return void
-  **/
-  function check_and_add_unknown_inputs($allrows, $convoArr)
-  {
-    if ($allrows['pattern'] == $convoArr['conversation']['default_aiml_pattern'])
-    {
-      global $dbConn, $dbn;
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding unknown input", 2);
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Pattern: " . $convoArr['aiml']['lookingfor'], 2);
-      $pattern = trim(normalize_text($convoArr['aiml']['lookingfor']));
-      $pattern = $pattern . " ";
-      $u_id = $convoArr['conversation']['user_id'];
-      $bot_id = $convoArr['conversation']['bot_id'];
-      $sql = "INSERT INTO `$dbn`.`unknown_inputs`
-            VALUES
-            (NULL, '" . $pattern . "','$bot_id','$u_id',NOW())";
-      runDebug(__FILE__, __FUNCTION__, __LINE__, "Unknown Input SQL: $sql", 3);
-      $sth = $dbConn->prepare($sql);
-      $sth->execute();
-    }
-  }
-
-  /**
   * function find_aiml_matches()
   * This function builds the sql to use to get a match from the tbl
   * @param array $convoArr - conversation array
@@ -936,7 +885,7 @@
   **/
   function find_aiml_matches($convoArr)
   {
-    global $dbConn, $dbn, $error_response, $use_parent_bot;
+    global $dbConn, $dbn, $error_response, $use_parent_bot, $user_id;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Finding the aiml matches from the DB", 4);
     $i = 0;
     //TODO convert to get_it
@@ -977,7 +926,7 @@
     }
     if (!empty($storedtopic))
     {
-      $topic_select = "AND (`topic`='' OR `topic`='$storedtopic')";
+      $topic_select = "AND (`topic`='$storedtopic' OR `topic`='')";
     }
     else
     {
@@ -1018,13 +967,12 @@
     {
       $tmp_rows = number_format($num_rows);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ($num_rows) potential AIML matches", 2);
-      $tmp_content = date('H:i:s') . ": SQL:\n$sql\nRows = $tmp_rows\n\n";
       //loop through results
       foreach ($result as $row)
       {
+        $row['score'] = 0;
         $row['aiml_id'] = $row['id'];
         $row['bot_id'] = $bot_id;
-        $row['score'] = 0;
         $row['track_score'] = '';
         $allrows[] = $row;
         $mu = memory_get_usage(true);
@@ -1038,6 +986,8 @@
     else
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Error: FOUND NO AIML matches in DB", 1);
+      addUnknownInput($convoArr, $lookingfor, $bot_id, $user_id);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Added input '$lookingfor' to the unknown_inputs table.", 1);
       $allrows[$i]['aiml_id'] = "-1";
       $allrows[$i]['bot_id'] = $bot_id;
       $allrows[$i]['pattern'] = "no results";

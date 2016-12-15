@@ -22,8 +22,31 @@
   include_once(_LIB_PATH_ . 'misc_functions.php');
   ini_set('default_charset', $charset);
 
+  //------------------------------------------------------------------------
+  // Error Handler
+  //------------------------------------------------------------------------
+  // set to the user defined error handler
+  set_error_handler("myErrorHandler");
+  //open db connection
+  $dbConn = db_open();
+  // Collect system specs for the first debug message
+  $versionCheckSQL = 'select version();';
+  $result = db_fetch($versionCheckSQL);
+  $mySQL_version = $result['version()'];
+  $pgoVersion = VERSION;
+  $phpVersion = phpversion();
+  $serverSoftware = $_SERVER['SERVER_SOFTWARE'];
+  $mbEnabled = (IS_MB_ENABLED) ? 'true' : 'false';
+  $firstDebugMessage = "Conversation starting. Current system specs:
+  Program O version:            $pgoVersion
+  Server Software:              $serverSoftware
+  PHP Version:                  $phpVersion
+  OS:                           $os
+  OS Version:                   $osv
+  MySQL Version:                $mySQL_version
+  Multi-byte functions enabled: $mbEnabled";
   //leave this first debug call in as it wipes any existing file for this session
-  runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Starting. Program O version " . VERSION . PHP_EOL . 'PHP  version ' . phpversion() . PHP_EOL . "OS: $os version $osv", 0);
+  runDebug(__FILE__, __FUNCTION__, __LINE__, $firstDebugMessage, 0);
   //load all the chatbot functions
   include_once (_BOTCORE_PATH_ . "aiml" . $path_separator . "load_aimlfunctions.php");
   //load all the user functions
@@ -33,13 +56,6 @@
   //load all the user addons
   include_once (_ADDONS_PATH_ . "load_addons.php");
   runDebug(__FILE__, __FUNCTION__, __LINE__, "Loaded all Includes", 4);
-  //------------------------------------------------------------------------
-  // Error Handler
-  //------------------------------------------------------------------------
-  // set to the user defined error handler
-  set_error_handler("myErrorHandler");
-  //open db connection
-  $dbConn = db_open();
   //initialise globals
   $convoArr = array();
   //$convoArr = intialise_convoArray($convoArr);
@@ -86,8 +102,8 @@
   if (!empty($say))
   {
     // Chect to see if the user is clearing properties
-    $lc_say = (IS_MB_ENABLED) ? mb_strtolower($say) : strtolower($say);
-    if ($lc_say == 'clear properties')
+    $lc_say = _strtolower($say);
+    if ($lc_say == 'clear properties' || $lc_say == ':reset bot')
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Clearing client properties and starting over.", 4);
       $convoArr = read_from_session();
@@ -138,8 +154,8 @@
     }
     //add any pre-processing addons
 
-    $rawSay = $say;
     $say = run_pre_input_addons($convoArr, $say);
+    $rawSay = $say;
     $say = normalize_text($say);
     /** @noinspection PhpUndefinedVariableInspection */
     $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $bot_id;
@@ -179,6 +195,7 @@
     }
     $convoArr['aiml'] = array();
     //add the latest thing the user said
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"Say = $say: raw say = $rawSay", 0);
     $convoArr = add_new_conversation_vars($say, $convoArr);
 
     //parse the aiml

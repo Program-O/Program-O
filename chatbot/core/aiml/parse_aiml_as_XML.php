@@ -20,7 +20,9 @@
   {
     global $botsay, $error_response;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the AIML template as XML", 2);
-    $template = add_text_tags($convoArr['aiml']['template']);
+    $template = remove_comment_tags($convoArr['aiml']['template']);
+    $template = add_text_tags($template);
+    $template = restore_comment_tags($template);
     try
     {
       $aimlTemplate = new SimpleXMLElement($template, LIBXML_NOCDATA);
@@ -41,6 +43,38 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Completed parsing the template. The bot will say: $botsay", 4);
     return $convoArr;
   }
+
+  /**
+   * function remove_comment_tags
+   *
+   * Removes comment tags from AIML templates so they won't screw up adding text tags
+   *
+   * @param $text
+   *
+   * @return sring
+   */
+
+   function remove_comment_tags($text) {
+       $out = str_replace('<!-- ', '[PGOcomment]', $text);
+       $out = str_replace(' -->', '[/PGOcomment]', $out);
+       return $out;
+   }
+
+  /**
+   * function restore_comment_tags
+   *
+   * Restores comment tags from AIML templates so they won't screw up adding text tags
+   *
+   * @param $text
+   *
+   * @return sring
+   */
+
+   function restore_comment_tags($text) {
+       $out = str_replace('[PGOcomment]', '<!-- ', $text);
+       $out = str_replace('[/PGOcomment]', ' -->', $out);
+       return $out;
+   }
 
   /**
    * Wraps mixed content XML with <text></text> tags, allowing full use of PHP's SimpleXML functions
@@ -222,8 +256,9 @@
       $index = $element->attributes()->index;
     }
     else $index = 1;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Current AIML Array:\n" . print_r($convoArr['aiml'], true), 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "star index = $index.", 4);
-    $star = $convoArr['star'][(int) $index];
+    $star = $convoArr['aiml']['stars'][(int) $index];
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$star' to the response array.", 4);
     $response[] = $star;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Index value = $index, star value = $star", 4);
@@ -364,10 +399,10 @@
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $var_name = $element->attributes()->name;
-    $var_name = ($var_name == '*') ? $convoArr['star'][1] : $var_name;
+    $var_name = ($var_name == '*') ? $convoArr['aiml']['stars'][1] : $var_name;
     for ($n = 2; $n <= $remember_up_to; $n++) # index multiple star values
     {
-      $var_name = ($var_name == "*$n") ? $convoArr['star'][$n] : $var_name;
+      $var_name = ($var_name == "*$n") ? $convoArr['aiml']['stars'][$n] : $var_name;
     }
     if (empty ($var_name))
       $response = 'undefined';
@@ -405,10 +440,10 @@
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $var_name = (string)$element->attributes()->name;
-    $var_name = ($var_name == '*') ? $convoArr['star'][1] : $var_name;
+    $var_name = ($var_name == '*') ? $convoArr['aiml']['stars'][1] : $var_name;
     for ($n = 2; $n <= $remember_up_to; $n++) # index multiple star values
     {
-      $var_name = ($var_name == "*$n") ? $convoArr['star'][$n] : $var_name;
+      $var_name = ($var_name == "*$n") ? $convoArr['aiml']['stars'][$n] : $var_name;
     }
     $vn_type = gettype($var_name);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "var_name = $var_name and is type: $vn_type", 4);
@@ -436,7 +471,7 @@
 
     }
     else $convoArr['client_properties'][$var_name] = $var_value;
-    $lc_var_name = (IS_MB_ENABLED) ? mb_strtolower($var_name) : strtolower($var_name);
+    $lc_var_name = _strtolower($var_name);
     if ($lc_var_name == 'topic') $convoArr['topic'][1] = $var_value;
     $sql = "select `value` from `$dbn`.`client_properties` where `user_id` = $user_id and `bot_id` = $bot_id and `name` = '$var_name';";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$sql", 3);
@@ -501,10 +536,10 @@
     global $remember_up_to;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a BOT tag.', 2);
     $attributeName = (string)$element->attributes()->name;
-    $attributeName = ($attributeName == '*') ? $convoArr['star'][1] : $attributeName;
+    $attributeName = ($attributeName == '*') ? $convoArr['aiml']['stars'][1] : $attributeName;
     for ($n = 2; $n <= $remember_up_to; $n++) # index multiple star values
     {
-      $attributeName = ($attributeName == "*$n") ? $convoArr['star'][$n] : $attributeName;
+      $attributeName = ($attributeName == "*$n") ? $convoArr['aiml']['stars'][$n] : $attributeName;
     }
     $response = (!empty ($convoArr['bot_properties'][$attributeName])) ? $convoArr['bot_properties'][$attributeName] : 'undefined';
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning bot property $attributeName. Value = $response", 4);
@@ -554,7 +589,7 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'PARSING AN UPPERCASE TAG.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $response_string = (IS_MB_ENABLED) ? mb_strtoupper($response_string) : strtoupper($response_string);
+    $response_string = _strtoupper($response_string);
     return ltrim($response_string, ' ');
   }
 
@@ -588,12 +623,16 @@
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SENTENCE tag.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+    $lc_response_string = _strtolower($response_string);
+    $response = _strtoupper(_substr($lc_response_string, 0, 1)) . _substr($lc_response_string, 1);
+/*
     if (IS_MB_ENABLED)
     {
       $response_string = mb_strtolower($response_string);
       $response = mb_strtoupper(mb_substr($response_string, 0, 1)) . mb_substr($response_string, 1);
     }
     else $response = ucfirst(strtolower($response_string));
+*/
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 4);
     return $response;
   }
@@ -612,7 +651,7 @@
     global $charset;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing A Formal Tag.', 2);
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $response = (IS_MB_ENABLED) ? mb_convert_case($response_string, MB_CASE_TITLE, $charset) : ucwords(strtolower($response_string));
+    $response = _convert_case($response_string);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 4);
     return $response;
   }
@@ -626,13 +665,14 @@
    * @param int $level
    * @return string
    */
-  function parse_srai_tag($convoArr, $element, $parentName, $level)
+  function parse_srai_tag(&$convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SRAI tag.', 2);
     $starArray = array('~<star[ ]?/>~i','~<star index="\d+"[ ]?\/>~');
     $elementXML = $element->asXML();
     //$srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+    $convoArr['aiml']['srai_input'] = $srai;
     $srai_new  = (strstr($elementXML, '<star') !== false) ?
       preg_replace($starArray, '*', $elementXML) :
       $srai;
@@ -640,7 +680,9 @@
     $srai_new  = preg_replace('~<[\/]?srai>~i', '', $srai_new );
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai_new.txt", print_r($srai_new, true) . "\n", FILE_APPEND);
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai.txt", print_r($srai, true) . "\n", FILE_APPEND);
+    set_wildcards($convoArr, $srai_new, 'srai');
     $response = run_srai($convoArr, $srai_new);
+    //$response = run_srai($convoArr, $srai);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 4);
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     return $response_string;
@@ -658,7 +700,7 @@
   function parse_sr_tag($convoArr, $element, $parentName, $level)
   {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SR tag.', 4);
-    $response = run_srai($convoArr, $convoArr['star'][1]);
+    $response = run_srai($convoArr, $convoArr['aiml']['stars'][1]);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SR tag', 4);
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
     return $response_string;
@@ -840,7 +882,7 @@
     $response_string = $element->asXML();
     $response_string = str_replace('<text>', '', $response_string);
     $response_string = str_replace('</text>', '', $response_string);
-    $star = (isset($convoArr['star'][1])) ? $convoArr['star'][1] : '';
+    $star = (isset($convoArr['aiml']['stars'][1])) ? $convoArr['aiml']['stars'][1] : '';
     if ($star != '') $response_string = str_replace('<star/>', $star, $response_string);
     return $response_string;
   }
@@ -1095,7 +1137,7 @@
         $response[] = (string) $element;
         break;
         default:
-        $response[] = $convoArr['star'][1];
+        $response[] = $convoArr['aiml']['stars'][1];
       }
     }
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);

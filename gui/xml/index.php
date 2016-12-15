@@ -30,7 +30,7 @@
   $url = 'chat.php';
 */
 
-  $display = "The URL for the API is currently set as:<br />\n$url.<br />\n";
+  $display = "The URL for the API is currently set as: <br /><br />\n$url.<br /><br />\n";
   $display .= 'Please make sure that you edit this file to change the value of the variable $url in this file to reflect the correct URL address of your chatbot, and to remove this message.' . PHP_EOL;
   #$display = '';
   $display_template = <<<end_display

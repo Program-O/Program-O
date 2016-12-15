@@ -108,7 +108,7 @@
       //if we are logging to file then build a log file. This will be overwriten if the program completes
       if ($writetotemp == 1)
       {
-        writefile_debug(implode("\n",$debugArr), $convoArr);
+        write_debug_to_file(implode(PHP_EOL,$debugArr), $convoArr);
       }
     }
   }
@@ -176,7 +176,7 @@
       case 1 :
         //write to log file
         $log = str_replace('[NEWLINE]', PHP_EOL, $log);
-        writefile_debug($log, $convoArr);
+        write_debug_to_file($log, $convoArr);
         break;
       case 2 :
         //show in webpage
@@ -206,9 +206,9 @@
     $showConvoArr['aiml'] = (isset($convoArr['aiml'])) ? $convoArr['aiml'] : '';
     $showConvoArr['topic'][1] = (isset($convoArr['topic'][1])) ? $convoArr['topic'][1] : '';
     $showConvoArr['that'][1] = (isset($convoArr['that'][1])) ? $convoArr['that'][1] : '';
-    if (isset($convoArr['star']))
+    if (isset($convoArr['aiml']['stars']))
     {
-      foreach ($convoArr['star'] as $index => $star)
+      foreach ($convoArr['aiml']['stars'] as $index => $star)
       {
         if (!empty ($star))
           $showConvoArr['star'][$index] = $star;
@@ -233,22 +233,19 @@
   }
 
   /**
-   * function writefile_debug()
+   * function write_debug_to_file()
    * Handles the debug when written to a file
    *
    * @param  string $log - the data to write
    * @internal param string $myFile - the name of the file which is also the convo id
    */
-  function writefile_debug($log)
+  function write_debug_to_file($log)
   {
-    global $new_convo_id, $old_convo_id;
+    global $new_convo_id;
     $session_id = ($new_convo_id === false) ? session_id() : $new_convo_id;
     $myFile = _DEBUG_PATH_ . $session_id . '.txt';
-    if (!IS_WINDOWS)
-    {
-      $log = str_replace("\n", "\r\n", $log);
-      $log = str_replace("\r\r", "\r", $log);
-    }
+    $log = str_replace(array(PHP_EOL, "\r", "\n"), "\n", $log);
+    $log = str_replace("\n", PHP_EOL, $log);
     file_put_contents($myFile, $log);
   }
 

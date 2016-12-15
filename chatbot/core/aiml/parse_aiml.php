@@ -184,11 +184,16 @@
   * @param string $type - normal or srai
   * @return array $convoArr - the updated conversation array
   **/
-  function parse_matched_aiml($convoArr, $type = "normal")
+  function parse_matched_aiml($convoArr, $type = "normal", $aiml_pattern = '')
   {
   //which debug mode?
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Run the aiml parse in $type mode (normal or srai)", 3);
-    $convoArr = set_wildcards($convoArr);
+    $aiml_pattern = ($aiml_pattern == '') ? $convoArr['aiml']['pattern'] : $aiml_pattern;
+    $convoArr = set_wildcards($convoArr, $aiml_pattern, $type);
+    $car = $convoArr;
+    $car['nounList'] = null;
+    ksort($car);
+    //file_put_contents(_LOG_PATH_ . 'car.txt', print_r($car, true));
     $convoArr = parse_aiml_as_XML($convoArr);
     if ($type != "srai")
     {
@@ -245,12 +250,14 @@
   * @param array $convoArr - the conversation array
   * @return array $convoArr - the updated conversation array
   **/
-  function set_wildcards($convoArr)
+  function set_wildcards($convoArr, $pattern, $type)
   {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Setting Wildcards", 2);
+      //if (!isset($convoArr['aiml']['stars'])/* || $type == 'srai' */) $convoArr['aiml']['stars'] = array();
+      $convoArr['aiml']['stars'] = array();
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Setting Wildcards. Pattern = '$pattern'", 2);
     //save_file(_LOG_PATH_ . 'convoarr.txt', print_r($convoArr, true));
-    $aiml_pattern = $convoArr['aiml']['pattern'];
-    $ap = trim($aiml_pattern);
+    //$pattern = $convoArr['aiml']['pattern'];
+    $ap = trim($pattern);
     $ap = str_replace("+", "\+", $ap);
     $ap = str_replace(" * ", " (\S*) ", $ap);
     $ap = str_replace(" _ ", " (\S*) ", $ap);
@@ -263,29 +270,40 @@
     $ap = str_replace("(\S(.*))", "(.*)", $ap);
     $ap = str_replace("(.(.*))", "(.*)", $ap);
     // Set pattern wildcards
-    $pattern_wildcards = str_replace("_", "(.*)?", str_replace("*", "(.*)?", $aiml_pattern));
-    if ($pattern_wildcards != $aiml_pattern)
+    $pattern_wildcards = str_replace("_", "(.*)?", str_replace("*", "(.*)?", $pattern));
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "compairing patterns $pattern_wildcards and $pattern", 2);
+    if ($pattern_wildcards != $pattern)
     {
+      $curCA = $convoArr;
+      $curCA['nounList'] = '';
+      ksort($curCA);
+      $curCA = print_r($curCA, true);
       runDebug(__FILE__, __FUNCTION__, __LINE__, "We have pattern stars to process!", 2);
+      runDebug(__FILE__, __FUNCTION__, __LINE__, "Current Convo Array:\n$curCA", 2);
       if (!isset ($convoArr['aiml']['user_raw']))
       {
         $checkagainst = $convoArr['aiml']['lookingfor'];
       }
+      elseif ($type == 'srai') {
+          $checkagainst = $convoArr['aiml']['srai_input'];
+      }
       else
       {
+        //runDebug(__FILE__, __FUNCTION__, __LINE__, "User RAW = {$convoArr['aiml']['user_raw']}");
         $checkagainst = $convoArr['aiml']['user_raw'];
       }
       runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking '$ap' against '$checkagainst'.", 2);
       if (preg_match_all("~$ap~siu", $checkagainst, $matches))
       {
         runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($matches, true), 2);
+        //save_file(_LOG_PATH_ . 'matches.txt', print_r($matches, true));
         for ($i = 1; $i < count($matches); $i++)
         {
           $curStar = trim($matches[$i][0]);
           $curStar = preg_replace('/[[:punct:]]/uis', ' ',$curStar);
           $curIndex = $i;
-          runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding $curStar to the star stack.", 2);
-          $convoArr['star'][$i] = $curStar;
+          runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$curStar' to the star stack.", 2);
+          $convoArr['aiml']['stars'][$i] = $curStar;
         }
       }
       else
@@ -344,6 +362,8 @@
   function run_srai(&$convoArr, $now_look_for_this)
   {
     global $srai_iterations, $error_response, $dbConn, $dbn;
+    $currentStars = $convoArr['aiml']['stars'];
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Running SRAI. Pattern = '$now_look_for_this'.", 2);
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
     if ($bot_parent_id != 0 and $bot_parent_id != $bot_id)
@@ -363,7 +383,8 @@
     runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = $sql", 2);
     $row = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
     runDebug(__FILE__, __FUNCTION__, __LINE__,'Result = ' . print_r($row, true), 2);
-    $num_rows = count($row);
+    //$num_rows = count($row);
+    $num_rows = 0;
     if ($num_rows > 0)
     {
       runDebug(__FILE__, __FUNCTION__, __LINE__,"Found $num_rows rows in lookup table: " . print_r($row, true), 2);
@@ -513,7 +534,7 @@
     $tmp_convoArr['aiml']['pattern'] = $now_look_for_this;
     $tmp_convoArr['aiml']['thatpattern'] = $convoArr['aiml']['thatpattern'];
     $tmp_convoArr = get_aiml_to_parse($tmp_convoArr);
-    $tmp_convoArr = parse_matched_aiml($tmp_convoArr, "srai");
+    $tmp_convoArr = parse_matched_aiml($tmp_convoArr, "srai", $now_look_for_this);
     $srai_parsed_template = $tmp_convoArr['aiml']['parsed_template'];
     runDebug(__FILE__, __FUNCTION__, __LINE__, "SRAI Found. Returning '$srai_parsed_template'", 2);
     $convoArr['client_properties'] = $tmp_convoArr['client_properties'];
