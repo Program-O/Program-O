@@ -1,4 +1,4 @@
-# [Program O](http://www.program-o.com)![Program O Mascot](http://geekcavecreations.com/images/ProgramO/Face_Small.svg)
+# [Program O](http://www.program-o.com)
 
 Readme info:
 - Version: 2.6.3
@@ -23,15 +23,7 @@ versions of 5.0 and above.
 
 Program O supports the creation of multiple chatbots. The individual bots are configured
 from the admin area. Bot specific variables are stored in the database. Configuration
-settings of Program O itself are contained within `/config/global_config.php`.
-
-## DEV Branch
-
-Development of Program O is an ongoing process, and from time to time we like to add new
-features. We also try to make sure that the main (MASTER) branch of the project is as
-stable as possible, so most bug fixes and new features are introduced in our development
-(DEV) branch first. If you would like to check out this particular branch, it can be found
-[__Here__](https://github.com/Program-O/Program-O/tree/dev).
+of Program O itself is done in `/config/global_config.php`
 
 ## Using the bot
 
