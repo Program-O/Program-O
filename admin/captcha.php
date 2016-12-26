@@ -1,28 +1,32 @@
 <?php
-     /*******************************************************/
-    /*                     CAPTCHA.php                     */
-   /* Creates a simple security image, for bot prevention */
-  /*           ©2009-2015 Geek Cave Creations            */
- /*                Coded by Dave Morton                 */
+/*******************************************************/
+/*                     CAPTCHA.php                     */
+/* Creates a simple security image, for bot prevention */
+/*           ©2009-2015 Geek Cave Creations            */
+/*                Coded by Dave Morton                 */
 /*******************************************************/
 
-  require_once('../config/global_config.php');
-  chdir( dirname ( __FILE__ ) );
-  $thisFolder = dirname( realpath( __FILE__ ) ) . DIRECTORY_SEPARATOR;
-  $log_path = str_replace('admin' . DIRECTORY_SEPARATOR, 'logs' . DIRECTORY_SEPARATOR, $thisFolder);
-  $captcha_path = $thisFolder . 'captcha-images' . DIRECTORY_SEPARATOR;
-  define('CAPTCHA_PATH', $captcha_path);
+/** @noinspection PhpIncludeInspection */
+require_once('../config/global_config.php');
+chdir(dirname(__FILE__));
 
-  $e_all = defined('E_DEPRECATED') ? E_ALL & ~E_DEPRECATED : E_ALL;
-  error_reporting($e_all);
-  ini_set('log_errors', 1);
-  ini_set('display_errors', 0);
-  ini_set('error_log', _LOG_PATH_ . 'CAPTCHA.error.log');
+$thisFolder = dirname(realpath(__FILE__)) . DIRECTORY_SEPARATOR;
+$log_path = str_replace('admin' . DIRECTORY_SEPARATOR, 'logs' . DIRECTORY_SEPARATOR, $thisFolder);
+$captcha_path = $thisFolder . 'captcha-images' . DIRECTORY_SEPARATOR;
 
-  // Set session config
-  $session_name = 'PGO_Admin';
-  session_name($session_name);
-  session_start();
+define('CAPTCHA_PATH', $captcha_path);
+
+$e_all = defined('E_DEPRECATED') ? E_ALL & ~E_DEPRECATED : E_ALL;
+error_reporting($e_all);
+
+ini_set('log_errors', 1);
+ini_set('display_errors', 0);
+ini_set('error_log', _LOG_PATH_ . 'CAPTCHA.error.log');
+
+// Set session config
+$session_name = 'PGO_Admin';
+session_name($session_name);
+session_start();
 /*
 captcha.php comments/help
 
@@ -62,147 +66,165 @@ match should allow the user access, while failure should be handled accordingly.
 
 
   */
-  $minX = 200;
-  $minY = 75;
-  $X = (isset($_GET['w'])) ? (int)$_GET['w'] : $minX; // Determine width of image
-  $Y = (isset($_GET['h'])) ? (int)$_GET['h'] : $minY; // Determine height of image
-  $X = ($X < $minX) ? $minX : $X;
-  $Y = ($Y < $minY) ? $minY : $Y;
-  $b = (isset($_GET['b'])) ? true : false; // determine whether a black background is desired
-  $g = (isset($_GET['g'])) ? true : false; // determine whether a gradient background is desired
-  $defaultAspectRatio = 200 / 75;
-  $aspectRatio = $X / $Y;
-  $fsl = 20 * floor((200 / $X) * ($aspectRatio / $defaultAspectRatio));
-  $fsh = 26 * floor((200 / $X) * ($aspectRatio / $defaultAspectRatio));
-  $vCenter = floor($Y / 2);
-  $capString = ""; // This is the 'question string' to present to the user, and is built later
-  $capKeys = array ('red','green','blue','man','woman','cat','dog','fish','one','two','three','four','circle','square','triangle');
-  $capKeyCount = count($capKeys);
-  $capNum = rand(0,$capKeyCount - 1);
-  $capKey = $capKeys[$capNum];
-  $objectWord = '';
-  $fn = '';
-  $number = '';
-  switch ($capKey) {
+$minX = 200;
+$minY = 75;
+
+$X = (isset($_GET['w'])) ? (int)$_GET['w'] : $minX; // Determine width of image
+$Y = (isset($_GET['h'])) ? (int)$_GET['h'] : $minY; // Determine height of image
+
+$X = ($X < $minX) ? $minX : $X;
+$Y = ($Y < $minY) ? $minY : $Y;
+
+$b = (isset($_GET['b'])) ? true : false; // determine whether a black background is desired
+$g = (isset($_GET['g'])) ? true : false; // determine whether a gradient background is desired
+
+$defaultAspectRatio = 200 / 75;
+$aspectRatio = $X / $Y;
+
+$fsl = 20 * floor((200 / $X) * ($aspectRatio / $defaultAspectRatio));
+$fsh = 26 * floor((200 / $X) * ($aspectRatio / $defaultAspectRatio));
+
+$vCenter = floor($Y / 2);
+
+$capString = ""; // This is the 'question string' to present to the user, and is built later
+$capKeys = array('red', 'green', 'blue', 'man', 'woman', 'cat', 'dog', 'fish', 'one', 'two', 'three', 'four', 'circle', 'square', 'triangle');
+$capKeyCount = count($capKeys);
+$capNum = rand(0, $capKeyCount - 1);
+$capKey = $capKeys[$capNum];
+
+$objectWord = '';
+$fn = '';
+$number = '';
+
+switch ($capKey)
+{
     case 'red':
     case 'green':
     case 'blue':
-      $fn = '[objectWord] [capKey]';
-      $capString = "What color is this [objectWord]?";
-      $objectNum = rand(1,5);
-      switch ($objectNum) {
-        case 1:
-          $objectWord = 'man';
-          $capString = "What color is this man's shirt?";
-          break;
-        case 2:
-          $objectWord = 'woman';
-          $capString = "What color is this woman's blouse?";
-          break;
-        case 3:
-          $objectWord = 'cat';
-          break;
-        case 4:
-          $objectWord = 'dog';
-          break;
-        case 5:
-          $objectWord = 'fish';
-          break;
-      }
-      break;
+        $fn = '[objectWord] [capKey]';
+        $capString = "What color is this [objectWord]?";
+        $objectNum = rand(1, 5);
+
+        switch ($objectNum)
+        {
+            case 1:
+                $objectWord = 'man';
+                $capString = "What color is this man's shirt?";
+                break;
+            case 2:
+                $objectWord = 'woman';
+                $capString = "What color is this woman's blouse?";
+                break;
+            case 3:
+                $objectWord = 'cat';
+                break;
+            case 4:
+                $objectWord = 'dog';
+                break;
+            case 5:
+                $objectWord = 'fish';
+                break;
+        }
+        break;
     case 'one':
     case 'two':
     case 'three':
     case 'four':
-      $fn = '[capKey]';
-      $capString = "How many lines do you see?";
-      break;
+        $fn = '[capKey]';
+        $capString = "How many lines do you see?";
+        break;
     case 'circle':
     case 'square':
     case 'triangle':
-      $fn = '[capKey]';
-      $capString = "What shape do you see?";
-      break;
+        $fn = '[capKey]';
+        $capString = "What shape do you see?";
+        break;
     case 'man':
     case 'woman':
-      $fn = '[capKey] [objectWord]';
-      $capString = "Is this a man or a woman?";
-      $objectNum = rand(1,3);
-      switch ($objectNum) {
-        case 1:
-          $objectWord = 'red';
-          break;
-        case 2:
-          $objectWord = 'green';
-          break;
-        case 3:
-          $objectWord = 'blue';
-          break;
-      }
-      break;
+        $fn = '[capKey] [objectWord]';
+        $capString = "Is this a man or a woman?";
+        $objectNum = rand(1, 3);
+
+        switch ($objectNum)
+        {
+            case 1:
+                $objectWord = 'red';
+                break;
+            case 2:
+                $objectWord = 'green';
+                break;
+            case 3:
+                $objectWord = 'blue';
+                break;
+        }
+        break;
     case 'cat':
     case 'dog':
     case 'fish':
-      $fn = '[capKey] [objectWord]';
-      $capString = "What is this object?";
-      $objectNum = rand(1,3);
-      switch ($objectNum) {
-        case 1:
-          $objectWord = 'red';
-          break;
-        case 2:
-          $objectWord = 'green';
-          break;
-        case 3:
-          $objectWord = 'blue';
-          break;
-      }
-      break;
-  }
-  $capString = str_replace('[objectWord]',$objectWord, $capString);
+        $fn = '[capKey] [objectWord]';
+        $capString = "What is this object?";
+        $objectNum = rand(1, 3);
 
-  // Set up the image
-  $image = imagecreatetruecolor($X, $Y);
-  $white = imagecolorallocate ($image, 255, 255, 255);
-  $black = imagecolorallocate ($image, 0, 0, 0);
+        switch ($objectNum)
+        {
+            case 1:
+                $objectWord = 'red';
+                break;
+            case 2:
+                $objectWord = 'green';
+                break;
+            case 3:
+                $objectWord = 'blue';
+                break;
+        }
+        break;
+}
 
-  // If black is the chosen background, lighten the current "black" to a medium grey
-  $black = ($b) ? imagecolorallocate ($image, 128, 128, 128) : $black;
-  $bkg = ($b) ? $black : $white;
-  $fgc = ($b) ? $white : $black;
+$capString = str_replace('[objectWord]', $objectWord, $capString);
 
-  // Fill the image with the desired background (the gradient will be handled later)
-  imagefill ($image, 0, 0, $bkg);
+// Set up the image
+$image = imagecreatetruecolor($X, $Y);
+$white = imagecolorallocate($image, 255, 255, 255);
+$black = imagecolorallocate($image, 0, 0, 0);
+
+// If black is the chosen background, lighten the current "black" to a medium grey
+$black = ($b) ? imagecolorallocate($image, 128, 128, 128) : $black;
+$bkg = ($b) ? $black : $white;
+$fgc = ($b) ? $white : $black;
+
+// Fill the image with the desired background (the gradient will be handled later)
+imagefill($image, 0, 0, $bkg);
 
 
-  // Paints the gradient background, if set
-  if ($g) {
+// Paints the gradient background, if set
+if ($g)
+{
     $lrl = 128;
     $lrh = 200;
     $drl = 64;
     $drh = 160;
-    for ($c = 0; $c <= $minX; $c++) {
-      $l = 255 - (($c / $minX) * 255);
-      $color = imagecolorallocate($image, $l, $l, $l);
-      imageline($image, $c, 0, $c, $minY, $color);
+
+    for ($c = 0; $c <= $minX; $c++)
+    {
+        $l = 255 - (($c / $minX) * 255);
+        $color = imagecolorallocate($image, $l, $l, $l);
+        imageline($image, $c, 0, $c, $minY, $color);
     }
-  }
+}
 
-  // get the description image
-  $fn = str_replace('[capKey]', $capKey, $fn);
-  $fn = str_replace('[objectWord]', $objectWord, $fn);
-  $overlay = imagecreatefrompng(CAPTCHA_PATH . "$fn.png");
-  $trans = imagecolorallocatealpha($overlay,0,0,0,127);
-  imagecopy($image,$overlay,$X-64,$Y-64,0,0,64,64);
+// get the description image
+$fn = str_replace('[capKey]', $capKey, $fn);
+$fn = str_replace('[objectWord]', $objectWord, $fn);
+$overlay = imagecreatefrompng(CAPTCHA_PATH . "$fn.png");
+$trans = imagecolorallocatealpha($overlay, 0, 0, 0, 127);
+imagecopy($image, $overlay, $X - 64, $Y - 64, 0, 0, 64, 64);
 
 
-
-  // Base value for the distance between each character
-  imagestring($image,2,3,3,$capString,$fgc);
-  $_SESSION["capKey"] = sha1(strtolower($capKey));
-  header ("Content-type: image/jpeg");
-  imagejpeg($image,null,100);
-  imagedestroy($image);
-  // Debug
-  //file_put_contents(_LOG_PATH_ . 'capKey.txt', "$capKey\r\n",FILE_APPEND);
-?>
+// Base value for the distance between each character
+imagestring($image, 2, 3, 3, $capString, $fgc);
+$_SESSION["capKey"] = sha1(strtolower($capKey));
+header("Content-type: image/jpeg");
+imagejpeg($image, null, 100);
+imagedestroy($image);
+// Debug
+//file_put_contents(_LOG_PATH_ . 'capKey.txt', "$capKey\r\n",FILE_APPEND);
