@@ -375,6 +375,7 @@
       $sql_bot_select = " bot_id = '$bot_id' ";
     }
     $bot_id = $convoArr['conversation']['bot_id'];
+/* disabling srai_lookup
     runDebug(__FILE__, __FUNCTION__, __LINE__,'Checking for entries in the srai_lookup table.', 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__,"google bot_id = $bot_id", 2);
     $lookingfor = $convoArr['aiml']['lookingfor'];
@@ -416,6 +417,7 @@
       runDebug(__FILE__, __FUNCTION__, __LINE__,'No match found in lookup table.', 2);
     }
       runDebug(__FILE__, __FUNCTION__, __LINE__,"Nothing found in the SRAI lookup table. Looking for a direct pattern match for '$now_look_for_this'.", 2);
+*/
       $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` where `pattern` = :pattern and $sql_bot_select order by `id` asc;";
       $result = db_fetchAll($sql, array(':pattern' => $now_look_for_this), __FILE__, __FUNCTION__, __LINE__);
       $num_rows = count($result);
