@@ -154,10 +154,10 @@ endFooter;
    *
    * @return (void)
    */
+/*
   function session_gc()
   {
     return false;
-/*
     This function is temporarily disabled until I can devise a better implementation of session handling
 
     global $session_lifetime;
@@ -167,8 +167,8 @@ endFooter;
       $lastAccessed = filemtime($file);
       if ($lastAccessed < (time() - $session_lifetime)) unlink($file);
     }
-*/
   }
+*/
 
   function addUnknownInput($convoArr, $input, $bot_id, $user_id) {
     global $dbConn, $dbn;
