@@ -37,6 +37,7 @@
   }
 
   /**
+   * function make_like_pattern
    * Gets an input sentence from the user and a aiml tag and creates an sql like pattern
    * @param  string $sentence
    * @param  string $field
@@ -54,7 +55,7 @@
       $sentence = implode_recursive(' ', $sentence, __FILE__, __FUNCTION__, __LINE__);
     }
     $words = explode(" ", $sentence);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "word list:\n" . print_r($words, true), 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "word list:\n" . pretty_print_r($words, true), 4);
     $count_words = count($words) - 1;
     $first_word = $words[0];
     if ($count_words == 0) return " `$field` like '$first_word'\n";
@@ -122,10 +123,12 @@
     global $error_response;
     $lookingfor_lc = _strtolower($lookingfor);
     $current_topic = get_topic($convoArr);
+    $current_topic_lc = _strtolower($current_topic);
     $current_thatpattern = (isset ($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
     //file_put_contents(_LOG_PATH_ . 'allrows.txt', print_r($allrows, true));
     if(!empty($current_thatpattern)) runDebug(__FILE__, __FUNCTION__, __LINE__, "Current THAT = $current_thatpattern", 1);
     $default_pattern = $convoArr['conversation']['default_aiml_pattern'];
+    $default_pattern_lc = _strtolower($default_pattern);
     $tmp_rows = array();
     $relevantRows = array();
     //if default pattern keep
@@ -152,7 +155,6 @@
       //get the pattern
       $aiml_pattern = _strtolower($subrow['pattern']);
       $aiml_pattern_wildcards = build_wildcard_RegEx($aiml_pattern);
-      $default_pattern_lc = _strtolower($default_pattern);
 
       //get the that pattern
       $aiml_thatpattern = _strtolower($subrow['thatpattern']);
@@ -160,7 +162,6 @@
       //get topic pattern
       $topicMatch = FALSE;
       $aiml_topic = _strtolower(trim($subrow['topic']));
-      $current_topic_lc = _strtolower($current_topic);
 
       #Check for a matching topic
       $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($aiml_topic) : '';
