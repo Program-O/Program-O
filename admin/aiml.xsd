@@ -49,264 +49,71 @@
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="aiml:bot"/>
         <xs:element ref="aiml:eval"/>
+        <xs:element ref="aiml:br"/>
       </xs:choice>
       <xs:attribute name="index" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="template">
-    <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
-    </xs:complexType>
+      <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+        </xs:extension>
+    </xs:complexContent> 
+       </xs:complexType> 
   </xs:element>
   <xs:element name="sentence">
-    <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
+        <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+        </xs:extension>
+      </xs:complexContent>      
     </xs:complexType>
   </xs:element>
   <xs:element name="formal">
-    <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
+        <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+        </xs:extension>
+      </xs:complexContent>      
     </xs:complexType>
   </xs:element>
   <xs:element name="lowercase">
-    <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
+        <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+        </xs:extension>
+      </xs:complexContent>      
     </xs:complexType>
   </xs:element>
   <xs:element name="set">
-    <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
-      <xs:attribute name="name" type="xs:string" use="required"/>
+     <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+          <xs:attribute name="name" type="xs:string" use="required"/>
+        </xs:extension>
+      </xs:complexContent>      
     </xs:complexType>
   </xs:element>
   <xs:element name="think">
     <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+        </xs:extension>
+      </xs:complexContent>      
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="MultiLength">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[-+]?(\d+|\d+(\.\d+)?%)|[1-9]?(\d+)?\*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <xs:complexType name="Flow" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+       <xs:group ref="aiml:inline"/>
         <xs:element ref="aiml:set"/>
         <xs:element ref="aiml:think"/>
         <xs:element ref="aiml:br"/>
@@ -315,7 +122,6 @@
         <xs:element ref="aiml:li"/>
         <xs:element ref="aiml:srai"/>
         <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
         <xs:element ref="aiml:person"/>
         <xs:element ref="aiml:person2"/>
         <xs:element ref="aiml:ul"/>
@@ -329,7 +135,6 @@
         <xs:element ref="aiml:dialcontact"/>
         <xs:element ref="aiml:learn"/>
         <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
         <xs:element ref="aiml:map"/>
         <xs:element ref="aiml:search"/>
         <xs:element ref="aiml:sms"/>
@@ -343,7 +148,7 @@
         <xs:element ref="aiml:uppercase"/>
         <xs:element ref="aiml:date"/>
         <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
+        <xs:element ref="aiml:thatstar"/>
         <xs:element ref="aiml:size"/>
         <xs:element ref="aiml:battery"/>
         <xs:element ref="aiml:em"/>
@@ -351,17 +156,418 @@
         <xs:element ref="aiml:formal"/>
         <xs:element ref="aiml:lowercase"/>
         <xs:element ref="aiml:version"/>
-      </xs:choice>
+        <xs:element ref="aiml:table"/>
+        <xs:element ref="aiml:wiki"/>
+        <xs:element ref="aiml:system"/>
+        <xs:element ref="aiml:php"/>
+         <xs:element ref="aiml:math"/>
+         <xs:element ref="aiml:google"/>
+         <xs:element ref="aiml:script"/>
+         <xs:element ref="aiml:font"/>
+    </xs:choice>
+  </xs:complexType>
+
+
+  <xs:element name="b">
+    <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Inline">
+          <xs:attributeGroup ref="aiml:attrs"/>
+        </xs:extension>
+      </xs:complexContent>
     </xs:complexType>
   </xs:element>
+
+
+  <xs:simpleType name="Number">
+    <xs:restriction base="xs:nonNegativeInteger">
+      <xs:pattern value="[0-9]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:attributeGroup name="attrs">
+    <xs:attributeGroup ref="aiml:coreattrs"/>
+  </xs:attributeGroup>
+
+  <xs:simpleType name="StyleSheet">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:attributeGroup name="coreattrs">
+    <xs:attribute name="id" type="xs:ID"/>
+    <xs:attribute name="class" type="xs:NMTOKENS"/>
+    <xs:attribute name="style" type="aiml:StyleSheet"/>
+    <xs:attribute name="title" type="aiml:Text"/>
+  </xs:attributeGroup>
+
+<xs:simpleType name="Character">
+<xs:restriction base="xs:string">
+<xs:length value="1" fixed="true"/>
+</xs:restriction>
+</xs:simpleType>
+
+  <xs:simpleType name="Length">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[-+]?(\d+|\d+(\.\d+)?%)"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Pixels">
+    <xs:restriction base="xs:nonNegativeInteger"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="Text">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+
+  <xs:simpleType name="Color">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Za-z]+|#[0-9A-Fa-f]{3}|#[0-9A-Fa-f]{6}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ImgAlign">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="top"/>
+      <xs:enumeration value="middle"/>
+      <xs:enumeration value="bottom"/>
+      <xs:enumeration value="left"/>
+      <xs:enumeration value="right"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  
+   <xs:element name="font">
+    <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Inline">
+          <xs:attribute name="size"/>
+          <xs:attribute name="color" type="aiml:Color"/>
+          <xs:attribute name="face"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="Inline" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="aiml:inline"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:group name="inline">
+    <xs:choice>
+      <xs:element ref="aiml:a"/>
+      <xs:element ref="aiml:b"/>
+    </xs:choice>
+  </xs:group>
+
+<xs:simpleType name="TFrame">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="void"/>
+      <xs:enumeration value="above"/>
+      <xs:enumeration value="below"/>
+      <xs:enumeration value="hsides"/>
+      <xs:enumeration value="lhs"/>
+      <xs:enumeration value="rhs"/>
+      <xs:enumeration value="vsides"/>
+      <xs:enumeration value="box"/>
+      <xs:enumeration value="border"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TRules">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="none"/>
+      <xs:enumeration value="groups"/>
+      <xs:enumeration value="rows"/>
+      <xs:enumeration value="cols"/>
+      <xs:enumeration value="all"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TAlign">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="left"/>
+      <xs:enumeration value="center"/>
+      <xs:enumeration value="right"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:attributeGroup name="cellhalign">
+    <xs:attribute name="align">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="left"/>
+          <xs:enumeration value="center"/>
+          <xs:enumeration value="right"/>
+          <xs:enumeration value="justify"/>
+          <xs:enumeration value="char"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="char" type="aiml:Character"/>
+    <xs:attribute name="charoff" type="aiml:Length"/>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="cellvalign">
+    <xs:attribute name="valign">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="top"/>
+          <xs:enumeration value="middle"/>
+          <xs:enumeration value="bottom"/>
+          <xs:enumeration value="baseline"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+
+  <xs:element name="table">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="aiml:caption"/>
+        <xs:choice>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="aiml:col"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="aiml:colgroup"/>
+        </xs:choice>
+        <xs:element minOccurs="0" ref="aiml:thead"/>
+        <xs:element minOccurs="0" ref="aiml:tfoot"/>
+        <xs:choice>
+          <xs:element maxOccurs="unbounded" ref="aiml:tbody"/>
+          <xs:element maxOccurs="unbounded" ref="aiml:tr"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attributeGroup ref="aiml:attrs"/>
+      <xs:attribute name="summary" type="aiml:Text"/>
+      <xs:attribute name="width" type="aiml:Length"/>
+      <xs:attribute name="border" type="aiml:Pixels"/>
+      <xs:attribute name="frame" type="aiml:TFrame"/>
+      <xs:attribute name="rules" type="aiml:TRules"/>
+      <xs:attribute name="cellspacing" type="aiml:Length"/>
+      <xs:attribute name="cellpadding" type="aiml:Length"/>
+      <xs:attribute name="align" type="aiml:TAlign"/>
+      <xs:attribute name="bgcolor" type="aiml:Color"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="CAlign">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="top"/>
+      <xs:enumeration value="bottom"/>
+      <xs:enumeration value="left"/>
+      <xs:enumeration value="right"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="caption">
+    <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Inline">
+          <xs:attributeGroup ref="aiml:attrs"/>
+          <xs:attribute name="align" type="aiml:CAlign"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+<xs:element name="thead">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="aiml:tr"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="aiml:attrs"/>
+      <xs:attributeGroup ref="aiml:cellhalign"/>
+      <xs:attributeGroup ref="aiml:cellvalign"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="tfoot">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="aiml:tr"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="aiml:attrs"/>
+      <xs:attributeGroup ref="aiml:cellhalign"/>
+      <xs:attributeGroup ref="aiml:cellvalign"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="tbody">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="aiml:tr"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="aiml:attrs"/>
+      <xs:attributeGroup ref="aiml:cellhalign"/>
+      <xs:attributeGroup ref="aiml:cellvalign"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="colgroup">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="aiml:col"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="aiml:attrs"/>
+      <xs:attribute name="span" default="1" type="aiml:Number"/>
+      <xs:attribute name="width" type="aiml:MultiLength"/>
+      <xs:attributeGroup ref="aiml:cellhalign"/>
+      <xs:attributeGroup ref="aiml:cellvalign"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="col">
+    <xs:complexType>
+      <xs:attributeGroup ref="aiml:attrs"/>
+      <xs:attribute name="span" default="1" type="aiml:Number"/>
+      <xs:attribute name="width" type="aiml:MultiLength"/>
+      <xs:attributeGroup ref="aiml:cellhalign"/>
+      <xs:attributeGroup ref="aiml:cellvalign"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="tr">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="aiml:th"/>
+        <xs:element ref="aiml:td"/>
+      </xs:choice>
+      <xs:attributeGroup ref="aiml:attrs"/>
+      <xs:attributeGroup ref="aiml:cellhalign"/>
+      <xs:attributeGroup ref="aiml:cellvalign"/>
+      <xs:attribute name="bgcolor" type="aiml:Color"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="Scope">
+    <xs:annotation>
+      <xs:documentation>
+      Scope is simpler than headers attribute for common tables
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="row"/>
+      <xs:enumeration value="col"/>
+      <xs:enumeration value="rowgroup"/>
+      <xs:enumeration value="colgroup"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="th">
+    <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+          <xs:attributeGroup ref="aiml:attrs"/>
+          <xs:attribute name="abbr" type="aiml:Text"/>
+          <xs:attribute name="axis"/>
+          <xs:attribute name="headers" type="xs:IDREFS"/>
+          <xs:attribute name="rowspan" default="1" type="aiml:Number"/>
+          <xs:attribute name="colspan" default="1" type="aiml:Number"/>
+          <xs:attributeGroup ref="aiml:cellhalign"/>
+          <xs:attributeGroup ref="aiml:cellvalign"/>
+          <xs:attribute name="nowrap">
+            <xs:simpleType>
+              <xs:restriction base="xs:token">
+                <xs:enumeration value="nowrap"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          <xs:attribute name="bgcolor" type="aiml:Color"/>
+          <xs:attribute name="width" type="aiml:Length"/>
+          <xs:attribute name="height" type="aiml:Length"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="td">
+    <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+          <xs:attributeGroup ref="aiml:attrs"/>
+          <xs:attribute name="abbr" type="aiml:Text"/>
+          <xs:attribute name="axis"/>
+          <xs:attribute name="headers" type="xs:IDREFS"/>
+          <xs:attribute name="scope" type="aiml:Scope"/>
+          <xs:attribute name="rowspan" default="1" type="aiml:Number"/>
+          <xs:attribute name="colspan" default="1" type="aiml:Number"/>
+          <xs:attributeGroup ref="aiml:cellhalign"/>
+          <xs:attributeGroup ref="aiml:cellvalign"/>
+          <xs:attribute name="nowrap">
+            <xs:simpleType>
+              <xs:restriction base="xs:token">
+                <xs:enumeration value="nowrap"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          <xs:attribute name="bgcolor" type="aiml:Color"/>
+          <xs:attribute name="width" type="aiml:Length"/>
+          <xs:attribute name="height" type="aiml:Length"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="wiki">
+    <xs:complexType mixed="true">
+       <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+        </xs:extension>
+    </xs:complexContent> 
+    </xs:complexType>
+  </xs:element>  
+  
+  <xs:element name="php">
+    <xs:complexType mixed="true">
+       <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+          <xs:attributeGroup ref="aiml:attrs"/>
+        </xs:extension>
+    </xs:complexContent> 
+    </xs:complexType>
+  </xs:element>    
+  
+  <xs:element name="google">
+    <xs:complexType mixed="true">
+       <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+        </xs:extension>
+    </xs:complexContent> 
+    </xs:complexType>
+  </xs:element>      
+  
+  <xs:element name="math">
+    <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+        </xs:extension>
+      </xs:complexContent>      
+    </xs:complexType>
+  </xs:element>    
+  
+    <xs:element name="system">
+    <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+  
+        </xs:extension>
+      </xs:complexContent>      
+    </xs:complexType>
+  </xs:element> 
+  
   <xs:element name="br">
     <xs:complexType/>
   </xs:element>
   <xs:element name="get">
     <xs:complexType>
-      <xs:attribute name="name" type="xs:string" use="required"/>
+      <xs:attribute name="name" type="xs:string" />
+      <xs:attribute name="bot" type="xs:string" />
     </xs:complexType>
   </xs:element>
+  
   <xs:element name="random">
     <xs:complexType>
       <xs:sequence maxOccurs="unbounded">
@@ -369,267 +575,127 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  
   <xs:element name="li">
     <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
-      <xs:attribute name="name" type="xs:string"/>
-      <xs:attribute name="value" type="xs:string"/>
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+          <xs:attributeGroup ref="aiml:attrs"/>
+             <xs:attribute name="name" type="xs:string"/>
+			    <xs:attribute name="value" type="xs:string"/>
+        </xs:extension>
+      </xs:complexContent>      
     </xs:complexType>
   </xs:element>
+  
+  
   <xs:element name="srai">
     <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+        </xs:extension>
+      </xs:complexContent>      
     </xs:complexType>
   </xs:element>
+  
   <xs:element name="star">
     <xs:complexType>
       <xs:attribute name="index" type="xs:string"/>
     </xs:complexType>
   </xs:element>
+
+
   <xs:element name="a">
     <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
-      <xs:attribute name="href" type="xs:string" use="required"/>
-      <xs:attribute name="target" type="xs:string"/>
+      <xs:complexContent>
+        <xs:extension base="aiml:a.content">
+          <xs:attributeGroup ref="aiml:attrs"/>
+          <xs:attribute name="href" type="aiml:URI"/>
+			<xs:attribute name="target" type="aiml:FrameTarget"/>
+        </xs:extension>
+      </xs:complexContent>
     </xs:complexType>
   </xs:element>
+  
+  <xs:simpleType name="FrameTarget">
+    <xs:annotation>
+      <xs:documentation>
+      render in this frame
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:NMTOKEN">
+      <xs:pattern value="_(blank|self|parent|top)|[A-Za-z]\c*"/>
+    </xs:restriction>
+  </xs:simpleType>  
+  
+  <xs:simpleType name="URI">
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+  
+  <xs:complexType name="a.content" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="aiml:special"/>
+      <xs:group ref="aiml:misc.inline"/>
+    </xs:choice>
+  </xs:complexType>  
+  
+   <xs:group name="special">
+    <xs:choice>
+      <xs:element ref="aiml:img"/>
+    </xs:choice>
+  </xs:group>
+   
+  <xs:group name="misc.inline">
+    <xs:choice>
+      <xs:element ref="aiml:script"/>
+    </xs:choice>
+  </xs:group>
+
+  <xs:group name="misc">
+    <xs:choice>
+      <xs:group ref="aiml:misc.inline"/>
+    </xs:choice>
+  </xs:group>
+
+
+  <xs:element name="script">
+    <xs:complexType mixed="true">
+        <xs:complexContent>
+         <xs:extension base="aiml:Flow">
+            <xs:attribute name="index" type="xs:string"/>
+            <xs:attribute name="id" type="xs:ID"/>
+      		<xs:attribute name="type"  type="aiml:ContentType"/>
+      		<xs:attribute name="src" type="aiml:URI"/>
+      		<xs:attribute name="language"/>      
+      	</xs:extension>
+      	</xs:complexContent>
+    </xs:complexType>
+  </xs:element>  
+ 
+  <xs:simpleType name="ContentType">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType> 
+  
   <xs:element name="person">
     <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
-      <xs:attribute name="index" type="xs:string"/>
+      <xs:complexContent>
+         <xs:extension base="aiml:Flow">
+            <xs:attribute name="index" type="xs:string"/>
+      </xs:extension>  
+    </xs:complexContent>  
     </xs:complexType>
   </xs:element>
+  
   <xs:element name="person2">
     <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
-      <xs:attribute name="index" type="xs:string"/>
+      <xs:complexContent>
+         <xs:extension base="aiml:Flow">
+            <xs:attribute name="index" type="xs:string"/>
+      </xs:extension>  
+      </xs:complexContent>
     </xs:complexType>
   </xs:element>
+  
   <xs:element name="ul">
     <xs:complexType>
       <xs:sequence maxOccurs="unbounded">
@@ -645,54 +711,13 @@
   </xs:element>
   <xs:element name="condition">
     <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
-      <xs:attribute name="name" type="xs:string"/>
-      <xs:attribute name="value" type="xs:string"/>
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+          <xs:attributeGroup ref="aiml:attrs"/>
+            <xs:attribute name="name" type="xs:string"/>
+            <xs:attribute name="value" type="xs:string"/>
+        </xs:extension>
+      </xs:complexContent>  
     </xs:complexType>
   </xs:element>
   <xs:element name="sr">
@@ -734,54 +759,14 @@
   </xs:element>
   <xs:element name="eval">
     <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+          <xs:attributeGroup ref="aiml:attrs"/>
+        </xs:extension>
+      </xs:complexContent>      
     </xs:complexType>
   </xs:element>
+  
   <xs:element name="thatstar">
     <xs:complexType>
       <xs:attribute name="index" type="xs:string"/>
@@ -865,54 +850,13 @@
   </xs:element>
   <xs:element name="uppercase">
     <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="aiml:set"/>
-        <xs:element ref="aiml:think"/>
-        <xs:element ref="aiml:br"/>
-        <xs:element ref="aiml:get"/>
-        <xs:element ref="aiml:random"/>
-        <xs:element ref="aiml:li"/>
-        <xs:element ref="aiml:srai"/>
-        <xs:element ref="aiml:star"/>
-        <xs:element ref="aiml:a"/>
-        <xs:element ref="aiml:person"/>
-        <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ul"/>
-        <xs:element ref="aiml:p"/>
-        <xs:element ref="aiml:bot"/>
-        <xs:element ref="aiml:that"/>
-        <xs:element ref="aiml:condition"/>
-        <xs:element ref="aiml:sr"/>
-        <xs:element ref="aiml:oob"/>
-        <xs:element ref="aiml:dial"/>
-        <xs:element ref="aiml:dialcontact"/>
-        <xs:element ref="aiml:learn"/>
-        <xs:element ref="aiml:eval"/>
-        <xs:element ref="aiml:thatstar"/>
-        <xs:element ref="aiml:map"/>
-        <xs:element ref="aiml:search"/>
-        <xs:element ref="aiml:sms"/>
-        <xs:element ref="aiml:recipient"/>
-        <xs:element ref="aiml:message"/>
-        <xs:element ref="aiml:input"/>
-        <xs:element ref="aiml:img"/>
-        <xs:element ref="aiml:id"/>
-        <xs:element ref="aiml:response"/>
-        <xs:element ref="aiml:request"/>
-        <xs:element ref="aiml:uppercase"/>
-        <xs:element ref="aiml:date"/>
-        <xs:element ref="aiml:topicstar"/>
-        <xs:element ref="aiml:thastar"/>
-        <xs:element ref="aiml:size"/>
-        <xs:element ref="aiml:battery"/>
-        <xs:element ref="aiml:em"/>
-        <xs:element ref="aiml:sentence"/>
-        <xs:element ref="aiml:formal"/>
-        <xs:element ref="aiml:lowercase"/>
-        <xs:element ref="aiml:version"/>
-      </xs:choice>
+      <xs:complexContent>
+        <xs:extension base="aiml:Flow">
+        </xs:extension>
+      </xs:complexContent>      
     </xs:complexType>
   </xs:element>
+  
   <xs:element name="version">
     <xs:complexType/>
   </xs:element>
@@ -927,11 +871,6 @@
     <xs:annotation>
       <xs:documentation>ATTLIST date format CDATA #REQUIRED</xs:documentation>
     </xs:annotation>
-    <xs:complexType>
-      <xs:attribute name="index" type="xs:string"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="thastar">
     <xs:complexType>
       <xs:attribute name="index" type="xs:string"/>
     </xs:complexType>
