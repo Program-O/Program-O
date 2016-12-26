@@ -422,65 +422,53 @@ function run_srai(&$convoArr, $now_look_for_this)
     }
 
     $bot_id = $convoArr['conversation']['bot_id'];
-
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking for entries in the srai_lookup table.', 2);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "google bot_id = $bot_id", 2);
-
+/* disabling srai_lookup    runDebug(__FILE__, __FUNCTION__, __LINE__,'Checking for entries in the srai_lookup table.', 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"google bot_id = $bot_id", 2);
     $lookingfor = $convoArr['aiml']['lookingfor'];
-
     //$now_look_for_this = strtoupper($now_look_for_this);
-    /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `template_id` FROM `$dbn`.`srai_lookup` WHERE `pattern` = '$now_look_for_this' AND $sql_bot_select;";
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "lookup SQL = $sql", 2);
+    $sql = "select `template_id` from `$dbn`.`srai_lookup` where `pattern` = '$now_look_for_this' and $sql_bot_select;";
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = $sql", 2);
     $row = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Result = ' . print_r($row, true), 2);
     //$num_rows = count($row);
     $num_rows = 0;
-
     if ($num_rows > 0)
     {
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Found $num_rows rows in lookup table: " . print_r($row, true), 2);
-
-        $template_id = $row[0]['template_id'];
-
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Found a matching entry in the lookup table. Using ID# $template_id.", 2);
-
-        /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `template` FROM `$dbn`.`aiml` WHERE `id` = '$template_id';";
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Row found in AIML for ID $template_id: " . print_r($row, true), 2);
-
-        if (!empty($row))
+      runDebug(__FILE__, __FUNCTION__, __LINE__,"Found $num_rows rows in lookup table: " . print_r($row, true), 2);
+      $template_id = $row[0]['template_id'];
+      runDebug(__FILE__, __FUNCTION__, __LINE__,"Found a matching entry in the lookup table. Using ID# $template_id.", 2);
+      $sql = "select `template` from `$dbn`.`aiml` where `id` = '$template_id';";
+      $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+      runDebug(__FILE__, __FUNCTION__, __LINE__,"Row found in AIML for ID $template_id: " . print_r($row, true), 2);
+      if (!empty($row))
+      {
+        $template = add_text_tags($row['template']);
+        try
         {
-            $template = add_text_tags($row['template']);
-
-            try {
-                $sraiTemplate = new SimpleXMLElement($template, LIBXML_NOCDATA);
-            }
-            catch (exception $e)
-            {
-                trigger_error("There was a problem parsing the SRAI template as XML. Template value:\n$template", E_USER_WARNING);
-                $sraiTemplate = new SimpleXMLElement("<text>$error_response</text>", LIBXML_NOCDATA);
-            }
-
-            $responseArray = parseTemplateRecursive($convoArr, $sraiTemplate);
-            $response = implode_recursive(' ', $responseArray, __FILE__, __FUNCTION__, __LINE__);
-            runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning results from stored srai lookup.", 2);
-
-            return $response;
+          $sraiTemplate = new SimpleXMLElement($template, LIBXML_NOCDATA);
         }
+        catch (exception $e)
+        {
+          trigger_error("There was a problem parsing the SRAI template as XML. Template value:\n$template", E_USER_WARNING);
+          $sraiTemplate = new SimpleXMLElement("<text>$error_response</text>", LIBXML_NOCDATA);
+        }
+        $responseArray = parseTemplateRecursive($convoArr, $sraiTemplate);
+        $response = implode_recursive(' ', $responseArray, __FILE__, __FUNCTION__, __LINE__);
+        runDebug(__FILE__, __FUNCTION__, __LINE__,"Returning results from stored srai lookup.", 2);
+        return $response;
+      }
     }
-    else {
-        runDebug(__FILE__, __FUNCTION__, __LINE__, 'No match found in lookup table.', 2);
+    else
+    {
+      runDebug(__FILE__, __FUNCTION__, __LINE__,'No match found in lookup table.', 2);
     }
-
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Nothing found in the SRAI lookup table. Looking for a direct pattern match for '$now_look_for_this'.", 2);
-
+      runDebug(__FILE__, __FUNCTION__, __LINE__,"Nothing found in the SRAI lookup table. Looking for a direct pattern match for '$now_look_for_this'.", 2);
+*/
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE `pattern` = :pattern AND $sql_bot_select ORDER BY `id` ASC;";
+    $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` where `pattern` = :pattern and $sql_bot_select order by `id` asc;";
     $result = db_fetchAll($sql, array(':pattern' => $now_look_for_this), __FILE__, __FUNCTION__, __LINE__);
     $num_rows = count($result);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Found $num_rows potential responses.", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"Found $num_rows potential responses.", 2);
     $allrows = array();
     $i = 0;
 

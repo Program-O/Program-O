@@ -516,10 +516,10 @@ function getCurrentVersion($branch)
 /**
  * Function handle_exceptions
  *
- * * @param exception $e
+ * @param exception $e
  * @return void
  */
-function handle_exceptions(exception $e)
+function handle_exceptions(Exception $e)
 {
     global $msg;
     $trace = $e->getTrace();
