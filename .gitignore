@@ -23,6 +23,7 @@ logs/*.txt
 backups
 backups/*
 admin/scripts/old
+patch.php
 
 #################
 ## WeBuilder/ Rapid PHP

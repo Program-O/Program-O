@@ -223,8 +223,8 @@ $content = str_replace('[myPage]', $curPage, $content);
 $content = str_replace('[divDecoration]', $divDecoration, $content);
 $content = str_replace('[blank]', '', $content);
 
-session_gc();
-exit($content);
+  //session_gc();
+  exit($content);
 
 /**
  * Function makeLinks
@@ -517,7 +517,7 @@ function getCurrentVersion($branch)
  * Function handle_exceptions
  *
  * @param exception $e
- * @return void
+ * @return string
  */
 function handle_exceptions(Exception $e)
 {

@@ -39,6 +39,7 @@ function get_first_word($sentence)
 }
 
 /**
+ * function make_like_pattern
  * Gets an input sentence from the user and a aiml tag and creates an sql like pattern
  * @param  string $sentence
  * @param  string $field
@@ -60,8 +61,7 @@ function make_like_pattern($sentence, $field)
 
     $words = explode(" ", $sentence);
 
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "word list:\n" . print_r($words, true), 4);
-
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "word list:\n" . pretty_print_r($words, true), 4);
     $count_words = count($words) - 1;
     $first_word = $words[0];
 
@@ -148,6 +148,7 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
 
     $lookingfor_lc = _strtolower($lookingfor);
     $current_topic = get_topic($convoArr);
+    $current_topic_lc = _strtolower($current_topic);
     $current_thatpattern = (isset ($convoArr['that'][1][1])) ? $convoArr['that'][1][1] : '';
 
     //file_put_contents(_LOG_PATH_ . 'allrows.txt', print_r($allrows, true));
@@ -157,6 +158,7 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
     }
 
     $default_pattern = $convoArr['conversation']['default_aiml_pattern'];
+    $default_pattern_lc = _strtolower($default_pattern);
     $tmp_rows = array();
     $relevantRows = array();
     //if default pattern keep
@@ -182,18 +184,16 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
 
     foreach ($allrows as $all => $subrow)
     {
-        //get the pattern
-        $aiml_pattern = _strtolower($subrow['pattern']);
-        $aiml_pattern_wildcards = build_wildcard_RegEx($aiml_pattern);
-        $default_pattern_lc = _strtolower($default_pattern);
+      //get the pattern
+      $aiml_pattern = _strtolower($subrow['pattern']);
+      $aiml_pattern_wildcards = build_wildcard_RegEx($aiml_pattern);
 
-        //get the that pattern
-        $aiml_thatpattern = _strtolower($subrow['thatpattern']);
-        $current_thatpattern = _strtolower($current_thatpattern);
-        //get topic pattern
-        $topicMatch = FALSE;
-        $aiml_topic = _strtolower(trim($subrow['topic']));
-        $current_topic_lc = _strtolower($current_topic);
+      //get the that pattern
+      $aiml_thatpattern = _strtolower($subrow['thatpattern']);
+      $current_thatpattern = _strtolower($current_thatpattern);
+      //get topic pattern
+      $topicMatch = FALSE;
+      $aiml_topic = _strtolower(trim($subrow['topic']));
 
         #Check for a matching topic
         $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($aiml_topic) : '';
@@ -968,6 +968,7 @@ function find_aiml_matches($convoArr)
     $bot_id = $convoArr['conversation']['bot_id'];
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
     $default_aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
+
     #$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
     $convoArr['aiml']['lookingfor'] = str_replace('  ', ' ', $convoArr['aiml']['lookingfor']);
     $lookingfor = trim(strtoupper($convoArr['aiml']['lookingfor']));

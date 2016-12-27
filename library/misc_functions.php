@@ -174,13 +174,13 @@ endFooter;
    * function session_gc
    * Performs garbage collection on expired session files
    *
-   * @return (void)
+   * @return void
    */
-  /*function session_gc()
+/*
+  This function is temporarily disabled until I can devise a better implementation of session handling
+*/function session_gc()
   {
     return false;
-
-    This function is temporarily disabled until I can devise a better implementation of session handling
 
     global $session_lifetime;
     $session_files = glob(_SESSION_PATH_ . 'sess_*');
@@ -189,8 +189,17 @@ endFooter;
       $lastAccessed = filemtime($file);
       if ($lastAccessed < (time() - $session_lifetime)) unlink($file);
     }
-}
-  */
+  }
+
+/**
+ * function addUnknownInput
+ * Adds previously unknown inputs to the database for later examination, and possible creation of new AIML categories
+ * @param array $convoArr
+ * @param string $input
+ * @param int $bot_id
+ * @param string $user_id
+ * @return void
+ */
 
 function addUnknownInput($convoArr, $input, $bot_id, $user_id)
 {
@@ -211,4 +220,24 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
         ':user_id' => $user_id,
     );
     $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
+}
+
+/**
+ * function pretty_print_r
+ * outputs a formatted text string from a print_r() statement
+ * @param mixed $var
+ * @return string $out
+ */
+
+function pretty_print_r($var)
+{
+    switch (true)
+    {
+        case (is_array($var)):
+            $out = implode_recursive(",\n", $var, __FILE__, __FUNCTION__, __LINE__);
+            break;
+        default:
+            $out = $var;
+    }
+    return trim($out, ",\n");
 }
