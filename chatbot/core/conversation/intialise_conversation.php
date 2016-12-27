@@ -481,9 +481,8 @@
    */
   function check_set_bot($convoArr)
   {
-    global  $form_vars, $error_response;
+    global  $form_vars, $error_response, $dbn, $bot_id, $format, $unknown_user;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking and/or setting the current bot.', 2);
-    global $dbConn, $dbn, $bot_id, $error_response, $format,$unknown_user;
     //check to see if bot_id has been passed if not load default
     if ((isset ($form_vars['bot_id'])) && (trim($form_vars['bot_id']) != ""))
     {
@@ -493,21 +492,18 @@
     {
       $bot_id = $convoArr['conversation']['bot_id'];
     }
-    else
-    {
-      /** @noinspection PhpSillyAssignmentInspection */
-      $bot_id = $bot_id;
-    }
+    // else $bot_id is unchanged
+
     //get the values from the db
-    $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '$bot_id' and `bot_active`='1'";
+    $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = $bot_id and `bot_active` = 1;";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making sure the bot exists. SQL = $sql", 3);
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
     if (($row) && (count($row) > 0))
     {
-      $bot_name = $row['bot_name'];
       $error_response = (!empty($row['error_response'])) ? $row['error_response'] : $error_response;
       $unknown_user = $row['unknown_user'];
-      $convoArr['conversation']['bot_name'] = $bot_name;
+      if($unknown_user === '[IP]') $unknown_user = $_SERVER['REMOTE_ADDR'];
+      $convoArr['conversation']['bot_name'] = $row['bot_name'];
       $convoArr['conversation']['bot_id'] = $bot_id;
       $convoArr['conversation']['format'] = $row['format'];
       $convoArr['conversation']['unknown_user'] = $unknown_user;
