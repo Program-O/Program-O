@@ -332,7 +332,7 @@ endScript;
         if (!file_exists('uploads'))
           mkdir('uploads');
         // Move the file
-        $file = './uploads/' . $_FILES['aimlfile']['name'];
+        $file = _UPLOAD_PATH_ . $_FILES['aimlfile']['name'];
         if (move_uploaded_file($_FILES['aimlfile']['tmp_name'], $file))
         {
         #file_put_contents(_LOG_PATH_ . 'upload.type.txt', 'Type = ' . $_FILES['aimlfile']['type']);
