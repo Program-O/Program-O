@@ -21,6 +21,7 @@
 function buildVerbList($name, $gender)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Building the verb list. Name:$name. Gender:$gender", 4);
+
     // person transform arrays:
     $firstPersonPatterns = array();
     $firstPersonReplacements = array();
@@ -111,6 +112,7 @@ function buildVerbList($name, $gender)
         $firstPersonReplacements[] = str_replace('[word]', $first, $firstPersonReplaceTemplate);
         // build first patterns to third replacements
     }
+
     $_SESSION['verbList'] = true;
     // debugging - Let's see what the contents of the files are!
     $transformList = array('firstPersonPatterns' => $firstPersonPatterns, 'secondPersonKeyedPatterns' => $secondPersonKeyedPatterns, 'secondPersonReplacements' => $secondPersonReplacements, 'thirdPersonReplacements' => $thirdPersonReplacements, 'secondPersonPatterns' => $secondPersonPatterns, 'firstPersonReplacements' => $firstPersonReplacements);
@@ -336,6 +338,7 @@ function set_wildcards($convoArr, $pattern, $type)
         {
             runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($matches, true), 2);
             //save_file(_LOG_PATH_ . 'matches.txt', print_r($matches, true));
+
             for ($i = 1; $i < count($matches); $i++)
             {
                 $curStar = trim($matches[$i][0]);
@@ -345,8 +348,7 @@ function set_wildcards($convoArr, $pattern, $type)
                 $convoArr['aiml']['stars'][$i] = $curStar;
             }
         }
-        else
-        {
+        else {
             runDebug(__FILE__, __FUNCTION__, __LINE__, "Something is not right here.", 2);
         }
     }
@@ -388,8 +390,7 @@ function set_wildcards($convoArr, $pattern, $type)
                 $convoArr['that_star'][$i] = $curStar;
             }
         }
-        else
-        {
+        else {
             runDebug(__FILE__, __FUNCTION__, __LINE__, "Something is not right here.", 2);
         }
     }
@@ -422,53 +423,56 @@ function run_srai(&$convoArr, $now_look_for_this)
     }
 
     $bot_id = $convoArr['conversation']['bot_id'];
-/* disabling srai_lookup    runDebug(__FILE__, __FUNCTION__, __LINE__,'Checking for entries in the srai_lookup table.', 2);
-    runDebug(__FILE__, __FUNCTION__, __LINE__,"google bot_id = $bot_id", 2);
-    $lookingfor = $convoArr['aiml']['lookingfor'];
-    //$now_look_for_this = strtoupper($now_look_for_this);
-    $sql = "select `template_id` from `$dbn`.`srai_lookup` where `pattern` = '$now_look_for_this' and $sql_bot_select;";
-    runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = $sql", 2);
-    $row = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Result = ' . print_r($row, true), 2);
-    //$num_rows = count($row);
-    $num_rows = 0;
-    if ($num_rows > 0)
-    {
-      runDebug(__FILE__, __FUNCTION__, __LINE__,"Found $num_rows rows in lookup table: " . print_r($row, true), 2);
-      $template_id = $row[0]['template_id'];
-      runDebug(__FILE__, __FUNCTION__, __LINE__,"Found a matching entry in the lookup table. Using ID# $template_id.", 2);
-      $sql = "select `template` from `$dbn`.`aiml` where `id` = '$template_id';";
-      $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-      runDebug(__FILE__, __FUNCTION__, __LINE__,"Row found in AIML for ID $template_id: " . print_r($row, true), 2);
-      if (!empty($row))
-      {
-        $template = add_text_tags($row['template']);
-        try
+    /* disabling srai_lookup    runDebug(__FILE__, __FUNCTION__, __LINE__,'Checking for entries in the srai_lookup table.', 2);
+        runDebug(__FILE__, __FUNCTION__, __LINE__,"google bot_id = $bot_id", 2);
+        $lookingfor = $convoArr['aiml']['lookingfor'];
+        //$now_look_for_this = strtoupper($now_look_for_this);
+        $sql = "select `template_id` from `$dbn`.`srai_lookup` where `pattern` = '$now_look_for_this' and $sql_bot_select;";
+        runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = $sql", 2);
+        $row = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Result = ' . print_r($row, true), 2);
+        //$num_rows = count($row);
+        $num_rows = 0;
+        if ($num_rows > 0)
         {
-          $sraiTemplate = new SimpleXMLElement($template, LIBXML_NOCDATA);
+          runDebug(__FILE__, __FUNCTION__, __LINE__,"Found $num_rows rows in lookup table: " . print_r($row, true), 2);
+          $template_id = $row[0]['template_id'];
+          runDebug(__FILE__, __FUNCTION__, __LINE__,"Found a matching entry in the lookup table. Using ID# $template_id.", 2);
+          $sql = "select `template` from `$dbn`.`aiml` where `id` = '$template_id';";
+          $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+          runDebug(__FILE__, __FUNCTION__, __LINE__,"Row found in AIML for ID $template_id: " . print_r($row, true), 2);
+          if (!empty($row))
+          {
+            $template = add_text_tags($row['template']);
+            try
+            {
+              $sraiTemplate = new SimpleXMLElement($template, LIBXML_NOCDATA);
+            }
+            catch (exception $e)
+            {
+              trigger_error("There was a problem parsing the SRAI template as XML. Template value:\n$template", E_USER_WARNING);
+              $sraiTemplate = new SimpleXMLElement("<text>$error_response</text>", LIBXML_NOCDATA);
+            }
+            $responseArray = parseTemplateRecursive($convoArr, $sraiTemplate);
+            $response = implode_recursive(' ', $responseArray, __FILE__, __FUNCTION__, __LINE__);
+            runDebug(__FILE__, __FUNCTION__, __LINE__,"Returning results from stored srai lookup.", 2);
+            return $response;
+          }
         }
-        catch (exception $e)
+        else
         {
-          trigger_error("There was a problem parsing the SRAI template as XML. Template value:\n$template", E_USER_WARNING);
-          $sraiTemplate = new SimpleXMLElement("<text>$error_response</text>", LIBXML_NOCDATA);
+          runDebug(__FILE__, __FUNCTION__, __LINE__,'No match found in lookup table.', 2);
         }
-        $responseArray = parseTemplateRecursive($convoArr, $sraiTemplate);
-        $response = implode_recursive(' ', $responseArray, __FILE__, __FUNCTION__, __LINE__);
-        runDebug(__FILE__, __FUNCTION__, __LINE__,"Returning results from stored srai lookup.", 2);
-        return $response;
-      }
-    }
-    else
-    {
-      runDebug(__FILE__, __FUNCTION__, __LINE__,'No match found in lookup table.', 2);
-    }
-      runDebug(__FILE__, __FUNCTION__, __LINE__,"Nothing found in the SRAI lookup table. Looking for a direct pattern match for '$now_look_for_this'.", 2);
-*/
+          runDebug(__FILE__, __FUNCTION__, __LINE__,"Nothing found in the SRAI lookup table. Looking for a direct pattern match for '$now_look_for_this'.", 2);
+    */
+
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` where `pattern` = :pattern and $sql_bot_select order by `id` asc;";
     $result = db_fetchAll($sql, array(':pattern' => $now_look_for_this), __FILE__, __FUNCTION__, __LINE__);
     $num_rows = count($result);
-    runDebug(__FILE__, __FUNCTION__, __LINE__,"Found $num_rows potential responses.", 2);
+
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Found $num_rows potential responses.", 2);
+
     $allrows = array();
     $i = 0;
 
@@ -533,7 +537,8 @@ function run_srai(&$convoArr, $now_look_for_this)
         $row = db_fetch($sql, array(':id' => $aiml_id), __FILE__, __FUNCTION__, __LINE__);
         $template = add_text_tags($row['template']);
 
-        try {
+        try
+        {
             $sraiTemplate = new SimpleXMLElement($template, LIBXML_NOCDATA);
         }
         catch (exception $e)
@@ -548,6 +553,7 @@ function run_srai(&$convoArr, $now_look_for_this)
         try
         {
             // code to try here
+            /** @noinspection SqlDialectInspection */
             $sql = "INSERT INTO `$dbn`.`srai_lookup` (`id`, `bot_id`, `pattern`, `template_id`) VALUES(null, :bot_id, :pattern, :template_id);";
             $sth = $dbConn->prepare($sql);
             $sth->bindValue(':bot_id', $bot_id);
@@ -642,8 +648,7 @@ function push_stack(& $convoArr, $item)
         $convoArr['stack']['second'] = $convoArr['stack']['top'];
         $convoArr['stack']['top'] = $item;
     }
-    else
-    {
+    else {
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Could not push empty item onto to the stack", 1);
     }
 
@@ -660,6 +665,7 @@ function pop_stack(& $convoArr)
 {
     $item = trim($convoArr['stack']['top']);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Popped $item off the stack", 4);
+
     $convoArr['stack']['top'] = $convoArr['stack']['second'];
     $convoArr['stack']['second'] = $convoArr['stack']['third'];
     $convoArr['stack']['third'] = $convoArr['stack']['fourth'];
@@ -738,9 +744,11 @@ function math_functions($operator, $num_1, $num_2 = "")
             $output = $num_1 * $num_2;
             break;
         case "divide" :
-            if ($num_2 == 0) {
+            if ($num_2 == 0)
+            {
                 $output = "You can't divide by 0!";
-            } else {
+            }
+            else {
                 $output = $num_1 / $num_2;
             }
             break;
