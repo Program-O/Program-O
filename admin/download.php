@@ -101,7 +101,7 @@ function getAIMLByFileName($filename)
     $topicArray = array();
     $curPath = dirname(__FILE__);
     chdir($curPath);
-    $fileContent = file_get_contents('./AIML_Header.dat');
+    $fileContent = file_get_contents(_ADMIN_PATH_ . 'AIML_Header.dat');
     $fileContent = str_replace('[year]', date('Y'), $fileContent);
     $fileContent = str_replace('[charset]', $charset, $fileContent);
     $fileContent = str_replace($bmnSearch, $botmaster_name, $fileContent);

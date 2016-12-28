@@ -376,7 +376,7 @@ function processUpload()
         }
 
         // Move the file
-        $file = './uploads/' . $_FILES['aimlfile']['name'];
+        $file = _UPLOAD_PATH_ . $_FILES['aimlfile']['name'];
 
         if (move_uploaded_file($_FILES['aimlfile']['tmp_name'], $file))
         {
