@@ -102,43 +102,43 @@ switch ($logged_in)
         $curPage = ($get_vars['page'] == 'login') ? login() : 'logout';
 }
 
-$name = (isset($_SESSION['poadmin']['name'])) ? $_SESSION['poadmin']['name'] : '';
-$ip = (isset($_SESSION['poadmin']['ip'])) ? $_SESSION['poadmin']['ip'] : '';
-$last = (isset($_SESSION['poadmin']['last_login'])) ? $_SESSION['poadmin']['last_login'] : '';
-$lip = (isset($_SESSION['poadmin']['lip'])) ? $_SESSION['poadmin']['lip'] : '';
-$llast = (isset($_SESSION['poadmin']['prior_login'])) ? $_SESSION['poadmin']['prior_login'] : '';
-$bot_name = (isset($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : $bot_name;
-$bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
-$hide_logo = (isset($_SESSION['display'])) ? $_SESSION['display'] : '';
+$name       = (isset($_SESSION['poadmin']['name'])) ? $_SESSION['poadmin']['name'] : '';
+$ip         = (isset($_SESSION['poadmin']['ip'])) ? $_SESSION['poadmin']['ip'] : '';
+$last       = (isset($_SESSION['poadmin']['last_login'])) ? $_SESSION['poadmin']['last_login'] : '';
+$lip        = (isset($_SESSION['poadmin']['lip'])) ? $_SESSION['poadmin']['lip'] : '';
+$llast      = (isset($_SESSION['poadmin']['prior_login'])) ? $_SESSION['poadmin']['prior_login'] : '';
+$bot_name   = (isset($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : $bot_name;
+$bot_id     = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
+$hide_logo  = (isset($_SESSION['display'])) ? $_SESSION['display'] : '';
 $bot_format = (isset($_SESSION['poadmin']['bot_format'])) ? $_SESSION['poadmin']['bot_format'] : '';
 
 
 # Build page sections
 # ordered here in the order that the page is constructed
-$logo = $template->getSection('Logo');
-$titleSpan = $template->getSection('TitleSpan');
-$main = $template->getSection('Main');
-$divDecoration = '';
-$mainContent = $template->getSection('LoginForm');
-$noLeftNav = $template->getSection('NoLeftNav');
-$noRightNav = $template->getSection('NoRightNav');
-$navHeader = $template->getSection('NavHeader');
-$footer = $template->getSection('Footer');
-$topNav = '';
-$leftNav = '';
-$rightNav = '';
-$rightNavLinks = '';
-$lowerScripts = $template->getSection('LogoLinkScript');
-$pageTitleInfo = '';
-$topNavLinks = makeLinks('top', makeTopLinks());
-$leftNavLinks = makeLinks('left', makeLeftLinks());
-$mediaType = ' media="screen"';
-$mainTitle = 'Program O Login';
-$FooterInfo = '<p>&copy; 2011-2014 My Program-O<br /><a href="http://www.program-o.com">www.program-o.com</a></p>';
-$headerTitle = '';
-$pageTitle = 'My-Program O - Login';
-$upperScripts = '';
-$extraCSS = '';
+$logo           = $template->getSection('Logo');
+$titleSpan      = $template->getSection('TitleSpan');
+$main           = $template->getSection('Main');
+$divDecoration  = '';
+$mainContent    = $template->getSection('LoginForm');
+$noLeftNav      = $template->getSection('NoLeftNav');
+$noRightNav     = $template->getSection('NoRightNav');
+$navHeader      = $template->getSection('NavHeader');
+$footer         = $template->getSection('Footer');
+$topNav         = '';
+$leftNav        = '';
+$rightNav       = '';
+$rightNavLinks  = '';
+$lowerScripts   = $template->getSection('LogoLinkScript');
+$pageTitleInfo  = '';
+$topNavLinks    = makeLinks('top', makeTopLinks());
+$leftNavLinks   = makeLinks('left', makeLeftLinks());
+$mediaType      = ' media="screen"';
+$mainTitle      = 'Program O Login';
+$FooterInfo     = '<p>&copy; 2011-2014 My Program-O<br /><a href="http://www.program-o.com">www.program-o.com</a></p>';
+$headerTitle    = '';
+$pageTitle      = 'My-Program O - Login';
+$upperScripts   = '';
+$extraCSS       = '';
 
 //if we get to the login page and we are still actually logged in
 //just destroy the session to prevent weirdness
@@ -157,7 +157,7 @@ $upperScripts .= ($hide_logo == 'HideLogoCSS') ? $template->getSection('HideLogo
 
 # Build page content from the template
 
-$content = $template->getSection('Header');
+$content  = $template->getSection('Header');
 #$content .= "hide_logo = $hide_logo";
 $content .= $template->getSection('PageBody');
 
@@ -166,7 +166,9 @@ $styleSheet = 'style.css';
 $errMsgClass = (!empty($msg)) ? "ShowError" : "HideError";
 $errMsgStyle = $template->getSection($errMsgClass);
 $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
-switch ($branch) {
+
+switch ($branch)
+{
     case 'master':
         $bSelOptD = '';
         $bSelOptM = ' selected="selected"';
@@ -176,41 +178,41 @@ switch ($branch) {
         $bSelOptM = '';
 }
 $searches = array(
-    '[charset]' => $charset,
-    '[myPage]' => $curPage,
-    '[pageTitle]' => $pageTitle,
-    '[styleSheet]' => $styleSheet,
-    '[mediaType]' => $mediaType,
-    '[extraCSS]' => $extraCSS,
-    '[upperScripts]' => $upperScripts,
-    '[logo]' => $logo,
-    '[pageTitleInfo]' => $pageTitleInfo,
-    '[topNav]' => $topNav,
-    '[leftNav]' => $leftNav,
-    '[rightNav]' => $rightNav,
-    '[main]' => $main,
-    '[footer]' => $footer,
-    '[lowerScripts]' => $lowerScripts,
-    '[titleSpan]' => $titleSpan,
-    '[divDecoration]' => $divDecoration,
-    '[topNavLinks]' => $topNavLinks,
-    '[navHeader]' => $navHeader,
-    '[leftNavLinks]' => $leftNavLinks,
-    '[mainTitle]' => $mainTitle,
-    '[mainContent]' => $mainContent,
-    '[rightNavLinks]' => $rightNavLinks,
-    '[FooterInfo]' => $FooterInfo,
-    '[headerTitle]' => $headerTitle,
-    '[errMsg]' => $msg,
-    '[bot_id]' => $bot_id,
-    '[bot_name]' => $bot_name,
-    '[errMsgStyle]' => $errMsgStyle,
-    '[noRightNav]' => $noRightNav,
-    '[noLeftNav]' => $noLeftNav,
-    '[version]' => $version,
-    '[branch]' => $branches[$branch],
-    '[bSelOptD]' => $bSelOptD,
-    '[bSelOptM]' => $bSelOptM,
+    '[charset]'         => $charset,
+    '[myPage]'          => $curPage,
+    '[pageTitle]'       => $pageTitle,
+    '[styleSheet]'      => $styleSheet,
+    '[mediaType]'       => $mediaType,
+    '[extraCSS]'        => $extraCSS,
+    '[upperScripts]'    => $upperScripts,
+    '[logo]'            => $logo,
+    '[pageTitleInfo]'   => $pageTitleInfo,
+    '[topNav]'          => $topNav,
+    '[leftNav]'         => $leftNav,
+    '[rightNav]'        => $rightNav,
+    '[main]'            => $main,
+    '[footer]'          => $footer,
+    '[lowerScripts]'    => $lowerScripts,
+    '[titleSpan]'       => $titleSpan,
+    '[divDecoration]'   => $divDecoration,
+    '[topNavLinks]'     => $topNavLinks,
+    '[navHeader]'       => $navHeader,
+    '[leftNavLinks]'    => $leftNavLinks,
+    '[mainTitle]'       => $mainTitle,
+    '[mainContent]'     => $mainContent,
+    '[rightNavLinks]'   => $rightNavLinks,
+    '[FooterInfo]'      => $FooterInfo,
+    '[headerTitle]'     => $headerTitle,
+    '[errMsg]'          => $msg,
+    '[bot_id]'          => $bot_id,
+    '[bot_name]'        => $bot_name,
+    '[errMsgStyle]'     => $errMsgStyle,
+    '[noRightNav]'      => $noRightNav,
+    '[noLeftNav]'       => $noLeftNav,
+    '[version]'         => $version,
+    '[branch]'          => $branches[$branch],
+    '[bSelOptD]'        => $bSelOptD,
+    '[bSelOptM]'        => $bSelOptM,
     '[bot_format_link]' => $bot_format_link,
 );
 

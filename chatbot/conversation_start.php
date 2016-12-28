@@ -78,16 +78,16 @@ $say = '';
 $display = "";
 
 $options = array(
-    'convo_id' => FILTER_SANITIZE_STRING,
-    'bot_id' => FILTER_SANITIZE_NUMBER_INT,
+    'convo_id'      => FILTER_SANITIZE_STRING,
+    'bot_id'        => FILTER_SANITIZE_NUMBER_INT,
     'say' => array(
-        'filter' => FILTER_SANITIZE_STRING,
-        'flags' => FILTER_FLAG_NO_ENCODE_QUOTES
+        'filter'    => FILTER_SANITIZE_STRING,
+        'flags'     => FILTER_FLAG_NO_ENCODE_QUOTES
     ),
-    'format' => FILTER_SANITIZE_STRING,
-    'debug_mode' => FILTER_SANITIZE_NUMBER_INT,
-    'debug_level' => FILTER_SANITIZE_NUMBER_INT,
-    'name' => FILTER_SANITIZE_STRING
+    'format'        => FILTER_SANITIZE_STRING,
+    'debug_mode'    => FILTER_SANITIZE_NUMBER_INT,
+    'debug_level'   => FILTER_SANITIZE_NUMBER_INT,
+    'name'          => FILTER_SANITIZE_STRING
 );
 
 
@@ -170,6 +170,7 @@ if (!empty($say)) {
 
         $confirm = $sth->rowCount();
         // Get user id, so that we can clear the client properties
+        /** @noinspection SqlDialectInspection */
         $sql = "SELECT `id` FROM `$dbn`.`users` WHERE `session_id` = '$new_convo_id' limit 1;";
         $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
 
@@ -179,7 +180,8 @@ if (!empty($say)) {
             $convoArr['conversation']['convo_id'] = $new_convo_id;
 
             runDebug(__FILE__, __FUNCTION__, __LINE__, "User ID = $user_id.", 4);
-            $sql = "delete from `$dbn`.`client_properties` where `user_id` = $user_id;";
+            /** @noinspection SqlDialectInspection */
+            $sql = "DELETE FROM `$dbn`.`client_properties` WHERE `user_id` = $user_id;";
             runDebug(__FILE__, __FUNCTION__, __LINE__, "Clear client properties from the DB - SQL:\n$sql", 4);
         }
 

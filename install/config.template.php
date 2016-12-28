@@ -28,17 +28,17 @@ define('_BASE_URL_', $baseURL);
 // Define paths for include files
 //------------------------------------------------------------------------
 
-define('_ADMIN_PATH_', _BASE_PATH_ . "admin$path_separator");
-define('_BOTCORE_PATH_', _BASE_PATH_ . "chatbot{$path_separator}core$path_separator");
-define('_LIB_PATH_', _BASE_PATH_ . "library$path_separator");
-define('_ADDONS_PATH_', _BASE_PATH_ . "chatbot{$path_separator}addons$path_separator");
-define('_CONF_PATH_', _BASE_PATH_ . "config$path_separator");
-define('_LOG_PATH_', _BASE_PATH_ . "logs$path_separator");
-define('_DEBUG_PATH_', _BASE_PATH_ . "chatbot{$path_separator}debug$path_separator");
-define('_INSTALL_PATH_', _BASE_PATH_ . "install$path_separator");
+define('_ADMIN_PATH_',   _BASE_PATH_  . "admin$path_separator");
+define('_BOTCORE_PATH_', _BASE_PATH_  . "chatbot{$path_separator}core$path_separator");
+define('_LIB_PATH_',     _BASE_PATH_  . "library$path_separator");
+define('_ADDONS_PATH_',  _BASE_PATH_  . "chatbot{$path_separator}addons$path_separator");
+define('_CONF_PATH_',    _BASE_PATH_  . "config$path_separator");
+define('_LOG_PATH_',     _BASE_PATH_  . "logs$path_separator");
+define('_DEBUG_PATH_',   _BASE_PATH_  . "chatbot{$path_separator}debug$path_separator");
+define('_INSTALL_PATH_', _BASE_PATH_  . "install$path_separator");
 define('_CAPTCHA_PATH_', _ADMIN_PATH_ . "captcha-images$path_separator");
-define('_UPLOAD_PATH_', _ADMIN_PATH_ . "uploads$path_separator");
-define('IS_WINDOWS', (DIRECTORY_SEPARATOR == '/') ? false : true);
+define('_UPLOAD_PATH_',  _ADMIN_PATH_ . "uploads$path_separator");
+define('IS_WINDOWS',     (DIRECTORY_SEPARATOR == '/') ? false : true);
 #define('_SESSION_PATH_', _ADMIN_PATH_ . '[session_dir]' . $path_separator);
 # The above line is commented out till I can come up with a better implementation of session handling
 
@@ -46,10 +46,10 @@ define('IS_WINDOWS', (DIRECTORY_SEPARATOR == '/') ? false : true);
 // Define URL paths
 //------------------------------------------------------------------------
 
-define('_ADMIN_URL_', _BASE_URL_ . 'admin/');
-define('_LIB_URL_', _BASE_URL_ . 'library/');
-define('_LOG_URL_', _BASE_URL_ . 'logs/');
-define('_DEBUG_URL_', _BASE_URL_ . 'chatbot/debug/');
+define('_ADMIN_URL_',   _BASE_URL_ . 'admin/');
+define('_LIB_URL_',     _BASE_URL_ . 'library/');
+define('_LOG_URL_',     _BASE_URL_ . 'logs/');
+define('_DEBUG_URL_',   _BASE_URL_ . 'chatbot/debug/');
 define('_INSTALL_URL_', _BASE_URL_ . 'install/');
 
 //------------------------------------------------------------------------
@@ -81,14 +81,14 @@ ini_set('display_errors', false);
 // DB and time zone settings
 //------------------------------------------------------------------------
 $time_zone_locale = '[time_zone_locale]'; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-$dbh = '[dbh]';  # dev remote server location
-$dbPort = '[dbPort]';    # dev database name/prefix
-$dbn = '[dbn]';    # dev database name/prefix
-$dbu = '[dbu]';       # dev database username
-$dbp = '[dbp]';  # dev database password
+$dbh     = '[dbh]';  # dev remote server location
+$dbPort  = '[dbPort]';    # dev database name/prefix
+$dbn     = '[dbn]';    # dev database name/prefix
+$dbu     = '[dbu]';       # dev database username
+$dbp     = '[dbp]';  # dev database password
 //these are the admin DB settings in case you want make the admin a different db user with more privs
-$adm_dbu = '[adm_dbu]';
-$adm_dbp = '[adm_dbp]';
+$adm_dbu    = '[adm_dbu]';
+$adm_dbp    = '[adm_dbp]';
 
 //------------------------------------------------------------------------
 // Default bot settings

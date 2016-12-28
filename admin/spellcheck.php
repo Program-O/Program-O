@@ -78,32 +78,32 @@ else {
 $content = str_replace('[group]', $group, $content);
 $sc_enabled = (USE_SPELL_CHECKER) ? 'enabled' : 'disabled';
 
-$topNav = $template->getSection('TopNav');
-$leftNav = $template->getSection('LeftNav');
-$main = $template->getSection('Main');
+$topNav         = $template->getSection('TopNav');
+$leftNav        = $template->getSection('LeftNav');
+$main           = $template->getSection('Main');
 
-$navHeader = $template->getSection('NavHeader');
-$rightNav = $template->getSection('RightNav');
+$navHeader      = $template->getSection('NavHeader');
+$rightNav       = $template->getSection('RightNav');
 
-$rightNavLinks = getMisspelledWords();
-$FooterInfo = getFooter();
-$errMsgClass = (!empty($msg)) ? "ShowError" : "HideError";
-$errMsgStyle = $template->getSection($errMsgClass);
+$rightNavLinks  = getMisspelledWords();
+$FooterInfo     = getFooter();
+$errMsgClass    = (!empty($msg)) ? "ShowError" : "HideError";
+$errMsgStyle    = $template->getSection($errMsgClass);
 
-$noLeftNav = '';
-$noTopNav = '';
-$noRightNav = '';
+$noLeftNav      = '';
+$noTopNav       = '';
+$noRightNav     = '';
 
-$headerTitle = 'Actions:';
-$pageTitle = 'My-Program O - Spellcheck Editor';
-$mainContent = $content;
-$mainTitle = 'Spellcheck Editor';
+$headerTitle    = 'Actions:';
+$pageTitle      = 'My-Program O - Spellcheck Editor';
+$mainContent    = $content;
+$mainTitle      = 'Spellcheck Editor';
 
 $mainContent = str_replace('[spellCheckForm]', spellCheckForm(), $mainContent);
 $mainContent = str_replace('[sc_enabled]', $sc_enabled, $mainContent);
-$rightNav = str_replace('[rightNavLinks]', $rightNavLinks, $rightNav);
-$rightNav = str_replace('[navHeader]', $navHeader, $rightNav);
-$rightNav = str_replace('[headerTitle]', scPaginate(), $rightNav);
+$rightNav    = str_replace('[rightNavLinks]', $rightNavLinks, $rightNav);
+$rightNav    = str_replace('[navHeader]', $navHeader, $rightNav);
+$rightNav    = str_replace('[headerTitle]', scPaginate(), $rightNav);
 
 /**
  * Function scPaginate
@@ -131,8 +131,10 @@ function scPaginate()
     $link = " - <a class=\"paginate\" href=\"index.php?page=spellcheck&amp;group=[group]\">[label]</a>";
     $curStart = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
     $firstPage = 1;
+
     $prev = ($curStart > ($firstPage + 1)) ? $curStart - 1 : -1;
     $next = ($lastPage > ($curStart + 1)) ? $curStart + 1 : -1;
+
     $firstLink = ($firstPage != $curStart) ? str_replace('[group]', '1', $link) : '';
     $prevLink = ($prev > 0) ? str_replace('[group]', $prev, $link) : '';
     $curLink = "- $curStart ";
@@ -358,19 +360,19 @@ function editSpellForm($id)
 {
     global $dbConn, $template, $get_vars;
     $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
-    $form = $template->getSection('EditSpellForm');
+    $form   = $template->getSection('EditSpellForm');
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
+    $sql    = "SELECT * FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
 
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $uc_missspelling = _strtoupper($row['missspelling']);
     $uc_correction = _strtoupper($row['correction']);
 
-    $form = str_replace('[id]', $row['id'], $form);
-    $form = str_replace('[missspelling]', $uc_missspelling, $form);
-    $form = str_replace('[correction]', $uc_correction, $form);
-    $form = str_replace('[group]', $group, $form);
+    $form   = str_replace('[id]', $row['id'], $form);
+    $form   = str_replace('[missspelling]', $uc_missspelling, $form);
+    $form   = str_replace('[correction]', $uc_correction, $form);
+    $form   = str_replace('[group]', $group, $form);
 
     return $form;
 }

@@ -369,44 +369,44 @@ function score_matches($convoArr, $allrows, $pattern)
     # set the scores for each type of word or sentence to be used in this function
 
     # full pattern match scores:
-    $this_bot_match = 250;
-    $underscore_match = 100;
-    $topic_underscore_match = 80;
-    $topic_direct_match = 50;
-    $topic_star_match = 10;
-    $thatpattern_underscore_match = 45;
-    $thatpattern_direct_match = 15;
-    $thatpattern_star_match = 2;
-    $direct_pattern_match = 10;
-    $pattern_direct_match = 7;
-    $pattern_star_match = 1;
-    $default_pattern_match = 5;
+    $this_bot_match                 = 250;
+    $underscore_match               = 100;
+    $topic_underscore_match         = 80;
+    $topic_direct_match             = 50;
+    $topic_star_match               = 10;
+    $thatpattern_underscore_match   = 45;
+    $thatpattern_direct_match       = 15;
+    $thatpattern_star_match         = 2;
+    $direct_pattern_match           = 10;
+    $pattern_direct_match           = 7;
+    $pattern_star_match             = 1;
+    $default_pattern_match          = 5;
 
     # individual word match scores:
-    $uncommon_word_match = 8;
-    $common_word_match = 1;
-    $direct_word_match = 2;
-    $underscore_word_match = 25;
-    $star_word_match = 1;
-    $rejected = -1000;
+    $uncommon_word_match        = 8;
+    $common_word_match          = 1;
+    $direct_word_match          = 2;
+    $underscore_word_match      = 25;
+    $star_word_match            = 1;
+    $rejected                   = -1000;
 
     # loop through all relevant results
     foreach ($allrows as $all => $subrow)
     {
-        $category_bot_id = isset($subrow['bot_id']) ? $subrow['bot_id'] : 1;
-        $category_topic = $subrow['topic'];
-        $category_thatpattern = $subrow['thatpattern'];
-        $category_pattern = $subrow['pattern'];
-        $check_pattern_words = true;
+        $category_bot_id        = isset($subrow['bot_id']) ? $subrow['bot_id'] : 1;
+        $category_topic         = $subrow['topic'];
+        $category_thatpattern   = $subrow['thatpattern'];
+        $category_pattern       = $subrow['pattern'];
+        $check_pattern_words    = true;
 
         # make it all lower case, to make it easier to test, and do it using mbstring functions if possible
-        $category_pattern_lc = _strtolower($category_pattern);
-        $category_thatpattern_lc = _strtolower($category_thatpattern);
-        $category_topic_lc = _strtolower($category_topic);
-        $default_pattern_lc = _strtolower($default_pattern);
-        $pattern_lc = _strtolower($pattern);
-        $topic_lc = _strtolower($topic);
-        $that_lc = _strtolower($that);
+        $category_pattern_lc        = _strtolower($category_pattern);
+        $category_thatpattern_lc    = _strtolower($category_thatpattern);
+        $category_topic_lc          = _strtolower($category_topic);
+        $default_pattern_lc         = _strtolower($default_pattern);
+        $pattern_lc                 = _strtolower($pattern);
+        $topic_lc                   = _strtolower($topic);
+        $that_lc                    = _strtolower($that);
 
         // Start scoring here
         $current_score = 0;

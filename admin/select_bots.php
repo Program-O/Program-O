@@ -13,39 +13,45 @@ $selectBot = '';
 $curBot = array();
 $post_vars = filter_input_array(INPUT_POST);
 
-if ((isset($post_vars['action'])) && ($post_vars['action'] == "update")) {
+if ((isset($post_vars['action'])) && ($post_vars['action'] == "update"))
+{
     $selectBot .= getChangeList();
     $msg = updateBotSelection();
     $selectBot .= getSelectedBot();
-} elseif ((isset($post_vars['action'])) && ($post_vars['action'] == "change")) {
+}
+elseif ((isset($post_vars['action'])) && ($post_vars['action'] == "change")) {
     $bot_id = $post_vars['bot_id'];
     changeBot();
     $selectBot .= getChangeList();
     $selectBot .= getSelectedBot();
-} elseif ((isset($post_vars['action'])) && ($post_vars['action'] == "add")) {
+}
+elseif ((isset($post_vars['action'])) && ($post_vars['action'] == "add"))
+{
     $selectBot .= addBot();
     $selectBot .= getChangeList();
     $selectBot .= getSelectedBot();
-} else {
+}
+else {
     $selectBot .= getChangeList();
     $selectBot .= getSelectedBot();
 }
 $bot_format = (isset($curBot['format'])) ? $curBot['format'] : $format;
 $_SESSION['poadmin']['format'] = $bot_format;
-$topNav = $template->getSection('TopNav');
-$leftNav = $template->getSection('LeftNav');
-$main = $template->getSection('Main');
-$navHeader = $template->getSection('NavHeader');
-$FooterInfo = getFooter();
-$errMsgClass = (!empty($msg)) ? "ShowError" : "HideError";
-$errMsgStyle = $template->getSection($errMsgClass);
-$noLeftNav = '';
-$noTopNav = '';
-$noRightNav = $template->getSection('NoRightNav');
-$headerTitle = 'Actions:';
-$pageTitle = 'My-Program O - Select or Edit a Bot';
-$mainContent = $selectBot;
-$mainTitle = 'Choose/Edit a Bot';
+
+$topNav         = $template->getSection('TopNav');
+$leftNav        = $template->getSection('LeftNav');
+$main           = $template->getSection('Main');
+$navHeader      = $template->getSection('NavHeader');
+$FooterInfo     = getFooter();
+$errMsgClass    = (!empty($msg)) ? "ShowError" : "HideError";
+$errMsgStyle    = $template->getSection($errMsgClass);
+$noLeftNav      = '';
+$noTopNav       = '';
+$noRightNav     = $template->getSection('NoRightNav');
+$headerTitle    = 'Actions:';
+$pageTitle      = 'My-Program O - Select or Edit a Bot';
+$mainContent    = $selectBot;
+$mainTitle      = 'Choose/Edit a Bot';
 
 /**
  * Returns a list of current, active chatbots, for selecting a parent chatbot
@@ -59,18 +65,31 @@ function getBotParentList($current_parent)
     global $dbConn;
 
     //get active bots from the db
-    if (empty($current_parent)) $current_parent = 0;
-    $sql = "SELECT * FROM `bots` where bot_active = '1'";
+    if (empty($current_parent))
+    {
+        $current_parent = 0;
+    }
+
+    /** @noinspection SqlDialectInspection */
+    $sql = "SELECT * FROM `bots` WHERE bot_active = '1'";
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $options = '                  <option value="0"[noBot]>No Parent Bot</option>';
 
-    foreach ($result as $row) {
-        if ($row['bot_id'] == 0) $options = str_replace('[noBot]', 'selected="selected"', $options);
-        if ($current_parent == $row['bot_id']) {
+    foreach ($result as $row)
+    {
+        if ($row['bot_id'] == 0)
+        {
+            $options = str_replace('[noBot]', 'selected="selected"', $options);
+        }
+
+        if ($current_parent == $row['bot_id'])
+        {
             $sel = "selected=\"selected\"";
-        } else {
+        }
+        else {
             $sel = '';
         }
+
         $options .= '                  <option value="' . $row['bot_id'] . '" ' . $sel . '>' . $row['bot_name'] . '</option>';
     }
     $options = str_replace('[noBot]', 'selected="selected"', $options);
@@ -242,6 +261,7 @@ function updateBotSelection()
     $logFile = _LOG_URL_ . 'admin.error.log';
     $msg = '';
     $bot_id = $post_vars['bot_id'];
+    /** @noinspection SqlDialectInspection */
     $sql = "SELECT * FROM bots WHERE bot_id = $bot_id;";
     $result = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $sql = '';
@@ -263,7 +283,8 @@ function updateBotSelection()
         */
         if ($result[$key] != $post_vars[$key])
         {
-            $sql .= "UPDATE `bots` SET `$key` = '$safeVal' where `bot_id` = $bot_id limit 1;\n";
+            /** @noinspection SqlDialectInspection */
+            $sql .= "UPDATE `bots` SET `$key` = '$safeVal' WHERE `bot_id` = $bot_id limit 1;\n";
         }
     }
 
@@ -338,27 +359,29 @@ function addBot()
     $sql = 'INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `error_response`)
 VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,:conversation_lines,:remember_up_to,:debugemail,:debugshow,:debugmode,:aiml_pattern,:error_response);';
     $params = array(
-        ':bot_name' => $bot_name,
-        ':bot_desc' => $bot_desc,
-        ':bot_desc' => $bot_desc,
-        ':bot_active' => $bot_active,
-        ':bot_parent_id' => $bot_parent_id,
-        ':format' => $format,
-        ':save_state' => $save_state,
-        ':conversation_lines' => $conversation_lines,
-        ':remember_up_to' => $remember_up_to,
-        ':debugemail' => $debugemail,
-        ':debugshow' => $debugshow,
-        ':debugmode' => $debugmode,
-        ':aiml_pattern' => $default_aiml_pattern,
-        ':error_response' => $error_response
+        ':bot_name'             => $bot_name,
+        ':bot_desc'             => $bot_desc,
+        ':bot_desc'             => $bot_desc,
+        ':bot_active'           => $bot_active,
+        ':bot_parent_id'        => $bot_parent_id,
+        ':format'               => $format,
+        ':save_state'           => $save_state,
+        ':conversation_lines'   => $conversation_lines,
+        ':remember_up_to'       => $remember_up_to,
+        ':debugemail'           => $debugemail,
+        ':debugshow'            => $debugshow,
+        ':debugmode'            => $debugmode,
+        ':aiml_pattern'         => $default_aiml_pattern,
+        ':error_response'       => $error_response
     );
     $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
-    if ($affectedRows > 0) {
+    if ($affectedRows > 0)
+    {
         $msg = "$bot_name Bot details added, please dont forget to create the bot personality and add the aiml.";
 
-    } else {
+    }
+    else {
         $msg = "$bot_name Bot details could not be added.";
     }
 
@@ -470,6 +493,7 @@ function changeBot()
 
     if ($post_vars['bot_id'] != "new")
     {
+        /** @noinspection SqlDialectInspection */
         $sql = "SELECT * FROM `bots` WHERE bot_id = '$botId'";
         $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
         $count = count($row);

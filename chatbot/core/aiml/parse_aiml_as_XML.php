@@ -797,8 +797,8 @@ function parse_srai_tag(&$convoArr, $element, $parentName, $level)
         preg_replace($starArray, '*', $elementXML) :
         $srai;
 
-    $srai_new = preg_replace('~<[\/]?text>~i', '', $srai_new);
-    $srai_new = preg_replace('~<[\/]?srai>~i', '', $srai_new);
+    $srai_new   = preg_replace('~<[\/]?text>~i', '', $srai_new);
+    $srai_new   = preg_replace('~<[\/]?srai>~i', '', $srai_new);
 
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai_new.txt", print_r($srai_new, true) . "\n", FILE_APPEND);
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai.txt", print_r($srai, true) . "\n", FILE_APPEND);

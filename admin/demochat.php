@@ -11,25 +11,24 @@
 
 /** @noinspection PhpUndefinedVariableInspection */
 $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
-$upperScripts = '';
+$upperScripts   = '';
+$topNav         = $template->getSection('TopNav');
+$leftNav        = $template->getSection('LeftNav');
+$main           = $template->getSection('Main');
+$navHeader      = $template->getSection('NavHeader');
 
-$topNav = $template->getSection('TopNav');
-$leftNav = $template->getSection('LeftNav');
-$main = $template->getSection('Main');
-$navHeader = $template->getSection('NavHeader');
-$FooterInfo = getFooter();
+$FooterInfo     = getFooter();
+$errMsgClass    = (!empty($msg)) ? "ShowError" : "HideError";
+$errMsgStyle    = $template->getSection($errMsgClass);
+$noLeftNav      = '';
+$noTopNav       = '';
+$noRightNav     = $template->getSection('NoRightNav');
 
-$errMsgClass = (!empty($msg)) ? "ShowError" : "HideError";
-$errMsgStyle = $template->getSection($errMsgClass);
-$noLeftNav = '';
-$noTopNav = '';
-$noRightNav = $template->getSection('NoRightNav');
-
-$headerTitle = 'Actions:';
-$pageTitle = 'My-Program O - Chat Demo';
-$mainContent = 'This will eventually be the page for the chat demo.';
-$mainContent = showChatFrame();
-$mainTitle = 'Chat Demo';
+$headerTitle    = 'Actions:';
+$pageTitle      = 'My-Program O - Chat Demo';
+$mainContent    = 'This will eventually be the page for the chat demo.';
+$mainContent    = showChatFrame();
+$mainTitle      = 'Chat Demo';
 
 /**
  * Function showChatFrame
@@ -42,7 +41,8 @@ function showChatFrame()
     global $template, $bot_name, $bot_id, $dbConn;
 
     $qs = '?bot_id=' . $bot_id;
-    $sql = "select `format` from `bots` where `bot_id` = $bot_id limit 1;";
+    /** @noinspection SqlDialectInspection */
+    $sql = "SELECT `format` FROM `bots` WHERE `bot_id` = $bot_id limit 1;";
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
     $format = strtolower($row['format']);
 

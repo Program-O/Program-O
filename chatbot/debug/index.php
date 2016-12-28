@@ -44,10 +44,10 @@ session_start();
 $iframeURL = 'about:blank';
 
 $options = array(
-    'file' => FILTER_SANITIZE_STRING,
-    'name' => FILTER_SANITIZE_STRING,
-    'pass' => FILTER_SANITIZE_STRING,
-    'logout' => FILTER_SANITIZE_STRING,
+    'file'      => FILTER_SANITIZE_STRING,
+    'name'      => FILTER_SANITIZE_STRING,
+    'pass'      => FILTER_SANITIZE_STRING,
+    'logout'    => FILTER_SANITIZE_STRING,
 );
 $post_vars = filter_input_array(INPUT_POST, $options);
 

@@ -41,12 +41,12 @@ $display_template = <<<end_display
 end_display;
 
 $options = array(
-    'say' => FILTER_SANITIZE_STRING,
-    'format' => FILTER_SANITIZE_STRING,
-    'bot_id' => FILTER_SANITIZE_STRING,
-    'convo_id' => array(
-        'filter' => FILTER_CALLBACK,
-        'options' => 'validateConvoId'
+    'say'       => FILTER_SANITIZE_STRING,
+    'format'    => FILTER_SANITIZE_STRING,
+    'bot_id'    => FILTER_SANITIZE_STRING,
+    'convo_id'  => array(
+        'filter'    => FILTER_CALLBACK,
+        'options'   => 'validateConvoId'
     )
 );
 

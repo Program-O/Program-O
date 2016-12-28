@@ -43,32 +43,32 @@ $XmlEntities = array(
 
 $AdminsOpts = getAdminsOpts();
 
-$membersForm = $template->getSection('MembersForm');
-$members_list_form = $template->getSection('MembersListForm');
-$showHelp = $template->getSection('MembersShowHelp');
-$topNav = $template->getSection('TopNav');
-$leftNav = $template->getSection('LeftNav');
-$main = $template->getSection('Main');
-$navHeader = $template->getSection('NavHeader');
-$FooterInfo = getFooter();
-$errMsgClass = (!empty($msg)) ? "ShowError" : "HideError";
-$errMsgStyle = $template->getSection($errMsgClass);
-$noLeftNav = '';
-$noTopNav = '';
-$noRightNav = $template->getSection('NoRightNav');
-$headerTitle = 'Actions:';
-$pageTitle = 'My-Program O - Admin Accounts';
-$mainContent = $template->getSection('MembersMain');
-$mainTitle = "Modify Admin Account Data [helpLink]";
+$membersForm        = $template->getSection('MembersForm');
+$members_list_form  = $template->getSection('MembersListForm');
+$showHelp           = $template->getSection('MembersShowHelp');
+$topNav             = $template->getSection('TopNav');
+$leftNav            = $template->getSection('LeftNav');
+$main               = $template->getSection('Main');
+$navHeader          = $template->getSection('NavHeader');
+$FooterInfo         = getFooter();
+$errMsgClass        = (!empty($msg)) ? "ShowError" : "HideError";
+$errMsgStyle        = $template->getSection($errMsgClass);
+$noLeftNav          = '';
+$noTopNav           = '';
+$noRightNav         = $template->getSection('NoRightNav');
+$headerTitle        = 'Actions:';
+$pageTitle          = 'My-Program O - Admin Accounts';
+$mainContent        = $template->getSection('MembersMain');
+$mainTitle          = "Modify Admin Account Data [helpLink]";
 
-$members_list_form = str_replace('[adminList]', $AdminsOpts, $members_list_form);
-$mainContent = str_replace('[showHelp]', $showHelp, $mainContent);
-$mainContent = str_replace('[members_content]', $membersForm, $mainContent);
-$mainContent = str_replace('[members_list_form]', $members_list_form, $mainContent);
-$mainContent = str_replace('[user_name]', $user_name, $mainContent);
-$mainContent = str_replace('[action]', $action, $mainContent);
-$mainContent = str_replace('[id]', $id, $mainContent);
-$mainTitle = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
+$members_list_form  = str_replace('[adminList]', $AdminsOpts, $members_list_form);
+$mainContent        = str_replace('[showHelp]', $showHelp, $mainContent);
+$mainContent        = str_replace('[members_content]', $membersForm, $mainContent);
+$mainContent        = str_replace('[members_list_form]', $members_list_form, $mainContent);
+$mainContent        = str_replace('[user_name]', $user_name, $mainContent);
+$mainContent        = str_replace('[action]', $action, $mainContent);
+$mainContent        = str_replace('[id]', $id, $mainContent);
+$mainTitle          = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
 
 
 /**

@@ -23,24 +23,24 @@ $msg = (empty($action)) ? '' : $action();
 
 $mainContent = str_replace('[group]', $group, $mainContent);
 
-$topNav = $template->getSection('TopNav');
-$leftNav = $template->getSection('LeftNav');
-$rightNav = $template->getSection('RightNav');
-$main = $template->getSection('Main');
-$navHeader = $template->getSection('NavHeader');
-$FooterInfo = getFooter();
+$topNav         = $template->getSection('TopNav');
+$leftNav        = $template->getSection('LeftNav');
+$rightNav       = $template->getSection('RightNav');
+$main           = $template->getSection('Main');
+$navHeader      = $template->getSection('NavHeader');
+$FooterInfo     = getFooter();
 
-$errMsgClass = (!empty($msg)) ? "ShowError" : "HideError";
-$errMsgStyle = $template->getSection($errMsgClass);
+$errMsgClass    = (!empty($msg)) ? "ShowError" : "HideError";
+$errMsgStyle    = $template->getSection($errMsgClass);
 
-$noLeftNav = '';
-$noTopNav = '';
+$noLeftNav      = '';
+$noTopNav       = '';
 
-$noRightNav = $template->getSection('NoRightNav');
+$noRightNav     = $template->getSection('NoRightNav');
 
-$headerTitle = 'Actions:';
-$pageTitle = 'My-Program O - SRAI Lookup';
-$mainTitle = 'SRAI Lookup ' . $template->getSection('HelpLink');
+$headerTitle    = 'Actions:';
+$pageTitle      = 'My-Program O - SRAI Lookup';
+$mainTitle      = 'SRAI Lookup ' . $template->getSection('HelpLink');
 
 $showHelp = $template->getSection('editSRAIShowHelp');
 $mainContent = str_replace('[showHelp]', $showHelp, $mainContent);

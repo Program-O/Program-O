@@ -26,23 +26,23 @@ $func = (isset($post_vars['func'])) ? $post_vars['func'] : 'showBugForm';
 # ordered here in the order that the page is constructed
 # Only the variables that are different from the
 # login page need be set here.
-$topNav = $template->getSection('TopNav');
-$leftNav = $template->getSection('LeftNav');
-$main = $template->getSection('Main');
+$topNav         = $template->getSection('TopNav');
+$leftNav        = $template->getSection('LeftNav');
+$main           = $template->getSection('Main');
 
-$navHeader = $template->getSection('NavHeader');
+$navHeader      = $template->getSection('NavHeader');
 
-$FooterInfo = getFooter();
-$errMsgClass = (!empty($msg)) ? "ShowError" : "HideError";
-$errMsgStyle = $template->getSection($errMsgClass);
-$noLeftNav = '';
-$noTopNav = '';
-$noRightNav = $template->getSection('NoRightNav');
-$headerTitle = 'Actions:';
-$pageTitle = 'My-Program O - Report a Bug';
-$mainContent = $func();
-$lowerScripts .= '      <script type="text/javascript">var fName = document.contactForm.name;fName.focus();</script>';
-$mainTitle = 'Send a Bug Report';
+$FooterInfo     = getFooter();
+$errMsgClass    = (!empty($msg)) ? "ShowError" : "HideError";
+$errMsgStyle    = $template->getSection($errMsgClass);
+$noLeftNav      = '';
+$noTopNav       = '';
+$noRightNav     = $template->getSection('NoRightNav');
+$headerTitle    = 'Actions:';
+$pageTitle      = 'My-Program O - Report a Bug';
+$mainContent    = $func();
+$lowerScripts   .= '      <script type="text/javascript">var fName = document.contactForm.name;fName.focus();</script>';
+$mainTitle      = 'Send a Bug Report';
 
 
 /**
@@ -90,7 +90,7 @@ function sendMail()
     $cba = checkBadAddress($email);
     $cbip = checkBadIP();
 
-    if ($email != "" and $name != "" and $subject != "" and $cba == 0 and $cbip == 0 and $message != "" and ($captcha == $capKey))
+    if ($email != "" && $name != "" && $subject != "" && $cba == 0 && $cbip == 0 && $message != "" && ($captcha == $capKey))
     {
         //$toAddr = "dmorton@geekcavecreations.com, " . BUGS_EMAIL;
         $toAddr = BUGS_EMAIL;
@@ -110,11 +110,11 @@ endThanx;
     else
     {
         $description = "";
-        $description .= ($cba == 1) ? "        <li>Your email address is on our ban list.</li>\n" : "";
-        $description .= ($cbip == 1) ? "        <li>Your IP address is on our ban list.</li>\n" : "";
-        $description .= ($name == "") ? "        <li>The name field was left blank.</li>\n" : "";
-        $description .= ($subject == "") ? "        <li>The subject field was left blank.</li>\n" : "";
-        $description .= ($message == "") ? "        <li>The message field was left blank.</li>\n" : "";
+        $description .= ($cba == 1)             ? "        <li>Your email address is on our ban list.</li>\n" : "";
+        $description .= ($cbip == 1)            ? "        <li>Your IP address is on our ban list.</li>\n" : "";
+        $description .= ($name == "")           ? "        <li>The name field was left blank.</li>\n" : "";
+        $description .= ($subject == "")        ? "        <li>The subject field was left blank.</li>\n" : "";
+        $description .= ($message == "")        ? "        <li>The message field was left blank.</li>\n" : "";
         #$description .= ($captcha != $capKey) ? "        <li>The typed CAPTCHA did not match the image (image was $capKey and text was $captcha. Text entered was $rawCap).</li>\n" : "";
         $description .= ($captcha != $capKey) ? "        <li>The typed CAPTCHA did not match the image.</li>\n" : "";
         $insert = ($cba == 1 or $cbip == 1) ? " don't" : "";
