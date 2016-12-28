@@ -25,13 +25,7 @@ else
 
     if (!empty($get_vars))
     {
-        $qs = '?';
-
-        foreach ($get_vars as $key => $value)
-        {
-            $qs .= "$key=$value&";
-        }
-        $qs = rtrim($qs, '&');
+        $qs = http_build_query($get_vars);
     }
     # Config exists we will goto the bot
     $thisFile = __FILE__;
