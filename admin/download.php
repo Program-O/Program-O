@@ -34,9 +34,9 @@ if (isset($post_vars))
     else
     {
         $fileNames = $post_vars['filenames'];
-        unlink(_ADMIN_PATH_ . "downloads/$zipFilename"); // clear out any old zip files to prepare for the new one.
+        unlink(_DOWNLOAD_PATH_ . $zipFilename); // clear out any old zip files to prepare for the new one.
         $zip = new ZipArchive();
-        $success = $zip->open(_ADMIN_PATH_ . "/downloads/$zipFilename", ZipArchive::CREATE);
+        $success = $zip->open(_DOWNLOAD_PATH_ . $zipFilename, ZipArchive::CREATE);
 
         if ($success === true)
         {
