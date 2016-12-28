@@ -74,6 +74,7 @@ $noTopNav = '';
 $noRightNav = $template->getSection('NoRightNav');
 $headerTitle = 'Actions:';
 $pageTitle = "My-Program O - Download AIML files";
+
 $mainContent = $content;
 $mainTitle = "Download AIML files for the bot named  $bot_name [helpLink]";
 $mainContent = str_replace('[showHelp]', $showHelp, $mainContent);
@@ -88,61 +89,93 @@ $mainTitle = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainT
  */
 function getAIMLByFileName($filename)
 {
-    if ($filename == 'null') return "You need to select a file to download.";
+    if ($filename == 'null')
+    {
+        return "You need to select a file to download.";
+    }
+
     global $dbn, $botmaster_name, $charset, $dbConn;
+
     $bmnLen = strlen($botmaster_name) - 2;
     $bmnSearch = str_pad('[bm_name]', $bmnLen);
-    $categoryTemplate =
-        '<category><pattern>[pattern]</pattern>[that]<template>[template]</template></category>';
+    $categoryTemplate = '<category><pattern>[pattern]</pattern>[that]<template>[template]</template></category>';
+
     $cleanedFilename = $filename;
     $fileNameSearch = '[fileName]';
     $cfnLen = strlen($cleanedFilename);
+
     $fileNameSearch = str_pad($fileNameSearch, $cfnLen);
     $topicArray = array();
     $curPath = dirname(__FILE__);
     chdir($curPath);
+
     $fileContent = file_get_contents(_ADMIN_PATH_ . 'AIML_Header.dat');
     $fileContent = str_replace('[year]', date('Y'), $fileContent);
     $fileContent = str_replace('[charset]', $charset, $fileContent);
     $fileContent = str_replace($bmnSearch, $botmaster_name, $fileContent);
+
     $curDate = date('m-d-Y', time());
     $cdLen = strlen($curDate);
     $curDateSearch = str_pad('[curDate]', $cdLen);
+
     $fileContent = str_replace($curDateSearch, $curDate, $fileContent);
     $fileContent = str_replace($fileNameSearch, $cleanedFilename, $fileContent);
-    $sql = "select distinct topic from aiml where filename like '$cleanedFilename';";
+
+    /** @noinspection SqlDialectInspection */
+    $sql = "SELECT DISTINCT topic FROM aiml WHERE filename LIKE '$cleanedFilename';";
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-    foreach ($result as $row) {
+
+    foreach ($result as $row)
+    {
         $topicArray[] = $row['topic'];
     }
-    foreach ($topicArray as $topic) {
+
+    foreach ($topicArray as $topic)
+    {
         if (!empty ($topic))
+        {
             $fileContent .= "<topic name=\"$topic\">\n";
-        $sql =
-            "select pattern, thatpattern, template from aiml where topic like '$topic' and filename like '$cleanedFilename';";
+        }
+
+        /** @noinspection SqlDialectInspection */
+        $sql = "SELECT pattern, thatpattern, template FROM aiml WHERE topic LIKE '$topic' AND filename LIKE '$cleanedFilename';";
         $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-        foreach ($result as $row) {
+
+        foreach ($result as $row)
+        {
             $pattern = _strtoupper($row['pattern']);
+
             $template = str_replace("\r\n", '', $row['template']);
             $template = str_replace("\n", '', $row['template']);
+
             $newLine = str_replace('[pattern]', $pattern, $categoryTemplate);
             $newLine = str_replace('[template]', $template, $newLine);
+
             $that = (!empty ($row['thatpattern'])) ? '<that>' . $row['thatpattern'] .
                 '</that>' : '';
+
             $newLine = str_replace('[that]', $that, $newLine);
             $fileContent .= "$newLine\n";
         }
+
         if (!empty ($topic))
+        {
             $fileContent .= "</topic>\n";
+        }
     }
+
     $fileContent .= "\r\n</aiml>\r\n";
+
     $dom = new DOMDocument();
     $dom->preserveWhiteSpace = false;
     $dom->formatOutput = true;
     $dom->loadXML(trim($fileContent));
+
     $fileContent = $dom->saveXML();
+
     $outFile = ltrim($fileContent, "\n\r\n");
     $outFile = (IS_MB_ENABLED) ? mb_convert_encoding($outFile, 'UTF-8') : $outFile;
+
     return $outFile;
 }
 
