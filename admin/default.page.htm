@@ -593,6 +593,17 @@ between the start and end section tags are the only parts of the template that a
               </dd>
             </div>
 <!-- Section DownloadShowHelp End -->
+<!-- Section SyncShowHelp Start -->
+[blank]            <div id="showHelp">
+              <h3>Help...</h3>
+              <dd> If your aiml file will not synchronized you may want to check the following.</dd>
+              <dd>--Make sure the folder you are trying to synchronize to has read/write privs on it (CHMOD 755)</dd>
+              <dd>--Remove any comments from the aiml</dd>
+              <dd>--Replace everything above the first &lt;cattegory&gt; with a simple &lt;aiml&gt; tag</dd>
+              <br />--You can find alot of information on the net about writing well formed aiml.
+              <br />--If you want to learn more about writing AIML <a href="http://www.alicebot.org/documentation/aiml-primer.html" target="_new" class="hbox">start here</a>
+            </div>
+<!-- Section SyncShowHelp End -->
 <!-- Section HelpLink Start -->
             <img src="images/help.png" onclick="showHide();" title="Click to toggle help" alt="Click to toggle help" style="cursor: pointer" />
 <!-- Section HelpLink End -->
@@ -818,6 +829,55 @@ between the start and end section tags are the only parts of the template that a
           </table>
             </form>
 <!-- Section UploadAIMLForm End -->
+<!-- Section SynchronizeMain Start -->
+[blank]          <div id="uploadForm" class="fullWidth noBorder">
+            <p>
+              Use this uploader to add AIML categories to your chatbot's database. You have the option
+              to upload either individual AIML files, or ZIP archive files of up to 2MB in size.
+              This uploader no longer performs XML validation, so you need to validate your AIML files prior to
+              uploading them. It's <strong><u>STRONGLY SUGGESTED</u></strong> that you use either W3School's
+              <a href="http://www.w3schools.com/xml/xml_validator.asp" target="_blank">XML Validator</a>,
+              or the <a href="validateAIML.php">Program O AIML Validator</a>. There are other XML validators
+              available, but the W3Schools validator works well, and the Program O Validator is specifically
+              designed to validate AIML files.
+            </p>
+[upload_content]
+            <hr />
+            <div id="AIML_List">
+              List of Currently Stored AIML files for [bot_name]:<br />
+[AIML_List]
+            </div>
+            <hr />
+          </div>
+          <div id="help">
+[showHelp]
+          </div>
+<!-- Section SynchronizeMain End -->
+<!-- Section SyncAIMLForm Start -->
+[blank]            <form id="upload" enctype="multipart/form-data"  action="" method="post">
+          <table class="formTable">
+            <tr>
+              <td>
+                  <input type="checkbox" id="clearDB" name="clearDB" checked="checked" />&nbsp; &nbsp;
+                  <label for="clearDB">Clear the database of entries from this file</label>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                  <label for="bot_id">Apply this file to this bot: </label>
+                  <select name="bot_id" id="bot_id" size="1">
+[all_bots]
+                  </select>&nbsp; &nbsp;
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                  <input type="submit" name="action" id="action" value="synchronize"/>
+              </td>
+            </tr>
+          </table>
+            </form>
+<!-- Section SyncAIMLForm End -->
 <!-- Section editSRAIPage Start -->
 [blank]          <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
           <style type="text/css">

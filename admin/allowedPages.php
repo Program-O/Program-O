@@ -161,6 +161,12 @@
       'action' => FILTER_SANITIZE_STRING,
       'page' => FILTER_SANITIZE_STRING,
     ),
+    'sync' => array(
+      'clearDB' => FILTER_SANITIZE_STRING,
+      'bot_id' => FILTER_SANITIZE_STRING,
+      'action' => FILTER_SANITIZE_STRING,
+      'page' => FILTER_SANITIZE_STRING,
+    ),
     'wordcensor' => array(
       'word_to_censor' => FILTER_SANITIZE_STRING,
       'replace_with' => FILTER_SANITIZE_STRING,
