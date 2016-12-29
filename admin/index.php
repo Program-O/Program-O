@@ -343,6 +343,14 @@
                  ),
                  array(
                        '[linkClass]' => ' class="[curClass]"',
+                       '[linkHref]' => ' href="index.php?page=sync"',
+                       '[linkOnclick]' => '',
+                       '[linkAlt]' => ' alt="Synchronize AIML files"',
+                       '[linkTitle]' => ' title="Synchronize AIML files"',
+                       '[linkLabel]' => 'Synchronize AIML'
+                 ),
+                 array(
+                       '[linkClass]' => ' class="[curClass]"',
                        '[linkHref]' => ' href="index.php?page=clear"',
                        '[linkOnclick]' => '',
                        '[linkAlt]' => ' alt="Clear AIML Categories"',
