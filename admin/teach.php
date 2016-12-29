@@ -99,6 +99,9 @@ function insertAIML()
     $aiml = (empty ($thatpattern)) ? str_replace('[thatpattern]', "<that>$thatpattern</that>", $aiml) : $aiml;
     $aiml = str_replace('[template]', $aimltemplate, $aiml);
 
+    $fileName = trim($post_vars['filename']);
+    if (!strstr($fileName, '.aiml')) $fileName .= '.aiml';
+
     $topic = trim($post_vars['topic']);
     $topic = _strtoupper($topic);
     $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
@@ -118,7 +121,7 @@ function insertAIML()
             ':thatpattern' => $thatpattern,
             ':aimltemplate' => $aimltemplate,
             ':topic' => $topic,
-            ':file' => 'admin_added.aiml'
+            ':file' => $fileName
         );
         $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 

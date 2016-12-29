@@ -284,16 +284,9 @@ function save_for_nextturn($convoArr)
  **/
 function set_wildcards($convoArr, $pattern, $type)
 {
-    $user_raw = $convoArr['aiml']['user_raw'];
-    $search = array ('+','-','*','/');
-    $repl = array('PLUS','MINUS','TIMES','DIVIDEDBY');
-    $user_raw = str_replace($search, $repl, $user_raw);
-    //if (!isset($convoArr['aiml']['stars'])/* || $type == 'srai' */) $convoArr['aiml']['stars'] = array();
     $convoArr['aiml']['stars'] = array();
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Setting Wildcards. Pattern = '$pattern'", 2);
 
-    //save_file(_LOG_PATH_ . 'convoarr.txt', print_r($convoArr, true));
-    //$pattern = $convoArr['aiml']['pattern'];
     $ap = trim($pattern);
     $ap = str_replace("+", "\+", $ap);
     $ap = str_replace(" * ", " (\S*) ", $ap);
@@ -332,9 +325,10 @@ function set_wildcards($convoArr, $pattern, $type)
         }
         else
         {
-            runDebug(__FILE__, __FUNCTION__, __LINE__, "User RAW = {$convoArr['aiml']['user_raw']}", 2);
-            //$checkagainst = $convoArr['aiml']['user_raw'];
-            $checkagainst = $user_raw;
+            // normalize the RAW input, but don't change case (e.g. convert symbold to text)
+            $normalized_RAW = normalize_text($convoArr['aiml']['user_raw'], false);
+            runDebug(__FILE__, __FUNCTION__, __LINE__, "User RAW = {$normalized_RAW}", 2);
+            $checkagainst = $normalized_RAW;
         }
 
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking '$ap' against '$checkagainst'.", 2);

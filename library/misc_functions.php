@@ -118,25 +118,34 @@ function _substr($text, $start, $len = null, $encoding = null)
  * Transforms text to uppercase, removes all punctuation, and strips extra whitespace
  *
  * @param (string) $text - The text to perform the transformations on
- * @return mixed|string (string) $normalized_text - The completely transformed text
+ * @param (bool) $convert_case - Flag for converting text to uppercase. Default = true
+ * @return (string) $normalized_text - The completely transformed text
  */
-function normalize_text($text)
+function normalize_text($text, $convert_case = true)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Begin normalization - text = '$text'", 4);
 
-    $normalized_text = preg_replace('/(\d+) - (\d+)/', '$1 MINUS $2', $text);
-    $normalized_text = preg_replace('/(\d+)-(\d+)/', '$1 MINUS $2', $normalized_text);
-    $normalized_text = preg_replace('/(\d+) \+ (\d+)/', '$1 PLUS $2', $normalized_text);
-    $normalized_text = preg_replace('/(\d+)\+(\d+)/', '$1 PLUS $2', $normalized_text);
-    $normalized_text = preg_replace('/(\d+) \* (\d+)/', '$1 TIMES $2', $normalized_text);
-    $normalized_text = preg_replace('/(\d+) x (\d+)/', '$1 TIMES $2', $normalized_text);
-    $normalized_text = preg_replace('/(\d+)x(\d+)/', '$1 TIMES $2', $normalized_text);
-    $normalized_text = preg_replace('/(\d+)\*(\d+)/', '$1 TIMES $2', $normalized_text);
-    $normalized_text = preg_replace('/(\d+) \/ (\d+)/', '$1 DIVIDEDBY $2', $normalized_text);
-    $normalized_text = preg_replace('/(\d+)\/(\d+)/', '$1 DIVIDEDBY $2', $normalized_text);
-    $normalized_text = preg_replace('/[[:punct:]]/uis', ' ', $normalized_text);
-    $normalized_text = preg_replace('/\s\s+/', ' ', $normalized_text);
-    $normalized_text = _strtoupper($normalized_text);
+    $srch = array(
+        '/(\d+)\s*-\s*(\d+)/',
+        '/(\d+)\s*\+\s*(\d+)/',
+        '/(\d+)\s*\*\s*(\d+)/',
+        '/(\d+)\s*x\s*(\d+)/',
+        '/(\d+)\s*\/\s*(\d+)/',
+        '/[[:punct:]]/uis',
+        '/\s\s+/',
+    );
+    $repl = array(
+        '$1 MINUS $2',
+        '$1 PLUS $2',
+        '$1 TIMES $2',
+        '$1 TIMES $2',
+        '$1 DIVIDEDBY $2',
+        ' ',
+        ' ',
+    );
+
+    $normalized_text = preg_replace($srch, $repl, $text);
+    $normalized_text = ($convert_case) ? _strtoupper($normalized_text) : $normalized_text;
     $normalized_text = trim($normalized_text);
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Normalization complete. Text = '$normalized_text'", 4);
