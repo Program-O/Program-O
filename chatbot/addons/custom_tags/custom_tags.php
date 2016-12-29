@@ -69,6 +69,8 @@ function parse_php_tag($convoArr, $element, $parentName, $level)
 
 function parse_math_tag($convoArr, simpleXMLElement $element, $parentName, $level)
 {
+    $elementAsXML = $element->asXML();
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing a MATH tag - input is $elementAsXML.", 4);
     $response = array();
     $children = $element->children();
 
@@ -181,7 +183,6 @@ function parse_wiki_tag($convoArr, $element, $parentName, $level)
     }
 
     $response_string = implode_recursive(' ', $response);
-    // do something here
 
     $wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&format=xml&limit=1&search=' . urlencode($response_string);
     $options = array(

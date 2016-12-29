@@ -369,12 +369,6 @@ function processUpload()
     }
     else
     {
-        // Create uploads directory if necessary
-        if (!file_exists('uploads'))
-        {
-            mkdir('uploads');
-        }
-
         // Move the file
         $file = _UPLOAD_PATH_ . $_FILES['aimlfile']['name'];
 

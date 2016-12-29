@@ -105,7 +105,7 @@ function wcPaginate()
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT COUNT(*) FROM `wordcensor` WHERE 1";
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
-    $rowCount = $row['count(*)'];
+    $rowCount = isset($row['COUNT(*)']) ? $row['COUNT(*)'] : 0;
     $lastPage = intval($rowCount / 50);
     $remainder = ($rowCount / 50) - $lastPage;
 

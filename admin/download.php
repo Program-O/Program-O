@@ -34,7 +34,8 @@ if (isset($post_vars))
     else
     {
         $fileNames = $post_vars['filenames'];
-        unlink(_DOWNLOAD_PATH_ . $zipFilename); // clear out any old zip files to prepare for the new one.
+        // clear out old zip file if it exists, to prepare for the new one.
+        if(file_exists(_DOWNLOAD_PATH_ . $zipFilename)) unlink(_DOWNLOAD_PATH_ . $zipFilename);
         $zip = new ZipArchive();
         $success = $zip->open(_DOWNLOAD_PATH_ . $zipFilename, ZipArchive::CREATE);
 

@@ -295,8 +295,7 @@ function parse_star_tag($convoArr, $element, $parentName, $level)
     $response = array();
     runDebug(__FILE__, __FUNCTION__, __LINE__, "parse_star_tag called from the $parentName tag at level $level. element = " . $element->asXML(), 4);
     $attributes = $element->attributes();
-
-    if (count($attributes) != 0)
+    if (isset($element->attributes()->index))
     {
         $index = $element->attributes()->index;
     }

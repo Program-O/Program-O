@@ -284,6 +284,10 @@ function save_for_nextturn($convoArr)
  **/
 function set_wildcards($convoArr, $pattern, $type)
 {
+    $user_raw = $convoArr['aiml']['user_raw'];
+    $search = array ('+','-','*','/');
+    $repl = array('PLUS','MINUS','TIMES','DIVIDEDBY');
+    $user_raw = str_replace($search, $repl, $user_raw);
     //if (!isset($convoArr['aiml']['stars'])/* || $type == 'srai' */) $convoArr['aiml']['stars'] = array();
     $convoArr['aiml']['stars'] = array();
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Setting Wildcards. Pattern = '$pattern'", 2);
@@ -328,8 +332,9 @@ function set_wildcards($convoArr, $pattern, $type)
         }
         else
         {
-            //runDebug(__FILE__, __FUNCTION__, __LINE__, "User RAW = {$convoArr['aiml']['user_raw']}");
-            $checkagainst = $convoArr['aiml']['user_raw'];
+            runDebug(__FILE__, __FUNCTION__, __LINE__, "User RAW = {$convoArr['aiml']['user_raw']}", 2);
+            //$checkagainst = $convoArr['aiml']['user_raw'];
+            $checkagainst = $user_raw;
         }
 
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking '$ap' against '$checkagainst'.", 2);
