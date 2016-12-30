@@ -271,4 +271,4 @@ display_conversation($convoArr);
 
 runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
 $convoArr = handleDebug($convoArr, $time); // Make sure this is the last line in the file, so that all debug entries are captured.
-//session_gc();
+//pgo_session_gc();

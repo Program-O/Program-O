@@ -180,14 +180,14 @@ endFooter;
 }
 
   /*
-   * function session_gc
+   * function pgo_session_gc
    * Performs garbage collection on expired session files
    *
    * @return void
    */
 /*
   This function is temporarily disabled until I can devise a better implementation of session handling
-*/function session_gc()
+*/function pgo_session_gc()
   {
     return false;
 
