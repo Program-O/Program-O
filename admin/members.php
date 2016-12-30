@@ -184,11 +184,12 @@ function getAdminsOpts()
  * Function getMemberData
  *
  * @param $id
+ * @return mixed
  */
 function getMemberData($id)
 {
     if ($id <= 0) {
-        return;
+        return '';
     }
 
     global $user_name, $dbConn;

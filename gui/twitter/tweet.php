@@ -75,9 +75,9 @@ tweetthis($connection, $myReplies);
  *
  * Sends out tweets to the Twitter API, based on the chatbot's response
  *
- * @param (object) $connection
- * @param (array) $myReplies
- * @return (void)
+ * @param object $connection
+ * @param array $myReplies
+ * @return void
  */
 function tweetthis($connection, $myReplies)
 {

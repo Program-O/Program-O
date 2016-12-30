@@ -179,29 +179,31 @@ endFooter;
     return $out;
 }
 
-  /*
-   * function pgo_session_gc
-   * Performs garbage collection on expired session files
-   *
-   * @return void
-   */
-/*
-  This function is temporarily disabled until I can devise a better implementation of session handling
-
-*/function pgo_session_gc()
-
-  {
-    return false;
+/**
+ * function pgo_session_gc
+ * Performs garbage collection on expired session files
+ *
+ * @return bool
+ */
+function pgo_session_gc()
+{
+    return false; // This function is temporarily disabled until I can devise a better implementation of session handling
 
     global $session_lifetime;
     $session_files = glob(_SESSION_PATH_ . 'sess_*');
+
     foreach($session_files as $file)
     {
-      $lastAccessed = filemtime($file);
-      if ($lastAccessed < (time() - $session_lifetime)) unlink($file);
+        $lastAccessed = filemtime($file);
+
+        if ($lastAccessed < (time() - $session_lifetime)) {
+          unlink($file);
+        }
     }
-  }
-*/
+
+    return false; // Suppress missing return statement warning
+}
+
 /**
  * function addUnknownInput
  * Adds previously unknown inputs to the database for later examination, and possible creation of new AIML categories
@@ -209,7 +211,7 @@ endFooter;
  * @param string $input
  * @param int $bot_id
  * @param string $user_id
- * @return void
+ * @return bool
  */
 
 function addUnknownInput($convoArr, $input, $bot_id, $user_id)
@@ -231,6 +233,8 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
         ':user_id' => $user_id,
     );
     $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
+
+    return true;
 }
 
 /**
