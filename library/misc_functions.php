@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.3
+ * Version: 2.6.4
  * FILE: misc_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-22-2013
@@ -179,30 +179,25 @@ endFooter;
     return $out;
 }
 
-/**
+/*
  * function pgo_session_gc
  * Performs garbage collection on expired session files
- *
- * @return bool
+ * @return void
  */
-function pgo_session_gc()
-{
-    return false; // This function is temporarily disabled until I can devise a better implementation of session handling
 
+
+  function pgo_session_gc()
+  {
     global $session_lifetime;
     $session_files = glob(_SESSION_PATH_ . 'sess_*');
-
+    clearstatcache();
     foreach($session_files as $file)
     {
-        $lastAccessed = filemtime($file);
-
-        if ($lastAccessed < (time() - $session_lifetime)) {
-          unlink($file);
-        }
+        $gcRand = mt_rand(0,10000); // random number from 0 to 10,000
+        $lastAccessed = fileatime($file);
+        if ($gcRand >= 10 && $lastAccessed < (time() - $session_lifetime)) unlink($file);
     }
-
-    return false; // Suppress missing return statement warning
-}
+  }
 
 /**
  * function addUnknownInput
@@ -211,7 +206,7 @@ function pgo_session_gc()
  * @param string $input
  * @param int $bot_id
  * @param string $user_id
- * @return bool
+ * @return void
  */
 
 function addUnknownInput($convoArr, $input, $bot_id, $user_id)
@@ -221,7 +216,7 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
     $default_aiml_pattern = get_convo_var($convoArr, 'conversation', 'default_aiml_pattern');
 
     if ($input == $default_aiml_pattern) {
-        return false;
+        return;
     }
 
     /** @noinspection SqlDialectInspection */
@@ -233,8 +228,6 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
         ':user_id' => $user_id,
     );
     $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
-
-    return true;
 }
 
 /**
