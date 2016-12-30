@@ -215,7 +215,7 @@ function updateSRAI()
         }
 
         $fields = implode(', ', $fArray);
-        $msg = str_replace('[fields]', $fieelds, $msg);
+        $msg = str_replace('[fields]', $fields, $msg);
     }
     else
     {
