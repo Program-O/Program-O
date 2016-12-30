@@ -54,7 +54,7 @@ if (!empty($sc_action))
             $content .= spellCheckForm();
             break;
         case 'update':
-            $x = updateSpell();
+            updateSpell();
             $content .= spellCheckForm();
             break;
         case 'delete':

@@ -204,8 +204,9 @@ function swapPerson($convoArr, $person, $input)
  * This function controls and triggers all the functions to parse the matched aiml
  * @param array $convoArr - the conversation array
  * @param string $type - normal or srai
+ * @param string $aiml_pattern
  * @return array $convoArr - the updated conversation array
- **/
+ */
 function parse_matched_aiml($convoArr, $type = "normal", $aiml_pattern = '')
 {
     //which debug mode?
@@ -280,8 +281,10 @@ function save_for_nextturn($convoArr)
  * function set_wildcards()
  * This function extracts wildcards from a patterns and puts their values in their associated array
  * @param array $convoArr - the conversation array
+ * @param $pattern
+ * @param $type
  * @return array $convoArr - the updated conversation array
- **/
+ */
 function set_wildcards($convoArr, $pattern, $type)
 {
     $convoArr['aiml']['stars'] = array();

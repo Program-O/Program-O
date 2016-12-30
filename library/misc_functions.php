@@ -101,7 +101,6 @@ function _title_case($text)
  * @param string $start
  * @param string $len
  * @param string $encoding
- *
  * @return string
  */
 function _substr($text, $start, $len = null, $encoding = null)
@@ -117,9 +116,9 @@ function _substr($text, $start, $len = null, $encoding = null)
  * function normalize_text
  * Transforms text to uppercase, removes all punctuation, and strips extra whitespace
  *
- * @param (string) $text - The text to perform the transformations on
- * @param (bool) $convert_case - Flag for converting text to uppercase. Default = true
- * @return (string) $normalized_text - The completely transformed text
+ * @param string $text - The text to perform the transformations on
+ * @param bool $convert_case - Flag for converting text to uppercase. Default = true
+ * @return string $normalized_text - The completely transformed text
  */
 function normalize_text($text, $convert_case = true)
 {

@@ -809,9 +809,9 @@ function get_convo_var($convoArr, $index_1, $index_2 = '~NULL~', $index_3 = 1, $
 /**
  * Function: get_client_property()
  * Summary: Extracts a value from the the client properties subarray within the main conversation array
- * @param Array $convoArr - the main conversation array
- * @param String $name - the key of the value to extract from client properties
- * @return String $response - the value of the client property
+ * @param array $convoArr - the main conversation array
+ * @param string $name - the key of the value to extract from client properties
+ * @return string $response - the value of the client property
  **/
 function get_client_property($convoArr, $name)
 {
@@ -831,6 +831,7 @@ function get_client_property($convoArr, $name)
 
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
+    /** @noinspection SqlDialectInspection */
     $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = $user_id AND `bot_id` = $bot_id AND `name` = '$name' limit 1;";
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for $name. SQL:\n$sql", 3);
@@ -1090,9 +1091,8 @@ function find_aiml_matches($convoArr)
 /** get_topic()
  * Extracts the current topic directly from the database
  *
- * @param Array $convoArr - the conversation array
- *                        returns String $retval - the topic
- *                        *@return string
+ * @param array $convoArr - the conversation array
+ * @return string $retVal - the topic
  */
 function get_topic($convoArr)
 {

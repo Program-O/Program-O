@@ -24,17 +24,16 @@ function custom_parse_aiml_as_XML($convoArr)
     return $convoArr;
 }
 
-/*
+/**
  * function parse_php_tag
  * Parses the custom <php> tag - Please note that this function is currently NOT
  * complete. It's mearly a placeholder, to illustrate how custom tag functions work.
- * @param (array) $convoArr
- * @param (SimpleXMLelement) $element
- * @param (string) $parentName
- * @param (int) $level
- * @return (string) $response_string
+ * @param array $convoArr
+ * @param SimpleXMLelement $element
+ * @param string $parentName
+ * @param int $level
+ * @return string $response_string
  */
-
 function parse_php_tag($convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing custom PHP tag.', 2);
@@ -60,13 +59,12 @@ function parse_php_tag($convoArr, $element, $parentName, $level)
  * Tag syntax: <math>{operator} {operand1} {operand2}
  * the operator can be one of four string values: ADD, SUBTRACT, MULTIPLY and DIVIDE.
  * Both operands must be numeric
- * @param (array) $convoArr
- * @param (SimpleXMLelement) $element
- * @param (string) $parentName
- * @param (int) $level
- * @return (string) $out
+ * @param array $convoArr
+ * @param SimpleXMLelement $element
+ * @param string $parentName
+ * @param int $level
+ * @return string $out
  */
-
 function parse_math_tag($convoArr, simpleXMLElement $element, $parentName, $level)
 {
     $elementAsXML = $element->asXML();

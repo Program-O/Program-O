@@ -53,5 +53,5 @@ else
     exit;
 }
 
-// UNREACHABLE STATEMENT
+/** @noinspection PhpUnreachableStatementInspection */
 header("Location: $pageBack");

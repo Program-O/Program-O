@@ -102,6 +102,7 @@ function runSearch()
     $where = array();
 
     // parse column searches
+    /** @noinspection PhpUndefinedVariableInspection */
     foreach ($columns as $index => $column)
     {
         if ($column['data'] == 'Delete') {
@@ -126,6 +127,7 @@ function runSearch()
     // get search order
     $oBy = array();
 
+    /** @noinspection PhpUndefinedVariableInspection */
     foreach ($order as $row)
     {
         $name = $columns[$row['column']]['data'];
@@ -147,9 +149,11 @@ function runSearch()
     $total = $count['count(id)'];
 
     /** @noinspection SqlDialectInspection */
+    /** @noinspection PhpUndefinedVariableInspection */
     $sql = "SELECT id, pattern, thatpattern, template, topic, filename FROM `aiml` " . "WHERE `bot_id` = $bot_id AND ($searchTerms) order by $orderBy limit $start, $length;";
     $result = db_fetchAll($sql, $searchParams, __FILE__, __FUNCTION__, __LINE__);
 
+    /** @noinspection PhpUndefinedVariableInspection */
     $out = array(
         'draw' => $draw,
         'recordsTotal' => $total,
@@ -174,33 +178,47 @@ function runSearch()
 
 /**
  * Function updateAIML
- *
  * @return string
+ * @throws Exception
  */
 function updateAIML()
 {
     global $form_vars, $dbConn;
+
     $template = trim($form_vars['template']);
     $filename = trim($form_vars['filename']);
     $pattern = _strtoupper(trim($form_vars['pattern']));
     $thatpattern = _strtoupper(trim($form_vars['thatpattern']));
     $topic = _strtoupper(trim($form_vars['topic']));
     $id = trim($form_vars['id']);
-    if (($template == "") || ($pattern == "") || ($id == "")) {
+
+    if (($template == "") || ($pattern == "") || ($id == ""))
+    {
         $msg = 'Please make sure you have entered a user input and bot response ';
-    } else {
+    }
+    else
+    {
+        /** @noinspection SqlDialectInspection */
         $sql = "UPDATE `aiml` SET `pattern`=?,`thatpattern`=?,`template`=?,`topic`=?,`filename`=? WHERE `id`=? LIMIT 1";
         $sth = $dbConn->prepare($sql);
-        try {
+
+        try
+        {
             $sth->execute(array($pattern, $thatpattern, $template, $topic, $filename, $id));
-        } catch (Exception $e) {
+        }
+        catch (Exception $e)
+        {
             header("HTTP/1.0 500 Internal Server Error");
             throw ($e);
         }
+
         $affectedRows = $sth->rowCount();
-        if ($affectedRows > 0) {
+
+        if ($affectedRows > 0)
+        {
             $msg = 'AIML Updated.';
-        } else {
+        }
+        else {
             $msg = 'There was an error updating the AIML - no changes made.';
         }
     }
@@ -269,7 +287,9 @@ function insertAIML()
 function clean_inputs($options = null)
 {
     $formVars = array_merge($_GET, $_POST);
-    switch (true) {
+
+    switch (true)
+    {
         case (null === $options):
             $out = filter_var_array($formVars);
             break;

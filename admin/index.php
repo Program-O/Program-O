@@ -484,6 +484,7 @@ function makeLeftLinks()
 /**
  * Function getCurrentVersion
  *
+ * @param $branch
  * @return bool|mixed|string
  */
 function getCurrentVersion($branch)

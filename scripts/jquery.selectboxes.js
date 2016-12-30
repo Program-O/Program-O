@@ -28,7 +28,8 @@ $.fn.addOption = function()
 	var add = function(el, v, t, sO, index)
 	{
 		var option = document.createElement("option");
-		option.value = v, option.text = t;
+		option.value = v;
+		option.text = t;
 		// get options
 		var o = el.options;
 		// get number of options
@@ -308,7 +309,8 @@ $.fn.sortOptions = function(ascending)
 				function(o1, o2)
 				{
 					// option text is made lowercase for case insensitive sorting
-					o1t = o1.t.toLowerCase(), o2t = o2.t.toLowerCase();
+					o1t = o1.t.toLowerCase();
+					o2t = o2.t.toLowerCase();
 					// if options are the same, no sorting is needed
 					if(o1t == o2t) return 0;
 					if(a)

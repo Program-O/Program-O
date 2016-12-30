@@ -36,6 +36,8 @@ class OAuthToken
     /**
      * key = the token
      * secret = the token secret
+     * @param $key
+     * @param $secret
      */
     function __construct($key, $secret)
     {
@@ -151,6 +153,10 @@ class OAuthSignatureMethod_PLAINTEXT extends OAuthSignatureMethod
      *
      * Please note that the second encoding MUST NOT happen in the SignatureMethod, as
      * OAuthRequest handles this!
+     * @param OAuthRequest $request
+     * @param OAuthConsumer $consumer
+     * @param OAuthToken $token
+     * @return string
      */
     public function build_signature($request, $consumer, $token)
     {
@@ -260,6 +266,10 @@ class OAuthRequest
 
     /**
      * attempt to build up a request from what was passed to the server
+     * @param null $http_method
+     * @param null $http_url
+     * @param null $parameters
+     * @return OAuthRequest
      */
     public static function from_request($http_method = NULL, $http_url = NULL, $parameters = NULL)
     {
@@ -312,6 +322,12 @@ class OAuthRequest
 
     /**
      * pretty much a helper function to set up the request
+     * @param $consumer
+     * @param $token
+     * @param $http_method
+     * @param $http_url
+     * @param null $parameters
+     * @return OAuthRequest
      */
     public static function from_consumer_and_token($consumer, $token, $http_method, $http_url, $parameters = NULL)
     {
@@ -451,6 +467,9 @@ class OAuthRequest
 
     /**
      * builds the Authorization: header
+     * @param null $realm
+     * @return string
+     * @throws OAuthException
      */
     public function to_header($realm = null)
     {
@@ -544,6 +563,8 @@ class OAuthServer
     /**
      * process a request_token request
      * returns the request token on success
+     * @param $request
+     * @return
      */
     public function fetch_request_token(&$request)
     {
@@ -566,6 +587,8 @@ class OAuthServer
     /**
      * process an access_token request
      * returns the access token on success
+     * @param $request
+     * @return
      */
     public function fetch_access_token(&$request)
     {
@@ -587,6 +610,8 @@ class OAuthServer
 
     /**
      * verify an api call, checks all the parameters
+     * @param $request
+     * @return array
      */
     public function verify_request(&$request)
     {
@@ -600,6 +625,9 @@ class OAuthServer
     // Internals from here
     /**
      * version 1
+     * @param $request
+     * @return string
+     * @throws OAuthException
      */
     private function get_version(&$request)
     {
@@ -617,6 +645,9 @@ class OAuthServer
 
     /**
      * figure out the signature with some defaults
+     * @param $request
+     * @return mixed
+     * @throws OAuthException
      */
     private function get_signature_method(&$request)
     {
@@ -643,6 +674,9 @@ class OAuthServer
 
     /**
      * try to find the consumer for the provided request's consumer key
+     * @param $request
+     * @return
+     * @throws OAuthException
      */
     private function get_consumer(&$request)
     {
@@ -661,6 +695,11 @@ class OAuthServer
 
     /**
      * try to find the token for the provided request's token key
+     * @param $request
+     * @param $consumer
+     * @param string $token_type
+     * @return
+     * @throws OAuthException
      */
     private function get_token(&$request, $consumer, $token_type = "access")
     {
@@ -677,6 +716,10 @@ class OAuthServer
     /**
      * all-in-one function to check the signature on a request
      * should guess the signature method appropriately
+     * @param $request
+     * @param $consumer
+     * @param $token
+     * @throws OAuthException
      */
     private function check_signature(&$request, $consumer, $token)
     {
@@ -704,6 +747,8 @@ class OAuthServer
 
     /**
      * check that the timestamp is new enough
+     * @param $timestamp
+     * @throws OAuthException
      */
     private function check_timestamp($timestamp)
     {
@@ -723,6 +768,11 @@ class OAuthServer
 
     /**
      * check that the nonce is not repeated
+     * @param $consumer
+     * @param $token
+     * @param $nonce
+     * @param $timestamp
+     * @throws OAuthException
      */
     private function check_nonce($consumer, $token, $nonce, $timestamp)
     {

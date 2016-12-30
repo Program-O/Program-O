@@ -361,7 +361,6 @@ VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,
     $params = array(
         ':bot_name'             => $bot_name,
         ':bot_desc'             => $bot_desc,
-        ':bot_desc'             => $bot_desc,
         ':bot_active'           => $bot_active,
         ':bot_parent_id'        => $bot_parent_id,
         ':format'               => $format,
