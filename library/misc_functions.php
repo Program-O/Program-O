@@ -187,7 +187,7 @@ endFooter;
    */
 /*
   This function is temporarily disabled until I can devise a better implementation of session handling
-*/function session_gc()
+function session_gc()
   {
     return false;
 
@@ -199,7 +199,7 @@ endFooter;
       if ($lastAccessed < (time() - $session_lifetime)) unlink($file);
     }
   }
-
+*/
 /**
  * function addUnknownInput
  * Adds previously unknown inputs to the database for later examination, and possible creation of new AIML categories
