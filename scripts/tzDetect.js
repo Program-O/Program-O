@@ -10,7 +10,7 @@
 var HEMISPHERE_SOUTH = 'SOUTH';
 var HEMISPHERE_NORTH = 'NORTH';
 var HEMISPHERE_UNKNOWN = 'N/A';
-var olson = {}
+var olson = {};
 
 /**
  * The keys in this dictionary are comma separated as such:
@@ -95,7 +95,7 @@ olson.timezones = {
     '765,1,s': new TimeZone('+12:45', 'Pacific/Chatham', true),
     '780,0': new TimeZone('+13:00', 'Pacific/Tongatapu', false),
     '840,0': new TimeZone('+14:00', 'Pacific/Kiritimati', false)
-}
+};
 
 /**
  * This object contains information on when daylight savings starts for
@@ -137,7 +137,7 @@ olson.dst_start_dates = {
     'America/Goose_Bay': new Date(2011, 2, 13, 2, 1, 0, 0),
     'America/Miquelon': new Date(2011, 2, 13, 5, 0, 0, 0),
     'America/Godthab': new Date(2011, 2, 27, 1, 0, 0, 0)
-}
+};
 
 /**
  * The keys in this object are timezones that we know may be ambiguous after
@@ -158,7 +158,7 @@ olson.ambiguity_list = {
     'America/New_York': ['America/Havana', 'America/New_York'],
     'America/Halifax': ['America/Goose_Bay', 'America/Halifax'],
     'America/Godthab': ['America/Miquelon', 'America/Godthab']
-}
+};
 
 
 /**
@@ -187,7 +187,7 @@ TimeZone.prototype.display = function () {
     response_text += '<b>Zone uses DST</b>: ' + (this.uses_dst ? 'yes' : 'no') + '<br/>';
 
     return response_text;
-}
+};
 
 /**
  * Checks if a timezone has possible ambiguities. I.e timezones that are similar.
@@ -208,14 +208,14 @@ TimeZone.prototype.ambiguity_check = function () {
     var length = local_ambiguity_list.length;
 
     for (var i = 0; i < length; i++) {
-        var tz = local_ambiguity_list[i]
+        var tz = local_ambiguity_list[i];
 
         if (date_is_dst(olson.dst_start_dates[tz])) {
             this.olson_tz = tz;
             return;
         }
     }
-}
+};
 
 /**
  * Checks whether a given date is in daylight savings time.
@@ -227,7 +227,7 @@ TimeZone.prototype.ambiguity_check = function () {
  * @returns {boolean}
  */
 function date_is_dst(date) {
-    var base_offset = ( (date.getMonth() > 5 ? get_june_offset() : get_january_offset()) )
+    var base_offset = ( (date.getMonth() > 5 ? get_june_offset() : get_january_offset()) );
 
     var date_offset = get_date_offset(date);
 
@@ -302,13 +302,13 @@ function get_june_offset() {
 function determine_timezone() {
     var timezone_key_info = get_timezone_info();
 
-    var hemisphere_suffix = ''
+    var hemisphere_suffix = '';
 
     if (timezone_key_info.hemisphere == HEMISPHERE_SOUTH) {
         hemisphere_suffix = ',s';
     }
 
-    var tz_key = timezone_key_info.utc_offset + ',' + timezone_key_info.dst + hemisphere_suffix
+    var tz_key = timezone_key_info.utc_offset + ',' + timezone_key_info.dst + hemisphere_suffix;
 
     return {'timezone': olson.timezones[tz_key], 'key': tz_key}
 }

@@ -221,7 +221,7 @@ function jq_get_convo_id()
             $('#chatlog').html($('#chatlog').html() + userSaid);
             var botSaid = botTitle + bot_name + endSpan;
             var formdata = $("#talkform").serialize();
-            $('#say').val('')
+            $('#say').val('');
             $('#say').focus();
             $.post('<?php echo $url ?>', formdata, function (data) {
                 var b = data.botsay;

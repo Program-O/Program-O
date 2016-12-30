@@ -126,8 +126,9 @@ function runDebug($fileName, $functionName, $line, $info, $level = 0)
  * function handleDebug()
  * Handle the debug array at the end of the process
  * @param  array $convoArr - conversation arrau
+ * @param $et
  * @return array $convoArr;
- **/
+ */
 function handleDebug($convoArr, $et)
 {
     global $debugArr, $debug_level, $debug_mode;

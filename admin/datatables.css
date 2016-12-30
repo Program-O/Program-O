@@ -64,11 +64,11 @@ table.dataTable thead .sorting_desc {
 }
 
 table.dataTable thead .sorting_asc_disabled {
-    background: url("images/sort_asc_disabled.png") no-repeat center right;
+    background: url("../install/images/sort_asc_disabled.png") no-repeat center right;
 }
 
 table.dataTable thead .sorting_desc_disabled {
-    background: url("images/sort_desc_disabled.png") no-repeat center right;
+    background: url("../install/images/sort_desc_disabled.png") no-repeat center right;
 }
 
 table.dataTable tbody tr {

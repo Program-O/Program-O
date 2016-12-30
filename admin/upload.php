@@ -449,7 +449,7 @@ function getBotList()
 /**
  * Function upload_libxml_display_errors
  *
- * @param $msg
+ * @param $fileName
  * @return string
  */
 function upload_libxml_display_errors($fileName)
@@ -593,7 +593,7 @@ function validateAIML($xml)
 
     if (!$xml->schemaValidate('aiml.xsd'))
     {
-        $validationStatus = get_errors();
+        get_errors();
         $out = false;
     }
 

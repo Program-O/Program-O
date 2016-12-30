@@ -46,7 +46,7 @@ if (!empty ($wc_action))
             $content .= wordCensorForm();
             break;
         case 'update' :
-            $x = updateWordCensor();
+            updateWordCensor();
             $content .= wordCensorForm();
             break;
         case 'delete' :

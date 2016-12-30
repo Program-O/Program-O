@@ -379,7 +379,6 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section ConversationLogs1 Start -->
 <div id="pTitle">[bot_name]'s Conversation Logs</div>
 <p>[convo]</p>
-</div>
 <!-- Section ConversationLogs1 End -->
 <!-- Section SpellcheckForm Start -->
 <fieldset style="margin-bottom: 3px;">
@@ -677,7 +676,7 @@ between the start and end section tags are the only parts of the template that a
 <br/>
 <!-- Section RSSItemTemplate End -->
 <!-- Section LogoLink Start -->
-<div id="logoLink" onclick="[showHide]Logo()">[showHide] Logo</div>
+<div id="logoLink" onclick="[showHide]Logo();">[showHide] Logo</div>
 <!-- Section LogoLink End -->
 <!-- Section LogoLinkScript Start -->
 [blank]
@@ -685,8 +684,7 @@ between the start and end section tags are the only parts of the template that a
     function ShowLogo() {
         //setDisplay('1');
         var body = document.body;
-        var bgi = 'url(images/repeated_header2.jpg)';
-        body.style.backgroundImage = bgi;
+        body.style.backgroundImage = 'url(images/repeated_header2.jpg)';
         var logo = document.getElementById('logo');
         logo.style.display = "block";
         //var ts = document.getElementById('title');
@@ -703,8 +701,7 @@ between the start and end section tags are the only parts of the template that a
     function HideLogo() {
         //setDisplay('HideLogoCSS');
         var body = document.body;
-        var bgi = 'none';
-        body.style.backgroundImage = bgi;
+        body.style.backgroundImage = 'none';
         var logo = document.getElementById('logo');
         logo.style.display = "none";
         var topNav = document.getElementById('top_nav');
@@ -1366,8 +1363,7 @@ between the start and end section tags are the only parts of the template that a
 </form>
 <script type="text/javascript">
     function renewImage() {
-        var url = 'captcha.php?r=' + Math.random();
-        document.getElementById('capImg').src = url;
+        document.getElementById('capImg').src = 'captcha.php?r=' + Math.random();
     }
 </script>
 <!-- Section BugForm End -->
