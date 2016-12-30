@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.3
+ * Version: 2.6.4
  * FILE: library/error_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -117,7 +117,7 @@ function runDebug($fileName, $functionName, $line, $info, $level = 0)
 
         // if we are logging to file then build a log file. This will be overwriten if the program completes
         if ($writetotemp == 1) {
-            write_debug_to_file(implode(PHP_EOL, $debugArr), $convoArr);
+            write_debug_to_file(implode(PHP_EOL, $debugArr));
         }
     }
 }
@@ -189,7 +189,7 @@ function handleDebug($convoArr, $et)
         case 1 :
             //write to log file
             $log = str_replace('[NEWLINE]', PHP_EOL, $log);
-            write_debug_to_file($log, $convoArr);
+            write_debug_to_file($log);
             break;
         case 2 :
             //show in webpage

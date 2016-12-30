@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.3
+ * Version: 2.6.4
  * FILE: misc_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-22-2013
@@ -179,29 +179,26 @@ endFooter;
     return $out;
 }
 
-  /*
-   * function pgo_session_gc
-   * Performs garbage collection on expired session files
-   *
-   * @return void
-   */
 /*
-  This function is temporarily disabled until I can devise a better implementation of session handling
+ * function pgo_session_gc
+ * Performs garbage collection on expired session files
+ * @return void
+ */
 
-*/function pgo_session_gc()
 
+  function pgo_session_gc()
   {
-    return false;
-
     global $session_lifetime;
     $session_files = glob(_SESSION_PATH_ . 'sess_*');
+    clearstatcache();
     foreach($session_files as $file)
     {
-      $lastAccessed = filemtime($file);
-      if ($lastAccessed < (time() - $session_lifetime)) unlink($file);
+        $gcRand = mt_rand(0,10000); // random number from 0 to 10,000
+        $lastAccessed = fileatime($file);
+        if ($gcRand >= 10 && $lastAccessed < (time() - $session_lifetime)) unlink($file);
     }
   }
-*/
+
 /**
  * function addUnknownInput
  * Adds previously unknown inputs to the database for later examination, and possible creation of new AIML categories
@@ -219,7 +216,7 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
     $default_aiml_pattern = get_convo_var($convoArr, 'conversation', 'default_aiml_pattern');
 
     if ($input == $default_aiml_pattern) {
-        return false;
+        return;
     }
 
     /** @noinspection SqlDialectInspection */

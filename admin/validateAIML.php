@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.3
+ * Version: 2.6.4
  * FILE: validateAIML.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 06-02-2014

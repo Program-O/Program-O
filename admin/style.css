@@ -1,7 +1,7 @@
 /***************************************
   * http://www.program-o.com
   * PROGRAM O
-  * Version: 2.6.3
+  * Version: 2.6.4
   * FILE: style.css
   * AUTHOR: Elizabeth Perreau and Dave Morton
   * DATE: FEB 01 2016
@@ -785,7 +785,6 @@ span.eightyPercent textarea.wide {
     bottom: 5px;
     right: 5px;
     z-index: 5;
-    background-color: #FFFFCC;
     background-color: transparent;
 }
 
@@ -1123,7 +1122,7 @@ iframe {
 }
 
 .editaiml-table thead {
-    background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.21)) repeat-x scroll 0px 0px #FFF;
+    background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.21)) repeat-x scroll 0 0 #FFF;
     border-radius: 10px;
 }
 
@@ -1133,7 +1132,7 @@ iframe {
 }
 
 .editaiml-table tfoot {
-    background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.21)) repeat-x scroll 0px 0px #Fca;
+    background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.21)) repeat-x scroll 0 0 #Fca;
 }
 
 .datatable-table tr.odd {
@@ -1204,7 +1203,6 @@ label {
 }
 
 .cbCell {
-    border: 1px solid black;
     border: none;
     padding: 3px 12px;
     width: 205px;

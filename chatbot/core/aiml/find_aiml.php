@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.3
+ * Version: 2.6.4
  * FILE: find_aiml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -61,7 +61,7 @@ function make_like_pattern($sentence, $field)
 
     $words = explode(" ", $sentence);
 
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "word list:\n" . pretty_print_r($words, true), 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "word list:\n" . pretty_print_r($words), 4);
     $count_words = count($words) - 1;
     $first_word = $words[0];
 
@@ -351,7 +351,7 @@ function aiml_pattern_match($pattern, $input)
  * @internal param int $bot_parent_id
  * @internal param string $current_thatpattern
  * @internal param string $current_topic
- * @return array
+ * @return array $allrows
  **/
 function score_matches($convoArr, $allrows, $pattern)
 {
@@ -613,7 +613,7 @@ function score_matches($convoArr, $allrows, $pattern)
  * @param $sortByItem
  * @param $sortAsc
  * @param $limit
- * @return void;
+ * @return array
  **/
 function sort2DArray($opName, $thisArr, $sortByItem, $sortAsc = 1, $limit = 10)
 {

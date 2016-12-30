@@ -101,7 +101,8 @@ class TwitterOAuth
         $request = $this->oAuthRequest($this->requestTokenURL(), 'GET', $parameters);
         $token = OAuthUtil::parse_parameters($request);
         $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
-        return $token;
+      /** @noinspection PhpIncompatibleReturnTypeInspection */
+      return $this->token;
     }
 
     /**
@@ -115,9 +116,11 @@ class TwitterOAuth
             $token = $token['oauth_token'];
         }
         if (empty($sign_in_with_twitter)) {
-            return $this->authorizeURL() . "?oauth_token={$token}";
+          /** @noinspection PhpIncompatibleReturnTypeInspection */
+          return $this->authorizeURL() . "?oauth_token={$token}";
         } else {
-            return $this->authenticateURL() . "?oauth_token={$token}";
+          /** @noinspection PhpIncompatibleReturnTypeInspection */
+          return $this->authenticateURL() . "?oauth_token={$token}";
         }
     }
 

@@ -2,12 +2,28 @@
 
 ##CHANGELOG info:
 
-- Version: 2.6.3
+- Version: 2.6.4
 - Authors: Elizabeth Perreau and Dave Morton
 - Date: June 11th 2016
 
 
 ##Version History:
+
+2.6.4   Reimplemented Custom Session Handling, Bug Fixes
+
+1. After months of researching, pulling hair out and banging heads against computer monitors,
+   we were finally able to work out a better implementation of custom session handling that is
+   both functional and secure. This time it should stick! __NOTE!__ This will require a "clean"
+   install of Program O, which is why we have a new version number.
+
+2. We also added in the option for botmasters to assign a file name other than 'admin_added.aiml'
+   to new AIML categories in the Teach page of the admin. The default is still 'admin_added.aiml',
+   but now it's not hard-coded in.
+
+3. The list of bugs fixed is too large to list here, but suffice it to say that most of the bugs
+   listed in the issues section in 2016 have been found and either killed or at least rendered
+   ineffective. There are still some things to address, but not as many as before.
+
 
 2.6.3   New Features!
 

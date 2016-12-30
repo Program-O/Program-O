@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.3
+ * Version: 2.6.4
  * FILE: chatbot/conversation_start.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -271,4 +271,4 @@ display_conversation($convoArr);
 
 runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation Ending. Elapsed time: $time milliseconds.", 0);
 $convoArr = handleDebug($convoArr, $time); // Make sure this is the last line in the file, so that all debug entries are captured.
-//pgo_session_gc();
+pgo_session_gc();

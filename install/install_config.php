@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.3
+ * Version: 2.6.4
  * FILE: config/install_config.php
  * AUTHOR: Elizabeth Perreau and Dave Morton AND DAVE MORTON
  * DATE: FEB 01 2016
@@ -44,8 +44,6 @@ define('_INSTALL_PATH_', _BASE_PATH_  . "install$path_separator");
 define('_CAPTCHA_PATH_', _ADMIN_PATH_ . "captcha-images$path_separator");
 define('_UPLOAD_PATH_',  _ADMIN_PATH_ . "uploads$path_separator");
 define('IS_WINDOWS',     (DIRECTORY_SEPARATOR == '/') ? false : true);
-#define('_SESSION_PATH_', _ADMIN_PATH_ . '[session_dir]' . $path_separator);
-# The above line is commented out till I can come up with a better implementation of session handling
 
 //------------------------------------------------------------------------
 // Define URL paths

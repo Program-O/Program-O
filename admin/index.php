@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.3
+ * Version: 2.6.4
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -225,7 +225,7 @@ $content = str_replace('[myPage]', $curPage, $content);
 $content = str_replace('[divDecoration]', $divDecoration, $content);
 $content = str_replace('[blank]', '', $content);
 
-  //pgo_session_gc();
+  pgo_session_gc();
   exit($content);
 
 /**

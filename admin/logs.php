@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.3
+ * Version: 2.6.4
  * FILE: logs.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-12-2014
@@ -15,7 +15,7 @@ $show = (isset ($get_vars['showing'])) ? $get_vars['showing'] : "last 20";
 //showThis($show)
 $show_this = showThis($show);
 $convo = (isset ($get_vars['id'])) ? getuserConvo($get_vars['id'], $show) : "Please select a conversation from the side bar.";
-$user_list = (isset ($get_vars['id'])) ? getuserList($get_vars['id'], $show) : getuserList($_SESSION['poadmin']['bot_id'], $show);
+$user_list = (isset ($get_vars['id'])) ? getuserList($get_vars['id']) : getuserList($_SESSION['poadmin']['bot_id']);
 $bot_name = (isset ($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'unknown';
 $upperScripts = $template->getSection('UpperScripts');
 
