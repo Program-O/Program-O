@@ -198,7 +198,7 @@
   $content = str_replace('[divDecoration]', $divDecoration, $content);
   $content = str_replace('[blank]', '', $content);
 
-  session_gc();
+  //session_gc();
   exit($content);
 
   /**
@@ -476,7 +476,7 @@
    * * @param exception $e
    * @return void
    */
-  function handle_exceptions(exception $e)
+  function handle_exceptions(Exception $e)
   {
     global $msg;
     $trace = $e->getTrace();
