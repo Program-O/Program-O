@@ -524,7 +524,7 @@ function run_srai(&$convoArr, $now_look_for_this)
     //score the relevant matches
     $allrows = score_matches($convoArr, $allrows, $now_look_for_this);
     //get the highest
-    $allrows = get_highest_scoring_row($convoArr, $allrows, $lookingfor);
+    $allrows = get_highest_scoring_row($convoArr, $allrows, $now_look_for_this);
 
     if (isset($allrows['aiml_id']) && $allrows['aiml_id'] > 0)
     {

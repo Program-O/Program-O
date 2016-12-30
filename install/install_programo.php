@@ -38,11 +38,12 @@ $errorMessage .= $no_unicode_message;
 require_once ('install_config.php');
 
 $dirArray = glob(_ADMIN_PATH_ . "ses_*",GLOB_ONLYDIR);
-$session_dir = (empty($dirArray)) ? 'ses_' . md5(time()) : basename($dirArray[0]);
+$session_dir = (empty($dirArray)) ? create_session_dirname() : basename($dirArray[0]);
 $dupPS = "$path_separator$path_separator";
 $session_dir = str_replace($dupPS, $path_separator, $session_dir); // remove double path separators when necessary
+$full_session_path = _ADMIN_PATH_ . $session_dir;
 
-define('_SESSION_PATH_', _ADMIN_PATH_ . $session_dir . DIRECTORY_SEPARATOR);
+define('_SESSION_PATH_', $full_session_path);
 
 $writeCheckArray = array('config' => _CONF_PATH_, 'debug' => _DEBUG_PATH_, 'logs' => _LOG_PATH_);
 $errFlag = false;
@@ -183,6 +184,7 @@ function Save()
 
     $configContents = file_get_contents(_INSTALL_PATH_ . 'config.template.php');
     $configContents = str_replace('[session_dir]', $session_dir, $configContents);
+    clearstatcache();
 
     if (!file_exists(_SESSION_PATH_))
     {
@@ -348,6 +350,21 @@ function Save()
     }
 
     return $out . $errorMessage;
+}
+
+/*
+ * function create_session_dirname
+ * Creates a cryptographically secure, random folder name for storing session files
+ * return (string) $out
+ */
+
+function create_session_dirname()
+{
+    global $path_separator;
+    $randBytes = openssl_random_pseudo_bytes(12);
+    $suffix = bin2hex($randBytes);
+    $out = "ses_$suffix$path_separator";
+    return $out;
 }
 
 

@@ -251,7 +251,6 @@ table.dataTable, table.dataTable th, table.dataTable td {
 .dataTables_wrapper .dataTables_paginate {
     float: right;
     padding-top: 0;
-    text-align: right;
     text-align: center;
     margin-right: 5px;
 }

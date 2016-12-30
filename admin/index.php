@@ -225,7 +225,7 @@ $content = str_replace('[myPage]', $curPage, $content);
 $content = str_replace('[divDecoration]', $divDecoration, $content);
 $content = str_replace('[blank]', '', $content);
 
-  //pgo_session_gc();
+  pgo_session_gc();
   exit($content);
 
 /**
