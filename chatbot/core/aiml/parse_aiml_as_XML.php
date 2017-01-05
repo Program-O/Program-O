@@ -766,7 +766,7 @@ function parse_formal_tag($convoArr, $element, $parentName, $level)
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing A Formal Tag.', 2);
 
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $response = _convert_case($response_string);
+    $response = _title_case($response_string);
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 4);
 
