@@ -53,7 +53,7 @@ $countSTH->bindValue(':bot_id', $bot_id, PDO::PARAM_INT);
 $countSTH->execute();
 $countRow = $countSTH->fetch();
 $countSTH->closeCursor();
-$row_count = number_format($countRow['count(id)']);
+$row_count = number_format($countRow['COUNT(id)']);
 
 $mainContent = str_replace('[row_count]', $row_count, $mainContent);
 $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);

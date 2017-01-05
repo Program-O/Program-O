@@ -118,7 +118,7 @@ function scPaginate()
     $sql = "SELECT COUNT(*) FROM `spellcheck` WHERE 1";
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
 
-    $rowCount = $row['count(*)'];
+    $rowCount = $row['COUNT(*)'];
     $lastPage = intval($rowCount / 50);
     $remainder = ($rowCount / 50) - $lastPage;
 

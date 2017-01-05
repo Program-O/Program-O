@@ -82,7 +82,7 @@ $newVersionAvailable = "Program O $githubVersion is now available for the "
     . '.zip">Click here</a> to download it.<br> (You are currently using version ' . VERSION . ' of the '
     . $branches[$branch] . ' branch)';
 
-$version = (compareVersions(VERSION, $githubVersion) >= 0) ? $upToDate : $newVersionAvailable;
+$version = (version_compare(VERSION, $githubVersion, '>=')) ? $upToDate : $newVersionAvailable;
 $dbConn = db_open();
 
 if ($get_vars['page'] == 'logout')
@@ -621,42 +621,3 @@ function getLoginStatus()
 {
     return (isset($_SESSION['poadmin']['logged_in']) && $_SESSION['poadmin']['logged_in'] === true) ? true : false;
 }
-
-/**
- * function compareVersions
- *
- * Compares the current Program O install's version to the version on GitHub
- * @param string $cv - The current Program O version
- * @param string $gv - The current GitHub version of Program O
- * @return int $out
- */
-function compareVersions($cv, $gv)
-{
-    //cv = current version, gv = github version
-    @list($cmv, $csv, $cb) = explode('.', $cv);
-    $cvTotal = $cmv + ($csv / 10) + ($cb / 100);
-
-    @list($gmv, $gsv, $gb) = explode('.', $gv);
-    $gvTotal = $gmv + ($gsv / 10) + ($gb / 100);
-
-    switch (true)
-    {
-        case ($cvTotal < $gvTotal):
-            $out = -1;
-            break;
-        case ($cvTotal == $gvTotal):
-            $out = 0;
-            break;
-        default:
-            $out = 1;
-    }
-
-    return $out;
-}
-
-
-
-
-
-
-
