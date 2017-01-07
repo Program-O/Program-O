@@ -961,7 +961,8 @@ function get_aiml_to_parse($convoArr)
  **/
 function find_aiml_matches($convoArr)
 {
-    global $dbConn, $dbn, $error_response, $use_parent_bot, $user_id;
+    global $dbConn, $dbn, $error_response, $use_parent_bot;
+    $user_id = $convoArr['conversation']['user_id'];
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Finding the aiml matches from the DB", 4);
 
     $i = 0;
