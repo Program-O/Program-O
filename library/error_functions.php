@@ -126,8 +126,9 @@ function runDebug($fileName, $functionName, $line, $info, $level = 0)
  * function handleDebug()
  * Handle the debug array at the end of the process
  * @param  array $convoArr - conversation arrau
+ * @param $et
  * @return array $convoArr;
- **/
+ */
 function handleDebug($convoArr, $et)
 {
     global $debugArr, $debug_level, $debug_mode;
@@ -242,7 +243,7 @@ function reduceConvoArr($convoArr)
     $showConvoArr['aiml']['score'] = (isset($convoArr['aiml']['score'])) ? $convoArr['aiml']['score'] : '';
     $showConvoArr['aiml']['aiml_id'] = (isset($convoArr['aiml']['aiml_id'])) ? $convoArr['aiml']['aiml_id'] : '';
     $showConvoArr['aiml']['parsed_template'] = (isset($convoArr['aiml']['parsed_template'])) ? $convoArr['aiml']['parsed_template'] : '';
-    $showConvoArr['user_say'][1] = (isset($convoArr['aiml']['parsed_template'])) ? $convoArr['user_say'][1] : '';
+    $showConvoArr['user_say'][1] = (isset($convoArr['user_say'][1])) ? $convoArr['user_say'][1] : '';
     $showConvoArr['that_raw'][1] = (isset($convoArr['that_raw'][1])) ? $convoArr['that_raw'][1] : '';
     $showConvoArr['parsed_template'][1] = (isset($convoArr['parsed_template'][1])) ? $convoArr['parsed_template'][1] : '';
 

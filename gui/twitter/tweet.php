@@ -112,9 +112,9 @@ function tweetthis($connection, $myReplies)
  *
  * Collects the chatbot's response to the incoming tweet
  *
- * @param (string) $convo_id
- * @param (string) $usersay
- * @return (string) $botsay
+ * @param string $convo_id
+ * @param string $usersay
+ * @return string $botsay
  */
 function getReply($convo_id, $usersay)
 {
@@ -124,7 +124,7 @@ function getReply($convo_id, $usersay)
     $request_url = $chatbot_endpoint . "?say=" . urlencode($usersay) . "&convo_id=$convo_id&bot_id=$bot_id&format=xml";
     $conversation = @simplexml_load_file($request_url, "SimpleXmlElement", LIBXML_NOERROR + LIBXML_ERR_FATAL + LIBXML_ERR_NONE);
 
-    if ((@$conversation) && (count(@$conversation) > 0))
+    if ((@$conversation) && (@$conversation->count()) > 0)
     {
         $botsay = (string)$conversation->chat->line[0]->response;
         $botsay = str_replace("undefined", "...", $botsay);

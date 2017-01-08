@@ -71,7 +71,7 @@ $(function () {
                 table.draw();
                 setTimeout(hideMsg, 3000);
                 $('#btnClearNewCat').click();
-            },
+            }
         });
     });
 });
@@ -113,7 +113,7 @@ function saveEdit(ele) {
             id: rowID,
             bot_id: bot_id,
             pattern: pattern,
-            template_id: template_id,
+            template_id: template_id
         },
         success: function (data) {
             $('#errMsg').empty().html('<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>').show();
@@ -126,7 +126,7 @@ function saveEdit(ele) {
 }
 
 function buildTA(ele, eleName, data) {
-    rowID = ele.closest('tr').attr('id');
+    var rowID = ele.closest('tr').attr('id');
     var w = ele.width() - 6;
     var name = eleName.replace(' ', '');
     var dataText = $('<div>').html(data).text();
@@ -162,7 +162,7 @@ function deleteRow(ele) {
             $('<span>').html(data).appendTo('#errMsg');
             setTimeout(hideMsg, 3000);
             table.draw(false);
-        },
+        }
     });
 }
 
@@ -190,7 +190,7 @@ function buildTable() {
                 width: '10%',
                 render: function (data, type, full, meta) {
                     return 'ID: ' + data + '<br><div class="deleteRow" onclick="deleteRow($(this))" title="Delete this row"><br>Delete</div>';
-                },
+                }
             },
             {
                 data: 'bot_id',
@@ -200,7 +200,7 @@ function buildTable() {
                 width: '15%',
                 render: function (data, type, full, meta) {
                     return '<pre>' + data + '</pre>';
-                },
+                }
             },
             {
                 data: 'pattern',
@@ -210,7 +210,7 @@ function buildTable() {
                 width: '60%',
                 render: function (data, type, full, meta) {
                     return '<pre>' + data + '</pre>';
-                },
+                }
             },
             {
                 data: 'template_id',
@@ -220,7 +220,7 @@ function buildTable() {
                 width: '15%',
                 render: function (data, type, full, meta) {
                     return '<pre>' + data + '</pre>';
-                },
+                }
             }
         ]
     });

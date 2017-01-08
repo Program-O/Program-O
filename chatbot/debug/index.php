@@ -201,8 +201,7 @@ else
     function loadDebug() {
         var url = document.getElementById('fn').value;
         var npTmpl = 'Viewing file [file]';
-        var npText = npTmpl.replace('[file]', url);
-        now_playing.innerHTML = npText;
+        now_playing.innerHTML = npTmpl.replace('[file]', url);
         //fileViewer.src = url;
         fileViewer.location.replace(url);
         lnkProfile.style.display = 'inline';
@@ -212,8 +211,7 @@ else
         var filename = document.getElementById('fn').value;
         var url = 'profile.php?file=' + filename;
         var npTmpl = 'Viewing profile for file [file]';
-        var npText = npTmpl.replace('[file]', filename);
-        now_playing.innerHTML = npText;
+        now_playing.innerHTML = npTmpl.replace('[file]', filename);
         //fileViewer.src = url;
         fileViewer.location.replace(url);
         lnkProfile.style.display = 'none';

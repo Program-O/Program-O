@@ -126,7 +126,7 @@ function add_text_tags($input)
  * Implodes a nested array into a single string recursively
  *
  * @param string $glue
- * @param array $input
+ * @param array|string $input
  * @param string $file
  * @param string $function
  * @param string $line
@@ -205,7 +205,7 @@ function parseTemplateRecursive(&$convoArr, SimpleXMLElement $element, $level = 
     $response = array();
 
     $parentName = strtolower($element->getName());
-    $elementCount = count($element);
+    $elementCount = $element->count();
     $children = ($elementCount > 0) ? $element->children() : $element;
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Processing element $parentName at level $level. element XML = " . $element->asXML(), 4);
@@ -243,7 +243,7 @@ function parseTemplateRecursive(&$convoArr, SimpleXMLElement $element, $level = 
     $value = trim((string)$retVal);
     $tmpResponse = ($level <= 1 and ($parentName != 'think') and (!in_array($parentName, $doNotParseChildren))) ? $value : '';
 
-    if (count($children) > 0 and is_object($retVal))
+    if ($children->count() > 0 and is_object($retVal))
     {
         foreach ($children as $child)
         {
@@ -331,7 +331,7 @@ function parse_thatstar_tag($convoArr, $element, $parentName, $level)
     runDebug(__FILE__, __FUNCTION__, __LINE__, "parse_thatstar_tag called from the $parentName tag at level $level. element = " . $element->asXML(), 4);
     $attributes = $element->attributes();
 
-    if (count($attributes) != 0)
+    if ($attributes->count() != 0)
     {
         $index = $element->attributes()->index;
     }
@@ -766,7 +766,7 @@ function parse_formal_tag($convoArr, $element, $parentName, $level)
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing A Formal Tag.', 2);
 
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $response = _convert_case($response_string);
+    $response = _title_case($response_string);
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 4);
 
@@ -1353,7 +1353,7 @@ function quickParseEval(&$convoArr, $elementText, $parentName, $level = 0)
     {
         $curEval = new SimpleXMLElement($match);
 
-        if (count($curEval->children()) == 0)
+        if ($curEval->children()->count() == 0)
         {
             $replace[] = $match;
         }

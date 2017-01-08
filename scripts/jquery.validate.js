@@ -905,6 +905,7 @@
                 // check if dependency is met
                 if (!this.depend(param, element))
                     return "dependency-mismatch";
+                //noinspection FallThroughInSwitchStatementJS
                 switch (element.nodeName.toLowerCase()) {
                     case 'select':
                         // could be an array for select-multiple or a string, both are fine this way
