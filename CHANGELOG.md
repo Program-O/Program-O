@@ -2,12 +2,32 @@
 
 ##CHANGELOG info:
 
-- Version: 2.6.3
+- Version: 2.7.0
 - Authors: Elizabeth Perreau and Dave Morton
 - Date: June 11th 2016
 
 
 ##Version History:
+
+2.7.0   Admin/Install Internationalization - The Beginning!
+
+1.  We're beginning to implement support for language translations for the admin and install scripts.
+    This represents a huge step forward for allowing botmasters whose native language is not
+    English to be able to use Program O's administration and installation features in their native
+    language. Right now, we're working on German and Chinese translations, with more to follow.
+    If you want to contribute with translations in other languages, please feel free to clone the
+    `admin-lang-support` branch and create new translations for your chosen language. Please note that
+    the system will use standard [Windows Locale Codes](http://www.science.co.il/Language/Locale-codes.php)
+    for language selection, and the files loaded will reside in a folder with that same locale code for
+    the folder name, within the `lang` directory. We'll be creating a new wiki page for this soon, so
+    keep checking back.
+
+2.) We'rechanging the way that Program O will contain it's configuration settings as a result of this
+    internationalization, so this new version won't be backwards compatible with current installations
+    of the script. Thus, a [Clean Install](https://github.com/Program-O/Program-O/wiki/Installation-Guide)
+    will be required. since we're altering the database, this is a necessary evil. Sorry for the
+    inconvenience.
+
 
 2.6.3   New Features!
 
