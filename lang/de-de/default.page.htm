@@ -1,0 +1,1334 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="[charset]">
+    <title>[pageTitle]</title>
+    <link rel="stylesheet" href="[styleSheet]" [mediaType] type="text/css"/>
+    [extraCSS][noLeftNav][noRightNav][upperScripts][errMsgStyle]
+</head>
+<!-- Section Header End -->
+<!-- Section PageBody Start -->
+[blank]
+<body>
+<div id="script_version">[version]</div>
+<div id="wrapper">
+    [logo]
+    [topNav]
+    [leftNav]
+    [main]
+    [rightNav]
+    [footer]
+</div>
+[lowerScripts]
+</body>
+</html>
+<!-- Section PageBody End -->
+Individual sections are placed after this section. This comment should NEVER be visible on any page!
+<!-- Section Logo Start -->
+[blank]
+<div id="logo">[pageTitleInfo]</div>
+<!-- Section Logo End -->
+<!-- Section TopNav Start -->
+[blank]
+<div id="top_nav">
+    [divDecoration]
+    <ul>
+        [topNavLinks]
+    </ul>
+</div>
+<!-- Section TopNav End -->
+You don't even have to place documentation within comment tags, since the sections
+between the start and end section tags are the only parts of the template that are displayed.
+<!-- Section LeftNav Start -->
+[blank]
+<div id="left_nav">
+    [divDecoration]
+    [navHeader]
+    <ul>
+        [leftNavLinks]
+    </ul>
+</div>
+<!-- Section LeftNav End -->
+<!-- Section Main Start -->
+[blank]
+<div id="errMsg" class="errMsg">
+    <div class="closeButton" id="closeButton" onclick="closeStatus('errMsg')" title="Schließen">&nbsp;</div>
+    [errMsg]
+</div>
+<div id="main">
+    [divDecoration]
+    <div id="main_title">
+        [mainTitle]
+    </div>
+    <div id="main_content">
+        [mainContent]
+    </div>
+</div>
+<!-- Section Main End -->
+<!-- Section RightNav Start -->
+[blank]
+<div id="right_nav">
+    [divDecoration]
+    [navHeader]
+    [rightNavLinks]
+</div>
+<!-- Section RightNav End -->
+<!-- Section Footer Start -->
+[blank]
+<div id="footer">
+    [divDecoration]
+    <div class="validXHTML">
+        <a href="http://validator.w3.org/check?uri=referer">
+            <img src="images/html5_valid.png" title="Valides HTML5" alt="Valides HTML5" height="31" width="88"
+                 style="border: none"/>
+        </a>
+    </div>
+    <div id="footer_content">
+        [FooterInfo]
+    </div>
+    <div class="validCSS">
+        <a href="http://jigsaw.w3.org/css-validator/check/referer">
+            <img style="border:0;width:88px;height:31px" src="images/vcss.gif" alt="Valides CSS!" title="Valid CSS!"/>
+        </a>
+    </div>
+</div>
+<!-- Section Footer End -->
+<!-- Section NavHeader Start -->
+[blank]
+<div class="nav_header">[headerTitle]</div>
+<!-- Section NavHeader End -->
+<!-- Section NavLink Start -->
+[blank]
+<li>
+    <div
+    [linkClass]>
+    [divDecoration]
+    <a [linkHref][linkOnclick][linkTitle]>
+        [linkLabel]
+    </a>
+    </div>
+</li>
+<!-- Section NavLink End -->
+<!-- Section DivDecoration Start -->
+[blank]
+<div class="ul"></div>
+<div class="ll"></div>
+<div class="ur"></div>
+<div class="lr"></div>
+<!-- Section DivDecoration End -->
+<!-- Section TitleSpan Start -->
+[blank]
+<div id="title">
+    <div id="titlespan">
+        [divDecoration]
+        <span class="orange">My</span> Program-O
+    </div>
+</div>
+<!-- Section TitleSpan End -->
+<!-- Section NoRightNav Start -->
+[blank]
+<style type="text/css">
+    #right_nav {
+        display: none;
+    }
+
+    #main {
+        right: 25px;
+    }
+</style>
+<!-- Section NoRightNav End -->
+<!-- Section NoLeftNav Start -->
+[blank]
+<style type="text/css">
+    #left_nav {
+        display: none;
+    }
+
+    #main {
+        left: 25px;
+    }
+</style>
+<!-- Section NoLeftNav End -->
+<!-- Section ShowError Start -->
+[blank]
+<style type="text/css">
+    .errMsg {
+        display: block;
+    }
+</style>
+<!-- Section ShowError End -->
+<!-- Section HideError Start -->
+[blank]
+<style type="text/css">
+    .errMsg {
+        display: none;
+    }
+</style>
+<!-- Section HideError End -->
+<!-- Section ErrorMessage Start -->
+[blank]
+<div class="errMsg">[errorMessage]</div>
+<!-- Section ErrorMessage End -->
+<!-- Section LoginForm Start -->
+[blank]
+<div id="form_table">
+    <fieldset>
+        <legend>Login</legend>
+        <form id="fm-form" method="post" action="index.php?page=login">
+            <div class="row center">
+                <label for="user_name">Benutzername:</label>
+                <input name="user_name" id="user_name" type="text" maxlength="255" size="15"/>
+            </div>
+            <div class="row">
+                <label for="pw">Passwort:</label>
+                <input name="pw" id="pw" type="password" autocomplete="off" maxlength="255" size="15"/><br/>
+            </div>
+            <div class="row">
+                <input value="Submit" type="submit"/>
+            </div>
+        </form>
+    </fieldset>
+</div>
+<!-- Section LoginForm End -->
+<!-- Section ChangeBot Start -->
+<!--fieldset-->
+<form id="changebot" action="index.php?page=select_bots" method="post">
+    <div>
+        <label>Aktiven Bot ändern</label>
+        <select name="bot_id" id="bot_id" onchange="submit()">
+            [options]
+        </select>
+        <input type="hidden" id="action" name="action" value="change"/>
+        Bot ID:&nbsp;<input style="text-align: center" type="text" size="1" disabled="disabled" value="[bot_id]"/> (Nicht änderbar)
+    </div>
+</form>
+<!--/fieldset-->
+<!-- Section ChangeBot End -->
+<!-- Section SelectBotForm Start -->
+
+[blank]    <!--fieldset-->
+<form id="botAttributes" action="index.php?page=select_bots" method="post">
+    <div class="leftHalf noBorder">
+        <table class="formTable">
+            <tr>
+                <td width="40%"><label for="bot_name"><span class="label">Namen des Bots</span></label></td>
+                <td width="60%"><span class="formw"><input type="text" class="fm-req" id="bot_name" name="bot_name"
+                                                           value="[bot_name]"/></span></td>
+            </tr>
+            <tr>
+                <td><label for="bot_active"><span class="label">Bot aktivieren</span></label></td>
+                <td>
+                <span class="formw">
+                  <select name="bot_active" id="bot_active">
+                    <option value="1" [sel_yes]>Yes</option>
+                    <option value="0" [sel_no]>No</option>
+                  </select>
+                </span>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="format"><span class="label">Antwortformat</span></label></td>
+                <td>
+                <span class="formw">
+                  <select name="format" id="format">
+                    <option value="html" [sel_html]>HTML</option>
+                    <option value="xml" [sel_xml]>XML</option>
+                    <option value="json" [sel_json]>JSON</option>
+                  </select>
+                </span>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="unknown_user"><span class="label">Unbekannter Benutzer</span></label></td>
+                <td>
+                <span class="formw">
+                  <input type="text" name="unknown_user" id="unknown_user" value="[bot_unknown_user]">
+                </span>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="debugemail"><span class="label">Debug E-Mail-Adresse</span></label></td>
+                <td>
+                <span class="formw">
+                  <input type="text" name="debugemail" id="debugemail" value="[bot_debugemail]"/>
+                </span>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="default_aiml_pattern"><span class="label">Standardantwort</span></label>
+                </td>
+                <td>
+                <span class="formw">
+                  <input type="text" name="default_aiml_pattern" id="default_aiml_pattern"
+                         value="[bot_default_aiml_pattern]"/>
+                </span>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="error_response"><span class="label">Format der Fehlerbenachrichtigung</span></label></td>
+                <td>
+                <span class="formw">
+                  <input type="text" name="error_response" id="error_response" value="[bot_error_response]"/>
+                </span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="center"><span class="label">Der Chatbot "[bot_name]" hat [aiml_count] AIML-Kategorien in der Datenbank vorliegen.</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="rightHalf noBorder">
+        <table class="formTable">
+            <tr>
+                <td width="40%"><label for="bot_desc"><span class="label">Beschreibung des Bots</span></label></td>
+                <td width="60%"><span class="formw">
+              <textarea id="bot_desc" name="bot_desc">[bot_desc]</textarea>
+            </span></td>
+            </tr>
+            <tr>
+                <td><label for="bot_parent_id"><span class="label">Name des übergeordneten Bots</span></label></td>
+                <td><span class="formw">
+              <select name="bot_parent_id" id="bot_parent_id">
+[parent_options]
+              </select>
+            </span></td>
+            </tr>
+            <tr>
+                <td><label for="save_state"><span class="label">Sicherung</span></label></td>
+                <td><span class="formw">
+              <select name="save_state" id="save_state">
+                    <option value="session" [sel_session]>Session</option>
+                    <option value="database" [sel_db]>Datenbank</option>
+              </select>
+            </span></td>
+            </tr>
+            <tr>
+                <td><label for="remember_up_to"><span class="label">Verlauf des Bots</span></label></td>
+                <td>
+                <span class="formw">
+                  <input type="text" class="fm-req" id="remember_up_to" name="remember_up_to" value="[remember_up_to]"/>
+                </span>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="conversation_lines"><span class="label">Chat Lines To Display</span></label></td>
+                <td><span class="formw">
+              <input type="text" class="fm-req" id="conversation_lines" name="conversation_lines"
+                     value="[bot_conversation_lines]"/>
+            </span></td>
+            </tr>
+            <tr>
+                <td><label for="debugmode"><span class="label">Debug Modus</span></label></td>
+                <td>
+                <span class="formw">
+                  <select name="debugmode" id="debugmode">
+                    <option value="0" [dm_]>Quellcode-Ansicht - Zeigt Debug-Code im Quellcode an</option>
+                    <option value="1" [dm_i]>Datei - Es wird eine Logdatei geführt</option>
+                    <option value="2" [dm_ii]>Normale-Ansicht - Zeigt Debug-Code auf der Website an</option>
+                    <option value="3" [dm_iii]>E-Mail - Die Konversation wird an Ihre E-Mail geschickt (nicht empfohlen)</option>
+                  </select>
+                </span>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="debugshow"><span class="label">Debug Stufe</span></label></td>
+                <td><span class="formw">
+              <select name="debugshow" id="debugshow">
+                  <option value="0" [ds_]>Kein Debug-Code anzeigen</option>
+                  <option value="1" [ds_i]>Nur einfache Fehler anzeigen</option>
+                  <option value="2" [ds_ii]>Ausnahmen und Fehler anzeigen</option>
+                  <option value="3" [ds_iii]>SQL-Fehler und Fehler im Code anzeigen</option>
+                  <option value="4" [ds_iv]>Alles anzeigen</option>
+              </select>
+            </span></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="useBranch">
+                        <span class="label">GitHub-Branch zum überprüfen auf Updates</span><span class="big red bold">*</span>
+                    </label>
+                </td>
+                <td>
+                    <select name="useBranch" id="useBranch">
+                        <option value="master" [bSelOptM]>Master (Stabile Version)</option>
+                        <option value="dev" [bSelOptD]>Entwicklungszweig</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input type="hidden" id="bot_id" name="bot_id" value="[bot_id]"/>
+    <div id="fm-submit" class="row fm-req center">
+        <input type="submit" name="action" id="action" value="[action]"/>
+    </div>
+</form>
+<div class="note">
+    <span class="big red bold">*</span>Wähle einen Zweig aus, mit welchem die aktuelle Installation verglichen werden soll.
+</div>
+<!--/fieldset-->
+<!-- Section SelectBotForm End -->
+<!-- Section FormRow Start -->
+<div class="[leftRight]">
+    <label for="[row_label]"><span class="label">[row_label]:</span></label>
+    <span class="formw"><input name="[row_label]" id="[row_label]" value="[row_value]"/></span>
+</div>
+<!-- Section FormRow End -->
+<!-- Section ConversationLogs1 Start -->
+<div id="pTitle">Konversationslog ([bot_name])</div>
+<p>[convo]</p>
+<!-- Section ConversationLogs1 End -->
+<!-- Section SpellcheckForm Start -->
+<fieldset style="margin-bottom: 3px;">
+    <form id="spellCheck" action="index.php?page=spellcheck&amp;group=[group]" method="post">
+        <div class="row bold">Füge der Fehlerkorrektur ein Wort hinzu:</div>
+        <div class="row fm-opt">
+            <label for="missspell">Falsch geschrieben: </label>
+            <input type="text" id="missspell" name="missspell"/>
+        </div>
+        <div class="row fm-opt">
+            <label for="correction">Richtig geschrieben: </label>
+            <input type="text" id="correction" name="correction"/>
+        </div>
+        <div id="row fm-submit" class="fm-req">
+            <input type="submit" name="action" id="action" value="add"/>
+        </div>
+    </form>
+</fieldset>
+<!-- Section SpellcheckForm End -->
+<!-- Section SearchSpellForm Start -->
+<fieldset style="margin-bottom: 3px;">
+    <span>Die Fehlererkorrektur-Erweiterung ist <u>[sc_enabled]</u></span><br/>
+    <span>
+              <strong>Hinweis:</strong>
+              Um die Fehlerkorrektur zu aktivieren oder deaktivieren müssen Sie Änderung an der Konfigurationsdatei vornehmen.
+              Bitte werfe einen Blick in die README-Datei im chatbot/addons/spell_checker Ordner für mehr Informationen.
+            </span><br/>
+    <form id="search" action="index.php?page=spellcheck&amp;group=[group]" method="post">
+        <div class="row bold">Suche ein falsch geschriebenes Wort:</div>
+        <div class="row fm-req">
+            <input type="text" id="search" name="search"/>
+            <input type="submit" name="action" id="action" value="search"/>
+        </div>
+    </form>
+</fieldset>
+<!-- Section SearchSpellForm End -->
+<!-- Section EditSpellForm Start -->
+<fieldset style="margin-bottom: 3px;">
+    <form id="spell" action="index.php?page=spellcheck&amp;group=[group]" method="post">
+        <div class="row bold">Bearbeite den Eintrag für [missspelling]:</div>
+        <div class="row fm-opt">
+            <label for="topic">Falsch geschrieben: </label>
+            <input type="text" id="missspelling" name="missspelling" value="[missspelling]"/>
+        </div>
+        <div class="row fm-opt">
+            <label for="correction">Richtig geschrieben: </label>
+            <input type="text" id="correction" name="correction" value="[correction]"/>
+        </div>
+        <div id="fm-submit" class="row fm-req">
+            <input type="hidden" name="id" id="id" value="[id]"/>
+            <input type="submit" name="action" id="action" value="update"/>
+            <input type="submit" name="action" id="action" value="Delete"
+                   onclick="return confirm('Bist du sicher, dass du diesen Eintrag löschen möchtest?');"/>
+        </div>
+    </form>
+</fieldset>
+<!-- Section EditSpellForm End -->
+<!-- Section WordCensorForm Start -->
+<fieldset style="margin-bottom: 3px;">
+    <form id="wordCensor" action="index.php?page=wordcensor&amp;group=[group]" method="post">
+        <div class="row bold">Füge ein unzulässiges Wort und seine gewünschte Repräsentation hinzu:</div>
+        <div class="row fm-opt">
+            <label for="word_to_censor">Unzulässiges Wort: </label>
+            <input type="text" id="word_to_censor" name="word_to_censor"/>
+        </div>
+        <div class="row fm-opt">
+            <label for="replace_with">Ersetzen durch: </label>
+            <input type="text" id="replace_with" name="replace_with"/>
+        </div>
+        <div id="row fm-submit" class="fm-req">
+            <input type="hidden" name="censor_id" value="[censor_id]"/>
+            <input type="submit" name="action" id="action" value="add"/>&nbsp;
+        </div>
+    </form>
+</fieldset>
+<!-- Section WordCensorForm End -->
+<!-- Section SearchWordCensorForm Start -->
+<fieldset style="margin-bottom: 3px;">
+    <form id="search" action="index.php?page=wordcensor&amp;group=[group]" method="post">
+        <div class="row bold">Suche nach einen unzulässigen Wort:</div>
+        <div class="row fm-req">
+            <input type="text" id="search" name="search"/>
+            <input type="submit" name="action" id="action" value="search"/>
+        </div>
+    </form>
+</fieldset>
+<!-- Section SearchWordCensorForm End -->
+<!-- Section EditWordCensorForm Start -->
+<fieldset style="margin-bottom: 3px;">
+    <form id="wordCensor" action="index.php?page=wordcensor&amp;group=[group]" method="post">
+        <div class="row bold">Bearbeite den Eintrag für das unzulässige Wort [word_to_censor]:</div>
+        <div class="row fm-opt">
+            <label for="topic">Unzulässiges Wort: </label>
+            <input type="text" id="word_to_censor" name="word_to_censor" value="[word_to_censor]"/>
+        </div>
+        <div class="row fm-opt">
+            <label for="replace_with">Ersetzen durch: </label>
+            <input type="text" id="replace_with" name="replace_with" value="[replace_with]"/>
+        </div>
+        <div id="fm-submit" class="row fm-req">
+            <input type="hidden" name="censor_id" id="censor_id" value="[censor_id]"/>
+            <input type="submit" name="action" id="action" value="update"/>&nbsp;
+            <input type="submit" name="action" id="action" value="Delete"
+                   onclick="return confirm('Bist du sicher, dass du diesen Eintrag löschen möchtest?');"/>
+        </div>
+    </form>
+</fieldset>
+<!-- Section EditWordCensorForm End -->
+<!-- Section TeachMain Start -->
+[blank]
+<div id="teachForm" class="fullWidth noBorder">
+    [teach_content]
+</div>
+<div id="help">
+    [showHelp]
+</div>
+<!-- Section TeachMain End -->
+<!-- Section TeachBotForm Start -->
+[blank]
+<form id="teach" action="index.php?page=teach" method="post">
+    <fieldset>
+        <div class="row">
+            <label for="filename"><span class="twentyPercent">Dateiname: </span></label>
+            <span class="eightyPercent"><input name="filename" id="filename" class="wide" value="admin_added.aiml"/></span>
+        </div>
+        <div class="row">
+            <label for="topic"><span class="twentyPercent">Thema: </span></label>
+            <span class="eightyPercent"><input name="topic" id="topic" class="wide"/></span>
+        </div>
+        <div class="row fm-opt">
+            <label for="thatpattern"><span class="twentyPercent">Vorherige Antwort des Bots (that): </span></label>
+            <span class="eightyPercent"><input id="thatpattern" name="thatpattern" class="wide"/></span>
+        </div>
+        <div class="row fm-opt">
+            <label for="pattern"><span class="twentyPercent">Benutzereingabe: </span></label>
+            <span class="eightyPercent"><input id="pattern" name="pattern" class="wide"/></span>
+        </div>
+        <div class="row fm-opt">
+            <label for="template"><span class="twentyPercent">Antwort des Bots: </span></label>
+            <span class="eightyPercent"><textarea id="template" name="template" class="wide"></textarea></span>
+        </div>
+        <div class="row">Für Hilfe, klick auf das Symbol im oberen Titel</div>
+        <div id="row" class="fm-req">
+            <input type="submit" name="action" id="action" value="teach"/>
+        </div>
+    </fieldset>
+</form>
+<!-- Section TeachBotForm End -->
+<!-- Section TeachShowHelp Start -->
+[blank]
+<div id="showHelp">
+    <h3>Hilfe...</h3>
+    <dd>Das Hinzufügen eines 'Themas' bedeutet, dass der Bot nur auf diese Antwort zugreifen kann,
+        wenn eine vorherige Kategorie dieses Thema als aktuelles Thema definiert hat.
+    </dd>
+    <dd>Der Bot kann nur antworten, wenn seine vorherige Antwort mit dieser Antwort übereinstimmt.</dd>
+    <dd>Die eigentliche Benutzereingabe, welche den Bot zum antworten bewegt.</dd>
+    <dd>Die Antwort des Bots, wenn die Benutzereingabe gefunden werden konnte.</dd>
+    <br/>
+    <h3>Beispiel (einfach):</h3>
+    <dd>Benutzer: Hallo, wie geht es Dir?</dd>
+    <dd>Bot: Mir geht es gut und Dir?</dd>
+    <br/>
+    <h3>Bespiel (mittel):</h3>
+    <dd>Vorherige Antwort des Bots: Mir geht es gut und Dir?</dd>
+    <dd>Benutzer: Gut, danke.</dd>
+    <dd>Bot: Das ist schön zu hören.</dd>
+    <br/>
+    <h3>Beispiel (fortgeschritten):</h3>
+    <dd>1. Die erste Eingabe setzt das Thema.</dd>
+    <dd>Benutzer: Ich mag Chatbots.</dd>
+    <dd>Bot: Was genau gefällt dir an Chatbots?
+        <set topic="chatbots">
+    </dd>
+    <br/>
+    <dd>2. Diese Antwort kann nur zustande kommen, wenn das jeweilige Thema gesetzt wurde.</dd>
+    <dd>Thema: chatbots</dd>
+    <dd>Benutzer: Sie gefallen mir einfach.</dd>
+    <dd>Bot: Ich mag sie auch.</dd>
+    <br/>--Du kannst im Internet noch viele weitere Informationen finden, zum Thema AIML.<br/>--Wenn du mehr über das
+    Thema AIML erfahren möchtest dann besuche diese <a href="http://www.alicebot.org/documentation/aiml-primer.html" target="_new" class="hbox">Seite</a>
+</div>
+<!-- Section TeachShowHelp End -->
+<!-- Section editAIMLShowHelp Start -->
+[blank]
+<div id="showHelp">
+    <h2>Hilfe...</h2>
+    <h3>Allgemeine Suche</h3>
+    <dd>
+        Das bearbeiten von Seiten gestaltet sich sehr einfach. Auf einer Seite werden jeweils immer mindestens zehn Kategorien angezeigt.
+        Du kannst die Zahl der angezeigten Kategorien in der Option ändern, welche sich in der unteren linken Ecke befindet.
+        Es können maximal 100 Kategorien angezeigt werden. Sollte dein Bot mehr als 100 Kategorien haben, benutze die Navigation um zu der nächsten Seite zu gelangen.
+        Die Navigation kannst du in der unteren rechten Hälfte finden.
+        Ein ebenfalls sehr nützliches Feature ist das sortieren von Kategorien, klicke hierfür auf den jeweiligen Titel in der Tabelle.
+    </dd>
+    <dd>
+        Verwenden Sie die obere Suche, um schneller Ihre AIML-Kategorien zu finden und gegebenfalls Änderung vorzunehmen.
+    </dd>
+    <dd></dd>
+    <br/>
+    <h3>Bearbeitung</h3>
+    <dd>
+        Das Bearbeiten von Kategorien, erfolgt durch einen einfachen Klick auf das gewünschte Feld.
+        Um das Bearbeiten abzubrechen drücken Sie die ESC-Taste oder klicken Sie auf ein anderes Feld ohne eine Änderung vorzunehmen.
+        Das Sichern Ihrer Bearbeitung erfolgt ebenfalls durch einen einfachen Klick außerhalb des Feldes.
+        Bitte beachten Sie, dass hinzugefügte Eingaben nicht validiert werden. Es liegt also bei Ihnen die Eingaben auf Richtigkeit zu prüfen.
+    </dd>
+    <dd></dd>
+    <br/>
+    <h3>Entfernen einer Kategorie (row)</h3>
+    <dd>
+        Um eine AIML-Kategorie aus der Datenbank zu entfernen, suchen Sie einfach mithilfe der Suchfunktion danach
+        und klicken auf das Löschen-Symbol (<img src="images/del.png" width="15" height="15" alt="">).
+        Danach werden Sie gefragt, ob Sie die Änderung wirklich vornehmen wollen. Bestätigen Sie dies mit ja.
+        <strong class="red">Warnung!</strong> Eine einmal gelöschte Kategorie kann nicht wieder hergestellt werden.
+        Überlegen Sie es sich deshalb zwei mal, ob Sie tatsächlich etwas entfernen möchten.
+    </dd>
+    <dd></dd>
+    <br/>--Du kannst im Internet noch viele weitere Informationen finden, zum Thema AIML.<br/>--Wenn du mehr über das
+    Thema AIML erfahren möchtest dann besuche diese <a href="http://www.alicebot.org/documentation/aiml-primer.html" target="_new" class="hbox">Seite</a>
+</div>
+<!-- Section editAIMLShowHelp End -->
+<!-- Section ClearShowHelp Start -->
+[blank]
+<div id="showHelp">
+    <h3>Hilfe...</h3>
+    <dd>Dieser Bereich erlaubt es Ihnen für einzelne Bots bestimmte oder alle Einträge zu entfernen.</dd>
+    <dd>Perfekt, wenn Sie wieder von Vorne anfangen möchten und Ihren Bot neu bearbeiten wollen.</dd>
+    <dd><strong>Sei gewarnt:</strong> Diese Änderung lässt sich nicht rückgängig machen.</dd>
+    <dd>--Vergewissern Sie sich, dass der richtige Bot ausgewählt wurde.</dd>
+    <dd>--Wählen Sie 'Lösche alle Kategorien' und wählen Sie die AIML-Datei aus dem Menü.</dd>
+    <dd>--oder wählen Sie 'Lösche alle Kategorien (Datenbank löschen)'.</dd>
+    <dd>--Drücken Sie dann auf 'Submit' um alle Einträge aus der Datei zu entfernen.</dd>
+</div>
+<!-- Section ClearShowHelp End -->
+<!-- Section MembersShowHelp Start -->
+[blank]
+<div id="showHelp">
+    <h3>Hilfe...</h3>
+    <dd>Dieser Bereich erlaubt es dir Benutzer zu bearbeiten oder neue hinzuzufügen.</dd>
+    <dd>--Wähle einen Benutzer.</dd>
+    <dd>--Oder füge einen neuen Benutzer hinzu.</dd>
+    <dd>--Drücke auf 'Speichern' um die Änderung vorzunehmen.</dd>
+    <dd>--Oder drücke 'Löschen' um einen Benutzer zu entfernen.</dd>
+</div>
+<!-- Section MembersShowHelp End -->
+<!-- Section UploadShowHelp Start -->
+[blank]
+<div id="showHelp">
+    <h3>Help...</h3>
+    <dd> Wenn Sie keine AIML-Datei hochladen können, überprüfen Sie bitte folgende Punkte.</dd>
+    <dd>--Der Ordner auf welchen hochgeladen werden soll, benötigt bestimmte Zugriffsrechte (CHMOD 755)</dd>
+    <dd>--Entferne die Kommentare aus der AIML-Datei</dd>
+    <dd>--Ersetze alles über der ersten Kategorie mit einem <aiml> tag</dd>
+    <br/>--Du kannst im Internet noch viele weitere Informationen finden, zum Thema AIML.
+    <br/>--Wenn du mehr über das Thema AIML erfahren möchtest dann besuche diese
+    <a href="http://www.alicebot.org/documentation/aiml-primer.html" target="_new" class="hbox">Seite</a>
+</div>
+<!-- Section UploadShowHelp End -->
+<!-- Section DownloadShowHelp Start -->
+[blank]
+<div id="showHelp">
+    <h3>Hilfe...</h3>
+    <dd>
+        Wählen Sie aus ob Sie die Dateien als AIML oder als SQL hochladen möchten. Standardmäßig ist AIML ausgewählt.
+        Klicke danach auf den Download Button. Die Eingabedaten werden nun verarbeitet, dies kann einige Sekunden dauern.
+        Es folgt eine Bestätigung, dass Ihre Datei erfolgreich verarbeitet konnte.
+    </dd>
+</div>
+<!-- Section DownloadShowHelp End -->
+<!-- Section HelpLink Start -->
+<img src="images/help.png" onclick="showHide();" title="Hilfe anzeigen oder ausblenden" alt="Hilfe anzeigen oder ausblenden"
+     style="cursor: pointer"/>
+<!-- Section HelpLink End -->
+<!-- Section RSSItemTemplate Start -->
+<p>[rssRowTitle]</p>
+<p>[rssRowContent]</p>
+<br/>
+<!-- Section RSSItemTemplate End -->
+<!-- Section LogoLink Start -->
+<div id="logoLink" onclick="[showHide]Logo();">[showHide] Logo</div>
+<!-- Section LogoLink End -->
+<!-- Section LogoLinkScript Start -->
+[blank]
+<script type="text/javascript" id="lowerScripts">
+    function ShowLogo() {
+        //setDisplay('1');
+        var body = document.body;
+        body.style.backgroundImage = 'url(images/repeated_header2.jpg)';
+        var logo = document.getElementById('logo');
+        logo.style.display = "block";
+        //var ts = document.getElementById('title');
+        //ts.style.top = '125px';
+        var topNav = document.getElementById('top_nav');
+        if (topNav) topNav.style.top = '130px';
+        var leftNav = document.getElementById('left_nav');
+        if (leftNav) leftNav.style.top = '160px';
+        var main = document.getElementById('main');
+        main.style.top = '160px';
+        var rightNav = document.getElementById('right_nav');
+        if (rightNav) rightNav.style.top = '160px';
+    }
+    function HideLogo() {
+        //setDisplay('HideLogoCSS');
+        var body = document.body;
+        body.style.backgroundImage = 'none';
+        var logo = document.getElementById('logo');
+        logo.style.display = "none";
+        var topNav = document.getElementById('top_nav');
+        topNav.style.top = '15px';
+        var leftNav = document.getElementById('left_nav');
+        if (leftNav) leftNav.style.top = '50px';
+        var main = document.getElementById('main');
+        main.style.top = '50px';
+        var rightNav = document.getElementById('right_nav');
+        if (rightNav) rightNav.style.top = '50px';
+    }
+    function toggleLogo() {
+        if (logoStatus == 'Hide') {
+            logoStatus = 'Show';
+            ShowLogo();
+        }
+        else {
+            logoStatus = 'Hide';
+            HideLogo();
+        }
+        setCookie('display', logoStatus);
+    }
+
+    function setCookie(name, value) {
+        document.cookie = name + '=' + escape(value) + ';path=/';
+    }
+    function getCookie(name) {
+        var dc = document.cookie;
+        var begin = dc.indexOf(name);
+        if (begin < 0) return false;
+        var end = (dc.indexOf(";", begin) == -1) ? dc.length : dc.indexOf(";", begin);
+        return unescape(dc.substring((begin + (name.length + 1)), end));
+    }
+    function closeStatus(element) {
+        var parent = document.getElementById(element);
+        parent.style.display = 'none';
+    }
+    function openStatus(element) {
+        var parent = document.getElementById(element);
+        parent.style.display = 'block';
+    }
+    //var logoStatus = (getCookie('display') !== false) ? 'Hide' : 'Show';
+    var logoStatus = getCookie('display');
+    logoStatus = (logoStatus == 'Hide' || logoStatus == 'Show') ? logoStatus : 'Show';
+    var func = logoStatus + 'Logo()';
+    setTimeout(function () {
+        eval(func);
+        //alert('logoStatus = ' + logoStatus);
+    }, 10);
+    //var x = eval(func);
+</script>
+<!-- Section LogoLinkScript End -->
+<!-- Section HideLogoCSS Start -->
+<style type="text/css">
+    body {
+        background-image: none;
+    }
+
+    #logo {
+        display: none;
+    }
+
+    #top_nav {
+        top: 15px;
+    }
+
+    #left_nav, #right_nav, #main {
+        top: 50px;
+    }
+</style>
+<!-- Section HideLogoCSS End -->
+<!-- Section ChatDemo Start -->
+<div id="demoChatTitle">Spreche mit [bot_name] mittels der [format] Schnittstelle:</div>
+<div id="demoChatContainer">
+    <iframe id="demoChat" src="[pageSource]"></iframe>
+</div>
+<!-- Section ChatDemo End -->
+<!-- Section DbStats Start -->
+[blank]
+<div id="dbStatsTitle">Datenbankstatistik für [dbn]</div>
+<div id="dbStatsContainer">
+    <p>Laufzeit: [stats_uptime]</p>
+    <p>Threads: [stats_threads]</p>
+    <p>Queries: [stats_query_count]</p>
+    <p>Langsame Queries: [stats_slow_queries]</p>
+    <p>Flush Tabellenanzahl: [stats_flush_count]</p>
+    <p>Offene Tabellen: [stats_tables_open]</p>
+    <p>Queries pro Sekunde (Durschschnitt): [stats_qps]</p>
+</div>
+<!-- Section DbStats End -->
+<!-- Section MembersMain Start -->
+[blank]
+<div id="membersForm" class="fullWidth noBorder">
+    <p>
+        Hier können Sie ihr Konto bearbeiten, löschen oder ein neues hinzufügen.
+    </p>
+    [members_list_form]
+    [members_content]
+</div>
+<div id="help">
+    [showHelp]
+</div>
+<!-- Section MembersMain End -->
+<!-- Section MembersForm Start -->
+[blank]          <p><strong>[action] Konto des Administrators:</strong></p>
+<form id="members" action="index.php?page=members" method="post">
+    <fieldset class="noBorder">
+        <div class="row">
+            <input name="id" id="id" value="[id]" autocomplete="off" disabled="disabled"/>
+            Account ID: (<u>nicht änderbar</u>)
+        </div>
+        <div class="row">
+            <input name="user_name" id="user_name" value="[user_name]"/>
+            <label for="user_name">Anmeldename: </label>
+        </div>
+        <div class="row">
+            <input name="password" id="password" type="password" autocomplete="off">
+            <label for="password">Passwort: </label>
+        </div>
+        <div class="row">
+            <input name="passwordConfirm" id="passwordConfirm" type="password" autocomplete="off">
+            <label for="passwordConfirm"> Passwort bestätigen: </label>
+        </div>
+        <div class="row">
+            <input type="hidden" name="id" id="id" value="[id]"/>
+            <input type="submit" name="action" value="[action]"/>
+            <input type="submit" name="action" value="Delete"/>
+        </div>
+    </fieldset>
+</form>
+<!-- Section MembersForm End -->
+<!-- Section MembersListForm Start -->
+[blank]
+<div class="row">
+    <form id="memberList" action="index.php?page=members" method="post">
+        <fieldset class="noBorder">
+            <label for="memberSelect">Derzeitige Administratoren: </label>
+            <select name="memberSelect" id="memberSelect" size="1">
+                <option value="-1">Wähle einen Administrator</option>
+                [adminList]
+            </select>
+            <input type="hidden" name="action" value="editfromlist"/>
+            <input type="submit" name="" value="Edit User"/>
+        </fieldset>
+    </form>
+</div>
+<!-- Section MembersListForm End -->
+<!-- Section UploadMain Start -->
+[blank]
+<div id="uploadForm" class="fullWidth noBorder">
+    <p>
+        Benutze das Upload-Skript um neue Kategorien hinzuzufügen. Du kannst zwischen AIML-Dateien oder Zip-Archiven wählen, achte
+        darauf dass keine Datei über 2MB groß ist. Achte darauf dass keine Validierung deiner Dateien stattfindet.
+        Es ist zu empfehlen dass Sie hierfür auf Werkzeuge wie dem <a href="http://www.w3schools.com/xml/xml_validator.asp" target="_blank">W3Schools-XML-Validator</a> zurückgreifen
+        oder auf <a href="validateAIML.php">Program O AIML Validator</a>.
+        Bitte beachten Sie, dass keine der oben genannten Methoden für Zip-Archive funktioniert.
+    </p>
+    [upload_content]
+    <hr/>
+    <div id="AIML_List">
+        Liste aller derzeitigen AIML-Dateien für [bot_name]:<br/>
+        [AIML_List]
+    </div>
+    <hr/>
+</div>
+<div id="help">
+    [showHelp]
+</div>
+<!-- Section UploadMain End -->
+<!-- Section UploadAIMLForm Start -->
+[blank]
+<form id="upload" enctype="multipart/form-data" action="" method="post">
+    <table class="formTable">
+        <tr>
+            <td>
+                <label for="aimlfile">Datei:</label>
+                <input type="file" id="aimlfile" name="aimlfile" onchange="checkSize();"/>&nbsp; &nbsp;
+            </td>
+            <td>
+                <input type="checkbox" id="clearDB" name="clearDB" checked="checked"/>&nbsp; &nbsp;
+                <label for="clearDB">Lösche mithilfer dieser Datei die Einträge in der Datenbank</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="bot_id">Eine Datei dem Bot hinzufügen: </label>
+                <select name="bot_id" id="bot_id" size="1">
+                    [all_bots]
+                </select>&nbsp; &nbsp;
+            </td>
+            <td>
+                <input type="checkbox" id="skipVal" name="skipVal" value="1"/>&nbsp; &nbsp;
+                <label for="skipVal">Überspringe die AIML-Validierung für diese Datei</label>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" name="action" id="action" value="upload"/>
+            </td>
+        </tr>
+    </table>
+</form>
+<!-- Section UploadAIMLForm End -->
+<!-- Section editSRAIPage Start -->
+[blank]
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"/>
+<style type="text/css">
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
+        padding: 1px 2px 1px 0;
+    }
+
+    input.search-input-text {
+        margin-left: -14px;
+    }
+
+    #showHelp {
+        top: -15px;
+    }
+</style>
+<div class="row center">
+    Die SRAI Lookup-Tabelle beinhaltet derzeit [row_count] Einträge für den Chatbot "[bot_name]".
+</div>
+<p>
+    <a href="?page=srai_lookup&amp;action=fillLookup">Fülle die Lookup-Tabelle</a>&nbsp;(Für mehr Informationen siehe Hilfe)
+</p>
+<hr class="w80 m0a mb5">
+<div class="holder">
+    <table id="SRAI_LOOKUP" class="datatable-table">
+        <thead>
+        <tr>
+            <th title="Sort by Table ID">ID</th>
+            <th title="Sort by Bot ID">Bot ID</th>
+            <th title="Sort by Pattern">Pattern</th>
+            <th title="Sort by Template ID">Template ID</th>
+        </tr>
+        </thead>
+        <thead>
+        <tr class="filters">
+            <th id="f_id"><input type="text" data-column="0" class="search-input-text" placeholder="ID Search"></th>
+            <th id="f_bot_id"><input type="text" data-column="1" class="search-input-text" placeholder="bot ID Search">
+            </th>
+            <th id="f_pattern"><input type="text" data-column="2" class="search-input-text"
+                                      placeholder="pattern Search"></th>
+            <th id="f_template_id"><input type="text" data-column="3" class="search-input-text"
+                                          placeholder="template ID Search"></th>
+        </tr>
+        </thead>
+    </table>
+    <form id="addNewCat">
+        <table id="newCatTable">
+            <tr>
+                <td colspan="4" class="center bold">Füge einen neuen SRAI Eintrag hinzu:</td>
+            </tr>
+            <tr>
+                <td class="w5">
+                    <input id="btnClearNewCat" name="" type="reset" value="Clear Form">
+                </td>
+                <td class="w15">
+                    <textarea name="bot_id" rows="2" placeholder="Bot ID" class="newCat"></textarea>
+                </td>
+                <td class="w55">
+                    <textarea name="pattern" rows="2" placeholder="Pattern" class="newCat"></textarea>
+                </td>
+                <td class="w15">
+                    <textarea name="template_id" rows="2" placeholder="Template ID" class="newCat"></textarea>
+                </td>
+                <td class="w10">
+                    <input id="btnSaveNewCat" name="" type="submit" value="Save Category">
+                    <input type="hidden" name="action" value="add"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div class='search-msg'></div>
+</div>
+[showHelp]
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script type="text/javascript" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="scripts/editSRAI.js"></script>
+<!-- Section editSRAIPage End -->
+<!-- Section editSRAIShowHelp Start -->
+[blank]
+<div id="showHelp">
+    <h2>Hilfe...</h2>
+    <h3>Allgemein</h3>
+    <dd>
+        Ein Skript führt eine Suche aus, die nach allen SRAI-Aufrufen sucht.
+        Dabei werden alle Einträge in einer speziellen Lookup-Tabelle gespeichert.
+        Die Chatbot-Engine kann diese Tabelle dann nutzen um nicht durch alle Datensätze zu iterieren.
+        Dies spart Zeit und steigert die Geschwindigkeit des Bots.
+        Geschwindigkeitsvorteile von fast 70% sind möglich. Du brauchst dieses Skript nur einmal aktivieren.
+        Solltest du jedoch signifikante Änderungen vornehmen, musst du das Skript wieder ausführen. Erst recht wenn du einen Bot
+        bearbeitet oder entfernt hast. Duplikate werden gelöscht und können daher die Lookup-Tabelle nicht künstlich vergrößern.
+    </dd>
+    <dd>
+        Die Tabelle und das Formular auf dieser Seite helfen bei der Suche, Bearbeitung und Einfügen von neuen Einträgen.
+        Dieses Hilfsmittel ist existiert, da das Skript weit weg ist von perfekt. Es kann passieren, dass Einträge nicht gefunden werden,
+        wenn SRAI-Aufrufe ebenfalls AIML-Tags enthalten. Dieses Tool sollte also mit vorsichtig genutzt werden und
+        ist nur etwas für erfahrene Benutzer die wissen was sie tun.
+    </dd>
+    <h3>Warnung:</h3>
+    <dd>
+        Bitte beachte wenn du die Einträge manuell bearbeitest, in der srai_lookup Tabelle und das Skript ausführst um die Tabelle zu erneuern, dass
+        alle neun hinzugefügten Einträge verloren gehen. Bevor du also das Skript ausführst um die Tabelle zu erneuern, solltest
+        du einen Datenbank-Manager (z. B. phpMyAdmin) verwenden um von den Änderung ein Backup anzulegen.
+    </dd>
+    <br/>
+    <h3>Bearbeitung</h3>
+    <dd>
+        Das Bearbeiten kann durch ein einfaches Klicken auf ein gewünschtes Feld bewerkstelligt werden.
+        Du kannst jederzeit das Bearbeiten abbrechen, klicke hierfür einfach außerhalb des Feldes oder drücke die ESC-Taste.
+        Zum speichern von Eingaben, bearbeiten Sie ihr gewünschtes Feld und klicken sie auch hier außerhalb eines Feldes, wenn
+        Sie mit der Bearbeitung zufrieden sind. Beachte, dass alle gemachten Eingaben nicht validiert werden. Es liegt
+        also bei Ihnen die Eingaben zu überprüfen.
+    </dd>
+    <dd></dd>
+    <br/>
+    <h3>Löschen einer Kategorie (row)</h3>
+    <dd>
+        Um eine AIML-Kategorie aus der Datenbank zu entfernen, suchen Sie einfach mithilfe der Suchfunktion danach
+        und klicken auf das Löschen-Symbol (<img src="images/del.png" width="15" height="15" alt="">).
+        Danach werden Sie gefragt, ob Sie die Änderung wirklich vornehmen wollen. Bestätigen Sie dies mit ja.
+        <strong class="red">Warnung!</strong> Eine einmal gelöschte Kategorie kann nicht wieder hergestellt werden.
+        Überlegen Sie es sich deshalb zwei mal, ob Sie tatsächlich etwas entfernen möchten.
+    </dd>
+</div>
+<!-- Section editSRAIShowHelp End -->
+<!-- Section StatsPage Start -->
+[blank]
+<div id="nocol">
+    <h2>Statistik von [bot_name]</h2>
+    <div class="leftHalf">
+        <b><u>Konversation: </u></b><br/>
+        Heute: [oneday]<br/>
+        Letzte Woche: [oneweek]<br/>
+        Letzten Monat: [onemonth]<br/>
+        Letzten sechs Monate: [sixmonths]<br/>
+        Letztes Jahr: [oneyear]<br/>
+        Von Beginn an: [alltime]
+    </div>
+    <div class="rightHalf">
+        <b><u>Reihe aller Konversationen:</u></b><br/>
+        Einzelne Reihe: [singlelines]<br/>
+        1-25 Reihen: [alines]<br/>
+        25-50 Reihen: [blines]<br/>
+        51-100 Reihen: [clines]<br/>
+        101+ Reihen: [dlines]<br/>
+        Durchschnitt: [avg]
+    </div>
+</div>
+<!-- Section StatsPage End -->
+<!-- Section EditAimlPage Start -->
+[blank]
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"/>
+<style type="text/css">
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {
+        padding: 1px 2px 1px 0;
+    }
+
+    input.search-input-text {
+        margin-left: -14px;
+    }
+
+    #showHelp {
+        top: -15px;
+    }
+</style>
+<div class="holder">
+    <table id="AIML" class="datatable-table">
+        <thead>
+        <tr>
+            <th title="Sortieren nach Tabellen ID">ID</th>
+            <th title="Sortieren nach Eingabe">Pattern</th>
+            <th title="Sortieren nach vorherige Ausgabe">Thatpattern</th>
+            <th title="Sortieren nach Antwort">Template</th>
+            <th title="Sortieren nach Thema">Thema</th>
+            <th title="Sortieren nach Datei">Datein</th>
+        </tr>
+        </thead>
+        <thead>
+        <tr class="filters">
+            <th id="f_id"><input type="text" data-column="0" class="search-input-text" placeholder="ID-Suche"></th>
+            <th id="f_pattern"><input type="text" data-column="1" class="search-input-text"
+                                      placeholder="Pattern-Suche"></th>
+            <th id="f_thatpattern"><input type="text" data-column="2" class="search-input-text"
+                                          placeholder="Thatpattern-Suche"></th>
+            <th id="f_template"><input type="text" data-column="3" class="search-input-text"
+                                       placeholder="Template-Suche"></th>
+            <th id="f_topic"><input type="text" data-column="4" class="search-input-text" placeholder="Topic-Suche">
+            </th>
+            <th id="f_filename"><input type="text" data-column="5" class="search-input-text"
+                                       placeholder="Datei-Suche"></th>
+        </tr>
+        </thead>
+    </table>
+    <form id="addNewCat">
+        <table id="newCatTable">
+            <tr>
+                <td colspan="6" class="center bold">Füge eine neue Kategorie hinzu:</td>
+            </tr>
+            <tr>
+                <td class="w5">
+                    <input id="btnClearNewCat" name="" type="reset" value="Formulareinträge entfernen">
+                </td>
+                <td class="w15">
+                    <textarea name="pattern" rows="2" placeholder="Benutzereingabe" class="newCat"></textarea>
+                </td>
+                <td class="w15">
+                    <textarea name="thatpattern" rows="2" placeholder="Vorherige Bot Antwort" class="newCat"></textarea>
+                </td>
+                <td>
+                    <textarea name="template" rows="2" placeholder="Bot Antwort" class="newCat"></textarea>
+                </td>
+                <td class="w15">
+                    <textarea name="topic" rows="2" placeholder="Thema (topic)" class="newCat"></textarea>
+                </td>
+                <td class="w10">
+                    <input id="btnSaveNewCat" name="" type="submit" value="Save Category">
+                    <input type="hidden" name="filename" value="admin_added.aiml"/>
+                    <input type="hidden" name="action" value="add"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div class='search-msg'></div>
+</div>
+[showHelp]
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script type="text/javascript" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="scripts/editAiml.js"></script>
+<!-- Section EditAimlPage End -->
+<!-- Section DataTable Start -->
+[blank]
+<div class="editaiml-table">
+    <div class='search-msg'></div>
+    <table id="[table_id]" class="datatable-table">
+        <thead class="datatable-columns">
+        [thead_content]
+        </thead>
+        <tfoot>
+        [tfoot_content]
+        </tfoot>
+        <tbody>
+        [tbody_content]
+        </tbody>
+    </table>
+</div>
+<!-- Section DataTable End -->
+<!-- Section DownloadForm Start -->
+[blank]
+<div id="downloadFormMulti" class="fullWidth noBorder downloadForms">
+    <div class="row center">Bitte wähle eine AIML-Datei aus, die Sie herunterladen möchten.</div>
+    <hr class="eightyPercent">
+    <form action="index.php?page=download" method="POST" id="downloadForm">
+        <table class="centered">
+            <tr>
+                <td class="center">
+                    <input type="radio" name="type" id="actionGetFileAIML" checked="checked" value="AIML">
+                    <label for="actionGetFileAIML" style="width: 250px">Datei als AIML herunterladen</label>
+                </td>
+                <td class="center">
+                    <input type="checkbox" id="cbSelectAll">
+                    <label for="cbSelectAll" style="width: 250px">Wähle alle Dateien aus</label>
+                </td>
+                <td class="center">
+                    <input type="radio" name="type" id="actionGetFileSQL" value="SQL">
+                    <label for="actionGetFileSQL" style="width: 250px">Datei als SQL herunterladen</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="center">
+                    <hr class="eightyPercent">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="center">
+                    [file_checkboxes]
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="center">
+                    <hr class="eightyPercent">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="center">
+                    <input type="submit" id="btnCBSub" value="Download Zip">
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div id="status">[status]</div>
+</div>
+[showHelp]
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#cbSelectAll').click(function () {
+            $('.cbFiles').prop('checked', $(this).prop('checked'));
+        });
+    });
+</script>
+<!-- Section DownloadForm End -->
+<!-- Section UpperScripts Start -->
+[blank]
+<script type="text/javascript">
+    function showMe() {
+        var sh = document.getElementById('showHelp');
+        var tf = document.getElementById('membersForm');
+        sh.style.display = 'block';
+        tf.style.display = 'none';
+    }
+    function hideMe() {
+        var sh = document.getElementById('showHelp');
+        var tf = document.getElementById('membersForm');
+        sh.style.display = 'none';
+        tf.style.display = 'block';
+    }
+    function showHide() {
+        var display = document.getElementById('showHelp').style.display;
+        switch (display) {
+            case '':
+            case 'none':
+                return showMe();
+                break;
+            case 'block':
+                return hideMe();
+                break;
+            default:
+                alert('display = ' + display);
+        }
+    }
+</script>
+<!-- Section UpperScripts End -->
+<!-- Section ClearAIML Start -->
+[blank]
+<div class="bold red center">Das entfernen von AIML-Kategorien aus der Datenbank ist <strong>permanent</strong>!
+    Diese Aktion kann <strong>nicht</strong> rückgängig gemacht werden!
+</div>
+<div id="clearForm">
+    <form name="clearForm" action="index.php?page=clear" method="POST" onsubmit="return verify()">
+        <table class="formTable">
+            <tr>
+                <td>
+                    <input type="radio" name="action" value="void" id="actionClearFile" checked="checked">
+                    <label for="actionClearFile" style="width: 210px; text-align: left">Entferne alle Einträge aus der AIML-Datei: </label><br/>
+                </td>
+                <td>
+                    <input type="radio" name="action" id="actionClearAll" value="clear">
+                    <label for="actionClearAll" style="width: 250px">Entferne <strong>ALLE</strong> AIML-Kategorien (Datenbank wird gelöscht)</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <select name="clearFile" id="clearFile" size="1" style="margin: 14px;"
+                            onclick="document.getElementById('actionClearFile').checked = true"
+                            onchange="document.getElementById('actionClearFile').checked = true">
+                        <option value="null" selected="selected">Wähle eine Datei aus</option>
+                        [selectOptions]
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" name="" value="Submit">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+[showHelp]
+<script type="text/javascript">
+    function verify() {
+
+
+        var fn = document.getElementById('clearFile').value;
+        var clearAll = document.getElementById('actionClearAll').checked;
+        if (fn == 'null' && clearAll === false) return false;
+        if (clearAll) fn = 'repository for all files';
+        return confirm('Dies wird alle Kategorien aus der Datenbank entfernen ' + fn + '! Dies kann nicht rückgängig gemacht werden. Bist du sicher, dass du das möchtest?');
+    }
+</script>
+<!-- Section ClearAIML End -->
+<!-- Section BugForm Start -->
+[blank]
+<form method="POST" action="index.php?page=bugs" name="contactForm">
+    <input name="func" value="sendMail" type="hidden">
+    <input name="contactMe" value="true" type="hidden">
+    <table border="1" width="100%">
+        <tr>
+            <td align="center" width="33%">
+                Dein Name:<br/>
+                <input name="name" value="" type="text">
+            </td>
+            <td align="center">
+                Deine E-Mail-Adresse:<br/>
+                <input name="email" value="[debugemail]" type="text">
+            </td>
+            <td align="center" width="33%">
+                Thema:<br/>
+                <input name="subject" value="Bug Berichtsvorlage" type="text">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" align="center">
+                Nachricht:<br/>
+                <textarea rows="7" id="report_message" name="message" placeholder="Deine Nachricht..."></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p class="indent">
+                    Benutze dieses Formular um einen Bug zu melden. Bitte beschreibe dein Problem so gut wie möglich.
+                    Versuche ebenfalls zu beschreiben was genau du gemacht hast, damit dieser Schritt reproduzierbar ist.
+                </p>
+            </td>
+            <td align="center">
+                <img id="capImg" src="captcha.php" title="Captcha script ©2009-2011 Geek Cave Creations"><br/>
+                <input onclick="renewImage(); return false" value="Refresh" type="button">
+            </td>
+            <td>
+                <p class="indent">
+                    Beantworte die Frage die du im linken Bild siehst. Es wird nur ein Wort gesucht.
+                    Es dürfen keine Zahlen enthalten sein. Tut uns Leid, aber Bots werden nicht geduldet.
+                </p>
+                <input name="captcha" type="text">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" align="center">
+                <input name="Post" id="report_submit" value="Submit Bug Report" type="submit">
+            </td>
+        </tr>
+    </table>
+</form>
+<script type="text/javascript">
+    function renewImage() {
+        document.getElementById('capImg').src = 'captcha.php?r=' + Math.random();
+    }
+</script>
+<!-- Section BugForm End -->
