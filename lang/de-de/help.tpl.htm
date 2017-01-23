@@ -1,0 +1,368 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Program-O Installationshilfe</title>
+    <link rel="stylesheet" href="help.css" type="text/css" />
+    <style type="text/css">
+      div.row {
+        width: 98%;
+      }
+      div.row span.label {
+        width: 25%;
+        margin-right: 12px;
+      }
+      .big {
+        font-size: x-large;
+      }
+      .description {
+        background-color: transparent;
+        margin-left: 28%;
+        clear: right;
+        width: 72%;
+      }
+      .description:hover {
+        background-color: transparent;
+      }
+      .row:hover {
+        background-color: #DDD;
+      }
+      .highlighted {
+        background-color: #66CCFF;
+      }
+      .highlighted:hover {
+        background-color: #FFFFAA;
+      }
+      .red {
+        color: red;
+        font-weight: bold;
+      }
+      .row.underline {
+          border: 1px outset #666;
+          border-right-width: 2px;
+          border-bottom-width: 2px;
+      }
+    </style>
+  </head>
+  <body onload="highlight()">
+    <div id="logo">&nbsp;</div>
+    <div id="title">
+      <div id="titlespan">
+        Program-O Installationshilfe
+        <div class="ul"></div>
+        <div class="ll"></div>
+        <div class="ur"></div>
+        <div class="lr"></div>
+      </div>
+    </div>
+      <div id="container">
+        [helpContent]
+      </div>
+    <div class="spacer">&nbsp;</div>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+    <script type="text/javascript">
+      function highlight() {
+        var myHash = location.hash;
+        //alert('hash = '+hash);
+        $('div.row').removeClass('highlighted');
+        $(myHash).addClass('highlighted');
+        document.close();
+        window.parent.helpWindow = null;
+      }
+    </script>
+  </body>
+</html>
+<!-- Section HelpPage End -->
+<!-- Section HelpMain Start -->
+        <div class="center big"><strong>Was das alles bedeutet...</strong></div>
+        <div>
+            Diese Datei soll dir dabei helfen die verschiedenen Einstellungen die du während der Installation vornehmen kannst zu verstehen.
+            Jeder Abschnitt wird erklärt und wenn nötig mit Beispielen erklärt. Einige Einstellungen werden automatisch generiert, dennoch solltest du
+            genau hinsehen. Bitte besuche die Seite <a href="http://www.program-o.com" target="_blank">Program O</a>.<br />
+          <div>&nbsp;</div>
+        </div>
+        <div class="big bold center">Allgemeine Konfiguration</div>
+
+        <div class="bold">&nbsp;</div>
+
+       <div class="bold center underline">Botmaster Information</div>
+
+        <div class="row" id="botmaster_name">
+          <span class="label">Dein Name</span>
+          <div class="description">
+            Selbsterklärend. Gib deinen Namen ein. Mit welchen Namen sollen dich deine Besucher ansprechen?
+          </div>
+        </div>
+
+        <div class="row" id="debugemail">
+          <span class="label">E-Mail-Adresse</span>
+          <div class="description">
+            Wird intern genutzt für Kontaktdetails und für das Übertragen von Debug-Code. Das Übertragen von Debug-Code ist optional.
+            Für mehr Informationen siehe unten, in den Debug Informationen.
+          </div>
+        </div>
+
+        <div class="row">&nbsp;</div>
+        <div class="bold center underline">Bot Konfiguration</div>
+
+        <div>
+            Ebenfallas selbsterklärend. Folgende Einträge sind vorhanden:
+        </div>
+
+        <div class="row" id="bot_name">
+          <span class="label">Bot Name</span>
+          <div class="description">
+              Ohne Namen geht es nicht. Wähle deinen Bot Namen weise.
+          </div>
+        </div>
+
+        <div class="row" id="bot_desc">
+          <span class="label">Bot Beschreibung</span>
+          <div class="description">
+              Gebe deinen Bot eine Hintergrundgeschichte beschreibe Ihn wenn möglich.
+              Dieses Feld muss aber nicht unbedingt ausgefüllt werden. Du kannst es auch leer lassen.
+          </div>
+        </div>
+
+        <div class="row" id="bot_active">
+          <span class="label">Bot Aktivieren</span>
+          <div class="description">
+              Du kannst deinen Bot als versteckt markieren, dies kann in einigen Bereichen von Nutzen sein.
+              Aktiviere diese Option wenn du deinen Bot normal nutzen möchtest. Ändere dies am Besten auf der Administrator-Seite.
+          </div>
+        </div>
+
+        <div class="row" id="error_response">
+          <span class="label">Fehlerbenachrichtigung</span>
+          <div class="description">
+              Diese Antwort wird ausgegeben, wenn ein interner Fehler auftritt.
+              Für was du dich entscheidest liegt ganz bei dir, es ist zu empfehlen irgendein Wert auszusuchen.
+          </div>
+        </div>
+
+        <div class="row" id="pattern">
+          <span class="label">Standard Pattern</span>
+          Standardwert: *
+          <div class="description">
+              Dieser Wert sollte nicht geändert werden und ist mittlerweile veraltet.
+          </div>
+        </div>
+
+        <div class="row" id="conversation_lines">
+          <span class="label">Anzahl der Chat-Zeilen</span>
+          <div class="description">
+              Wie viele Zeilen sollen im Chat angezeigt werden? Setze es auf 0 für unendlich. Beachte
+              dass dies die Performance deines Bots beeinflussen kann, wenn viele Benutzer gleichzeitig agieren.
+          </div>
+        </div>
+
+        <div class="row" id="remember_up_to">
+          <span class="label">Anzahl der Antworten im Verlauf</span>
+          <div class="description">
+              Bestimmt wie viele Antworten jeweils zwischengespeichert werden, damit sich der Bot "zurückerinnern" kann.
+              Diese Einstellung ist limitiert, das dies sonst zu viel Leistung kosten würde. Der Wert sollte bei mindestens
+              30 liegen. Solltest du JSON nutzen, setze diese Einstellung auf eins und implementiere deinen eigenen Verlauf client-seitig.
+          </div>
+        </div>
+
+        <div class="row" id="format">
+          <span class="label">Antwort Format</span>
+          <div class="description">
+            Standard: HTML<br />
+            Program-O gibt dir drei Optionen zur Verfügung um die Antworten deines Bots zu parsen:
+            <ul>
+              <li>
+                <strong>HTML</strong> Diese Option bewirkt dass, Program-O HTML als Ausgabeformat nutzt.
+                  Für Neulinge ist diese Option vorzuziehen, da diese am wenigsten Probleme macht.
+              </li>
+              <li>
+                <strong>JSON</strong> Diese Option bewirkt dass, Program-O <a href="http://en.wikipedia.org/wiki/JSON" target="_blank">JSON</a> als Ausgabeformat nutzt.
+                Diese Option ist vorzuziehen, wenn dein Bot client-seitig angesprochen werden soll, so ist es relativ einfach möglich mithilfe von
+                <a href="http://jquery.com/">jQuery</a> Anfragen zu verschicken.
+              </li>
+              <li>
+                <strong>XML</strong> Diese Option bewirkt dass, Program-O XML als Ausgabeformat nutzt.
+                  Standardisiertes Format und leicht auszulesen so wie breite Unterstützung.
+              </li>
+            </ul>
+              Hier gibt es einige <a href="../gui/index.php">Beispielseiten</a> zum ausprobieren.
+              Vergesse aber nicht, dass diese Seiten nur zum experimentieren sind.
+              Für den produktiven Einsatz sind Modifikation unerlässlich.
+          </div>
+        </div>
+
+        <div class="bold">&nbsp;</div>
+
+        <div class="bold big underline center">Datenbank Konfiguration</div>
+
+        <div class="bold">&nbsp;</div>
+
+        <div class="bold underline center">Info zur Datenbankverbindung</div>
+
+        <div class="red">
+            Bitte beachte, dass du bereits im Vorfeld eine Datenbank für deinen Bot anlegen <strong>musst</strong>.
+            Die nötigen Tabellen werden automatisch angelegt. Aus dem Grund dass, viele Hoster das anlegen von Datenbanken aus dem Skript nicht erlauben.
+            Verbindungsinformation wie z. B. der Benutzername und Passwort sollten daher vorliegen.
+        </div>
+
+        <div class="row" id="dbh">
+          <span class="label">Datenbank Host Name</span>
+          <div class="description">
+            Standard: localhost<br />
+              Standardmäßig localhost, es kann aber auch sein, dass dein Host dir einen anderen Host Name zuweist.
+              Diese Eingabe ist erforderlich.
+          </div>
+        </div>
+
+        <div class="row" id="dbPort">
+          <span class="label">Datenbank Port</span>
+          <div class="description">
+            Standard: 3306<br />
+              Nur erforderlich wenn der Server so konfiguriert wurde, dass ein anderer Port genutzt wird.
+          </div>
+        </div>
+
+        <div class="row" id="dbn">
+          <span class="label">Datenbank Name</span>
+          <div class="description">
+              Wenn du bereits eine Datenbank angelegt hast, gebe diesen Namen bitte hier ein.
+          </div>
+        </div>
+
+        <div class="row" id="dbu">
+          <span class="label">Datenbank Benutzername</span>
+          <div class="description">
+              Der Name des Benutzers welche Rechte für die neu angelegte Datenbank besitzt.
+          </div>
+        </div>
+
+        <div class="row" id="dbp">
+          <span class="label">Datenbank Passwort</span>
+          <div class="description">
+              Das Passwort welches zum Anmelden deiner Datenbank benötigt wird. Achte darauf dieses Feld auszufüllen.
+          </div>
+        </div>
+
+        <div class="row" id="timezone">
+          <span class="label">Datenbank Zeitzone</span>
+          <div class="description">
+              Die Zeitzone deines Servers. Diese Einstellung wird automatisch vorgenommen, sollte aber noch einmal überprüft werden.
+          </div>
+        </div>
+
+        <div class="bold">&nbsp;</div>
+
+        <div class="bold underline center">Administration</div>
+
+        <div class="row" id="adm_dbu">
+          <span class="label">Administrator Benutzername</span>
+          <div class="description">
+              Zum Anmelden wird ein Benutzername und Passwort benötigt. Das ist der Benutzername des Administrator.
+          </div>
+        </div>
+
+        <div class="row" id="adm_dbp">
+          <span class="label">Administrator Passwort</span>
+          <div class="description">
+              Genau wie beim Benutzernamen. Diese Einstellung ist erforderlich. Das Passwort wird als Hash in einer Datenbank gespeichert.
+          </div>
+        </div>
+
+        <div class="bold">&nbsp;</div>
+
+        <div class="bold center underline">Debug Optionen</div>
+
+        <div class="row" id="debug_level">
+          <span class="label">Debug Stufe</span>
+          <div class="description">
+            Diese Einstellung bestimmt die Menge der Ausgaben welche von den Debug-Funktionen erzeugt wird.
+              Du hast die Wahl zwischen vier Optionen:
+            <ul>
+              <li><strong>Keine</strong> Es werden keine Debug-Daten angezeigt und kann die Performance des Bots steigern.</li>
+              <li><strong>Allgemein</strong> Es werden nur allgemeine bis wenig Informationen generiert.</li>
+              <li>
+                <strong>Allgemein/SQL</strong> Kleiner Zusatz bei dem zusätzlich SQL-Anfragen gespeichert werden.
+              </li>
+              <li>
+                <strong>Alles</strong> Es wird eine umfangreiche Berichterstattung generiert und jeder Funktions-Aufruf wird
+                  protokolliert. <strong>WARNUNG!</strong> Eine <u>GROßE</u> Menge
+                an Daten wird dabei generiert, dass kann die Performance negativ beeinflussen, gerade dann wenn
+                  die Daten im Quellcode angezeigt werden. Vermeide diese Option, wenn du Debug-Informationen zu deiner E-Mail geschickt bekommen möchtest.
+              </li>
+            </ul>
+              In den meisten Fällen sollte die Option auf "Keine" stehen, außer du möchtest ein Problem zurückverfolgen.
+              Die letzten zwei Optionen dienen allein der Fehlerbehebung.
+          </div>
+        </div>
+
+        <div class="row" id="debug_mode">
+          <span class="label">Debug Modus</span>
+          <div class="description">Standard: Datei<br />
+            Mit "Debug Modus" wird das Ausgabeformat der Debug-Informationen festgelegt.
+            <ul>
+              <li>
+                <strong>Im Quellcode anzeigen</strong> Debug-Informationen werden im Quellcode angezeigt,
+                  innerhalb von HTML Kommentaren. <em>Hinweis - Funktioniert nur wenn das Ausgabeformat auf HTML gestellt ist</em>(Siehe weiter unten)
+              </li>
+              <li>
+                <strong>Datei</strong> Debug-Informationen werden in einer Datei chronologisch gespeichert.
+                Der benutze Ordner liegt in /chatbot/debug/.
+              </li>
+              <li>
+                <strong>Anzeigen</strong> Zeigt Debug-Informationen direkt auf dem Bildschirm an.
+                  <em>Hinweis - Funktioniert nur wenn das Ausgabeformat auf HTML gestellt ist</em>(Siehe weiter unten)
+              </li>
+              <li>
+                <strong>E-Mail</strong> Sendet Debug-Informationen via E-Mail - <strong>WARNUNG!</strong> Das kann eine <u>MENGE</u> E-Mail
+                Traffic verursachen! Nutze es Weise.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="row" id="save_state">
+          <span class="label">Sicherung</span>
+          <div class="description">
+            Standard: Session<br />
+            Diese Einstellung bestimmt wie Program-O Benutzereingaben speichert. Hier kannst du zwischen folgenden Optionen wählen:
+            <ul>
+              <li>
+                <strong>Session</strong> Das ist der Standard. Alle Daten werden in einer einzelnen Session-Variable zwischengespeichert.
+                  Je nach Einstellungen des Browsers, erlöscht die Session nach dem Schließen des Browsers.
+              </li>
+              <li>
+                <strong>Datenbank</strong> Anstatt die Daten in einem Array zwischenzuspeichern, werden hier die Daten in einer Datenbank gespeichert.
+              </li>
+            </ul>
+              Hier gibt es keine Option die vom Vorteil wäre. Wähle die Option die dir am meisten zusagt.
+          </div>
+        </div>
+
+        <div class="row">&nbsp;</div>
+
+        <div class="big bold center underline">Fehlerbehebung</div>
+
+        <div class="row" id="permissions">
+          <span class="label">Datei Zugriffsrechte</span>
+          <div class="description">
+            <p>
+                Solltest du diese Seite sehen, dann weil dein Server dem Installations-Skript keine Rechte gewährt.
+                Sollte dies der Fall sein, dann ändere die Zugriffsrechte der einzelnen Ordner und Dateien.
+                Damit die Konfiguration abgeschlossen werden kann.
+            </p>
+            <p>
+                Um manuell die Zugriffsrechte auf deinen Server zu ändern, gibt es mehrere Wege.
+                Sollte dein Host eine Benutzerkontrolle haben, kannst du die einzelnen Zugriffsrechte anpassen
+                oder du benutzt eine FTP-Software welche dir ebenfalls erlaubt Rechte zu ändern.
+                Für weitere Informationen lese die Hilfs-Seite deines FTP-Programms und suche nach "CHMOD" oder "Zugriffsrechte".
+            </p>
+            <p>
+                Die korrekt Einstellung für die Zugriffsrechte ist 0755. Wenn du nicht weißt was damit gemeint ist, dann werfe einen Blick
+                hierauf <a href="http://www.perlfect.com/articles/chmod.shtml">http://www.perlfect.com/articles/chmod.shtml</a>.
+                Merke dir einfach nur, dass diese Einstellung festlegt ob die Konfigurationsdatei beschrieben werden kann oder nicht und
+                es weiterhin möglich ist von der Datei zu lesen. Wenn auf diese Datei nicht geschrieben werden kann, können die Einstellungen nicht gespeichert werden
+                welche du vorgenommen hast. Dein Bot würde also nicht richtig funktionieren. Es ist also äußerst wichtig.
+            </p>
+          </div>
+        </div>
+<!-- Section HelpMain End -->
