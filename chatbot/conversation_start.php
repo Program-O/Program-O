@@ -17,7 +17,7 @@ $last_timestamp = $time_start;
 $thisFile = __FILE__;
 
 /** @noinspection PhpIncludeInspection */
-require_once("../config/global_config.php");
+require_once(_CONF_PATH_ . 'global_config.php');
 //load shared files
 /** @noinspection PhpIncludeInspection */
 require_once(_LIB_PATH_ . 'PDO_functions.php');
