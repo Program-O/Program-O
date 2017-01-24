@@ -16,8 +16,8 @@ $script_start = $time_start;
 $last_timestamp = $time_start;
 $thisFile = __FILE__;
 
-/** @noinspection PhpIncludeInspection */
-require_once(_CONF_PATH_ . 'global_config.php');
+$configPath = (defined('_CONF_PATH_')) ? _CONF_PATH_ : '../config/';
+require_once("{$configPath}global_config.php");
 //load shared files
 /** @noinspection PhpIncludeInspection */
 require_once(_LIB_PATH_ . 'PDO_functions.php');
