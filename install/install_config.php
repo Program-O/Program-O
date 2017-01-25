@@ -34,7 +34,7 @@ define('_INSTALL_PATH_', _BASE_PATH_  . "install$path_separator");
 //------------------------------------------------------------------------
 
 $doc_root = $_SERVER['DOCUMENT_ROOT'];
-$bu = str_replace($path_separator, '/', BASE_PATH);
+$bu = str_replace($path_separator, '/', _BASE_PATH_);
 $baseURL = str_replace($doc_root, '', $bu);
 define ('_BASE_URL_', $baseURL);
 define('_ADMIN_URL_',   _BASE_URL_ . 'admin/');

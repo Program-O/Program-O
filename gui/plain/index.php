@@ -20,7 +20,7 @@ if (!file_exists('../../config/global_config.php'))
 /** @noinspection PhpIncludeInspection */
 require_once('../../config/global_config.php');
 /** @noinspection PhpIncludeInspection */
-require_once('../chatbot/conversation_start.php');
+require_once('../../chatbot/conversation_start.php');
 
 $get_vars = (!empty($_GET)) ? filter_input_array(INPUT_GET) : array();
 $post_vars = (!empty($_POST)) ? filter_input_array(INPUT_POST) : array();

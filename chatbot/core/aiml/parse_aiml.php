@@ -212,7 +212,7 @@ function parse_matched_aiml($convoArr, $type = "normal", $aiml_pattern = '')
     //which debug mode?
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Run the aiml parse in $type mode (normal or srai)", 3);
 
-    $aiml_pattern = ($aiml_pattern == '') ? $convoArr['aiml']['pattern'] : $aiml_pattern;
+    $aiml_pattern = $convoArr['aiml']['pattern'];
     $convoArr = set_wildcards($convoArr, $aiml_pattern, $type);
     $car = $convoArr;
     $car['nounList'] = null;
