@@ -801,8 +801,8 @@ function parse_srai_tag(&$convoArr, $element, $parentName, $level)
 
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai_new.txt", print_r($srai_new, true) . "\n", FILE_APPEND);
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai.txt", print_r($srai, true) . "\n", FILE_APPEND);
-    set_wildcards($convoArr, $srai_new, 'srai');
-    $response = run_srai($convoArr, $srai_new);
+    $convoArr = set_wildcards($convoArr, $srai_new, 'srai');
+    $response = run_srai($convoArr, $convoArr['aiml']['srai_input']);
 
     //$response = run_srai($convoArr, $srai);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 4);
