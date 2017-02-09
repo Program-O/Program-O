@@ -70,9 +70,9 @@ if (isset($post_vars['name']))
 
     if ($row !== false)
     {
-        $verify = $row['password'];
+        $verify = (string) $row['password']; // cast the result as a string, just to make sure the comparison is properly made, later.
 
-        if ($pass == $verify)
+        if ($pass === $verify)
         {
             $_SESSION['isLoggedIn'] = true;
             header('Location: ' . _LOG_URL_);
@@ -104,6 +104,7 @@ else
     $now_playing = ($iframeURL == 'about:blank') ? 'Viewer is empty' : "<strong>Viewing Log File: $iframeURL</strong>";
     $optionTemplate = '        <option[fileSelected] value="[file]">[file]</option>' . "\n";
     $fileList = glob(_LOG_PATH_ . "{*.log,*.txt}", GLOB_BRACE);
+    if (empty($fileList)) $sel_msg = 'No Logs to View';
 
     usort(
       $fileList,
