@@ -71,8 +71,9 @@ if (isset($post_vars['name']))
 
     if ($row !== false)
     {
+        $verify = $row['password'];
 
-        if ($pass === $verify)
+        if ($pass == $verify)
         {
             $_SESSION['isLoggedIn'] = true;
             header('Location: ' . _DEBUG_URL_);
@@ -103,7 +104,6 @@ else
     $now_playing = ($iframeURL == 'about:blank') ? 'Viewer is empty' : "<strong>Viewing Debug File: $iframeURL</strong>";
     $optionTemplate = '            <option[fileSelected] value="[file]">[file]</option>' . "\n";
     $fileList = glob(_DEBUG_PATH_ . '*.txt');
-    if (empty($fileList)) $sel_msg = 'No Logs to View';
 
     usort(
         $fileList,
