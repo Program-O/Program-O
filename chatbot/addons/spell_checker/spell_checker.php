@@ -36,11 +36,11 @@ function run_spell_checker_say($say)
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Starting function and setting timestamp.', 2);
 
     $sentence = '';
-    $wordArr = explode(' ', $say);
+    $wordArr = preg_split('/([^\pL](?<!\x27))/u', $say, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
     foreach ($wordArr as $index => $word)
     {
-        $sentence .= spell_check($word, $bot_id) . " ";
+        $sentence .= spell_check($word, $bot_id);
     }
 
     return trim($sentence);
