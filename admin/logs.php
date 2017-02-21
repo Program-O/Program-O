@@ -9,13 +9,21 @@
  * DATE: 12-12-2014
  * DETAILS: Displays chat logs for the currently selected chatbot
  ***************************************/
-$get_vars = filter_input_array(INPUT_GET);
+$allowed_get_vars = array(
+    // Make sure to put at least something in here, like this:
+    'page' => FILTER_DEFAULT,
+    'showing' => FILTER_DEFAULT,
+    'id'   => FILTER_VALIDATE_INT,
+    //see http://php.net/manual/en/filter.constants.php for available options
+);
+$get_vars = clean_inputs($allowed_get_vars);
+
 $show = (isset ($get_vars['showing'])) ? $get_vars['showing'] : "last 20";
 
 //showThis($show)
 $show_this = showThis($show);
 $convo = (isset ($get_vars['id'])) ? getuserConvo($get_vars['id'], $show) : "Please select a conversation from the side bar.";
-$user_list = (isset ($get_vars['id'])) ? getuserList($get_vars['id']) : getuserList($_SESSION['poadmin']['bot_id']);
+$user_list = (isset ($get_vars['id'])) ? getUserList($get_vars['id'], $show) : getUserList($_SESSION['poadmin']['bot_id'], $show);
 $bot_name = (isset ($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'unknown';
 $upperScripts = $template->getSection('UpperScripts');
 
@@ -56,7 +64,7 @@ function getUserNames()
     $nameList = array();
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `id`, `user_name` FROM `users` WHERE 1;";
+    $sql = "SELECT `id`, `user_name` FROM `users` WHERE 1 order by `id`;";
     $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
     foreach ($result as $row) {
         $nameList[$row['id']] = $row['user_name'];
@@ -65,12 +73,13 @@ function getUserNames()
 }
 
 /**
- * Function getuserList
+ * Function getUserList
  *
+ * @param $bot_id
  * @param $showing
  * @return string
  */
-function getuserList($showing)
+function getUserList($bot_id, $showing)
 {
     //db globals
     global $template, $get_vars, $dbConn;
@@ -81,69 +90,88 @@ function getuserList($showing)
     $linkTag = $template->getSection('NavLink');
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = '$bot_id' AND DATE(`timestamp`) = '[repl_date]' GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC";
+    $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= ([repl_date]) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC";
     $showarray = array("last 20", "previous week", "previous 2 weeks", "previous month", "last 6 months", "this year", "previous year", "all years");
 
     switch ($showing)
     {
         case "today" :
-            $repl_date = date("Y-m-d");
+            $repl_date = strtotime(date("Y-m-d"));
             break;
         case "previous week" :
-            $repl_date = strtotime("-1 week");
+            //$repl_date = strtotime("-1 week");
+            $repl_date = 'NOW() - interval 1 week';
             break;
         case "previous 2 weeks" :
             $repl_date = strtotime("-2 week");
+            $repl_date = 'NOW() - interval 1 week';
             break;
         case "previous month" :
             $repl_date = strtotime("-1 month");
+            $repl_date = 'NOW() - interval 1 week';
             break;
         case "previous 6 months" :
             $repl_date = strtotime("-6 month");
+            $repl_date = 'NOW() - interval 1 week';
             break;
         case "past 12 months" :
             $repl_date = strtotime("-1 year");
+            $repl_date = 'NOW() - interval 1 week';
             break;
         case "all time" :
             /** @noinspection SqlDialectInspection */
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC";
-            $repl_date = time();
+            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC;";
+            //$repl_date = time();
+            $repl_date = false;
+            break;
+        case 'last 20':
+            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC limit 20;";
+            //$repl_date = time();
+            $repl_date = false;
             break;
         default :
             /** @noinspection SqlDialectInspection */
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC";
-            $repl_date = time();
+            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC;";
+            //$repl_date = time();
+            $repl_date = false;
     }
 
-    $sql = str_replace('[repl_date]', $repl_date, $sql);
     $list = '<div class="userlist"><ul>';
 
-    $rows = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = str_replace('[repl_date]', $repl_date, $sql);
+    $params = array(
+        ':bot_id' => $bot_id,
+        ':repl_date' => $repl_date
+    );
+    if (false === $repl_date) unset($params[':repl_date']);
+    $rows = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $numRows = count($rows);
 
-    if ($numRows == 0)
+    if ($numRows == 0 || false === $rows)
     {
         $list .= '          <li>No log entries found</li>';
     }
 
-    foreach ($rows as $row)
-    {
-        $user_id = $row['user_id'];
-        $linkClass = ($user_id == $curUserid) ? 'selected' : 'noClass';
-        $userName = @ $nameList[$user_id];
+    else {
+        foreach ($rows as $row)
+        {
+            $user_id = $row['user_id'];
+            $linkClass = ($user_id == $curUserid) ? 'selected' : 'noClass';
+            $userName = (!empty($nameList[$user_id])) ? $nameList[$user_id] : 'Unknown';
 
-        $TOT = $row['TOT'];
+            $TOT = $row['TOT'];
 
-        $tmpLink = str_replace('[linkClass]', " class=\"$linkClass\"", $linkTag);
-        $tmpLink = str_replace('[linkOnclick]', '', $tmpLink);
-        $tmpLink = str_replace('[linkHref]', "href=\"index.php?page=logs&showing=$showing&id=$user_id#$user_id\" name=\"$user_id\"", $tmpLink);
-        $tmpLink = str_replace('[linkTitle]', " title=\"Show entries for user $userName\"", $tmpLink);
-        $tmpLink = str_replace('[linkLabel]', "USER:$userName($TOT)", $tmpLink);
+            $tmpLink = str_replace('[linkClass]', " class=\"$linkClass\"", $linkTag);
+            $tmpLink = str_replace('[linkOnclick]', '', $tmpLink);
+            $tmpLink = str_replace('[linkHref]', "href=\"index.php?page=logs&showing=$showing&id=$user_id#$user_id\" name=\"$user_id\"", $tmpLink);
+            $tmpLink = str_replace('[linkTitle]', " title=\"Show entries for user $userName\"", $tmpLink);
+            $tmpLink = str_replace('[linkLabel]', "USER:$userName($TOT)", $tmpLink);
 
-        $anchor = "            <a name=\"$user_id\" />\n";
-        $anchor = '';
+            $anchor = "            <a name=\"$user_id\" />\n";
+            $anchor = '';
 
-        $list .= "$tmpLink\n$anchor";
+            $list .= "$tmpLink\n$anchor";
+        }
     }
 
     $list .= "\n       </div>\n";
@@ -201,7 +229,8 @@ function getuserConvo($id, $showing)
     $bot_name = (isset ($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'Bot';
     $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
     $nameList = getUserNames();
-    $user_name = $nameList[$id];
+    $user_name = (!empty($nameList[$id])) ? $nameList[$id] : 'Unknown';
+    $sqladd = '';
 
     switch ($showing)
     {
