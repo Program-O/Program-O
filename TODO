@@ -1,33 +1,28 @@
-  /***************************************
-  * http://www.program-o.com
-  * PROGRAM O
-  * Version: 2.6.3
-  * FILE: TODO
-  * AUTHOR: Elizabeth Perreau and Dave Morton
-  * DATE: 02-18-2013
-  * DETAILS: List of things to accomplish for the next revision
-  * Please note that this list is NOT prioritized
-  ***************************************/
+/***************************************
+* http://www.program-o.com
+* PROGRAM O
+* Version: 2.6.4
+* FILE: TODO
+* AUTHOR: Elizabeth Perreau and Dave Morton
+* DATE: 02-18-2013
+* DETAILS: List of things to accomplish for the next revision
+* Please note that this list is NOT prioritized
+***************************************/
 
 
-  1.) Add functionality for botmasters to see what inputs triggered the default
-      response category, so that they may be able to more easily determine what
-      AIML categories need to be added.
+1.) Add functionality for botmasters to see what inputs triggered the default
+  response category, so that they may be able to more easily determine what
+  AIML categories need to be added.
 
-  2.) Add a page to the admin script that helps botmasters create new AIML categories
-      based on the functionality mentioned in item 1, above.
+2.) Add a page to the admin script that helps botmasters create new AIML categories
+  based on the functionality mentioned in item 1, above.
 
-  3.) Add a page to the admin script that allows botmasters to edit the config file
-      directly.
+3.) Add a page to the admin script that allows botmasters to edit the config file
+  directly.
 
-  4.) Add config options for enable/disable of BBCode, spell check and word censor addons
+4.) Add config options for enable/disable of BBCode, spell check and word censor addons
 
-  5.) Create configurable functionality to delete users and conversation entries that are
-      older than a given amount of time (defalts to 30 days)
+5.) Create configurable functionality to delete users and conversation entries that are
+  older than a given amount of time (defalts to 30 days)
 
-  6.) Add ability to delete selected files from both log and debug file viewers  
-
-
-
-
-
+6.) Add ability to delete selected files from both log and debug file viewers

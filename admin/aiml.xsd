@@ -50,6 +50,7 @@
         <xs:element ref="aiml:bot"/>
         <xs:element ref="aiml:eval"/>
         <xs:element ref="aiml:br"/>
+        <xs:element ref="aiml:srai"/>
       </xs:choice>
       <xs:attribute name="index" type="xs:string"/>
     </xs:complexType>
