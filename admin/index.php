@@ -334,6 +334,14 @@ function makeLeftLinks()
     $out = array(
         array( # Change bot
             '[linkClass]' => ' class="[curClass]"',
+            '[linkHref]' => ' href="index.php"',
+            '[linkOnclick]' => '',
+            '[linkAlt]' => ' alt="Admin Home"',
+            '[linkTitle]' => ' title="Admin Home"',
+            '[linkLabel]' => 'Home'
+        ),
+        array( # Home
+            '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=select_bots"',
             '[linkOnclick]' => '',
             '[linkAlt]' => ' alt="Change or edit the current bot"',
@@ -352,9 +360,9 @@ function makeLeftLinks()
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=logs"',
             '[linkOnclick]' => '',
-            '[linkAlt]' => ' alt="View the log files"',
-            '[linkTitle]' => ' title="View the log files"',
-            '[linkLabel]' => 'Logs'
+            '[linkAlt]' => ' alt="View the Conversation Logs"',
+            '[linkTitle]' => ' title="View the Conversation Logs"',
+            '[linkLabel]' => 'Conversation Logs'
         ),
         array(
             '[linkClass]' => ' class="[curClass]"',
@@ -464,17 +472,17 @@ function makeLeftLinks()
             '[linkClass]' => '',
             '[linkHref]' => ' href="' . _BASE_URL_ . 'chatbot/debug/"',
             '[linkOnclick]' => ' target="_blank"',
-            '[linkAlt]' => ' alt="View the Debug Files"',
+            '[linkAlt]' => ' alt="Debug File Viewer"',
             '[linkTitle]' => ' title="View the debug files in a new tab/window"',
-            '[linkLabel]' => 'View the Debug Files'
+            '[linkLabel]' => 'Debug File Viewer'
         ),
         array(
             '[linkClass]' => '',
             '[linkHref]' => ' href="../logs/"',
             '[linkOnclick]' => ' target="_blank"',
-            '[linkAlt]' => ' alt="View the Logs"',
-            '[linkTitle]' => ' title="View the logs in a new tab/window"',
-            '[linkLabel]' => 'View the Logs'
+            '[linkAlt]' => ' alt="Log File Viewer"',
+            '[linkTitle]' => ' title="Log File Viewer in a new tab/window"',
+            '[linkLabel]' => 'Log File Viewer'
         ),
     );
     return $out;
