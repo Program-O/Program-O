@@ -248,3 +248,27 @@ function pretty_print_r($var)
     }
     return trim($out, ",\n");
 }
+
+function clean_inputs($options = null)
+{
+    $referer = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : false;
+    $host = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : false;
+    if (false === $host || false === $referer) die ('CSRF failure!');
+    $formVars = array_merge($_GET, $_POST);
+
+    switch (true)
+    {
+        case (null === $options):
+            $out = filter_var_array($formVars);
+            break;
+        case (!is_array($options)):
+            if (!isset($formVars[$options])) return false;
+            $vars = filter_var_array($formVars);
+            $out = $vars[$options];
+            break;
+        default:
+            $out = filter_var_array($formVars, $options, false);
+    }
+    return $out;
+}
+

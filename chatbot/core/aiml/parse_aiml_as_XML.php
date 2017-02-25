@@ -942,6 +942,10 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
                     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Pick XML = ' . $pick->asXML(), 4);
                     break;
                 }
+                else
+                {
+                    $pick = $pick->asXML();
+                }
             }
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($pick, true), 4);
         }
@@ -973,7 +977,7 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Response = " . print_r($response, true), 4);
     }
     else {
-        $response[] = (string)$pick;
+        $response[] = '';
     }
 
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);

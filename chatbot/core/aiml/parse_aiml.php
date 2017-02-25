@@ -287,7 +287,9 @@ function save_for_nextturn($convoArr)
  */
 function set_wildcards($convoArr, $pattern, $type)
 {
-    $convoArr['aiml']['stars'] = array();
+    if (!isset($convoArr['aiml']['srai_input'])) {
+        $convoArr['aiml']['stars'] = array();
+    }
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Setting Wildcards. Pattern = '$pattern'", 2);
 
     $ap = trim($pattern);

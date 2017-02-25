@@ -284,23 +284,4 @@ function insertAIML()
     return $msg;
 }
 
-function clean_inputs($options = null)
-{
-    $formVars = array_merge($_GET, $_POST);
-
-    switch (true)
-    {
-        case (null === $options):
-            $out = filter_var_array($formVars);
-            break;
-        case (!is_array($options)):
-            if (!isset($formVars[$options])) return false;
-            $vars = filter_var_array($formVars);
-            $out = $vars[$options];
-            break;
-        default:
-            $out = filter_var_array($formVars, $options, false);
-    }
-    return $out;
-}
 
