@@ -418,7 +418,7 @@ function run_srai(&$convoArr, $now_look_for_this)
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
 
-    if ($bot_parent_id != 0 and $bot_parent_id != $bot_id)
+    if ($bot_parent_id != 0 && $bot_parent_id != $bot_id)
     {
         $sql_bot_select = " (bot_id = '$bot_id' OR bot_id = '$bot_parent_id') ";
     }

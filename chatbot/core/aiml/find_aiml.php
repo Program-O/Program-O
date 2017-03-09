@@ -1001,7 +1001,7 @@ function find_aiml_matches($convoArr)
     //get the word count
     $word_count = wordsCount_inSentence($lookingfor);
 
-    if ($bot_parent_id != 0 and $bot_parent_id != $bot_id)
+    if ($bot_parent_id != 0 && $bot_parent_id != $bot_id)
     {
         $sql_bot_select = " (bot_id = '$bot_id' OR bot_id = '$bot_parent_id') ";
     }

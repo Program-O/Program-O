@@ -28,14 +28,14 @@ function get_cURL($url, $options = array(), $params = array())
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        if (is_array($options) and count($options) > 0)
+        if (is_array($options) && count($options) > 0)
         {
             foreach ($options as $key => $value) {
                 curl_setopt($ch, $key, $value);
             }
         }
 
-        if (is_array($params) and count($params) > 0)
+        if (is_array($params) && count($params) > 0)
         {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
