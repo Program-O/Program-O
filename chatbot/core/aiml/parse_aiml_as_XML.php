@@ -606,7 +606,6 @@ function parse_set_tag(&$convoArr, $element, $parentName, $level)
     $response = $var_value;
     $convoArr['client_properties'][$var_name] = $var_value;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Value for $var_name has ben set. Returning $var_value.", 4);
-    $convoArr['client_properties']['test'] = 'passed';
 
     return $response;
 }
