@@ -3,7 +3,6 @@
 $msg = '';
 $upperScripts = <<<endScript
 
-    <script type="text/javascript" src="scripts/tablesorter.min.js"></script>
     <script type="text/javascript">
 <!--
       var state = 'hidden';
