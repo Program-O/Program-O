@@ -67,6 +67,7 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 function runDebug($fileName, $functionName, $line, $info, $level = 0)
 {
     global $debugArr, $srai_iterations, $quickdebug, $writetotemp, $convoArr, $last_timestamp, $debug_level;
+    if ($debug_level === 0) return;
 
     $debug_level = (isset($convoArr['conversation']['debug_level'])) ? $convoArr['conversation']['debug_level'] : $debug_level;
 

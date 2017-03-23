@@ -1001,7 +1001,7 @@ function parse_person_tag($convoArr, $element, $parentName, $level)
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a PERSON tag.', 2);
 
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'star');
-    $response = swapPerson($convoArr, 3, $response_string);
+    $response = swapPerson($convoArr, 2, $response_string);
 
     return $response;
 }
@@ -1020,7 +1020,7 @@ function parse_person2_tag($convoArr, $element, $parentName, $level)
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a PERSON2 tag.', 2);
 
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'star');
-    $response = swapPerson($convoArr, 2, $response_string);
+    $response = swapPerson($convoArr, 3, $response_string);
 
     return $response;
 }

@@ -143,7 +143,7 @@ function swapPerson($convoArr, $person, $input)
         buildVerbList($name, $gender);
     }
 
-    // <person2> = swap first with second poerson (e.g. I with you)
+    // <person2> = swap first with second person (e.g. I with you)
     // <person> swap with third person (e.g. I with he,she,it)
     switch ($gender)
     {
