@@ -2,9 +2,9 @@
 
 ##CHANGELOG info:
 
-- Version: 2.6.4
+- Version: 2.6.5
 - Authors: Elizabeth Perreau and Dave Morton
-- Date: June 11th 2016
+- Date: March 30th 2017
 
 
 ##Version History:
