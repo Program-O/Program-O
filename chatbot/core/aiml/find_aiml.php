@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.5
  * FILE: find_aiml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -166,7 +166,8 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
     //if wildcard or direct pattern match and direct or wildcard thatpattern match keep
     //if wildcard pattern matches found aiml keep
     //the end......
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "NEW FUNC Searching through " . count($allrows) . " rows to unset bad matches", 4);
+    $nfARc = number_format(count($allrows));
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "NEW FUNC Searching through " . $nfARc . " rows to unset bad matches", 4);
 
     // If no pattern was found, exit early
     if (($allrows[0]['pattern'] == "no results") && (count($allrows) == 1))
@@ -465,7 +466,7 @@ function score_matches($convoArr, $allrows, $pattern)
                     if (preg_match("/$regEx/i", $topic))
                     {
                         $current_score += $topic_star_match;
-                        $track_matches .= 'topic match with wildcards';
+                        $track_matches .= 'topic match with wildcards, ';
                     }
                 }
             }
@@ -669,7 +670,7 @@ function sort2DArray($opName, $thisArr, $sortByItem, $sortAsc = 1, $limit = 10)
  **/
 function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
 {
-    global $bot_id;
+    global $bot_id, $which_response;
 
     $bestResponse = array();
     $last_high_score = 0;
@@ -695,8 +696,40 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
         }
     }
 
+/*
+     It has been suggested that the "winning" response be the first category found with the highest score,
+     rather than a random selection from all high scoring responses. It was also suggested that the most
+     recent (e.g. the last) response should be chosen, with newer AIML categories superseding older ones.
+     At some point this will be an option that will be placed in the admin pages on a per-bot basis, but
+     for now it's just a random pick. That said, however, I'm going to start adding code for the other
+     two options now.
+*/
+    if (!defined('BOT_USE_FIRST_RESPONSE')) $which_response = 0;
+    $resultCount = count($tmpArr);
+    if ($resultCount > 0)
+    {
+        switch ($which_response)
+        {
+            case 0:
+                $bestResponse = $tmpArr[array_rand($tmpArr)];
+                $use_message = "Will use randomly picked best response chosen out of $resultCount responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'];
+                break;
+            case BOT_USE_FIRST_RESPONSE:
+                $bestResponse = $tmpArr[0];
+                $use_message = "Will use the first best response chosen out of $resultCount responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'];
+                break;
+            case BOT_USE_LAST_RESPONSE:
+                $bestResponse = $tmpArr[$resultCount - 1];
+                $use_message = "Will use the most recent best response chosen out of $resultCount responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'];
+                break;
+            case 0:
+            default:
+                $bestResponse = $tmpArr[array_rand($tmpArr)];
+                $use_message = "Will use randomly picked best response chosen out of $resultCount responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'];
+        }
+    }
+    else $bestResponse = false;
     //there may be any number of results with the same score so pick any random one
-    $bestResponse = (count($tmpArr) > 0) ? $tmpArr[array_rand($tmpArr)] : false;
     if (!$bestResponse)
     {
         $bestResponse = array(
@@ -715,9 +748,8 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
         $bestResponse['template'] = get_winning_category($convoArr, $bestResponse['aiml_id']);
     }
 
-    $cRes = count($tmpArr);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Best Responses: " . print_r($tmpArr, true), 4);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Will use randomly picked best response chosen out of $cRes responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'], 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, $use_message, 2);
 
     //return the best response
     return $bestResponse;
@@ -1011,10 +1043,10 @@ function find_aiml_matches($convoArr)
 
     if (!empty($storedtopic))
     {
-        $topic_select = "AND (`topic`='$storedtopic' OR `topic`='')";
+        $topic_select = "AND (`topic`='$storedtopic' OR `topic`='' OR `topic` like '%*%' OR `topic` like '%_%')";
     }
     else {
-        $topic_select = "AND `topic`=''";
+        $topic_select = "AND `topic`='' OR `topic` like '%*%' OR `topic` like '%_%'";
     }
 
     if ($word_count == 1)
@@ -1027,7 +1059,7 @@ function find_aiml_matches($convoArr)
   `pattern` = '*' OR
   `pattern` = '$lookingfor' OR
   `pattern` = '$default_aiml_pattern'
-  $thatPatternSQL
+  $thatPatternSQL OR `thatpattern` LIKE '%*%' OR `thatpattern` LIKE '%_%'
   ) $topic_select ORDER BY `topic` DESC, `pattern` ASC, `thatpattern` ASC,`id` ASC;";
     }
     else {
@@ -1041,7 +1073,7 @@ function find_aiml_matches($convoArr)
   `pattern` = '*' OR
   `pattern` = '$lookingfor' OR $sql_add OR
   `pattern` = '$default_aiml_pattern'
-  $thatPatternSQL
+  $thatPatternSQL OR `thatpattern` LIKE '%*%' OR `thatpattern` LIKE '%_%'
   ) $topic_select
   ORDER BY `topic` DESC, `pattern` ASC, `thatpattern` ASC,`id` ASC;";
     }
@@ -1054,7 +1086,7 @@ function find_aiml_matches($convoArr)
     if (($result) && ($num_rows > 0))
     {
         $tmp_rows = number_format($num_rows);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ($num_rows) potential AIML matches", 2);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ($tmp_rows) potential AIML matches", 2);
         //loop through results
 
         foreach ($result as $row)

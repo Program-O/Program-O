@@ -9,6 +9,24 @@
 
 ##Version History:
 
+2.6.5   Major Bug Fix, New Option for Response Selection
+
+1. A rather glaring bug was discovered in the SQL query that collects all potential responses
+   that was leaving out certain AIML categories that could have been relevant. This has been
+   corrected.
+
+2. It has been suggested that the "winning" response be the first category found with the highest score,
+   rather than a random selection from all high scoring responses. It was also suggested that the most
+   recent (e.g. the last) response should be chosen, with newer AIML categories superseding older ones.
+   There are now three (3) defined constants in the config file that allow botmasters to determine for
+   themselves which response to choose when there are multiple versions with the same score.
+
+Given that this new version involves changes to the config file, an "overlay" install would be a good
+idea. It's not __VITAL__ to the operation of the chatbot, but using it without doing so will tend to
+generate some rather annoying error messages in the logs, so it's best to just re-run the install script
+with all of the same information.
+
+
 2.6.4   Reimplemented Custom Session Handling, Bug Fixes
 
 1. After months of researching, pulling hair out and banging heads against computer monitors,
