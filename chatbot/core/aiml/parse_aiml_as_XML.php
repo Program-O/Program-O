@@ -10,6 +10,8 @@
  * DETAILS: Handles the parsing of AIML code as XML
  ***************************************/
 
+ require_once(_BOTCORE_AIML_PATH_ . 'parse_aiml_2.0.php');
+
 /**
  * This function starts the process of recursively parsing the AIML template as XML, converting it to text
  *
@@ -240,6 +242,7 @@ function parseTemplateRecursive(&$convoArr, SimpleXMLElement $element, $level = 
     else
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, "function $func does not exist. Parsing tag as text.", 4);
+        // testing...
         $retVal = $element;
     }
 

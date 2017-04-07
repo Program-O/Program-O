@@ -197,5 +197,27 @@ endMessage;
     }
 }
 
+function db_parse_sql ($sql, $params = null)
+{
+    global $dbConn;
+    if (is_null($params) || !is_array($params) || empty($params)) return $sql;
+    $out = $sql;
+    foreach ($params as $search => $replace)
+    {
+        if (!is_numeric($replace))
+        {
+            $replace = $dbConn->quote($replace);
+        }
+        $out = str_replace($search, $replace, $out);
+    }
+    return $out;
+}
+
+
+
+
+
+
+
 
 

@@ -187,7 +187,7 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
     {
       //get the pattern
       $aiml_pattern = _strtolower($subrow['pattern']);
-      $aiml_pattern_wildcards = build_wildcard_RegEx($aiml_pattern);
+      $aiml_pattern_wildcards = build_wildcard_RegEx($convoArr, $aiml_pattern);
 
       //get the that pattern
       $aiml_thatpattern = _strtolower($subrow['thatpattern']);
@@ -197,7 +197,7 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
       $aiml_topic = _strtolower(trim($subrow['topic']));
 
         #Check for a matching topic
-        $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($aiml_topic) : '';
+        $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($convoArr, $aiml_topic) : '';
 
         if ($aiml_topic == '')
         {
@@ -224,7 +224,7 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
         $aiml_patternmatch = (count($matches) > 0) ? true : false;
 
         # look for a thatpattern match
-        $aiml_thatpattern_wildcards = (!empty($aiml_thatpattern)) ? build_wildcard_RegEx($aiml_thatpattern) : '';
+        $aiml_thatpattern_wildcards = (!empty($aiml_thatpattern)) ? build_wildcard_RegEx($convoArr,$aiml_thatpattern) : '';
         $aiml_thatpattern_wc_matches = (!empty($aiml_thatpattern_wildcards)) ? preg_match_all($aiml_thatpattern_wildcards, $current_thatpattern, $matches) : 0;
 
         switch (true)
@@ -311,8 +311,12 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
  * @param string $item
  * @return string
  **/
-function build_wildcard_RegEx($item)
+function build_wildcard_RegEx($convoArr, $item)
 {
+    if (strstr($item, '<'))
+    {
+        $item = parse_pattern_side_tags($convoArr, $item);
+    }
     $item = trim($item);
     $item = str_replace("*", ")(.*)(", $item);
     $item = str_replace("_", ")(.*)(", $item);
@@ -706,6 +710,7 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
 */
     if (!defined('BOT_USE_FIRST_RESPONSE')) $which_response = 0;
     $resultCount = count($tmpArr);
+    $use_message = 'No results found, so none to pick from.';
     if ($resultCount > 0)
     {
         switch ($which_response)
@@ -1142,3 +1147,23 @@ function get_topic($convoArr)
 
     return $retval;
 }
+
+function parse_pattern_side_tags(&$convoArr, $item)
+{
+    error_log("Item = " . print_r($item, true) . "\n", 3, _LOG_PATH_ . 'find_aiml.ppt.raw_item.txt');
+    $search = '~(\<.*?\>)~';
+    preg_match_all($search, $item, $matches);
+    foreach ($matches[0] as $mSearch)
+    {
+        $xml = new SimpleXMLElement($mSearch);
+        $mRepl = parse_bot_tag($convoArr, $xml);
+        $item = str_replace($mSearch, $mRepl, $item);
+    }
+    error_log("Item = $item\n", 3, _LOG_PATH_ . 'find_aiml.ppt.processed_item.txt');
+    return $item;
+}
+
+
+
+
+
