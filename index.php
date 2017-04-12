@@ -14,10 +14,6 @@ if (!file_exists('config/global_config.php'))
     # No config exists we will run install
     header('Location: install/install_programo.php');
 }
-elseif (file_exists('patch.php'))
-{
-    require_once ('patch.php');
-}
 else
 {
     $get_vars = filter_input_array(INPUT_GET);

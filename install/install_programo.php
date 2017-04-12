@@ -9,11 +9,6 @@
 * DETAILS: Program O's Automatic install script
 ***************************************/
 
-if (file_exists('../patch.php'))
-{
-    unlink('../patch.php'); // If this is a fresh install, we need not patch the DB
-}
-
 session_name('PGO_install');
 session_start();
 
