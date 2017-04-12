@@ -46,8 +46,7 @@ if (!empty ($_FILES))
     if (move_uploaded_file($tmpFile, $target))
     {
         $aimlContent = trim(file_get_contents($target));
-        $validAIMLHeader = '<?xml version="1.0" encoding="[charset]"?>
-<aiml version="1.0.1" xmlns="http://www.alicebot.org/TR/2001/WD-aiml">';
+        $validAIMLHeader = '<?xml version="1.0" encoding="[charset]"?><aiml version="2.0">';
         $validAIMLHeader = str_replace('[charset]', $charset, $validAIMLHeader);
         $aimlTagStart = stripos($aimlContent, '<aiml', 0);
         $aimlTagEnd = strpos($aimlContent, '>', $aimlTagStart) + 1;
@@ -72,7 +71,7 @@ if (!empty ($_FILES))
             $status = "File $fileName is <strong>NOT</strong> valid!<br />\n";
             libxml_display_errors();
         }
-        elseif (!$xml->schemaValidate('aiml.xsd'))
+        elseif (!$xml->relaxNGValidate('aiml2.rng'))
         {
             $status = '<b>A total of [count] error[plural] been found in this document.</b>';
             libxml_display_errors();

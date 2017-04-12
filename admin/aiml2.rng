@@ -1,0 +1,1288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+    <start>
+        <ref name="aiml"/>
+    </start>
+
+    <define name="aiml">
+        <element name="aiml">
+            <optional>
+                <choice>
+                    <attribute name="version">
+                        <value>2.0</value>
+                    </attribute>
+                    <element name="version">
+                        <value>2.0</value>
+                    </element>
+                </choice>
+            </optional>
+            <oneOrMore>
+                <choice>
+                    <ref name="category"/>
+                    <ref name="topic"/>
+                </choice>
+            </oneOrMore>
+        </element>
+    </define>
+
+    <define name="category">
+        <element name="category">
+            <element name="pattern">
+                <ref name="pattern-expr"/>
+            </element>
+            <optional>
+                <element name="that">
+                    <ref name="pattern-expr"/>
+                </element>
+            </optional>
+            <optional>
+                <element name="topic">
+                    <ref name="pattern-expr"/>
+                </element>
+            </optional>
+            <element name="template">
+                <ref name="template-expr"/>
+            </element>
+        </element>
+    </define>
+
+    <define name="topic">
+        <element name="topic">
+            <choice>
+                <attribute name="name">
+                    <data type="string">
+                        <param name="pattern">($?\w+|[#_\^*])(\s+($?\w+|[#_\^*]))*</param>
+                    </data>
+                </attribute>
+                <element name="name">
+                    <ref name="pattern-expr"/>
+                </element>
+            </choice>
+            <oneOrMore>
+                <ref name="category"/>
+            </oneOrMore>
+        </element>
+    </define>
+
+    <define name="pattern-expr">
+        <oneOrMore>
+            <choice>
+                <text/>
+                <element name="set">
+                    <data type="normalizedString"/>
+                </element>
+                <element name="bot">
+                    <choice>
+                        <attribute name="name">
+                            <data type="normalizedString"/>
+                        </attribute>
+                        <element name="name">
+                            <data type="normalizedString"/>
+                        </element>
+                    </choice>
+                </element>
+            </choice>
+        </oneOrMore>
+    </define>
+
+    <define name="template-expr">
+        <zeroOrMore>
+            <choice>
+                <text/>
+                <ref name="tag-expr"/>
+            </choice>
+        </zeroOrMore>
+    </define>
+
+    <define name="tag-expr">
+        <choice>
+            <ref name="random"/>
+            <ref name="condition"/>
+            <ref name="srai"/>
+            <ref name="sraix"/>
+            <ref name="set"/>
+            <ref name="get"/>
+            <ref name="map"/>
+            <ref name="bot"/>
+            <ref name="date"/>
+            <ref name="think"/>
+            <ref name="rest"/>
+            <ref name="first"/>
+            <ref name="explode"/>
+            <ref name="normalize"/>
+            <ref name="denormalize"/>
+            <ref name="formal"/>
+            <ref name="lowercase"/>
+            <ref name="uppercase"/>
+            <ref name="sentence"/>
+            <ref name="sr"/>
+            <ref name="id"/>
+            <ref name="vocabulary"/>
+            <ref name="program"/>
+            <ref name="size"/>
+            <ref name="person"/>
+            <ref name="person2"/>
+            <ref name="gender"/>
+            <ref name="system"/>
+            <ref name="star"/>
+            <ref name="thatstar"/>
+            <ref name="topicstar"/>
+            <ref name="that"/>
+            <ref name="request"/>
+            <ref name="input"/>
+            <ref name="response"/>
+            <ref name="learn"/>
+            <ref name="interval"/>
+            <ref name="oob"/>
+            <ref name="global"/>
+        </choice>
+    </define>
+
+    <define name="global">
+        <element>
+            <anyName>
+                <except>
+                    <name>alarm</name>
+                    <name>apikey</name>
+                    <name>battery</name>
+                    <!--
+                    <name>body</name>
+                    -->
+                    <name>bot</name>
+                    <name>botecho</name>
+                    <name>botid</name>
+                    <name>cc</name>
+                    <name>condition</name>
+                    <name>contact</name>
+                    <name>date</name>
+                    <name>day</name>
+                    <name>denormalize</name>
+                    <name>description</name>
+                    <name>dial</name>
+                    <name>dialog</name>
+                    <name>duration</name>
+                    <name>email</name>
+                    <name>explode</name>
+                    <name>first</name>
+                    <name>formal</name>
+                    <name>format</name>
+                    <name>from</name>
+                    <name>gender</name>
+                    <name>get</name>
+                    <name>hint</name>
+                    <name>host</name>
+                    <name>hour</name>
+                    <name>id</name>
+                    <name>input</name>
+                    <name>interval</name>
+                    <name>item</name>
+                    <name>jformat</name>
+                    <name>launch</name>
+                    <name>learn</name>
+                    <name>learnf</name>
+                    <!--
+                    <name>li</name>
+                    -->
+                    <name>limit</name>
+                    <name>list</name>
+                    <name>location</name>
+                    <name>loop</name>
+                    <name>lowercase</name>
+                    <name>map</name>
+                    <name>message</name>
+                    <name>minute</name>
+                    <name>month</name>
+                    <name>name</name>
+                    <name>normalize</name>
+                    <name>oob</name>
+                    <name>pattern</name>
+                    <name>person2</name>
+                    <name>person</name>
+                    <name>program</name>
+                    <name>random</name>
+                    <name>request</name>
+                    <name>response</name>
+                    <name>rest</name>
+                    <name>schedule</name>
+                    <name>search</name>
+                    <name>sentence</name>
+                    <name>server</name>
+                    <name>service</name>
+                    <name>set</name>
+                    <name>setbot</name>
+                    <name>size</name>
+                    <name>sms</name>
+                    <name>sr</name>
+                    <name>srai</name>
+                    <name>sraix</name>
+                    <name>star</name>
+                    <!--
+                    <name>style</name>
+                    -->
+                    <name>subject</name>
+                    <name>system</name>
+                    <name>template</name>
+                    <name>that</name>
+                    <name>thatstar</name>
+                    <name>think</name>
+                    <!--
+                    <name>title</name>
+                    -->
+                    <name>to</name>
+                    <name>topic</name>
+                    <name>topicstar</name>
+                    <name>uppercase</name>
+                    <name>url</name>
+                    <name>url</name>
+                    <name>urlget</name>
+                    <name>value</name>
+                    <name>var</name>
+                    <name>version</name>
+                    <name>vocabulary</name>
+                    <name>week</name>
+                    <name>year</name>
+                </except>
+            </anyName>
+            <ref name="template-expr"/>
+            <zeroOrMore>
+                <attribute>
+                    <anyName/>
+                </attribute>
+            </zeroOrMore>
+        </element>
+    </define>
+
+    <define name="oob">
+        <element name="oob">
+            <choice>
+                <element name="dial">
+                    <ref name="template-expr"/>
+                </element>
+                <element name="sms">
+                    <element name="recipent">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="message">
+                        <ref name="template-expr"/>
+                    </element>
+                </element>
+                <element name="search">
+                    <ref name="template-expr"/>
+                </element>
+                <element name="url">
+                    <ref name="template-expr"/>
+                </element>
+                <element name="urlget">
+                    <ref name="template-expr"/>
+                </element>
+                <element name="botecho">
+                    <ref name="template-expr"/>
+                </element>
+                <element name="map">
+                    <ref name="template-expr"/>
+                </element>
+                <element name="directions">
+                    <optional>
+                        <element name="from">
+                            <ref name="template-expr"/>
+                        </element>
+                    </optional>
+                    <element name="to">
+                        <ref name="template-expr"/>
+                    </element>
+                </element>
+                <element name="launch">
+                    <ref name="template-expr"/>
+                </element>
+                <element name="email">
+                    <element name="to">
+                        <ref name="template-expr"/>
+                    </element>
+                    <optional>
+                        <element name="cc">
+                            <ref name="template-expr"/>
+                        </element>
+                    </optional>
+                    <optional>
+                        <element name="subject">
+                            <ref name="template-expr"/>
+                        </element>
+                    </optional>
+                    <choice>
+                        <element name="message">
+                            <ref name="template-expr"/>
+                        </element>
+                        <element name="body">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </element>
+                <element name="contact">
+                    <empty/>
+                </element>
+                <element name="battery">
+                    <empty/>
+                </element>
+                <element name="version">
+                    <empty/>
+                </element>
+                <element name="setbot">
+                    <element name="host">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="botid">
+                        <ref name="template-expr"/>
+                    </element>
+                </element>
+                <element name="schedule">
+                    <element name="title">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="description">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="location">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="year">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="month">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="day">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="hour">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="minute">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="duration">
+                        <ref name="template-expr"/>
+                    </element>
+                </element>
+                <element name="alarm">
+                    <element name="message">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="year">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="month">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="day">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="hour">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="minute">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="duration">
+                        <ref name="template-expr"/>
+                    </element>
+                </element>
+                <element name="dialog">
+                    <element name="title">
+                        <ref name="template-expr"/>
+                    </element>
+                    <element name="list">
+                        <oneOrMore>
+                            <element name="item">
+                                <ref name="template-expr"/>
+                            </element>
+                        </oneOrMore>
+                    </element>
+                </element>
+            </choice>
+        </element>
+    </define>
+
+    <define name="interval">
+        <element name="interval">
+            <choice>
+                <group>
+                    <optional>
+                        <ref name="format"/>
+                    </optional>
+                    <ref name="jformat"/>
+                    <ref name="interval-expr"/>
+                </group>
+                <group>
+                    <ref name="format"/>
+                    <optional>
+                        <ref name="jformat"/>
+                    </optional>
+                    <ref name="interval-expr"/>
+                </group>
+            </choice>
+        </element>
+    </define>
+
+    <define name="format">
+        <choice>
+            <attribute name="format">
+                <data type="string">
+                    <param name="pattern">([^%]*(%[%aAbBcCdDehHIjmMnprRStTuUVWxXyYZ])?)+</param>
+                </data>
+            </attribute>
+            <element name="format">
+                <ref name="template-expr"/>
+            </element>
+        </choice>
+    </define>
+
+    <define name="jformat">
+        <choice>
+            <attribute name="jformat">
+                <data type="string">
+                    <param name="pattern">('([^']|\\.)*'|[^a-zA-Z]+|[GyYMwWDdFEuaHkKhmsSzZX]+)+</param>
+                </data>
+            </attribute>
+            <element name="jformat">
+                <ref name="template-expr"/>
+            </element>
+        </choice>
+    </define>
+
+    <define name="interval-expr">
+        <element name="style">
+            <ref name="template-expr"/>
+        </element>
+        <element name="from">
+            <ref name="template-expr"/>
+        </element>
+        <element name="to">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="learn">
+        <choice>
+            <element name="learn">
+                <ref name="learn-category-expr"/>
+            </element>
+            <element name="learnf">
+                <ref name="learn-category-expr"/>
+            </element>
+        </choice>
+    </define>
+
+    <define name="learn-category-expr">
+        <oneOrMore>
+            <element name="category">
+                <element name="pattern">
+                    <ref name="learn-pattern-expr"/>
+                </element>
+                <optional>
+                    <element name="that">
+                        <ref name="learn-pattern-expr"/>
+                    </element>
+                </optional>
+                <optional>
+                    <element name="topic">
+                        <ref name="learn-pattern-expr"/>
+                    </element>
+                </optional>
+                <element name="template">
+                    <ref name="learn-template-expr"/>
+                </element>
+            </element>
+        </oneOrMore>
+    </define>
+
+    <define name="learn-pattern-expr">
+        <oneOrMore>
+            <choice>
+                <ref name="pattern-expr"/>
+                <element name="eval">
+                    <ref name="template-expr"/>
+                </element>
+            </choice>
+        </oneOrMore>
+    </define>
+
+    <define name="learn-template-expr">
+        <zeroOrMore>
+            <choice>
+                <text/>
+                <ref name="tag-expr"/>
+                <element name="eval">
+                    <ref name="template-expr"/>
+                </element>
+            </choice>
+        </zeroOrMore>
+    </define>
+
+    <define name="response">
+        <element name="response">
+            <optional>
+                <choice>
+                    <attribute name="index">
+                        <data type="unsignedInt"/>
+                    </attribute>
+                    <element name="index">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </optional>
+        </element>
+    </define>
+
+    <define name="request">
+        <element name="request">
+            <optional>
+                <choice>
+                    <attribute name="index">
+                        <data type="unsignedInt"/>
+                    </attribute>
+                    <element name="index">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </optional>
+        </element>
+    </define>
+
+    <define name="input">
+        <element name="input">
+            <optional>
+                <choice>
+                    <attribute name="index">
+                        <data type="unsignedInt"/>
+                    </attribute>
+                    <element name="index">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </optional>
+        </element>
+    </define>
+
+    <define name="that">
+        <element name="that">
+            <optional>
+                <choice>
+                    <attribute name="index">
+                        <data type="string">
+                            <param name="pattern">\d+(,\d+)?</param>
+                        </data>
+                    </attribute>
+                    <element name="index">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </optional>
+        </element>
+    </define>
+
+    <define name="thatstar">
+        <element name="thatstar">
+            <optional>
+                <choice>
+                    <attribute name="index">
+                        <data type="unsignedInt"/>
+                    </attribute>
+                    <element name="index">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </optional>
+        </element>
+    </define>
+
+    <define name="topicstar">
+        <element name="topicstar">
+            <optional>
+                <choice>
+                    <attribute name="index">
+                        <data type="unsignedInt"/>
+                    </attribute>
+                    <element name="index">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </optional>
+        </element>
+    </define>
+
+    <define name="star">
+        <element name="star">
+            <optional>
+                <choice>
+                    <attribute name="index">
+                        <data type="unsignedInt"/>
+                    </attribute>
+                    <element name="index">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </optional>
+        </element>
+    </define>
+
+    <define name="system">
+        <element name="system">
+            <choice>
+                <attribute name="timeout">
+                    <data type="unsignedInt"/>
+                </attribute>
+                <element name="timeout">
+                    <ref name="template-expr"/>
+                </element>
+            </choice>
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="gender">
+        <element name="gender">
+            <choice>
+                <optional>
+                    <ref name="template-expr"/>
+                </optional>
+                <group>
+                    <choice>
+                        <attribute name="index">
+                            <data type="unsignedInt"/>
+                        </attribute>
+                        <element name="index">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </group>
+            </choice>
+        </element>
+    </define>
+
+    <define name="person2">
+        <element name="person2">
+            <choice>
+                <optional>
+                    <ref name="template-expr"/>
+                </optional>
+                <group>
+                    <choice>
+                        <attribute name="index">
+                            <data type="unsignedInt"/>
+                        </attribute>
+                        <element name="index">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </group>
+            </choice>
+        </element>
+    </define>
+
+    <define name="person">
+        <element name="person">
+            <choice>
+                <optional>
+                    <ref name="template-expr"/>
+                </optional>
+                <group>
+                    <choice>
+                        <attribute name="index">
+                            <data type="unsignedInt"/>
+                        </attribute>
+                        <element name="index">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </group>
+            </choice>
+        </element>
+    </define>
+
+    <define name="sr">
+        <element name="sr">
+            <empty/>
+        </element>
+    </define>
+
+    <define name="id">
+        <element name="id">
+            <empty/>
+        </element>
+    </define>
+
+    <define name="vocabulary">
+        <element name="vocabulary">
+            <empty/>
+        </element>
+    </define>
+
+    <define name="program">
+        <element name="program">
+            <empty/>
+        </element>
+    </define>
+
+    <define name="size">
+        <element name="size">
+            <empty/>
+        </element>
+    </define>
+
+    <define name="rest">
+        <element name="rest">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="first">
+        <element name="first">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="sentence">
+        <element name="sentence">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="uppercase">
+        <element name="uppercase">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="lowercase">
+        <element name="lowercase">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="formal">
+        <element name="formal">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="denormalize">
+        <element name="normalize">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="normalize">
+        <element name="normalize">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="explode">
+        <element name="explode">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="think">
+        <element name="think">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="date">
+        <element name="date">
+            <optional>
+                <choice>
+                    <attribute name="format">
+                        <data type="string">
+                            <param name="pattern">([^%]*(%[%aAbBcCdDehHIjmMnprRStTuUVWxXyYZ])?)+</param>
+                        </data>
+                    </attribute>
+                    <element name="format">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </optional>
+            <optional>
+                <choice>
+                    <attribute name="jformat">
+                        <data type="string">
+                            <param name="pattern">('([^']|\\.)*'|[^a-zA-Z]+|[GyYMwWDdFEuaHkKhmsSzZX]+)+</param>
+                        </data>
+                    </attribute>
+                    <element name="jformat">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </optional>
+            <optional>
+                <choice>
+                    <attribute name="locale">
+                        <choice>
+                            <value>af_ZA</value>
+                            <value>ar_OM</value>
+                            <value>da_DK</value>
+                            <value>en_HK</value>
+                            <value>es_CO</value>
+                            <value>es_PY</value>
+                            <value>fr_CA</value>
+                            <value>is_IS</value>
+                            <value>mt_MT</value>
+                            <value>sh_YU</value>
+                            <value>vi_VN</value>
+                            <value>ar_AE</value>
+                            <value>ar_QA</value>
+                            <value>de_AT</value>
+                            <value>en_IE</value>
+                            <value>es_CR</value>
+                            <value>es_SV</value>
+                            <value>fr_CH</value>
+                            <value>it_CH</value>
+                            <value>nb_NO</value>
+                            <value>sk_SK</value>
+                            <value>zh_CN</value>
+                            <value>ar_BH</value>
+                            <value>ar_SA</value>
+                            <value>de_BE</value>
+                            <value>en_IN</value>
+                            <value>es_DO</value>
+                            <value>es_US</value>
+                            <value>fr_FR</value>
+                            <value>it_IT</value>
+                            <value>nl_BE</value>
+                            <value>sl_SI</value>
+                            <value>zh_HK</value>
+                            <value>ar_DZ</value>
+                            <value>ar_SD</value>
+                            <value>de_CH</value>
+                            <value>en_NZ</value>
+                            <value>es_EC</value>
+                            <value>es_UY</value>
+                            <value>fr_LU</value>
+                            <value>ja_JP</value>
+                            <value>nl_NL</value>
+                            <value>sq_AL</value>
+                            <value>zh_SG</value>
+                            <value>ar_EG</value>
+                            <value>ar_SY</value>
+                            <value>de_DE</value>
+                            <value>en_PH</value>
+                            <value>es_ES</value>
+                            <value>es_VE</value>
+                            <value>ga_IE</value>
+                            <value>kl_GL</value>
+                            <value>nn_NO</value>
+                            <value>sr_YU</value>
+                            <value>zh_TW</value>
+                            <value>ar_IN</value>
+                            <value>ar_TN</value>
+                            <value>de_LU</value>
+                            <value>en_SG</value>
+                            <value>es_GT</value>
+                            <value>et_EE</value>
+                            <value>gl_ES</value>
+                            <value>ko_KR</value>
+                            <value>no_NO</value>
+                            <value>sv_FI</value>
+                            <value>ar_IQ</value>
+                            <value>ar_YE</value>
+                            <value>el_GR</value>
+                            <value>en_US</value>
+                            <value>es_HN</value>
+                            <value>eu_ES</value>
+                            <value>gv_GB</value>
+                            <value>kw_GB</value>
+                            <value>pl_PL</value>
+                            <value>sv_SE</value>
+                            <value>ar_JO</value>
+                            <value>be_BY</value>
+                            <value>en_AU</value>
+                            <value>en_ZA</value>
+                            <value>es_MX</value>
+                            <value>fa_IN</value>
+                            <value>he_IL</value>
+                            <value>lt_LT</value>
+                            <value>pt_BR</value>
+                            <value>ta_IN</value>
+                            <value>ar_KW</value>
+                            <value>bg_BG</value>
+                            <value>en_BE</value>
+                            <value>en_ZW</value>
+                            <value>es_NI</value>
+                            <value>fa_IR</value>
+                            <value>hi_IN</value>
+                            <value>lv_LV</value>
+                            <value>pt_PT</value>
+                            <value>te_IN</value>
+                            <value>ar_LB</value>
+                            <value>bn_IN</value>
+                            <value>en_BW</value>
+                            <value>es_AR</value>
+                            <value>es_PA</value>
+                            <value>fi_FI</value>
+                            <value>hr_HR</value>
+                            <value>mk_MK</value>
+                            <value>ro_RO</value>
+                            <value>th_TH</value>
+                            <value>ar_LY</value>
+                            <value>ca_ES</value>
+                            <value>en_CA</value>
+                            <value>es_BO</value>
+                            <value>es_PE</value>
+                            <value>fo_FO</value>
+                            <value>hu_HU</value>
+                            <value>mr_IN</value>
+                            <value>ru_RU</value>
+                            <value>tr_TR</value>
+                            <value>ar_MA</value>
+                            <value>cs_CZ</value>
+                            <value>en_GB</value>
+                            <value>es_CL</value>
+                            <value>es_PR</value>
+                            <value>fr_BE</value>
+                            <value>id_ID</value>
+                            <value>ms_MY</value>
+                            <value>ru_UA</value>
+                            <value>uk_UA</value>
+                        </choice>
+                    </attribute>
+                    <element name="locale">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </optional>
+            <optional>
+                <choice>
+                    <attribute name="timezone">
+                        <data type="integer">
+                            <param name="minInclusive">-12</param>
+                            <param name="maxInclusive">12</param>
+                        </data>
+                    </attribute>
+                    <element name="timezone">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </optional>
+        </element>
+    </define>
+
+    <define name="bot">
+        <element name="bot">
+            <choice>
+                <attribute name="name">
+                    <text/>
+                </attribute>
+                <element name="name">
+                    <ref name="template-expr"/>
+                </element>
+            </choice>
+        </element>
+    </define>
+
+    <define name="map">
+        <element name="map">
+            <choice>
+                <attribute name="name">
+                    <text/>
+                </attribute>
+                <element name="name">
+                    <ref name="template-expr"/>
+                </element>
+            </choice>
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="set">
+        <element name="set">
+            <choice>
+                <group>
+                    <choice>
+                        <attribute name="name">
+                            <text/>
+                        </attribute>
+                        <element name="name">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                    <ref name="template-expr"/>
+                </group>
+                <group>
+                    <choice>
+                        <attribute name="var">
+                            <text/>
+                        </attribute>
+                        <element name="var">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                    <ref name="template-expr"/>
+                </group>
+            </choice>
+        </element>
+    </define>
+
+    <define name="get">
+        <element name="get">
+            <choice>
+                <choice>
+                    <attribute name="name">
+                        <text/>
+                    </attribute>
+                    <element name="name">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+                <choice>
+                    <attribute name="var">
+                        <text/>
+                    </attribute>
+                    <element name="var">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+            </choice>
+        </element>
+    </define>
+
+    <define name="sraix">
+        <element name="sraix">
+            <interleave>
+                <optional>
+                    <choice>
+                        <attribute name="host">
+                            <text/>
+                        </attribute>
+                        <element name="host">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </optional>
+                <optional>
+                    <choice>
+                        <attribute name="bot">
+                            <text/>
+                        </attribute>
+                        <element name="bot">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </optional>
+                <optional>
+                    <choice>
+                        <attribute name="limit">
+                            <data type="unsignedInt"/>
+                        </attribute>
+                        <element name="limit">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </optional>
+                <optional>
+                    <choice>
+                        <attribute name="service">
+                            <text/>
+                        </attribute>
+                        <element name="service">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </optional>
+                <optional>
+                    <choice>
+                        <attribute name="apikey">
+                            <text/>
+                        </attribute>
+                        <element name="apikey">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </optional>
+                <optional>
+                    <choice>
+                        <attribute name="botid">
+                            <text/>
+                        </attribute>
+                        <element name="botid">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </optional>
+                <optional>
+                    <choice>
+                        <attribute name="server">
+                            <text/>
+                        </attribute>
+                        <element name="server">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </optional>
+                <optional>
+                    <choice>
+                        <attribute name="hint">
+                            <text/>
+                        </attribute>
+                        <element name="hint">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </optional>
+                <optional>
+                    <choice>
+                        <attribute name="default">
+                            <text/>
+                        </attribute>
+                        <element name="default">
+                            <ref name="template-expr"/>
+                        </element>
+                    </choice>
+                </optional>
+            </interleave>
+            <ref name="template-expr"/>
+        </element>
+    </define>
+
+    <define name="random">
+        <element name="random">
+            <oneOrMore>
+                <element name="li">
+                    <ref name="template-expr"/>
+                </element>
+            </oneOrMore>
+        </element>
+    </define>
+
+    <define name="condition">
+        <element name="condition">
+            <choice>
+                <group>
+                    <choice>
+                        <group>
+                            <choice>
+                                <attribute name="name">
+                                    <text/>
+                                </attribute>
+                                <element name="name">
+                                    <ref name="template-expr"/>
+                                </element>
+                            </choice>
+                            <ref name="condition-expr"/>
+                        </group>
+                        <group>
+                            <choice>
+                                <attribute name="var">
+                                    <text/>
+                                </attribute>
+                                <element name="var">
+                                    <ref name="template-expr"/>
+                                </element>
+                            </choice>
+                            <ref name="condition-expr"/>
+                        </group>
+                    </choice>
+                </group>
+                <group>
+                    <oneOrMore>
+                        <element name="li">
+                            <choice>
+                                <group>
+                                    <choice>
+                                        <attribute name="name">
+                                            <text/>
+                                        </attribute>
+                                        <element name="name">
+                                            <ref name="template-expr"/>
+                                        </element>
+                                    </choice>
+                                    <ref name="value"/>
+                                </group>
+                                <group>
+                                    <choice>
+                                        <attribute name="var">
+                                            <text/>
+                                        </attribute>
+                                        <element name="var">
+                                            <ref name="template-expr"/>
+                                        </element>
+                                    </choice>
+                                    <ref name="value"/>
+                                </group>
+                            </choice>
+                        </element>
+                    </oneOrMore>
+                    <optional>
+                        <element name="li">
+                            <ref name="template-expr"/>
+                            <ref name="loop"/>
+                        </element>
+                    </optional>
+                </group>
+            </choice>
+        </element>
+    </define>
+
+    <define name="value">
+        <choice>
+            <attribute name="value">
+                <text/>
+            </attribute>
+            <element name="value">
+                <ref name="template-expr"/>
+            </element>
+        </choice>
+        <ref name="template-expr"/>
+        <ref name="loop"/>
+    </define>
+
+    <define name="loop">
+        <optional>
+            <element name="loop">
+                <empty/>
+            </element>
+        </optional>
+    </define>
+
+    <define name="condition-expr">
+        <choice>
+            <group>
+                <choice>
+                    <attribute name="value">
+                        <text/>
+                    </attribute>
+                    <element name="value">
+                        <ref name="template-expr"/>
+                    </element>
+                </choice>
+                <ref name="template-expr"/>
+            </group>
+            <group>
+                <zeroOrMore>
+                    <element name="li">
+                        <choice>
+                            <attribute name="value">
+                                <text/>
+                            </attribute>
+                            <element name="value">
+                                <ref name="template-expr"/>
+                            </element>
+                        </choice>
+                        <ref name="template-expr"/>
+                        <ref name="loop"/>
+                    </element>
+                </zeroOrMore>
+                <element name="li">
+                    <ref name="template-expr"/>
+                    <ref name="loop"/>
+                </element>
+            </group>
+        </choice>
+    </define>
+
+    <define name="srai">
+        <element name="srai">
+            <ref name="template-expr"/>
+        </element>
+    </define>
+</grammar>
