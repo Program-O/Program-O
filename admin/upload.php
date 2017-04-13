@@ -174,8 +174,7 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
     /*       AIML tags from the beginning of the file      */
     /*       and replacing them with our own tags          */
     /*******************************************************/
-    $validAIMLHeader = '<?xml version="1.0" encoding="[charset]"?>
-<aiml version="1.0.1" xmlns="http://www.alicebot.org/TR/2001/WD-aiml">';
+    $validAIMLHeader = '<?xml version="1.0" encoding="[charset]"?><aiml version="2.0">';
     $validAIMLHeader = str_replace('[charset]', $charset, $validAIMLHeader);
     $aimlTagStart = stripos($aimlContent, '<aiml', 0);
     $aimlTagEnd = strpos($aimlContent, '>', $aimlTagStart) + 1;
@@ -200,7 +199,7 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
             $msg = wordwrap($msg, 80, "<br>\n");
             $_SESSION['failCount']++;
         }
-        elseif (!$skipVal && !$xml->schemaValidate('aiml.xsd'))
+        elseif (!$skipVal && !$xml->relaxNGValidate('aiml2.rng'))
         {
             $msg = "<div class=\"center\"><b>A total of [count] error[plural] been found in the file $fileName.</b></div><br><br>\n";
             $xmlErrCount = 0;
@@ -573,7 +572,7 @@ function processZip($fileName)
             {
                 $out .= "$fn, ";
             }
-            $out = rtrim($out, ', ') . "<br .>\nPlease test each of these files independently, to locate the errors within.";
+            $out = rtrim($out, ', ') . "<br />\nPlease test each of these files independently, to locate the errors within.";
             unset ($_SESSION['bad_aiml_files']);
         }
     }
@@ -585,13 +584,17 @@ function processZip($fileName)
     return $out;
 }
 
+/**
+ * @param DOMDocument $xml
+ * @return bool
+ */
 function validateAIML($xml)
 {
     file_put_contents(_LOG_PATH_ . 'upload.xml.txt', print_r($xml, true));
     global $validationStatus;
     $out = true;
 
-    if (!$xml->schemaValidate('aiml.xsd'))
+    if (!$xml->relaxNGValidate('aiml2.rng'))
     {
         get_errors();
         $out = false;
