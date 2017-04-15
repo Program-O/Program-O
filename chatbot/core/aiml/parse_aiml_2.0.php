@@ -28,7 +28,11 @@
             if (function_exists($func))
             {
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Passing element $curName to the $func function.", 4);
-                if (count($child->children() > 0)) $result = parseTemplateRecursive($convoArr, $child, $eName, $level + 1);
+                if (count($child->children() > 0))
+                {
+                    //$result = parseTemplateRecursive($convoArr, $child, $eName, $level + 1);
+                    $result = parseTemplateRecursive($convoArr, $child, $eName, $level + 1);
+                }
                 else $result = $func($convoArr, $child, $eName, $level + 1);
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Result returned from $func: $result.", 4);
                 $prefix[] = $result;
@@ -44,7 +48,7 @@
             }
         }
         $out = implode_recursive('', $prefix) . implode_recursive('', $suffix);
-        save_file(_LOG_PATH_ . 'parse_oob_output.txt', $out . PHP_EOL, true);
+        //save_file(_LOG_PATH_ . 'parse_oob_output.txt', $out . PHP_EOL, true);
         return $out;
     }
 /*

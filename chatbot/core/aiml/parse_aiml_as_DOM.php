@@ -10,6 +10,8 @@
  * DETAILS: Handles the parsing of AIML code as XML
  ***************************************/
 
+ // NOTE: This script is experimental. It explores using PHP's DOMDocument, rather than SimpleXML, to parse the AIML template
+
  require_once(_BOTCORE_AIML_PATH_ . 'parse_aiml_2.0.php');
 
 /**
@@ -18,7 +20,7 @@
  * @param  array $convoArr - the existing conversation array
  * @return array $convoArr
  **/
-function parse_aiml_as_XML($convoArr)
+function parse_aiml_as_DOM($convoArr)
 {
     global $botsay, $error_response;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the AIML template as XML", 2);
@@ -1254,7 +1256,6 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $category = $element->category;
     $aiml = $category->asXML();
     $params[':aiml'] = $aiml;
-    $catXpath = $element->xpath('//eval');
 
     // pull out the necessary info to save to the DB
 
@@ -1299,19 +1300,21 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
 
     $params[':bot_id'] = $bot_id;
     $params[':user_id'] = $convo_id;
-    $testSQL = str_replace(array_keys($params), array_values($params), $sql);
-    $sth = $dbConn->prepare($sql);
-    $sth->execute($params);
+    $numRows = db_write($sql, $params);
+    if (false === $numRows || empty($numRows))
+    {
+        $errSQL = db_parse_sql($sql, $params);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Failed to write to the DB. SQL: $errSQL.", 0);
+    }
 
     return '';
 }
 
 /**
+ * function parse_eval_tag
  * Parses the 'extended' AIML <eval> tag
  * NOTE: The <eval> tag is intended to allow the parsing of it's contents within the confines
- * of a <learn> tag, so what was here before is completely opposite to what it should have been
- *
- * I'll be fixing that now.
+ * of a <learn> tag.
  *
  * @param array $convoArr
  * @param SimpleXMLElement $element

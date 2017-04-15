@@ -247,6 +247,7 @@ if (!empty($say)) {
     $convoArr = write_to_session($convoArr);
     $convoArr = get_conversation($convoArr);
     $convoArr = run_post_response_useraddons($convoArr);
+    //save_file(_LOG_PATH_ . 'convoArr.txt', print_r($convoArr, true));
     //return the values to display
     $display = $convoArr['send_to_user'];
     $time_start = $convoArr['time_start'];
