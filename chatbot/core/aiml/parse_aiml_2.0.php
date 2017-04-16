@@ -47,5 +47,132 @@
         save_file(_LOG_PATH_ . 'parse_oob_output.txt', $out . PHP_EOL, true);
         return $out;
     }
+
+    /**
+     * Parses the AIML 2.0 <interval> tag (experimental)
+     *
+     * @param array $convoArr
+     * @param SimpleXMLElement $element
+     * @param string $parentName
+     * @param int $level
+     * @return string
+     */
+    function parse_interval_tag($convoArr, $element, $parentName, $level)
+    {
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an INTERVAL tag.', 2);
+
+        $from = null;
+        $to = null;
+        $format = isset($element->attributes()->format) ? $element->attributes()->format : '';
+        $style = '';
+
+        /** @var SimpleXMLElement $child */
+        foreach ($element->children() as $child)
+        {
+            $response = parseTemplateRecursive($convoArr, $child, $level + 1);
+            $response = implode_recursive('', $response, __FILE__, __FUNCTION__, __LINE__);
+
+            switch ($child->getName())
+            {
+                case 'format':
+                    $format = $response;
+                    break;
+                case 'style':
+                    $style = $response;
+                    break;
+                case 'from':
+                    $from = new DateTime($response);
+                    break;
+                case 'to':
+                    $to = new DateTime($response);
+                    break;
+            }
+        }
+
+        return $from->diff($to)->format($format);
+    }
+
+    /**
+     * Parses the AIML 2.0 <size/> tag
+     *
+     * @param array $convoArr
+     * @param SimpleXMLElement $element
+     * @param string $parentName
+     * @param int $level
+     * @return string|array
+     */
+    function parse_size_tag($convoArr, $element, $parentName, $level)
+    {
+        global $dbn;
+
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SIZE tag.', 2);
+
+        $bot_id = $convoArr['conversation']['bot_id'];
+
+        /** @noinspection SqlNoDataSourceInspection */
+        /** @noinspection SqlDialectInspection */
+        $sql = "SELECT COUNT(*) as `total` FROM `$dbn`.`aiml` WHERE `bot_id` = $bot_id;";
+
+        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+
+        return $row['total'];
+    }
+
+    /**
+     * Parses the AIML 2.0 <explode> tag
+     *
+     * @param array $convoArr
+     * @param SimpleXMLElement $element
+     * @param string $parentName
+     * @param int $level
+     * @return string|array
+     */
+    function parse_explode_tag($convoArr, $element, $parentName, $level)
+    {
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an EXPLODE tag.', 2);
+
+        $response = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+        $response = preg_split('//u', $response, -1, PREG_SPLIT_NO_EMPTY);
+
+        return implode(' ', $response);
+    }
+
+    /**
+     * Parses the AIML 2.0 <first> tag
+     *
+     * @param array $convoArr
+     * @param SimpleXMLElement $element
+     * @param string $parentName
+     * @param int $level
+     * @return string|array
+     */
+    function parse_first_tag($convoArr, $element, $parentName, $level)
+    {
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a FIRST tag.', 2);
+
+        $response = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+        $response = explode(' ', $response);
+
+        return $response[0];
+    }
+
+    /**
+     * Parses the AIML 2.0 <rest> tag
+     *
+     * @param array $convoArr
+     * @param SimpleXMLElement $element
+     * @param string $parentName
+     * @param int $level
+     * @return string|array
+     */
+    function parse_rest_tag($convoArr, $element, $parentName, $level)
+    {
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a REST tag.', 2);
+
+        $response = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+        $response = explode(' ', $response);
+
+        return array_slice($response, 1);
+    }
 /*
  */
