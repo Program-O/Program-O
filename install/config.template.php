@@ -22,6 +22,7 @@ define('_BASE_PATH_', $parentFolder);
 
 define('_ADMIN_PATH_',   _BASE_PATH_  . "admin$path_separator");
 define('_BOTCORE_PATH_', _BASE_PATH_  . "chatbot{$path_separator}core$path_separator");
+define('_BOTCORE_AIML_PATH_', _BOTCORE_PATH_ . "aiml$path_separator");
 define('_LIB_PATH_',     _BASE_PATH_  . "library$path_separator");
 define('_ADDONS_PATH_',  _BASE_PATH_  . "chatbot{$path_separator}addons$path_separator");
 define('_CONF_PATH_',    _BASE_PATH_  . "config$path_separator");
