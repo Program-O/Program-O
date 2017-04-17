@@ -19,16 +19,24 @@
             </set>
                 Text before the THINK tag:
                 <think>Tag before the SET tag:
-                    <set name="test">
+                    <set><name>test</name>
                         Text before the GET tag:
-                        <get name="foo"/>
+                        <get><name>foo</name></get>
                         Text after the GET tag:
                     </set>
                     Text after the SET tag:
                 </think>
                 Text after the THINK tag:
-                Today's date is <date format="F jS, Y - h:i:s A"/>.
-                The date is also <date format="m/d/Y, h:i:s A"/>.
+                Today's date is <date format="%Y/%m/%d - %I:%M:%S"/>.
+                The date is also <date/>.
+                Random subtag test <date>
+                                <format>
+                                    <random>
+                                        <li>%Y/%m/%d - %I:%M:%S</li>
+                                        <li>%d.%m.%Y - %H:%M:%S</li>
+                                    </random>
+                                </format>
+                            </date>.
                 Test complete.
         </template>
     </category>
