@@ -7,14 +7,9 @@
     <define name="aiml">
         <element name="aiml">
             <optional>
-                <choice>
-                    <attribute name="version">
-                        <value>2.0</value>
-                    </attribute>
-                    <element name="version">
-                        <value>2.0</value>
-                    </element>
-                </choice>
+                <attribute name="version">
+                    <value>2.0</value>
+                </attribute>
             </optional>
             <oneOrMore>
                 <choice>
@@ -48,18 +43,25 @@
 
     <define name="topic">
         <element name="topic">
-            <choice>
-                <attribute name="name">
-                    <data type="string">
-                        <param name="pattern">($?\w+|[#_\^*])(\s+($?\w+|[#_\^*]))*</param>
-                    </data>
-                </attribute>
-                <element name="name">
-                    <ref name="pattern-expr"/>
-                </element>
-            </choice>
+            <attribute name="name">
+                <data type="string">
+                    <param name="pattern">($?\p{L}+|[#_\^*])([\p{C}\p{Z}]+($?\p{L}+|[#_\^*]))*</param>
+                </data>
+            </attribute>
             <oneOrMore>
-                <ref name="category"/>
+                <element name="category">
+                    <element name="pattern">
+                        <ref name="pattern-expr"/>
+                    </element>
+                    <optional>
+                        <element name="that">
+                            <ref name="pattern-expr"/>
+                        </element>
+                    </optional>
+                    <element name="template">
+                        <ref name="template-expr"/>
+                    </element>
+                </element>
             </oneOrMore>
         </element>
     </define>
@@ -69,20 +71,26 @@
             <choice>
                 <text/>
                 <element name="set">
-                    <data type="normalizedString"/>
+                    <ref name="word"/>
                 </element>
                 <element name="bot">
                     <choice>
                         <attribute name="name">
-                            <data type="normalizedString"/>
+                            <ref name="word"/>
                         </attribute>
                         <element name="name">
-                            <data type="normalizedString"/>
+                            <ref name="word"/>
                         </element>
                     </choice>
                 </element>
             </choice>
         </oneOrMore>
+    </define>
+
+    <define name="word">
+        <data type="string">
+            <param name="pattern">\p{L}+</param>
+        </data>
     </define>
 
     <define name="template-expr">
@@ -427,7 +435,7 @@
         <choice>
             <attribute name="format">
                 <data type="string">
-                    <param name="pattern">([^%]*(%[%aAbBcCdDehHIjmMnprRStTuUVWxXyYZ])?)+</param>
+                    <param name="pattern">([^%]+|%[%aAbBcCdDehHIjmMnprRStTuUVWxXyYZ])+</param>
                 </data>
             </attribute>
             <element name="format">
@@ -792,28 +800,10 @@
     <define name="date">
         <element name="date">
             <optional>
-                <choice>
-                    <attribute name="format">
-                        <data type="string">
-                            <param name="pattern">([^%]*(%[%aAbBcCdDehHIjmMnprRStTuUVWxXyYZ])?)+</param>
-                        </data>
-                    </attribute>
-                    <element name="format">
-                        <ref name="template-expr"/>
-                    </element>
-                </choice>
+                <ref name="format"/>
             </optional>
             <optional>
-                <choice>
-                    <attribute name="jformat">
-                        <data type="string">
-                            <param name="pattern">('([^']|\\.)*'|[^a-zA-Z]+|[GyYMwWDdFEuaHkKhmsSzZX]+)+</param>
-                        </data>
-                    </attribute>
-                    <element name="jformat">
-                        <ref name="template-expr"/>
-                    </element>
-                </choice>
+                <ref name="jformat"/>
             </optional>
             <optional>
                 <choice>
@@ -971,7 +961,7 @@
         <element name="bot">
             <choice>
                 <attribute name="name">
-                    <text/>
+                    <ref name="word"/>
                 </attribute>
                 <element name="name">
                     <ref name="template-expr"/>
@@ -984,7 +974,7 @@
         <element name="map">
             <choice>
                 <attribute name="name">
-                    <text/>
+                    <ref name="word"/>
                 </attribute>
                 <element name="name">
                     <ref name="template-expr"/>
@@ -1000,7 +990,7 @@
                 <group>
                     <choice>
                         <attribute name="name">
-                            <text/>
+                            <ref name="word"/>
                         </attribute>
                         <element name="name">
                             <ref name="template-expr"/>
@@ -1011,7 +1001,7 @@
                 <group>
                     <choice>
                         <attribute name="var">
-                            <text/>
+                            <ref name="word"/>
                         </attribute>
                         <element name="var">
                             <ref name="template-expr"/>
@@ -1028,7 +1018,7 @@
             <choice>
                 <choice>
                     <attribute name="name">
-                        <text/>
+                        <ref name="word"/>
                     </attribute>
                     <element name="name">
                         <ref name="template-expr"/>
@@ -1036,7 +1026,7 @@
                 </choice>
                 <choice>
                     <attribute name="var">
-                        <text/>
+                        <ref name="word"/>
                     </attribute>
                     <element name="var">
                         <ref name="template-expr"/>
@@ -1162,7 +1152,7 @@
                         <group>
                             <choice>
                                 <attribute name="name">
-                                    <text/>
+                                    <ref name="word"/>
                                 </attribute>
                                 <element name="name">
                                     <ref name="template-expr"/>
@@ -1173,7 +1163,7 @@
                         <group>
                             <choice>
                                 <attribute name="var">
-                                    <text/>
+                                    <ref name="word"/>
                                 </attribute>
                                 <element name="var">
                                     <ref name="template-expr"/>
@@ -1190,7 +1180,7 @@
                                 <group>
                                     <choice>
                                         <attribute name="name">
-                                            <text/>
+                                            <ref name="word"/>
                                         </attribute>
                                         <element name="name">
                                             <ref name="template-expr"/>
@@ -1201,7 +1191,7 @@
                                 <group>
                                     <choice>
                                         <attribute name="var">
-                                            <text/>
+                                            <ref name="word"/>
                                         </attribute>
                                         <element name="var">
                                             <ref name="template-expr"/>
