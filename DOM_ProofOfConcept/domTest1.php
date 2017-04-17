@@ -31,6 +31,7 @@ exit($content);
 function parseTemplateRecursive(&$convoArr, DOMNode $element, $parentName = 'unknown', $out = '', $level = 0)
 {
     $out = '';
+    if (!isset($convoArr['response'])) $convoArr['response'] = array();
     if ($element->nodeType === XML_TEXT_NODE)
     {
         $out .= trim($element->nodeValue, ' ');
@@ -83,7 +84,8 @@ function parse_date_tag(&$convoArr, $element)
     if ($element->hasAttributes())
     {
         $format = $element->getAttribute('format');
-        return trim(date($format), ' ') ;
+        $out = trim(date($format), ' ');
+        return trim($out, ' ') . ' ';
     }
 }
 
@@ -93,9 +95,9 @@ function parse_think_tag(&$convoArr, $element)
     $out = '';
     foreach ($element->childNodes as $childNode)
     {
-        if ($childNode->nodeValue != null)
+        if ($childNode->nodeType === XML_TEXT_NODE)
         {
-            $out .= trim($childNode->nodeValue, ' ') . ' ';
+            //$out .= trim($childNode->nodeValue, ' ') . ' ';
         }
         else
         {
@@ -115,8 +117,8 @@ function parse_get_tag(&$convoArr, $element)
     $out = '';
     if (!$element->hasAttributes()) return false;
     $name = $element->getAttribute('name');
-    $value = (isset($getArray[$name])) ? $getArray[$name] : 'undefined';
-    return trim($value, ' ') . ' ';
+    $value = (isset($convoArr['client_properties'][$name])) ? $convoArr['client_properties'][$name] : 'undefined';
+    return trim($out, ' ') . ' ';
 
 }
 
@@ -183,8 +185,8 @@ function parse_random_tag(&$convoArr, $element)
     }
     elseif ($pickedTag->nodeType === XML_ELEMENT_NODE)
     {
-        //$out .= trim($pickedTag->nodeValue, ' ');
-        return trim($pickedTag->nodeValue, ' ') . ' ';
+        $out .= trim($pickedTag->nodeValue, ' ');
+        return trim($out, ' ') . ' ';
     }
     else
     {
@@ -208,6 +210,71 @@ function parse_random_tag(&$convoArr, $element)
     return trim($out, ' ') . ' ';
 }
 
+/**
+ * Implodes a nested array into a single string recursively
+ *
+ * @param string $glue
+ * @param array|string $input
+ * @param string $file
+ * @param string $function
+ * @param string $line
+ * @return string
+ */
+function implode_recursive($glue, $input, $file = 'unknown', $function = 'unknown', $line = 'unknown')
+{
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Imploding an array into a string. (recursively, if necessary)', 2);
+    #runDebug(__FILE__, __FUNCTION__, __LINE__, "This function was called from $file, function $function at line $line.", 4);
+    if (empty($input)) {
+        return $glue;
+    }
+
+    if (!is_array($input) && !is_string($input))
+    {
+        $varType = gettype($input);
+        trigger_error("Input not array! Input is of type $varType. Error originated in $file, function $function, line $line. Input = " . print_r($input, true));
+
+        return $input;
+    }
+    elseif (is_string($input))
+    {
+        return $input;
+    }
+
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'The variable $input is of type ' . gettype($input), 4);
+
+    foreach ($input as $index => $element)
+    {
+        if (empty ($element)) {
+            continue;
+        }
+
+        if (is_array($element)) {
+            $input[$index] = implode_recursive($glue, $element, __FILE__, __FUNCTION__, __LINE__);
+        }
+    }
+
+    switch (gettype($input))
+    {
+        case 'array':
+            $out = implode($glue, $input);
+            break;
+        case 'string':
+            $out = $input;
+            break;
+        default:
+            runDebug(__FILE__, __FUNCTION__, __LINE__, 'input type: ' . gettype($input), 4);
+            $out = (string)$input;
+    }
+
+    $out = str_replace('  ', ' ', $out);
+
+    if ($function != 'implode_recursive')
+    {
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Imploding complete. Returning '$out'", 4);
+    }
+
+    return ltrim($out);
+}
 
 
 
