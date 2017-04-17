@@ -14,13 +14,14 @@
 
  require_once(_BOTCORE_AIML_PATH_ . 'parse_aiml_2.0.php');
 
-/**
- * This function starts the process of recursively parsing the AIML template as XML, converting it to text
- *
- * @param  array $convoArr - the existing conversation array
- * @return array $convoArr
- **/
-function parse_aiml_as_DOM($convoArr)
+
+  /**
+   * Function parse_aiml_as_DOM
+   *
+   * * @param $convoArr
+   * @return mixed
+   */
+  function parse_aiml_as_DOM($convoArr)
 {
     global $botsay, $error_response;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the AIML template as XML", 2);

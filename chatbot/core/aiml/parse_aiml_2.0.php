@@ -11,7 +11,16 @@
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading AIML 2.0 functions.', 0);
 
-    function parse_oob_tag ($convoArr, SimpleXMLElement $element, $parentName, $level)
+  /**
+   * Function parse_oob_tag
+   *
+   * * @param $convoArr
+   * @param SimpleXMLElement $element
+   * @param                  $parentName
+   * @param                  $level
+   * @return string
+   */
+  function parse_oob_tag ($convoArr, SimpleXMLElement $element, $parentName, $level)
     {
         //save_file(_LOG_PATH_ . 'element_val.txt', print_r($element->asXML(), true), true);
         $eName = $element->getName();

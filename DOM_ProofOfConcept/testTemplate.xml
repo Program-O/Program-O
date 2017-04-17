@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml>
+    <category>
+        <pattern>FOO</pattern>
+        <template>
+            Value =<set name="test2">
+                <random>
+                    <li>000</li>
+                    <li>001</li>
+                    <li>002</li>
+                    <li>003</li>
+                    <li>004</li>
+                    <li>005</li>
+                    <li>006</li>
+                    <li>007</li>
+                    <li>008</li>
+                    <li>009</li>
+                </random>
+            </set>
+                Text before the THINK tag:
+                <think>Tag before the SET tag:
+                    <set name="test">
+                        Text before the GET tag:
+                        <get name="foo"/>
+                        Text after the GET tag:
+                    </set>
+                    Text after the SET tag:
+                </think>
+                Text after the THINK tag:
+                Today's date is <date format="F jS, Y - h:i:s A"/>.
+                The date is also <date format="m/d/Y, h:i:s A"/>.
+                Test complete.
+        </template>
+    </category>
+</aiml>

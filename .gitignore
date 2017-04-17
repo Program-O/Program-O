@@ -21,6 +21,8 @@ logs/*.txt
 backups
 backups/*
 patch.php
+DOM_ProofOfConcept/*.txt
+DOM_ProofOfConcept/*.log
 
 #################
 ## WeBuilder/ Rapid PHP
