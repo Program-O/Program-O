@@ -38,7 +38,7 @@ function parseTemplateRecursive(&$convoArr, DOMNode $element, $parentName = 'unk
     }
     else
     {
-        $elementName = $element->tagName;
+        $elementName = $element->nodeName;
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the tag '$elementName', a child of $parentName.", 0);
         if ($element->hasChildNodes())
         {
@@ -78,18 +78,51 @@ function parseTemplateRecursive(&$convoArr, DOMNode $element, $parentName = 'unk
     return trim($out, ' ') . ' ';
 }
 
-function parse_date_tag(&$convoArr, $element)
+/**
+ * Returns the value of an attribute or subtag
+ *
+ * @param $convoArr
+ * @param string $attribute the name of an attribute or subtag
+ * @param DOMElement $element
+ * @return bool|string
+ */
+function getValueOfAttribute(&$convoArr, $attribute, DOMElement &$element)
 {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a DATE tag.', 0);
-    if ($element->hasAttributes())
+    if ($element->hasAttribute($attribute))
     {
-        $format = $element->getAttribute('format');
-        $out = trim(date($format), ' ');
-        return trim($out, ' ') . ' ';
+        return $element->getAttribute($attribute);
     }
+
+    /** @var DOMElement $childNode */
+    foreach ($element->childNodes as $childNode)
+    {
+        if ($childNode->nodeName == $attribute)
+        {
+            $element->removeChild($childNode);
+            $out = parseTemplateRecursive($convoArr, $childNode, $element->nodeName);
+
+            return trim($out);
+        }
+    }
+
+    return false;
 }
 
-function parse_think_tag(&$convoArr, $element)
+function parse_date_tag(&$convoArr, DOMElement $element)
+{
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a DATE tag.', 0);
+
+    $format = getValueOfAttribute($convoArr, 'format', $element);
+
+    if (!$format)
+    {
+        return date('Y/m/d h:i:s'); // default response (<date/>)
+    }
+
+    return strftime($format);
+}
+
+function parse_think_tag(&$convoArr, DOMElement $element)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THINK tag.', 0);
     $out = '';
@@ -104,34 +137,38 @@ function parse_think_tag(&$convoArr, $element)
             $childName = $childNode->tagName;
             $func = "parse_{$childName}_tag";
             if (function_exists($func)) $out .= $func($convoArr, $childNode) . ' ';
-            else $out .= "[{$elementName}], ";
+            else $out .= "[{$childName}], ";
         }
     }
     return '';
 }
 
-function parse_get_tag(&$convoArr, $element)
+function parse_get_tag(&$convoArr, DOMElement $element)
 {
     global $getArray;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a GET tag.', 0);
-    $out = '';
-    if (!$element->hasAttributes()) return false;
-    $name = $element->getAttribute('name');
-    $value = (isset($convoArr['client_properties'][$name])) ? $convoArr['client_properties'][$name] : 'undefined';
-    return trim($out, ' ') . ' ';
 
+    $name = getValueOfAttribute($convoArr, 'name', $element);
+
+    if (!$name) {
+        return false;
+    }
+
+    $value = (isset($convoArr['client_properties'][$name])) ? $convoArr['client_properties'][$name] : 'undefined';
+    return trim($value, ' ') . ' ';
 }
 
-function parse_set_tag(&$convoArr, $element)
+function parse_set_tag(&$convoArr, DOMElement $element)
 {
     global $getArray;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SET tag.', 0);
     $out = '';
-    if ($element->hasAttributes())
-    {
-        $name = $element->getAttribute('name');
+    $name = getValueOfAttribute($convoArr, 'name', $element);
+
+    if (!$name) {
+        $name = 'unknown';
     }
-    else $name='unknown';
+
     foreach ($element->childNodes as $childNode)
     {
         if ($childNode->nodeType === XML_TEXT_NODE)
@@ -160,7 +197,7 @@ function runDebug($file = 'unknown', $function = 'unknown', $line = 'unknown', $
     error_log($outMessage, 3, 'debug.txt');
 }
 
-function parse_random_tag(&$convoArr, $element)
+function parse_random_tag(&$convoArr, DOMElement $element)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a RANDOM tag.', 0);
     $liTags = $element->getElementsByTagName('li');
