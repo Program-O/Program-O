@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml>
+    <category>
+        <pattern>FOO</pattern>
+        <template>
+            This example is all about setting client properties. First, a random choice from a list:
+            Random tag: value = '<set name="test2">
+                <random>
+                    <li>000</li>
+                    <li>001</li>
+                    <li>002</li>
+                    <li>003</li>
+                    <li>004</li>
+                    <li>005</li>
+                    <li>006</li>
+                    <li>007</li>
+                    <li>008</li>
+                    <li>009</li>
+                    <li>FernGulley</li>
+                </random>
+            </set>'
+            
+            Now let's set just a plain text value:
+            "<set name="plainText">Plain Text</set>"
+            Anything between the quotes above? If so, AWESOME!
+
+            Setting a value the old way, with attributes in the &lt;set&gt; and &lt;get&gt; tags:
+            Getting foo and setting it to old_set: "<set name="old_set">
+                <get name="foo"/>
+            </set>"
+            If there is something other than a space within the quotes above, then the test succeeded.
+
+            Now setting a value with "attribute tags":
+            Getting baz and setting it to new_set: "<set>
+                <name>new_set</name>
+                <get>
+                    <name>baz</name>
+                </get>
+            </set>"
+            Once again, if there is something other than a space within the quotes above, then we have success!
+
+            Today's date is <date format="%b %d%O, %Y"/>.
+            The current time is <date format="%l:%M %p"/>.
+
+            Let's parse a get tag. The value of foo (with attributes) is "<get name="foo"/>".
+            Let's do it again. The value of bar (with attribute tags) is "<get><name>bar</name></get>".
+
+            Test complete.
+        </template>
+    </category>
+</aiml>

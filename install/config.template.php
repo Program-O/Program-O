@@ -20,19 +20,20 @@ define('_BASE_PATH_', $parentFolder);
 // Define paths for include files
 //------------------------------------------------------------------------
 
-define('_ADMIN_PATH_',   _BASE_PATH_  . "admin$path_separator");
-define('_BOTCORE_PATH_', _BASE_PATH_  . "chatbot{$path_separator}core$path_separator");
+define('_ADMIN_PATH_',        _BASE_PATH_     . "admin$path_separator");
+define('_BOTCORE_PATH_',      _BASE_PATH_     . "chatbot{$path_separator}core$path_separator");
+define('_ADDONS_PATH_',       _BASE_PATH_     . "chatbot{$path_separator}addons$path_separator");
+define('_CLASS_PATH_',        _BASE_PATH_     . "classes$path_separator");
+define('_CONF_PATH_',         _BASE_PATH_     . "config$path_separator");
+define('_DEBUG_PATH_',        _BASE_PATH_     . "chatbot{$path_separator}debug$path_separator");
+define('_INSTALL_PATH_',      _BASE_PATH_     . "install$path_separator");
+define('_LIB_PATH_',          _BASE_PATH_     . "library$path_separator");
+define('_LOG_PATH_',          _BASE_PATH_     . "logs$path_separator");
+define('_DOWNLOAD_PATH_',     _ADMIN_PATH_    . "downloads$path_separator");
+define('_SESSION_PATH_',      _ADMIN_PATH_    . '[session_dir]' . $path_separator);
+define('_UPLOAD_PATH_',       _ADMIN_PATH_    . "uploads$path_separator");
 define('_BOTCORE_AIML_PATH_', _BOTCORE_PATH_  . "aiml$path_separator");
-define('_LIB_PATH_',     _BASE_PATH_  . "library$path_separator");
-define('_ADDONS_PATH_',  _BASE_PATH_  . "chatbot{$path_separator}addons$path_separator");
-define('_CONF_PATH_',    _BASE_PATH_  . "config$path_separator");
-define('_LOG_PATH_',     _BASE_PATH_  . "logs$path_separator");
-define('_DEBUG_PATH_',   _BASE_PATH_  . "chatbot{$path_separator}debug$path_separator");
-define('_INSTALL_PATH_', _BASE_PATH_  . "install$path_separator");
-define('_UPLOAD_PATH_',  _ADMIN_PATH_ . "uploads$path_separator");
-define('_DOWNLOAD_PATH_',  _ADMIN_PATH_ . "downloads$path_separator");
-define('IS_WINDOWS',     (DIRECTORY_SEPARATOR == '/') ? false : true);
-define('_SESSION_PATH_', _ADMIN_PATH_ . '[session_dir]' . $path_separator);
+define ('IS_WINDOWS', (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? true : false); // Detect Windows OS
 
 //------------------------------------------------------------------------
 // Define URL paths

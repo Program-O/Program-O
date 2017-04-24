@@ -17,11 +17,11 @@ if (!file_exists('config/global_config.php'))
 else
 {
     $get_vars = filter_input_array(INPUT_GET);
-    $qs = '?';
+    $qs = '';
 
     if (!empty($get_vars))
     {
-        $qs .= http_build_query($get_vars);
+        $qs = makeQuery($get_vars);
     }
     # Config exists we will goto the bot
     $thisFile = __FILE__;
@@ -54,3 +54,13 @@ else
         header("Location: gui/$gui/$qs");
     }
 }
+
+    function makeQuery($array)
+    {
+        $out = '?';
+        foreach ($array as $key => $value)
+        {
+            $out .= "$key=$value&";
+        }
+        return trim($out, '&');
+    }
