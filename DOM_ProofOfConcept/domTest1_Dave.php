@@ -47,7 +47,7 @@ function parseTemplateRecursive(&$convoArr, DOMNode $element)
     }
     else
     {
-        $elementName = $element->tagName;
+        $elementName = $element->nodeName;
         debugTrace(__FILE__, __FUNCTION__, __LINE__, "Parsing the tag '$elementName'.", 0);
         if ($element->hasChildNodes())
         {
@@ -95,50 +95,86 @@ function parse_date_tag(&$convoArr, $element)
 {
     debugTrace(__FILE__, __FUNCTION__, __LINE__, 'Parsing a DATE tag.', 0);
     $now = time();
-    if ($element->hasAttributes())
+    $tz_list = array(
+        '-12' => 'Pacific/Kwajalein',
+        '-11' => 'Pacific/Samoa',
+        '-10' => 'Pacific/Honolulu',
+        '-9' => 'America/Juneau',
+        '-8' => 'America/Los_Angeles',
+        '-7' => 'America/Denver',
+        '-6' => 'America/Mexico_City',
+        '-5' => 'America/New_York',
+        '-4' => 'America/Caracas',
+        '-3.5' => 'America/St_Johns',
+        '-3' => 'America/Argentina/Buenos_Aires',
+        '-2' => 'Atlantic/Azores',
+        '-1' => 'Atlantic/Azores',
+        '0' => 'Europe/London',
+        '1' => 'Europe/Paris',
+        '2' => 'Europe/Helsinki',
+        '3' => 'Europe/Moscow',
+        '3.5' => 'Asia/Tehran',
+        '4' => 'Asia/Baku',
+        '4.5' => 'Asia/Kabul',
+        '5' => 'Asia/Karachi',
+        '5.5' => 'Asia/Calcutta',
+        '6' => 'Asia/Colombo',
+        '7' => 'Asia/Bangkok',
+        '8' => 'Asia/Singapore',
+        '9' => 'Asia/Tokyo',
+        '9.5' => 'Australia/Darwin',
+        '10' => 'Pacific/Guam',
+        '11' => 'Asia/Magadan',
+        '12' => 'Asia/Kamchatka'
+    );
+
+    $locale = getAttribute($convoArr, 'locale', $element);
+    $tz     = getAttribute($convoArr, 'timezone', $element);
+    $format = getAttribute($convoArr, 'format', $element);
+
+    if (!$format) // check for a non-existing format attribute
     {
-        $locale = getAttribute($convoArr, 'locale', $element);
-        $tz     = getAttribute($convoArr, 'timezone', $element);
-        $format = getAttribute($convoArr, 'format', $element);
-        // Handle timezone first
-        if (!empty($tz))
+        $out = strftime('%m/%d/%Y %H:%M %p');
+        debugTrace(__FILE__, __FUNCTION__, __LINE__, "The date is $out.", 4);
+        return $out;
+    }
+    // Handle timezone first
+    if (!empty($tz))
+    {
+        if (is_numeric($tz) && ($tz >= -12 && $tz <= 12))
         {
-            if (is_numeric($tz) && ($tz >= -12 && $tz <= 12))
+            if (!isset($convoArr['timezones']))
             {
-                if (!isset($convoArr['timezones']))
-                {
-                    require_once('tz_list.php');
-                    $convoArr['timezones'] = $tz_list;
-                }
-                if (isset($convoArr['timezones'][$tz]))
-                {
-                    $cur_tz = date_default_timezone_get();
-                    $new_tz = $convoArr['timezones'][$tz];
-                    date_default_timezone_set($new_tz);
-                }
+                $convoArr['timezones'] = $tz_list;
+            }
+            if (isset($convoArr['timezones'][$tz]))
+            {
+                $cur_tz = date_default_timezone_get();
+                $new_tz = $convoArr['timezones'][$tz];
+                date_default_timezone_set($new_tz);
             }
         }
-        // Now work on locale
-        if (!empty($locale))
-        {
-            //LC_TIME
-            $cur_locale = setlocale(LC_TIME, '');
-        }
-        // Finally, deal with format
-        if (IS_WIN)
-        {
-            // windows doesn't support %l, so some "trickery" is required.
-            $format = str_replace('%l', date('g', $now), $format);
-        }
-        // %b %-d%O, %Y %-l:%M %p = 3 char Month 1-2 digit day with ordinal suffix, 4 digit year 12 hour hour:2 digit minute AM/PM
-        // %m/%d/%Y %-l:%M %p = 2 digit month/2 digit day/4 digit year 12 hour hour:2 digit minute AM/PM
-        // In order to use ordinal suffixes, which strftime does not support, some "trickery" is needed.
-        // Since strftime doesn't use %O (percent sigh, capital O) for any formatting options, it can be 'hijacked', and used to make
-        // ordinal suffixes possible.
-        $format = str_replace('%O', date('S'), $format);
-        $out = strftime($format);
     }
-    else $out = strftime('%m/%d/%Y %H:%M %p');
+    // Now work on locale
+    if (!empty($locale))
+    {
+        //LC_TIME
+        $cur_locale = setlocale(LC_TIME, '');
+    }
+    // Finally, deal with format
+    if (IS_WIN)
+    {
+        // windows doesn't support %l, so some "trickery" is required.
+        $format = str_replace('%l', date('g', $now), $format);
+    }
+    // %b %-d%O, %Y %-l:%M %p = 3 char Month 1-2 digit day with ordinal suffix, 4 digit year 12 hour hour:2 digit minute AM/PM
+    // %m/%d/%Y %-l:%M %p = 2 digit month/2 digit day/4 digit year 12 hour hour:2 digit minute AM/PM
+    // In order to use ordinal suffixes, which strftime does not support, some "trickery" is needed.
+    // Since strftime doesn't use %O (percent sigh, capital O) for any formatting options, it can be 'hijacked', and used to make
+    // ordinal suffixes possible.
+    $format = str_replace('%O', date('S'), $format);
+    $out = strftime($format);
+
     debugTrace(__FILE__, __FUNCTION__, __LINE__, "The date is $out.", 4);
     return trim($out, ' ');
 }
@@ -158,7 +194,7 @@ function parse_think_tag(&$convoArr, $element)
             $childName = $childNode->tagName;
             $func = "parse_{$childName}_tag";
             if (function_exists($func)) $out .= $func($convoArr, $childNode);
-            else $out .= "[{$elementName}],";
+            else $out .= "[{$childName}],";
         }
     }
     return '';
@@ -224,7 +260,7 @@ function parse_set_tag(&$convoArr, $element)
     return trim($out, ' ');
 }
 
-function parse_random_tag(&$convoArr, $element)
+function parse_random_tag(&$convoArr, DOMElement $element)
 {
     debugTrace(__FILE__, __FUNCTION__, __LINE__, 'Parsing a RANDOM tag.', 0);
     $liTags = $element->getElementsByTagName('li');
@@ -353,7 +389,7 @@ function implode_recursive($glue, $input, $file = 'unknown', $function = 'unknow
  */
 function debugTrace($file = 'unknown', $function = 'unknown', $line = 'unknown', $message = '', $debug_level = 4)
 {
-    if (empty($message)) return false;
+    if (empty($message)) return;
     $file = str_replace(BASE_PATH, '', $file);
     $outMessage = "[$file][$function][$line]: $message\n";
     //echo $outMessage;
@@ -389,7 +425,7 @@ function getAttribute(&$convoArr, $attribute, DOMElement &$element)
             $element->removeChild($childNode);
             $out = parseTemplateRecursive($convoArr, $childNode);
 
-            return trim($out) ;
+            return trim($out);
         }
     }
 
