@@ -475,6 +475,11 @@ function score_matches($convoArr, $allrows, $pattern)
                     }
                 }
             }
+        }
+        else
+        {
+            // take no action, as we're not looking for a topic here
+            $track_matches .= 'no topic to match, ';
         } # end topic testing
 
         # 3.) test for a category thatpattern
