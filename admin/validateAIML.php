@@ -29,16 +29,19 @@ $ip = ($ip == '::1') ? 'localhost' : $ip;
 
 if (!empty ($_FILES))
 {
-    $uploadDir = 'uploads/';
+    $uploadDir = _UPLOAD_PATH_;
     //chdir($uploadDir);
     if (!file_exists("$uploadDir$ip"))
     {
         mkdir("$uploadDir$ip");
     }
 
-    $tf = basename($_FILES['uploaded']['name']);
+    $rawFilename = basename($_FILES['uploaded']['name']);
+    $tf = preg_replace('~[^a-zA-Z0-9_\.]*?~', '', $rawFilename);
     $tf = str_replace(' ', '_', $tf);
-    $target = $uploadDir . $ip . '/' . $tf;
+    $hefn = htmlentities($rawFilename);
+    if ($tf != $rawFilename) $status .= "Due to security concerns, the file $hefn was renamed to $tf.\n";
+    $target = $uploadDir . $ip . DIRECTORY_SEPARATOR . $tf;
     libxml_clear_errors();
     libxml_use_internal_errors(true);
     $tmpFile = str_replace('../', '', $_FILES['uploaded']['tmp_name']);
@@ -52,9 +55,7 @@ if (!empty ($_FILES))
         $aimlTagStart = stripos($aimlContent, '<aiml', 0);
         $aimlTagEnd = strpos($aimlContent, '>', $aimlTagStart) + 1;
         $aimlFile = $validAIMLHeader . substr($aimlContent, $aimlTagEnd);
-        $fileName = basename($_FILES['uploaded']['name']);
-        //$xml->preserveWhiteSpace = true;
-        //$xml->formatOutput = true;
+        $fileName = $tf;
         $aimlArray = explode("\n", $aimlFile);
         array_unshift($aimlArray, null);
         unset($aimlArray[0]);
@@ -69,16 +70,16 @@ if (!empty ($_FILES))
 
         if (!$xml->loadXML($aimlFile))
         {
-            $status = "File $fileName is <strong>NOT</strong> valid!<br />\n";
+            $status .= "File $fileName is <strong>NOT</strong> valid!<br />\n";
             libxml_display_errors();
         }
         elseif (!$xml->schemaValidate('aiml.xsd'))
         {
-            $status = '<b>A total of [count] error[plural] been found in this document.</b>';
+            $status .= '<b>A total of [count] error[plural] been found in this document.</b>';
             libxml_display_errors();
         }
         else {
-            $status = "File $fileName is valid.<br />\n";
+            $status .= "File $fileName is valid.<br />\n";
         }
     }
 }

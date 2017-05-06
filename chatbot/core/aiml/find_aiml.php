@@ -183,11 +183,12 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Blue 5 to Blue leader. Starting my run now!', 4);
     $i = 0;
 
-    foreach ($allrows as $all => $subrow)
+    foreach ($allrows as $subrow)
     {
       //get the pattern
       $aiml_pattern = _strtolower($subrow['pattern']);
-      $aiml_pattern_wildcards = build_wildcard_RegEx($aiml_pattern);
+      if (strstr($aiml_pattern, '<bot')) $aiml_pattern = get_bot_predicate($aiml_pattern);
+      $aiml_pattern_wildcards = build_wildcard_RegEx($aiml_pattern, 'pattern');
 
       //get the that pattern
       $aiml_thatpattern = _strtolower($subrow['thatpattern']);
@@ -197,7 +198,7 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
       $aiml_topic = _strtolower(trim($subrow['topic']));
 
         #Check for a matching topic
-        $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($aiml_topic) : '';
+        $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($aiml_topic, 'topic') : '';
 
         if ($aiml_topic == '')
         {
@@ -217,14 +218,16 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
         }
 
         # check for a matching pattern
-        //save_file(_LOG_PATH_ . 'aiml_pattern_wildcards.txt', print_r($aiml_pattern_wildcards, true) . "\n", true);
         set_error_handler('wildcard_handler', E_ALL);
-        preg_match($aiml_pattern_wildcards, $lookingfor, $matches);
+        if (false === preg_match($aiml_pattern_wildcards, $lookingfor, $matches))
+        {
+            save_file(_LOG_PATH_ . 'aiml_pattern_wildcards.txt', print_r($aiml_pattern_wildcards, true) . "\n", true);
+        }
         restore_error_handler();
         $aiml_patternmatch = (count($matches) > 0) ? true : false;
 
         # look for a thatpattern match
-        $aiml_thatpattern_wildcards = (!empty($aiml_thatpattern)) ? build_wildcard_RegEx($aiml_thatpattern) : '';
+        $aiml_thatpattern_wildcards = (!empty($aiml_thatpattern)) ? build_wildcard_RegEx($aiml_thatpattern, 'thatpattern') : '';
         $aiml_thatpattern_wc_matches = (!empty($aiml_thatpattern_wildcards)) ? preg_match_all($aiml_thatpattern_wildcards, $current_thatpattern, $matches) : 0;
 
         switch (true)
@@ -311,12 +314,14 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
  * @param string $item
  * @return string
  **/
-function build_wildcard_RegEx($item)
+function build_wildcard_RegEx($item, $what = 'unknown')
 {
+    $originalItem = $item;
     $item = trim($item);
     $item = str_replace("*", ")(.*)(", $item);
     $item = str_replace("_", ")(.*)(", $item);
     $item = str_replace("+", "\+", $item);
+    $item = str_replace("/", "\/", $item);
     $item = "(" . str_replace(" ", "\s", $item) . ")";
     $item = str_replace("()", '', $item);
     $matchme = "/^" . $item . "$/ui";
@@ -338,7 +343,7 @@ function aiml_pattern_match($pattern, $input)
         return false;
     }
 
-    $pattern_regex = build_wildcard_RegEx(_strtolower($pattern));
+    $pattern_regex = build_wildcard_RegEx(_strtolower($pattern), 'pattern');
 
     return preg_match($pattern_regex, _strtolower($input)) === 1;
 }
@@ -677,7 +682,7 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
     $tmpArr = array();
     //loop through the results
 
-    foreach ($allrows as $all => $subrow)
+    foreach ($allrows as $subrow)
     {
         if (!isset ($subrow['score']))
         {
@@ -741,6 +746,7 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
             'score' => 0,
             'track_score' => 'No Match Found!',
         );
+        $use_message = 'Empty Response!';
     }
 
     if (false !== $bestResponse)
@@ -750,6 +756,20 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Best Responses: " . print_r($tmpArr, true), 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, $use_message, 2);
+
+    // Add row data to the chatbot output
+    $data = array();
+    foreach ($bestResponse as $key => $value)
+    {
+        if ($key === 'id')
+        {
+            $data['aiml_id'] = $value;
+            continue;
+        }
+        $data[$key] = $value;
+    }
+    unset($data['template']);
+    $convoArr['conversation']['data'] = $data;
 
     //return the best response
     return $bestResponse;
@@ -1053,7 +1073,7 @@ function find_aiml_matches($convoArr)
     {
         //if there is one word do this
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
+        $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic`, `filename` FROM `$dbn`.`aiml` WHERE
   $sql_bot_select AND (
   `pattern` = '_' OR
   `pattern` = '*' OR
@@ -1067,7 +1087,7 @@ function find_aiml_matches($convoArr)
         $sql_add = make_like_pattern($lookingfor, 'pattern');
 
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
+        $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic`, `filename` FROM `$dbn`.`aiml` WHERE
   $sql_bot_select AND (
   `pattern` = '_' OR
   `pattern` = '*' OR
@@ -1093,7 +1113,6 @@ function find_aiml_matches($convoArr)
         {
             $row['score'] = 0;
             $row['aiml_id'] = $row['id'];
-            $row['bot_id'] = $bot_id;
             $row['track_score'] = '';
             $allrows[] = $row;
             $mu = memory_get_usage(true);
@@ -1142,3 +1161,29 @@ function get_topic($convoArr)
 
     return $retval;
 }
+
+function get_bot_predicate($input)
+{
+    $search = '/<bot name="(.*?)"[\/]?>/i';
+    if (!preg_match($search, $input, $matches)) return $input;
+    global $dbConn, $dbn, $bot_id;
+    $name = $matches[1];
+    $params = array(':name' => $name, ':bot_id' => $bot_id);
+    $sql = 'select value from botpersonality where bot_id = :bot_id and name like :name;';
+    $result = db_fetch($sql, $params);
+    if (!empty($result) && is_array($result))
+    {
+        $replace = $result['value'];
+    }
+    else $replace = '';
+    $out = preg_replace($search, $replace, $input);
+    return $out;
+}
+
+
+
+
+
+
+
+

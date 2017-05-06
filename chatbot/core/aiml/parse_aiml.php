@@ -318,7 +318,7 @@ function set_wildcards($convoArr, $pattern, $type)
         $curCA = print_r($curCA, true);
 
         runDebug(__FILE__, __FUNCTION__, __LINE__, "We have pattern stars to process!", 2);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Current Convo Array:\n$curCA", 2);
+        //runDebug(__FILE__, __FUNCTION__, __LINE__, "Current Convo Array:\n$curCA", 2);
 
         if (!isset ($convoArr['aiml']['user_raw']))
         {

@@ -146,9 +146,10 @@ function jq_get_convo_id()
                     $('.usersay').text(usersay);
                 }
                 $('.botsay').html(b);
+                $('#urlwarning').hide();
             }, 'json').fail(function (xhr, textStatus, errorThrown) {
                 console.error('XHR =', xhr.responseText);
-                $('#urlwarning').html("Something went wrong! Error = " + errorThrown);
+                $('#urlwarning').html("Something went wrong! Error = " + errorThrown).show();
             });
             return false;
         });
