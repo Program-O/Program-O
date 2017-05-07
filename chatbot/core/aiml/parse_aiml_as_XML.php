@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.5
  * FILE: parse_aiml_as_xml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -140,7 +140,7 @@ function implode_recursive($glue, $input, $file = 'unknown', $function = 'unknow
         return '';
     }
 
-    if (!is_array($input) and !is_string($input))
+    if (!is_array($input) && !is_string($input))
     {
         $varType = gettype($input);
         trigger_error("Input not array! Input is of type $varType. Error originated in $file, function $function, line $line. Input = " . print_r($input, true));
@@ -199,6 +199,9 @@ function implode_recursive($glue, $input, $file = 'unknown', $function = 'unknow
 function parseTemplateRecursive(&$convoArr, SimpleXMLElement $element, $level = 0)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Recursively parsing the AIML template.', 2);
+    $curXML = print_r($element, true);
+    $elementName = $element->getName();
+    //runDebug(__FILE__, __FUNCTION__, __LINE__, "Current XML for tag $elementName:\n$curXML\n", 2);
 
     $HTML_tags = array('a', 'abbr', 'acronym', 'address', 'applet', 'area', 'b', 'bdo', 'big', 'blockquote', 'br', 'button', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir', 'div', 'dl', 'dt', 'em', 'fieldset', 'font', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'iframe', 'img', 'ins', 'kbd', 'label', 'legend', 'ol', 'object', 's', 'script', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'tt', 'u', 'ul');
     $doNotParseChildren = array('li');
@@ -241,9 +244,9 @@ function parseTemplateRecursive(&$convoArr, SimpleXMLElement $element, $level = 
     }
 
     $value = trim((string)$retVal);
-    $tmpResponse = ($level <= 1 and ($parentName != 'think') and (!in_array($parentName, $doNotParseChildren))) ? $value : '';
+    $tmpResponse = ($level <= 1 && ($parentName != 'think') && (!in_array($parentName, $doNotParseChildren))) ? $value : '';
 
-    if ($children->count() > 0 and is_object($retVal))
+    if ($children->count() > 0 && is_object($retVal))
     {
         foreach ($children as $child)
         {
@@ -484,7 +487,7 @@ function parse_get_tag($convoArr, $element, $parentName, $level)
 
         $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
 
-        if (($row) and (count($row) > 0))
+        if (($row) && (count($row) > 0))
         {
             $response = $row['value'];
         }
@@ -602,8 +605,7 @@ function parse_set_tag(&$convoArr, $element, $parentName, $level)
     $rowCount = $sth->rowCount();
     $response = $var_value;
     $convoArr['client_properties'][$var_name] = $var_value;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Value for $var_name has ben set. Returning $var_value.", 4);
-    $convoArr['client_properties']['test'] = 'passed';
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Value for $var_name has been set. Returning $var_value.", 4);
 
     return $response;
 }
@@ -738,14 +740,6 @@ function parse_sentence_tag($convoArr, $element, $parentName, $level)
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $lc_response_string = _strtolower($response_string);
     $response = _strtoupper(_substr($lc_response_string, 0, 1)) . _substr($lc_response_string, 1);
-    /*
-        if (IS_MB_ENABLED)
-        {
-          $response_string = mb_strtolower($response_string);
-          $response = mb_strtoupper(mb_substr($response_string, 0, 1)) . mb_substr($response_string, 1);
-        }
-        else $response = ucfirst(strtolower($response_string));
-    */
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 4);
 
     return $response;
@@ -942,6 +936,10 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
                     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Pick XML = ' . $pick->asXML(), 4);
                     break;
                 }
+                else
+                {
+                    $pick = $pick->asXML();
+                }
             }
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($pick, true), 4);
         }
@@ -973,7 +971,7 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Response = " . print_r($response, true), 4);
     }
     else {
-        $response[] = (string)$pick;
+        $response[] = '';
     }
 
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
@@ -995,7 +993,7 @@ function parse_person_tag($convoArr, $element, $parentName, $level)
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a PERSON tag.', 2);
 
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'star');
-    $response = swapPerson($convoArr, 3, $response_string);
+    $response = swapPerson($convoArr, 2, $response_string);
 
     return $response;
 }
@@ -1014,7 +1012,7 @@ function parse_person2_tag($convoArr, $element, $parentName, $level)
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a PERSON2 tag.', 2);
 
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'star');
-    $response = swapPerson($convoArr, 2, $response_string);
+    $response = swapPerson($convoArr, 3, $response_string);
 
     return $response;
 }
@@ -1032,16 +1030,31 @@ function parse_html_tag($convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a generic HTML tag.', 2);
 
-    $response_string = $element->asXML();
-    $response_string = str_replace('<text>', '', $response_string);
-    $response_string = str_replace('</text>', '', $response_string);
+    // get the text of the XML
+    $elementXML = $element->asXML();
+    //save_file(_LOG_PATH_ . 'elementXML.txt', $elementXML);
 
-    $star = (isset($convoArr['aiml']['stars'][1])) ? $convoArr['aiml']['stars'][1] : '';
+    // Find the first tag, so that it can be added as text to the output
+    $tagSearch = preg_match('~<.*?>~', $elementXML, $tagMatches);
+    //save_file(_LOG_PATH_ . 'tagMatches.txt', print_r($tagMatches, true));
 
-    if ($star != '')
+    // Create the opening tag from the regular expression search, above
+    $openTag = $tagMatches[0];
+
+    // Create the closing tag
+    $closeTag = str_replace('<', '</', $openTag);
+
+    // strip out any attributes from the opening tag, as they aren't needed in the close
+    $closeTag = preg_replace('~ .*?>~', '>', $closeTag);
+    $kids = $element->children();
+    $response_string = $openTag;
+
+    // Parse any children that the current element may have
+    foreach ($kids as $kid)
     {
-        $response_string = str_replace('<star/>', $star, $response_string);
+        $response_string .= implode_recursive(' ', parseTemplateRecursive($convoArr, $kid, $level + 1), __FILE__, __FUNCTION__, __LINE__); //
     }
+    $response_string .= $closeTag;
 
     return $response_string;
 }

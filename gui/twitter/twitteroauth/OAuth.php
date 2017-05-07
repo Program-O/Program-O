@@ -418,7 +418,7 @@ class OAuthRequest
      */
     public function get_normalized_http_method()
     {
-        return strtoupper($this->http_method);
+        return (function_exists('mb_internal_encoding')) ? mb_strtoupper($this->http_method) : strtoupper($this->http_method);
     }
 
     /**

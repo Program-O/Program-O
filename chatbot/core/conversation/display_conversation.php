@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.5
  * FILE: chatbot/core/conversation/display_conversation.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -143,6 +143,7 @@ function get_json($convoArr, $conversation)
         $show_json['convo_id'] = $convoArr['conversation']['convo_id'];
         $show_json['usersay'] = stripslashes($conversation_subarray['input']);
         $show_json['botsay'] = stripslashes($conversation_subarray['response']);
+        $show_json['data'] = $convoArr['conversation']['data'];
         $i++;
     }
 

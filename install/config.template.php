@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.5
  * FILE: config/global_config.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -95,6 +95,26 @@ $adm_dbp    = '[adm_dbp]';
 // the actual parent bot is set later on in program o there is no need to edit this value
 //------------------------------------------------------------------------
 $bot_parent_id = 1;
+
+//------------------------------------------------------------------------
+// Define some bot option constants
+//------------------------------------------------------------------------
+
+/*
+     It has been suggested that the "winning" response be the first category found with the highest score,
+     rather than a random selection from all high scoring responses. It was also suggested that the most
+     recent (e.g. the last) response should be chosen, with newer AIML categories superseding older ones.
+     At some point this will be an option that will be placed in the admin pages on a per-bot basis, but
+     for now it's just a random pick. That said, however, I'm going to start adding code for the other
+     two options now. Feel free to change the value of $which_response to one of the three constants
+     defined here.
+*/
+
+define('BOT_USE_RANDOM_RESPONSE', 0);
+define('BOT_USE_FIRST_RESPONSE', 1);
+define('BOT_USE_LAST_RESPONSE', 2);
+
+$which_response = BOT_USE_RANDOM_RESPONSE;
 
 
 //Used to populate the stack when first initialized

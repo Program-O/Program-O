@@ -2,17 +2,12 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.6.4
+* Version: 2.6.5
 * FILE: install_programo.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: FEB 01 2016
 * DETAILS: Program O's Automatic install script
 ***************************************/
-
-if (file_exists('../patch.php'))
-{
-    unlink('../patch.php'); // If this is a fresh install, we need not patch the DB
-}
 
 session_name('PGO_install');
 session_start();
@@ -52,10 +47,21 @@ foreach ($writeCheckArray as $key => $folder)
 {
     if (!is_writable($folder))
     {
-        error_log("The folder $folder is not writable.", 3, '../logs/install.log');
+        $test = file_put_contents("{$folder}test.txt", $key);
+        if (false === $test)
+        {
+            $dirExists = (file_exists($folder)) ? 'true' : 'false';
+            $perms = fileperms($folder);
+            $txtPerms = showPerms($perms);
+            error_log("The folder $folder is not writable. Folder exists?: $dirExists. Permissions: $txtPerms." . PHP_EOL, 3, '../logs/install.log');
 
-        $errFlag = true;
-        $errorMessage .= "<p class=\"red bold\">The $key folder cannot be written to, or does not exist. Please correct this before you continue.</p>";
+            $errFlag = true;
+            $errorMessage .= "<p class=\"red bold\">The $key folder cannot be written to, or does not exist. Please correct this before you continue.</p>";
+        }
+        else
+        {
+            unlink("{$folder}test.txt");
+        }
     }
 }
 
@@ -70,8 +76,8 @@ $additionalInfo = <<<endInfo
       <li>chatbot/debug</li>
     </ul>
     Permissions for these folders should be 0755. If they are not, then you need to change that. If you
-    have trouble with this, or have questions, please visit us at
-    <a href="http://www.program-o.com">Program O</a>.
+    have trouble with this, or have questions, please report the issue on
+    <a href="https://github.com/Program-O/Program-O/issues">our GitHub page</a>.
   </p>
 endInfo;
 
@@ -367,4 +373,55 @@ function create_session_dirname()
     return $out;
 }
 
+function showPerms ($perms)
+{
+    switch ($perms & 0xF000) {
+        case 0xC000: // socket
+            $info = 's';
+            break;
+        case 0xA000: // symbolic link
+            $info = 'l';
+            break;
+        case 0x8000: // regular
+            $info = 'r';
+            break;
+        case 0x6000: // block special
+            $info = 'b';
+            break;
+        case 0x4000: // directory
+            $info = 'd';
+            break;
+        case 0x2000: // character special
+            $info = 'c';
+            break;
+        case 0x1000: // FIFO pipe
+            $info = 'p';
+            break;
+        default: // unknown
+            $info = 'u';
+    }
+
+// Owner
+    $info .= (($perms & 0x0100) ? 'r' : '-');
+    $info .= (($perms & 0x0080) ? 'w' : '-');
+    $info .= (($perms & 0x0040) ?
+                (($perms & 0x0800) ? 's' : 'x' ) :
+                (($perms & 0x0800) ? 'S' : '-'));
+
+// Group
+    $info .= (($perms & 0x0020) ? 'r' : '-');
+    $info .= (($perms & 0x0010) ? 'w' : '-');
+    $info .= (($perms & 0x0008) ?
+                (($perms & 0x0400) ? 's' : 'x' ) :
+                (($perms & 0x0400) ? 'S' : '-'));
+
+// World
+    $info .= (($perms & 0x0004) ? 'r' : '-');
+    $info .= (($perms & 0x0002) ? 'w' : '-');
+    $info .= (($perms & 0x0001) ?
+                (($perms & 0x0200) ? 't' : 'x' ) :
+                (($perms & 0x0200) ? 'T' : '-'));
+
+    return $info;
+}
 

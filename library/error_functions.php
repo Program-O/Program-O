@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.5
  * FILE: library/error_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -67,6 +67,7 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 function runDebug($fileName, $functionName, $line, $info, $level = 0)
 {
     global $debugArr, $srai_iterations, $quickdebug, $writetotemp, $convoArr, $last_timestamp, $debug_level;
+    if ($debug_level === 0) return;
 
     $debug_level = (isset($convoArr['conversation']['debug_level'])) ? $convoArr['conversation']['debug_level'] : $debug_level;
 
@@ -402,7 +403,7 @@ function mem_tracer($file, $function, $line)
 
 function wildcard_handler($errNum, $errMsg, $errFile, $errLine, $errContext)
 {
-    $saveContent = "An error (Number $errNum, $errMsg) was caught in file $errFile, line $errLine. The following variableis what you are looking for:\n";
+    $saveContent = "An error (Number $errNum, $errMsg) was caught in file $errFile, line $errLine. The following variable is what you are looking for:\n";
     $saveContent .= print_r($errContext['aiml_pattern_wildcards'], true) . "\n---------------------------------------------------------------\n";
 
     save_file(_LOG_PATH_ . 'wildcard_errors.txt', $saveContent, true);

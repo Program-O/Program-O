@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.5
  * FILE: find_aiml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -166,7 +166,8 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
     //if wildcard or direct pattern match and direct or wildcard thatpattern match keep
     //if wildcard pattern matches found aiml keep
     //the end......
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "NEW FUNC Searching through " . count($allrows) . " rows to unset bad matches", 4);
+    $nfARc = number_format(count($allrows));
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "NEW FUNC Searching through " . $nfARc . " rows to unset bad matches", 4);
 
     // If no pattern was found, exit early
     if (($allrows[0]['pattern'] == "no results") && (count($allrows) == 1))
@@ -182,11 +183,12 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Blue 5 to Blue leader. Starting my run now!', 4);
     $i = 0;
 
-    foreach ($allrows as $all => $subrow)
+    foreach ($allrows as $subrow)
     {
       //get the pattern
       $aiml_pattern = _strtolower($subrow['pattern']);
-      $aiml_pattern_wildcards = build_wildcard_RegEx($aiml_pattern);
+      if (strstr($aiml_pattern, '<bot')) $aiml_pattern = get_bot_predicate($aiml_pattern);
+      $aiml_pattern_wildcards = build_wildcard_RegEx($aiml_pattern, 'pattern');
 
       //get the that pattern
       $aiml_thatpattern = _strtolower($subrow['thatpattern']);
@@ -196,7 +198,7 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
       $aiml_topic = _strtolower(trim($subrow['topic']));
 
         #Check for a matching topic
-        $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($aiml_topic) : '';
+        $aiml_topic_wildcards = (!empty($aiml_topic)) ? build_wildcard_RegEx($aiml_topic, 'topic') : '';
 
         if ($aiml_topic == '')
         {
@@ -216,14 +218,16 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
         }
 
         # check for a matching pattern
-        //save_file(_LOG_PATH_ . 'aiml_pattern_wildcards.txt', print_r($aiml_pattern_wildcards, true) . "\n", true);
         set_error_handler('wildcard_handler', E_ALL);
-        preg_match($aiml_pattern_wildcards, $lookingfor, $matches);
+        if (false === preg_match($aiml_pattern_wildcards, $lookingfor, $matches))
+        {
+            save_file(_LOG_PATH_ . 'aiml_pattern_wildcards.txt', print_r($aiml_pattern_wildcards, true) . "\n", true);
+        }
         restore_error_handler();
         $aiml_patternmatch = (count($matches) > 0) ? true : false;
 
         # look for a thatpattern match
-        $aiml_thatpattern_wildcards = (!empty($aiml_thatpattern)) ? build_wildcard_RegEx($aiml_thatpattern) : '';
+        $aiml_thatpattern_wildcards = (!empty($aiml_thatpattern)) ? build_wildcard_RegEx($aiml_thatpattern, 'thatpattern') : '';
         $aiml_thatpattern_wc_matches = (!empty($aiml_thatpattern_wildcards)) ? preg_match_all($aiml_thatpattern_wildcards, $current_thatpattern, $matches) : 0;
 
         switch (true)
@@ -310,12 +314,14 @@ function unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor)
  * @param string $item
  * @return string
  **/
-function build_wildcard_RegEx($item)
+function build_wildcard_RegEx($item, $what = 'unknown')
 {
+    $originalItem = $item;
     $item = trim($item);
     $item = str_replace("*", ")(.*)(", $item);
     $item = str_replace("_", ")(.*)(", $item);
     $item = str_replace("+", "\+", $item);
+    $item = str_replace("/", "\/", $item);
     $item = "(" . str_replace(" ", "\s", $item) . ")";
     $item = str_replace("()", '', $item);
     $matchme = "/^" . $item . "$/ui";
@@ -337,7 +343,7 @@ function aiml_pattern_match($pattern, $input)
         return false;
     }
 
-    $pattern_regex = build_wildcard_RegEx(_strtolower($pattern));
+    $pattern_regex = build_wildcard_RegEx(_strtolower($pattern), 'pattern');
 
     return preg_match($pattern_regex, _strtolower($input)) === 1;
 }
@@ -465,10 +471,15 @@ function score_matches($convoArr, $allrows, $pattern)
                     if (preg_match("/$regEx/i", $topic))
                     {
                         $current_score += $topic_star_match;
-                        $track_matches .= 'topic match with wildcards';
+                        $track_matches .= 'topic match with wildcards, ';
                     }
                 }
             }
+        }
+        else
+        {
+            // take no action, as we're not looking for a topic here
+            $track_matches .= 'no topic to match, ';
         } # end topic testing
 
         # 3.) test for a category thatpattern
@@ -669,14 +680,14 @@ function sort2DArray($opName, $thisArr, $sortByItem, $sortAsc = 1, $limit = 10)
  **/
 function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
 {
-    global $bot_id;
+    global $bot_id, $which_response;
 
     $bestResponse = array();
     $last_high_score = 0;
     $tmpArr = array();
     //loop through the results
 
-    foreach ($allrows as $all => $subrow)
+    foreach ($allrows as $subrow)
     {
         if (!isset ($subrow['score']))
         {
@@ -695,8 +706,40 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
         }
     }
 
+/*
+     It has been suggested that the "winning" response be the first category found with the highest score,
+     rather than a random selection from all high scoring responses. It was also suggested that the most
+     recent (e.g. the last) response should be chosen, with newer AIML categories superseding older ones.
+     At some point this will be an option that will be placed in the admin pages on a per-bot basis, but
+     for now it's just a random pick. That said, however, I'm going to start adding code for the other
+     two options now.
+*/
+    if (!defined('BOT_USE_FIRST_RESPONSE')) $which_response = 0;
+    $resultCount = count($tmpArr);
+    if ($resultCount > 0)
+    {
+        switch ($which_response)
+        {
+            case 0:
+                $bestResponse = $tmpArr[array_rand($tmpArr)];
+                $use_message = "Will use randomly picked best response chosen out of $resultCount responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'];
+                break;
+            case BOT_USE_FIRST_RESPONSE:
+                $bestResponse = $tmpArr[0];
+                $use_message = "Will use the first best response chosen out of $resultCount responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'];
+                break;
+            case BOT_USE_LAST_RESPONSE:
+                $bestResponse = $tmpArr[$resultCount - 1];
+                $use_message = "Will use the most recent best response chosen out of $resultCount responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'];
+                break;
+            case 0:
+            default:
+                $bestResponse = $tmpArr[array_rand($tmpArr)];
+                $use_message = "Will use randomly picked best response chosen out of $resultCount responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'];
+        }
+    }
+    else $bestResponse = false;
     //there may be any number of results with the same score so pick any random one
-    $bestResponse = (count($tmpArr) > 0) ? $tmpArr[array_rand($tmpArr)] : false;
     if (!$bestResponse)
     {
         $bestResponse = array(
@@ -708,6 +751,7 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
             'score' => 0,
             'track_score' => 'No Match Found!',
         );
+        $use_message = 'Empty Response!';
     }
 
     if (false !== $bestResponse)
@@ -715,9 +759,22 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
         $bestResponse['template'] = get_winning_category($convoArr, $bestResponse['aiml_id']);
     }
 
-    $cRes = count($tmpArr);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Best Responses: " . print_r($tmpArr, true), 4);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Will use randomly picked best response chosen out of $cRes responses with same score: " . $bestResponse['aiml_id'] . " - " . $bestResponse['pattern'], 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, $use_message, 2);
+
+    // Add row data to the chatbot output
+    $data = array();
+    foreach ($bestResponse as $key => $value)
+    {
+        if ($key === 'id')
+        {
+            $data['aiml_id'] = $value;
+            continue;
+        }
+        $data[$key] = $value;
+    }
+    unset($data['template']);
+    $convoArr['conversation']['data'] = $data;
 
     //return the best response
     return $bestResponse;
@@ -973,7 +1030,7 @@ function find_aiml_matches($convoArr)
 
     #$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
     $convoArr['aiml']['lookingfor'] = str_replace('  ', ' ', $convoArr['aiml']['lookingfor']);
-    $lookingfor = trim(strtoupper($convoArr['aiml']['lookingfor']));
+    $lookingfor = trim(_strtoupper($convoArr['aiml']['lookingfor']));
 
     //get the first and last words of the cleaned user input
     $lastInputWord = get_last_word($lookingfor);
@@ -1001,7 +1058,7 @@ function find_aiml_matches($convoArr)
     //get the word count
     $word_count = wordsCount_inSentence($lookingfor);
 
-    if ($bot_parent_id != 0 and $bot_parent_id != $bot_id)
+    if ($bot_parent_id != 0 && $bot_parent_id != $bot_id)
     {
         $sql_bot_select = " (bot_id = '$bot_id' OR bot_id = '$bot_parent_id') ";
     }
@@ -1011,23 +1068,23 @@ function find_aiml_matches($convoArr)
 
     if (!empty($storedtopic))
     {
-        $topic_select = "AND (`topic`='$storedtopic' OR `topic`='')";
+        $topic_select = "AND (`topic`='$storedtopic' OR `topic`='' OR `topic` like '%*%' OR `topic` like '%_%')";
     }
     else {
-        $topic_select = "AND `topic`=''";
+        $topic_select = "AND `topic`='' OR `topic` like '%*%' OR `topic` like '%_%'";
     }
 
     if ($word_count == 1)
     {
         //if there is one word do this
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
+        $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic`, `filename` FROM `$dbn`.`aiml` WHERE
   $sql_bot_select AND (
   `pattern` = '_' OR
   `pattern` = '*' OR
   `pattern` = '$lookingfor' OR
   `pattern` = '$default_aiml_pattern'
-  $thatPatternSQL
+  $thatPatternSQL OR `thatpattern` LIKE '%*%' OR `thatpattern` LIKE '%_%'
   ) $topic_select ORDER BY `topic` DESC, `pattern` ASC, `thatpattern` ASC,`id` ASC;";
     }
     else {
@@ -1035,13 +1092,13 @@ function find_aiml_matches($convoArr)
         $sql_add = make_like_pattern($lookingfor, 'pattern');
 
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
+        $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic`, `filename` FROM `$dbn`.`aiml` WHERE
   $sql_bot_select AND (
   `pattern` = '_' OR
   `pattern` = '*' OR
   `pattern` = '$lookingfor' OR $sql_add OR
   `pattern` = '$default_aiml_pattern'
-  $thatPatternSQL
+  $thatPatternSQL OR `thatpattern` LIKE '%*%' OR `thatpattern` LIKE '%_%'
   ) $topic_select
   ORDER BY `topic` DESC, `pattern` ASC, `thatpattern` ASC,`id` ASC;";
     }
@@ -1054,14 +1111,13 @@ function find_aiml_matches($convoArr)
     if (($result) && ($num_rows > 0))
     {
         $tmp_rows = number_format($num_rows);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ($num_rows) potential AIML matches", 2);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ($tmp_rows) potential AIML matches", 2);
         //loop through results
 
         foreach ($result as $row)
         {
             $row['score'] = 0;
             $row['aiml_id'] = $row['id'];
-            $row['bot_id'] = $bot_id;
             $row['track_score'] = '';
             $allrows[] = $row;
             $mu = memory_get_usage(true);
@@ -1110,3 +1166,29 @@ function get_topic($convoArr)
 
     return $retval;
 }
+
+function get_bot_predicate($input)
+{
+    $search = '/<bot name="(.*?)"[\/]?>/i';
+    if (!preg_match($search, $input, $matches)) return $input;
+    global $dbConn, $dbn, $bot_id;
+    $name = $matches[1];
+    $params = array(':name' => $name, ':bot_id' => $bot_id);
+    $sql = 'select value from botpersonality where bot_id = :bot_id and name like :name;';
+    $result = db_fetch($sql, $params);
+    if (!empty($result) && is_array($result))
+    {
+        $replace = $result['value'];
+    }
+    else $replace = '';
+    $out = preg_replace($search, $replace, $input);
+    return $out;
+}
+
+
+
+
+
+
+
+

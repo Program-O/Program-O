@@ -2,7 +2,7 @@
 /***************************************
  * www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.5
  * FILE: chatbot/addons/load_addons.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -55,7 +55,7 @@ function run_mid_level_addons($convoArr)
  */
 function run_post_response_useraddons($convoArr)
 {
-    $format = $convoArr['conversation']['format'];
+    $format = _strtolower($convoArr['conversation']['format']);
     $response = (isset($convoArr['send_to_user'])) ? $convoArr['send_to_user'] : $convoArr['conversation']['error_response'];
     $curTime = date('H:i:s');
     $response = str_replace('[serverTime]', $curTime, $response);

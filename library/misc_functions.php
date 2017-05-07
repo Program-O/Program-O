@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.5
  * FILE: misc_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-22-2013
@@ -28,14 +28,14 @@ function get_cURL($url, $options = array(), $params = array())
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        if (is_array($options) and count($options) > 0)
+        if (is_array($options) && count($options) > 0)
         {
             foreach ($options as $key => $value) {
                 curl_setopt($ch, $key, $value);
             }
         }
 
-        if (is_array($params) and count($params) > 0)
+        if (is_array($params) && count($params) > 0)
         {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
@@ -251,6 +251,9 @@ function pretty_print_r($var)
 
 function clean_inputs($options = null)
 {
+    $referer = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : false;
+    $host = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : false;
+    if (false === $host || false === $referer) die ('CSRF failure!');
     $formVars = array_merge($_GET, $_POST);
 
     switch (true)
