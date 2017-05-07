@@ -28,10 +28,11 @@ else
 
     /** @noinspection PhpIncludeInspection */
     require_once('config/global_config.php');
+    require_once(_LIB_PATH_ . '/misc_functions.php');
 
     /** @noinspection PhpUndefinedVariableInspection */
     $format = (isset($get_vars['format'])) ? $get_vars['format'] : $format;
-    $format = strtoupper($format);
+    $format = _strtoupper($format);
 
     switch ($format)
     {

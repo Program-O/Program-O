@@ -740,14 +740,6 @@ function parse_sentence_tag($convoArr, $element, $parentName, $level)
     $response_string = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $lc_response_string = _strtolower($response_string);
     $response = _strtoupper(_substr($lc_response_string, 0, 1)) . _substr($lc_response_string, 1);
-    /*
-        if (IS_MB_ENABLED)
-        {
-          $response_string = mb_strtolower($response_string);
-          $response = mb_strtoupper(mb_substr($response_string, 0, 1)) . mb_substr($response_string, 1);
-        }
-        else $response = ucfirst(strtolower($response_string));
-    */
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Response string was: $response_string. Transformed to $response.", 4);
 
     return $response;

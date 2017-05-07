@@ -1030,7 +1030,7 @@ function find_aiml_matches($convoArr)
 
     #$lookingfor = get_convo_var($convoArr,"aiml","lookingfor");
     $convoArr['aiml']['lookingfor'] = str_replace('  ', ' ', $convoArr['aiml']['lookingfor']);
-    $lookingfor = trim(strtoupper($convoArr['aiml']['lookingfor']));
+    $lookingfor = trim(_strtoupper($convoArr['aiml']['lookingfor']));
 
     //get the first and last words of the cleaned user input
     $lastInputWord = get_last_word($lookingfor);

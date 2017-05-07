@@ -319,8 +319,8 @@ function runSpellSearch()
     foreach ($result as $row)
     {
         $i++;
-        $misspell = strtoupper($row['missspelling']);
-        $correction = strtoupper($row['correction']);
+        $misspell = _strtoupper($row['missspelling']);
+        $correction = _strtoupper($row['correction']);
         $id = $row['id'];
         $group = round(($id / 50));
         $action = "<a href=\"index.php?page=spellcheck&amp;action=edit&amp;id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>

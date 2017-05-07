@@ -430,7 +430,7 @@ function run_srai(&$convoArr, $now_look_for_this)
     /* disabling srai_lookup    runDebug(__FILE__, __FUNCTION__, __LINE__,'Checking for entries in the srai_lookup table.', 2);
         runDebug(__FILE__, __FUNCTION__, __LINE__,"google bot_id = $bot_id", 2);
         $lookingfor = $convoArr['aiml']['lookingfor'];
-        //$now_look_for_this = strtoupper($now_look_for_this);
+        //$now_look_for_this = _strtoupper($now_look_for_this);
         $sql = "select `template_id` from `$dbn`.`srai_lookup` where `pattern` = '$now_look_for_this' and $sql_bot_select;";
         runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = $sql", 2);
         $row = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
