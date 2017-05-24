@@ -134,6 +134,7 @@ function jq_get_convo_id()
             $('#say').val('');
             $('#say').focus();
             $.get(URL, formdata, function (data) {
+                console.info('Data =', data);
                 var b = data.botsay;
                 if (b.indexOf('[img]') >= 0) {
                     b = showImg(b);

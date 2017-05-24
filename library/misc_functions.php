@@ -212,9 +212,10 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
 {
     global $dbConn, $dbn;
 
-    $default_aiml_pattern = get_convo_var($convoArr, 'conversation', 'default_aiml_pattern');
+    $default_aiml_pattern = _strtolower(get_convo_var($convoArr, 'conversation', 'default_aiml_pattern'));
+    $lcInput = _strtolower($input);
 
-    if ($input == $default_aiml_pattern) {
+    if ($lcInput == $default_aiml_pattern) {
         return;
     }
 

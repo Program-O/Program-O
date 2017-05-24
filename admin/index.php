@@ -366,6 +366,14 @@ function makeLeftLinks()
         ),
         array(
             '[linkClass]' => ' class="[curClass]"',
+            '[linkHref]' => ' href="index.php?page=unknown_inputs"',
+            '[linkOnclick]' => '',
+            '[linkAlt]' => ' alt="View Unknown Inputs for this bot"',
+            '[linkTitle]' => ' title="View Unknown Inputs"',
+            '[linkLabel]' => 'Unknown Inputs'
+        ),
+        array(
+            '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=teach"',
             '[linkOnclick]' => '',
             '[linkAlt]' => ' alt="Train your bot"',

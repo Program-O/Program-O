@@ -161,6 +161,10 @@ $allowed_pages = array(
         'action' => FILTER_SANITIZE_STRING,
         'page' => FILTER_SANITIZE_STRING,
     ),
+    'unknown_inputs' => array(
+        'id' => FILTER_SANITIZE_STRING,
+        'page' => FILTER_SANITIZE_STRING,
+    ),
     'wordcensor' => array(
         'word_to_censor' => FILTER_SANITIZE_STRING,
         'replace_with' => FILTER_SANITIZE_STRING,
