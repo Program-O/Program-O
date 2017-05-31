@@ -1248,7 +1248,7 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $patternText = $pattern->asXML();
     $pattern2store = (!empty($patternEvalXpath)) ?
         quickParseEval($convoArr, $patternText, 'pattern', 0) :
-        $patternText;
+        remove_text_tag($patternText, 'pattern');
     $params[':pattern'] = $pattern2store;
 
     // thatpattern
@@ -1257,7 +1257,7 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $thatpatternText = $thatpattern->asXML();
     $thatpattern2store = (!empty($thatpatternEvalXpath)) ?
         quickParseEval($convoArr, $thatpatternText, 'that', 0) :
-        $thatpatternText;
+        remove_text_tag($thatpatternText, 'that');
     $params[':thatpattern'] = $thatpattern2store;
 
     // template
@@ -1266,7 +1266,7 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $templateText = $curTemplate->asXML();
     $template2store = (!empty($templateEvalXpath)) ?
         quickParseEval($convoArr, $templateText, 'template', 0) :
-        $templateText;
+        remove_text_tag($templateText, 'template');
     $params[':template'] = $template2store;
 
     /** @noinspection SqlDialectInspection */
@@ -1288,6 +1288,18 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $sth->execute($params);
 
     return '';
+}
+
+/**
+ * Removes all text tags and the parent node
+ *
+ * @param $element
+ * @param $parentName
+ * @return mixed
+ */
+function remove_text_tag($element, $parentName)
+{
+    return str_replace(array('<text>', '</text>', "<$parentName>", "</$parentName>"), '', $element);
 }
 
 /**
