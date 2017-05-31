@@ -952,60 +952,6 @@ function get_client_property($convoArr, $name)
 }
 
 /**
- * function find_userdefined_aiml()
- * This function searches the user defined aiml patterns first
- * It will show an unmoderated response if the user_id's match
- * Or if you wish to approve a response to everyone set the user_id to -1
- * @param array $convoArr - conversation array
- * @return array allrows
- **/
-function find_userdefined_aiml($convoArr)
-{
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Looking for user defined responses', 4);
-    global $dbn, $dbConn;
-
-    $i = 0;
-    $allrows = array();
-    $bot_id = $convoArr['conversation']['bot_id'];
-    $c_id = $convoArr['conversation']['convo_id']; //$convoArr['conversation'][''];user_id
-    $lookingfor = $convoArr['aiml']['lookingfor'];
-
-    //build sql
-    /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `$dbn`.`aiml_userdefined` WHERE
-    `bot_id` = '$bot_id' AND
-    (`user_id` = '$c_id' OR `user_id` = '-1') AND
-    `pattern` = '$lookingfor'";
-
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined SQL: $sql", 3);
-
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-    $num_rows = count($result);
-
-    //if there is a result get it
-    if (($result) && ($num_rows > 0))
-    {
-        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Results returned: ' . print_r($result, true), 3);
-
-        //loop through results
-        foreach ($result as $row)
-        {
-            $allrows['aiml_id'] = $row['id'];
-            $allrows['score'] = 300 - $i; // since this is user defined AIML code, score it high, but each succesive entry gets one less score.
-            $allrows['pattern'] = $row['pattern'];
-            $allrows['thatpattern'] = (isset($row['thatpattern'])) ? $row['thatpattern'] : '';
-            $allrows['template'] = $row['template'];
-            $allrows['topic'] = ''; // User defined AIML has no topic.
-            $i++;
-        }
-    }
-
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined rows found: '$i'", 2);
-    //return rows
-    return $allrows;
-}
-
-/**
  * function get_aiml_to_parse()
  * This function controls all the process to match the aiml in the db to the user input
  * @param array $convoArr - conversation array
@@ -1023,7 +969,7 @@ function get_aiml_to_parse($convoArr)
     $raw_that = (isset ($convoArr['that'])) ? print_r($convoArr['that'], true) : '';
 
     //check if match in user defined aiml
-    $allrows = find_userdefined_aiml($convoArr);
+    $allrows = find_aiml_matches($convoArr, 'aiml_userdefined');
 
     //if there is no match in the user defined aiml table
     if ((!isset ($allrows)) || (count($allrows) <= 0))
@@ -1036,6 +982,10 @@ function get_aiml_to_parse($convoArr)
         $allrows = score_matches($convoArr, $allrows, $lookingfor);
         //get the highest scoring row
         $WinningCategory = get_highest_scoring_row($convoArr, $allrows, $lookingfor);
+    }
+    else
+    {
+        $WinningCategory = $allrows;
     }
 
     // If the selected category's pattern is the default pickup category, store the input in the unknown inputs table
@@ -1065,15 +1015,17 @@ function get_aiml_to_parse($convoArr)
  * function find_aiml_matches()
  * This function builds the sql to use to get a match from the tbl
  * @param array $convoArr - conversation array
- * @return array $convoArr
+ * @param string $table The database table name where the aiml is stored
+ * @return array $allrows
  **/
-function find_aiml_matches($convoArr)
+function find_aiml_matches($convoArr, $table = 'aiml')
 {
     global $dbConn, $dbn, $error_response;
     $user_id = $convoArr['conversation']['user_id'];
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finding the aiml matches from the DB', 4);
 
     $i = 0;
+    $allrows = array();
     //TODO convert to get_it
     $bot_id = $convoArr['conversation']['bot_id'];
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
@@ -1127,33 +1079,48 @@ function find_aiml_matches($convoArr)
         $topic_select = "AND `topic`='' OR `topic` like '%*%' OR `topic` like '%_%'";
     }
 
+    if ($table != 'aiml')
+    {
+        $c_id = $convoArr['conversation']['convo_id'];
+        $sql_bot_select .= "AND (`user_id` = '$c_id' OR `user_id` = '-1') ";
+        $topic_select = ''; // user defined AIML has no topics
+    }
+
+    if ($topic_select == '') {
+        $topic_select = ' ORDER BY';
+        $fieldlist = ', `template`';
+    }
+    else {
+        $topic_select .= ' ORDER BY `topic` DESC,';
+        $fieldlist = ', `topic`, `filename`';
+    }
+
     if ($word_count == 1)
     {
         //if there is one word do this
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic`, `filename` FROM `$dbn`.`aiml` WHERE
+        $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern` $fieldlist FROM `$dbn`.`$table` WHERE
   $sql_bot_select AND (
   `pattern` = '_' OR
   `pattern` = '*' OR
   `pattern` = '$lookingfor' OR
   `pattern` = '$default_aiml_pattern'
   $thatPatternSQL OR `thatpattern` LIKE '%*%' OR `thatpattern` LIKE '%_%'
-  ) $topic_select ORDER BY `topic` DESC, `pattern` ASC, `thatpattern` ASC,`id` ASC;";
+  ) $topic_select `pattern` ASC, `thatpattern` ASC,`id` ASC;";
     }
     else {
         //otherwise do this
         $sql_add = make_like_pattern($lookingfor, 'pattern');
 
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic`, `filename` FROM `$dbn`.`aiml` WHERE
+        $sql = "SELECT `id`, `bot_id`, `pattern`, `thatpattern` $fieldlist FROM `$dbn`.`$table` WHERE
   $sql_bot_select AND (
   `pattern` = '_' OR
   `pattern` = '*' OR
   `pattern` = '$lookingfor' OR $sql_add OR
   `pattern` = '$default_aiml_pattern'
   $thatPatternSQL OR `thatpattern` LIKE '%*%' OR `thatpattern` LIKE '%_%'
-  ) $topic_select
-  ORDER BY `topic` DESC, `pattern` ASC, `thatpattern` ASC,`id` ASC;";
+  ) $topic_select `pattern` ASC, `thatpattern` ASC,`id` ASC;";
     }
 
 
@@ -1167,12 +1134,27 @@ function find_aiml_matches($convoArr)
         runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ($tmp_rows) potential AIML matches", 2);
         //loop through results
 
+        $j = 0;
         foreach ($result as $row)
         {
-            $row['score'] = 0;
             $row['aiml_id'] = $row['id'];
-            $row['track_score'] = '';
-            $allrows[] = $row;
+
+            if ($table == 'aiml')
+            {
+                $row['score'] = 0;
+                $row['track_score'] = '';
+                $allrows[] = $row;
+            }
+            else
+            {
+                $allrows['score'] = 300 - $j;
+                $allrows['pattern'] = $row['pattern'];
+                $allrows['thatpattern'] = (isset($row['thatpattern'])) ? $row['thatpattern'] : '';
+                $allrows['template'] = $row['template'];
+                $allrows['topic'] = ''; // User defined AIML has no topic.
+                $j++;
+            }
+
             $mu = memory_get_usage(true);
 
             if ($mu >= MEM_TRIGGER)
@@ -1182,7 +1164,7 @@ function find_aiml_matches($convoArr)
             }
         }
     }
-    else
+    else if ($table == 'aiml')
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Error: FOUND NO AIML matches in DB", 1);
         addUnknownInput($convoArr, $lookingfor, $bot_id, $user_id);
