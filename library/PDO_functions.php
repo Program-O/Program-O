@@ -198,4 +198,29 @@ endMessage;
 }
 
 
+/**
+ * function db_parseSQL
+ *
+ * Converts a prepared statment query into a human readable version
+ *
+ * @param string $sql
+ * @param array $params
+ *
+ * @return string $out
+ */
+
+ function db_parseSQL ($sql, $params = null)
+{
+    $out = $sql;
+    if (is_array($params))
+    {
+        foreach ($params as $key => $value)
+        {
+            $value = (is_numeric($value)) ? $value : "'$value'";
+            $out = str_replace($key, $value, $out);
+        }
+    }
+    return $out;
+}
+
 
