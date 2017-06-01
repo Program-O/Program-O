@@ -717,10 +717,9 @@ function sort2DArray($opName, $thisArr, $sortByItem, $sortAsc = 1, $limit = 10)
  * @param array $convoArr - the conversation array
  * @param array $allrows - all the results
  * @param string $lookingfor - the user input
- * @param string $table The database table name where the aiml is stored
  * @return array bestResponseArr - best response and its parts (topic etc)
  **/
-function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor, $table = 'aiml')
+function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
 {
     global $bot_id, $which_response;
 
@@ -799,7 +798,7 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor, $table = 'a
 
     if (false !== $bestResponse)
     {
-        $bestResponse['template'] = get_winning_category($convoArr, $bestResponse['aiml_id'], $table);
+        $bestResponse['template'] = get_winning_category($convoArr, $bestResponse['aiml_id']);
     }
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Best Responses: " . print_r($tmpArr, true), 4);
@@ -829,16 +828,15 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor, $table = 'a
  *
  * @param       $convoArr
  * @param array $id - the id number of the AIML category to get
- * @param string $table The database table name where the aiml is stored
  * @return string $template - the value of the `template` field from the chosen DB entry
  */
-function get_winning_category(& $convoArr, $id, $table = 'aiml')
+function get_winning_category(& $convoArr, $id)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "And the winner is... $id!", 2);
     global $dbConn, $dbn, $error_response;
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `template` FROM `$dbn`.`$table` WHERE `id` = $id limit 1;";
+    $sql = "SELECT `template` FROM `$dbn`.`aiml` WHERE `id` = $id limit 1;";
     $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
 
     if ($row)
@@ -846,8 +844,20 @@ function get_winning_category(& $convoArr, $id, $table = 'aiml')
         $template = $row['template'];
         $convoArr['aiml']['template_id'] = $id;
     }
-    else {
-        $template = $error_response;
+    else
+    {
+        $sql = "SELECT `template` FROM `$dbn`.`aiml_userdefined` WHERE `id` = $id limit 1;";
+        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+
+        if ($row)
+        {
+            $template = $row['template'];
+            $convoArr['aiml']['template_id'] = $id;
+        }
+        else
+        {
+            $template = $error_response;
+        }
     }
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Returning the AIML template for id# $id. Value:\n'$template'", 4);
@@ -961,6 +971,7 @@ function get_client_property($convoArr, $name)
  **/
 function get_aiml_to_parse($convoArr)
 {
+    global $pattern;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running all functions to get the correct aiml from the DB", 4);
 
     $lookingfor = $convoArr['aiml']['lookingfor'];
@@ -969,25 +980,44 @@ function get_aiml_to_parse($convoArr)
     $aiml_pattern = $convoArr['conversation']['default_aiml_pattern'];
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
     $raw_that = (isset ($convoArr['that'])) ? print_r($convoArr['that'], true) : '';
-    $table = 'aiml_userdefined';
 
     //check if match in user defined aiml
     $allrows = find_aiml_matches($convoArr, 'aiml_userdefined');
-
-    //if there is no match in the user defined aiml table
-    if ((!isset ($allrows)) || (count($allrows) <= 0))
-    {
-        //look for a match in the normal aiml tbl
-        $allrows = find_aiml_matches($convoArr);
-        $table = 'aiml';
-    }
-
     //unset all irrelvant matches
     $allrows = unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor);
     //score the relevant matches
-    $allrows = score_matches($convoArr, $allrows, $lookingfor);
+    $allrows1 = score_matches($convoArr, $allrows, $lookingfor);
+
+    //look for a match in the normal aiml tbl
+    $allrows = find_aiml_matches($convoArr);
+    //unset all irrelvant matches
+    $allrows = unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor);
+    //score the relevant matches
+    $allrows2 = score_matches($convoArr, $allrows, $lookingfor);
+
+    $allrows = array_merge($allrows1, $allrows2);
+
+    // remove all RANDOM PICKUP LINES if there are more than one matches
+    if (count($allrows) > 1)
+    {
+        $random_pickup_line = $allrows[rand(0, count($allrows) - 1)];
+
+        foreach ($allrows as $key => &$allrow)
+        {
+            if ($allrow['pattern'] == $pattern)
+            {
+                unset($allrows[$key]);
+            }
+        }
+
+        if (empty($allrows))
+        {
+            $allrows[] = $random_pickup_line;
+        }
+    }
+
     //get the highest scoring row
-    $WinningCategory = get_highest_scoring_row($convoArr, $allrows, $lookingfor, $table);
+    $WinningCategory = get_highest_scoring_row($convoArr, $allrows, $lookingfor);
 
     // If the selected category's pattern is the default pickup category, store the input in the unknown inputs table
     if ($WinningCategory['pattern'] == $aiml_pattern && $lookingfor != $aiml_pattern)
