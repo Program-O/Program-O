@@ -90,49 +90,37 @@ function getUserList($bot_id, $showing)
     $linkTag = $template->getSection('NavLink');
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= ([repl_date]) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC";
+    $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= DATE(NOW()[repl_date]) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC";
     $showarray = array("last 20", "previous week", "previous 2 weeks", "previous month", "last 6 months", "this year", "previous year", "all years");
 
     switch ($showing)
     {
         case "today" :
-            $repl_date = strtotime(date("Y-m-d"));
+            $repl_date = '';
             break;
         case "previous week" :
-            //$repl_date = strtotime("-1 week");
-            $repl_date = 'NOW() - interval 1 week';
+            $repl_date = ' - interval 1 week';
             break;
         case "previous 2 weeks" :
-            $repl_date = strtotime("-2 week");
-            $repl_date = 'NOW() - interval 1 week';
+            $repl_date = ' - interval 2 week';
             break;
         case "previous month" :
-            $repl_date = strtotime("-1 month");
-            $repl_date = 'NOW() - interval 1 week';
+            $repl_date = ' - interval 1 month';
             break;
         case "previous 6 months" :
-            $repl_date = strtotime("-6 month");
-            $repl_date = 'NOW() - interval 1 week';
+            $repl_date = ' - interval 6 month';
             break;
         case "past 12 months" :
-            $repl_date = strtotime("-1 year");
-            $repl_date = 'NOW() - interval 1 week';
-            break;
-        case "all time" :
-            /** @noinspection SqlDialectInspection */
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC;";
-            //$repl_date = time();
-            $repl_date = false;
+            $repl_date = ' - interval 1 year';
             break;
         case 'last 20':
             $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC limit 20;";
-            //$repl_date = time();
             $repl_date = false;
             break;
+        case "all time" :
         default :
             /** @noinspection SqlDialectInspection */
             $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC;";
-            //$repl_date = time();
             $repl_date = false;
     }
 
