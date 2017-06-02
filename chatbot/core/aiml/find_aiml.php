@@ -983,17 +983,33 @@ function get_aiml_to_parse($convoArr)
 
     //check if match in user defined aiml
     $allrows = find_aiml_matches($convoArr, 'aiml_userdefined');
-    //unset all irrelvant matches
-    $allrows = unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor);
-    //score the relevant matches
-    $allrows1 = score_matches($convoArr, $allrows, $lookingfor);
+
+    if (!empty($allrows))
+    {
+        //unset all irrelvant matches
+        $allrows = unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor);
+        //score the relevant matches
+        $allrows1 = score_matches($convoArr, $allrows, $lookingfor);
+    }
+    else
+    {
+        $allrows1 = array();
+    }
 
     //look for a match in the normal aiml tbl
     $allrows = find_aiml_matches($convoArr);
-    //unset all irrelvant matches
-    $allrows = unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor);
-    //score the relevant matches
-    $allrows2 = score_matches($convoArr, $allrows, $lookingfor);
+
+    if (!empty($allrows))
+    {
+        //unset all irrelvant matches
+        $allrows = unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor);
+        //score the relevant matches
+        $allrows2 = score_matches($convoArr, $allrows, $lookingfor);
+    }
+    else
+    {
+        $allrows2 = array();
+    }
 
     $allrows = array_merge($allrows1, $allrows2);
 
