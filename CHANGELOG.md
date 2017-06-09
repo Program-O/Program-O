@@ -2,12 +2,31 @@
 
 ##CHANGELOG info:
 
-- Version: 2.6.5
+- Version: 2.6.6
 - Authors: Elizabeth Perreau and Dave Morton
-- Date: March 30th 2017
+- Date: June 9th 2017
 
 
 ##Version History:
+
+2.6.6   Improvements to the Database, Code Streamlining
+
+1.  It was discovered that the aiml_userdefined table had not been properly indexed, and that
+    the SQL queries that searched both that table and the main aiml table were still somewhat
+    broken, so some changes were made that have drastically improved performance.
+
+2.  More progress has been made with streamlining the code, and a number of unused functions
+    have been removed. the end result is an improvement in performance.
+
+Since changes were made to the structure of the database, a full, "CLEAN" install will be required
+for this new version. It is highly suggested that you download all of your AIML files, backup the
+botpersonality table, and any other data that you feel is important. **WARNING!** DO NOT backup
+either the aiml or the aiml_userdefined tables. The structures of these tables has been altered
+such that you won't be able to restore the data within them via SQL files without extensive
+modifications. If you only have a few rows of data in the aiml_userdefined table, you might wish
+to try modifying that SQL file, but I don't recommend it. the aiml table's SQL file would just
+be too much work to contemplate. We apologize for the inconvenience, but these changes are worth
+the effort involved. :)
 
 2.6.5   Major Bug Fix, New Option for Response Selection
 

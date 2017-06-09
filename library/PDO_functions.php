@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.6
  * FILE: library/PDO_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -117,7 +117,17 @@ function db_fetchAll($sql, $params = null, $file = 'unknown', $function = 'unkno
 
         /** @noinspection PhpUndefinedVariableInspection */
         $psError = print_r($sth->errorInfo(), true);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while extracting multiple rows of data from the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
+        $errSql = db_parseSQL($sql, $params);
+        $dParams = (!is_null($params)) ? print_r($params, true) : 'null';
+        $errMsg = <<<endMsg
+An error was generated while extracting multiple rows of data from the database in file $file at line $line, in the function $function.
+SQL: $errSql
+Params: $dParams
+PDO error: $pdoError
+PDO_statement error: $psError
+
+endMsg;
+        runDebug(__FILE__, __FUNCTION__, __LINE__, $errMsg, 0);
         return false;
     }
 }

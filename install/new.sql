@@ -1,16 +1,40 @@
+-- phpMyAdmin SQL Dump
+-- version 4.6.0
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Jun 04, 2017 at 07:53 AM
+-- Server version: 5.7.9-log
+-- PHP Version: 5.6.18
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `pgo266`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `aiml`
+--
 
 DROP TABLE IF EXISTS `aiml`;
 CREATE TABLE IF NOT EXISTS `aiml` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `bot_id` int(11) NOT NULL DEFAULT '1',
-  `aiml` text NOT NULL,
-  `pattern` varchar(255) NOT NULL,
-  `thatpattern` varchar(255) NOT NULL,
+  `pattern` varchar(256) NOT NULL,
+  `thatpattern` varchar(256) NOT NULL,
   `template` text NOT NULL,
-  `topic` varchar(255) NOT NULL,
-  `filename` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `topic` (`topic`)
+  `topic` varchar(256) NOT NULL,
+  `filename` varchar(256) NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -20,17 +44,15 @@ CREATE TABLE IF NOT EXISTS `aiml` (
 --
 
 DROP TABLE IF EXISTS `aiml_userdefined`;
-CREATE TABLE IF NOT EXISTS `aiml_userdefined` (
+CREATE TABLE `aiml_userdefined` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `aiml` text NOT NULL,
-  `pattern` text NOT NULL,
-  `thatpattern` text NOT NULL,
+  `pattern` varchar(256) NOT NULL,
+  `thatpattern` varchar(256) NOT NULL,
   `template` text NOT NULL,
-  `user_id` text NOT NULL,
+  `user_id` varchar(256) NOT NULL,
   `bot_id` int(11) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -39,14 +61,12 @@ CREATE TABLE IF NOT EXISTS `aiml_userdefined` (
 --
 
 DROP TABLE IF EXISTS `botpersonality`;
-CREATE TABLE IF NOT EXISTS `botpersonality` (
+CREATE TABLE `botpersonality` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `bot_id` tinyint(4) NOT NULL DEFAULT '0',
-  `name` varchar(255) NOT NULL DEFAULT '',
-  `value` text NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `botname` (`bot_id`,`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `name` varchar(256) NOT NULL DEFAULT '',
+  `value` text NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -55,10 +75,10 @@ CREATE TABLE IF NOT EXISTS `botpersonality` (
 --
 
 DROP TABLE IF EXISTS `bots`;
-CREATE TABLE IF NOT EXISTS `bots` (
+CREATE TABLE `bots` (
   `bot_id` int(11) NOT NULL AUTO_INCREMENT,
-  `bot_name` varchar(255) NOT NULL,
-  `bot_desc` varchar(255) NOT NULL,
+  `bot_name` varchar(256) NOT NULL,
+  `bot_desc` varchar(256) NOT NULL,
   `bot_active` int(11) NOT NULL DEFAULT '1',
   `bot_parent_id` int(11) NOT NULL DEFAULT '0',
   `format` varchar(10) NOT NULL DEFAULT 'html',
@@ -69,10 +89,9 @@ CREATE TABLE IF NOT EXISTS `bots` (
   `debugshow` int(11) NOT NULL DEFAULT '1',
   `debugmode` int(11) NOT NULL DEFAULT '1',
   `error_response` text NOT NULL,
-  `default_aiml_pattern` varchar(255) NOT NULL DEFAULT 'RANDOM PICKUP LINE',
-  `unknown_user` varchar(255) NOT NULL DEFAULT 'Seeker',
-  PRIMARY KEY (`bot_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `default_aiml_pattern` varchar(256) NOT NULL DEFAULT 'RANDOM PICKUP LINE',
+  `unknown_user` varchar(256) NOT NULL DEFAULT 'Seeker'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -81,14 +100,13 @@ CREATE TABLE IF NOT EXISTS `bots` (
 --
 
 DROP TABLE IF EXISTS `client_properties`;
-CREATE TABLE IF NOT EXISTS `client_properties` (
+CREATE TABLE `client_properties` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `bot_id` int(11) NOT NULL,
   `name` text NOT NULL,
-  `value` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `value` text NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -97,16 +115,15 @@ CREATE TABLE IF NOT EXISTS `client_properties` (
 --
 
 DROP TABLE IF EXISTS `conversation_log`;
-CREATE TABLE IF NOT EXISTS `conversation_log` (
+CREATE TABLE `conversation_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `input` text NOT NULL,
   `response` longtext NOT NULL,
   `user_id` int(11) NOT NULL,
   `convo_id` text NOT NULL,
   `bot_id` int(11) NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -115,15 +132,13 @@ CREATE TABLE IF NOT EXISTS `conversation_log` (
 --
 
 DROP TABLE IF EXISTS `myprogramo`;
-CREATE TABLE IF NOT EXISTS `myprogramo` (
+CREATE TABLE `myprogramo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_name` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
+  `user_name` varchar(256) NOT NULL,
+  `password` varchar(256) NOT NULL,
   `last_ip` varchar(25) NOT NULL,
-  `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `user_name` (`user_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -132,14 +147,17 @@ CREATE TABLE IF NOT EXISTS `myprogramo` (
 --
 
 DROP TABLE IF EXISTS `spellcheck`;
-CREATE TABLE IF NOT EXISTS `spellcheck` (
+CREATE TABLE `spellcheck` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `missspelling` varchar(100) NOT NULL,
-  `correction` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `correction` varchar(100) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT IGNORE INTO spellcheck (id, missspelling, correction) VALUES
+--
+-- Dumping data for table `spellcheck`
+--
+
+INSERT INTO `spellcheck` (`id`, `missspelling`, `correction`) VALUES
 (1, 'shakespear', 'shakespeare'),
 (2, 'shakesper', 'shakespeare'),
 (3, 'ws', 'william shakespeare'),
@@ -183,7 +201,7 @@ INSERT IGNORE INTO spellcheck (id, missspelling, correction) VALUES
 (44, 'qestion', 'question'),
 (45, 'elrond hubbard', 'l.ron hubbard'),
 (46, 'programm', 'program'),
-(47, 'c''mon', 'come on'),
+(47, 'c\'mon', 'come on'),
 (48, 'ye', 'yes'),
 (49, 'im', 'i am'),
 (50, 'fuckahh', 'fucker'),
@@ -195,14 +213,14 @@ INSERT IGNORE INTO spellcheck (id, missspelling, correction) VALUES
 (56, 'coz', 'because'),
 (57, 'cuz', 'because'),
 (58, 'isnt', 'is not'),
-(59, 'isn''t', 'is not'),
-(60, 'i''m', 'i am'),
+(59, 'isn\'t', 'is not'),
+(60, 'i\'m', 'i am'),
 (61, 'ima', 'i am a'),
 (62, 'chheese', 'cheese'),
 (63, 'watsup', 'what is up'),
 (64, 'let s', 'let us'),
 (65, 'he s', 'he is'),
-(66, 'she''s', 'she is'),
+(66, 'she\'s', 'she is'),
 (67, 'i ll', 'i will'),
 (68, 'they ll', 'they will'),
 (69, 'you re', 'you are'),
@@ -240,7 +258,23 @@ INSERT IGNORE INTO spellcheck (id, missspelling, correction) VALUES
 (107, 'ddddddddd', 'ddddddddd'),
 (108, 'fgfgfgfg', 'fgfgfgfg'),
 (110, 'program-o', 'programo'),
-(111, 'fav', 'favorite');
+(111, 'fav', 'favorite'),
+(112, 'FUCK', 'FUCK'),
+(113, 'U', 'YOU');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `srai_lookup`
+--
+
+DROP TABLE IF EXISTS `srai_lookup`;
+CREATE TABLE `srai_lookup` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `bot_id` int(11) NOT NULL,
+  `pattern` text NOT NULL,
+  `template_id` int(11) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls';
 
 -- --------------------------------------------------------
 
@@ -249,46 +283,13 @@ INSERT IGNORE INTO spellcheck (id, missspelling, correction) VALUES
 --
 
 DROP TABLE IF EXISTS `undefined_defaults`;
-CREATE TABLE IF NOT EXISTS `undefined_defaults` (
+CREATE TABLE `undefined_defaults` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `bot_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL DEFAULT '0',
   `pattern` text NOT NULL,
-  `template` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
-INSERT IGNORE INTO undefined_defaults (id, bot_id, pattern, template) VALUES
-(1, 1, 'your name', 'my friend'),
-(2, 1, 'your it', 'it'),
-(3, 1, 'your location', 'your town'),
-(4, 1, 'your does', 'it'),
-(5, 1, 'your genus', 'human'),
-(6, 1, 'your he', 'him'),
-(7, 1, 'your she', 'her'),
-(8, 1, 'your them', 'those'),
-(9, 1, 'your memory', 'that'),
-(10, 1, 'your they', 'those'),
-(11, 1, 'your gender', 'woman'),
-(12, 1, 'your has', 'that'),
-(13, 1, 'your we', 'you and me'),
-(14, 1, 'your x', 'x'),
-(15, 1, 'your personality', 'chatty'),
-(16, 1, 'etype', 'great and witty'),
-(17, 1, 'your top', 'om'),
-(18, 1, 'your second', 'om'),
-(19, 1, 'your third', 'om'),
-(20, 1, 'your fourth', 'om'),
-(21, 1, 'your fifth', 'om'),
-(22, 1, 'your sixth', 'om'),
-(23, 1, 'your seventh', 'om'),
-(24, 1, 'your last', 'om'),
-(25, 1, 'your want', 'it'),
-(26, 1, 'your is', 'it'),
-(27, 1, 'you dealerhand', 'The dealers hand'),
-(28, 1, 'your playerhand', 'Your hand'),
-(29, 1, 'your dealerace', 'dealer total'),
-(30, 1, 'your playerace', 'your total');
+  `template` varchar(256) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -297,14 +298,13 @@ INSERT IGNORE INTO undefined_defaults (id, bot_id, pattern, template) VALUES
 --
 
 DROP TABLE IF EXISTS `unknown_inputs`;
-CREATE TABLE IF NOT EXISTS `unknown_inputs` (
+CREATE TABLE `unknown_inputs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `bot_id` int(11) NOT NULL,
   `input` text NOT NULL,
   `user_id` int(11) NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -313,20 +313,20 @@ CREATE TABLE IF NOT EXISTS `unknown_inputs` (
 --
 
 DROP TABLE IF EXISTS `users`;
-CREATE TABLE IF NOT EXISTS `users` (
+CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_name` text NOT NULL,
-  `session_id` varchar(255) NOT NULL,
+  `session_id` varchar(256) NOT NULL,
   `bot_id` int(11) NOT NULL,
   `chatlines` int(11) NOT NULL,
   `ip` varchar(100) NOT NULL,
   `referer` text NOT NULL,
   `browser` text NOT NULL,
   `date_logged_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_update` timestamp NULL DEFAULT NULL,
-  `state` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `last_update` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `state` text NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 -- --------------------------------------------------------
 
 --
@@ -334,24 +334,186 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 DROP TABLE IF EXISTS `wordcensor`;
-CREATE TABLE IF NOT EXISTS `wordcensor` (
+CREATE TABLE `wordcensor` (
   `censor_id` int(11) NOT NULL AUTO_INCREMENT,
   `word_to_censor` varchar(50) NOT NULL,
   `replace_with` varchar(50) NOT NULL DEFAULT '****',
-  `bot_exclude` varchar(255) NOT NULL,
-  PRIMARY KEY (`censor_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `bot_exclude` varchar(256) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT IGNORE INTO wordcensor (censor_id, word_to_censor, replace_with, bot_exclude) VALUES
-(1, 'shit', 's***', ''),
+--
+-- Dumping data for table `wordcensor`
+--
+
+INSERT INTO `wordcensor` (`censor_id`, `word_to_censor`, `replace_with`, `bot_exclude`) VALUES
+(1, 'SHIT', 'S***', ''),
 (2, 'fuck', 'f***', '');
 
-DROP TABLE IF EXISTS `srai_lookup`;
-CREATE TABLE IF NOT EXISTS `srai_lookup` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `bot_id` int(11) NOT NULL,
-  `pattern` text NOT NULL,
-  `template_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `pattern` (`pattern`(64))
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1 ;
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `aiml`
+--
+ALTER TABLE `aiml`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`),
+  ADD KEY `topic` (`topic`),
+  ADD KEY `thatpattern` (`thatpattern`),
+  ADD KEY `pattern` (`pattern`),
+  ADD KEY `bot_id` (`bot_id`);
+
+--
+-- Indexes for table `aiml_userdefined`
+--
+ALTER TABLE `aiml_userdefined`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`),
+  ADD KEY `pattern` (`pattern`),
+  ADD KEY `thatpattern` (`thatpattern`),
+  ADD KEY `bot_id` (`bot_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `botpersonality`
+--
+ALTER TABLE `botpersonality`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `botname` (`bot_id`,`name`);
+
+--
+-- Indexes for table `bots`
+--
+ALTER TABLE `bots`
+  ADD PRIMARY KEY (`bot_id`);
+
+--
+-- Indexes for table `client_properties`
+--
+ALTER TABLE `client_properties`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `conversation_log`
+--
+ALTER TABLE `conversation_log`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `myprogramo`
+--
+ALTER TABLE `myprogramo`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_name` (`user_name`);
+
+--
+-- Indexes for table `spellcheck`
+--
+ALTER TABLE `spellcheck`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `srai_lookup`
+--
+ALTER TABLE `srai_lookup`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `template_id` (`template_id`),
+  ADD KEY `pattern` (`bot_id`,`pattern`(64));
+
+--
+-- Indexes for table `undefined_defaults`
+--
+ALTER TABLE `undefined_defaults`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `unknown_inputs`
+--
+ALTER TABLE `unknown_inputs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `wordcensor`
+--
+ALTER TABLE `wordcensor`
+  ADD PRIMARY KEY (`censor_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `aiml`
+--
+ALTER TABLE `aiml`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `aiml_userdefined`
+--
+ALTER TABLE `aiml_userdefined`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `botpersonality`
+--
+ALTER TABLE `botpersonality`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `bots`
+--
+ALTER TABLE `bots`
+  MODIFY `bot_id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `client_properties`
+--
+ALTER TABLE `client_properties`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `conversation_log`
+--
+ALTER TABLE `conversation_log`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `myprogramo`
+--
+ALTER TABLE `myprogramo`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `spellcheck`
+--
+ALTER TABLE `spellcheck`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `srai_lookup`
+--
+ALTER TABLE `srai_lookup`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `undefined_defaults`
+--
+ALTER TABLE `undefined_defaults`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `unknown_inputs`
+--
+ALTER TABLE `unknown_inputs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `wordcensor`
+--
+ALTER TABLE `wordcensor`
+  MODIFY `censor_id` int(11) NOT NULL AUTO_INCREMENT;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

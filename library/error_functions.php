@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.6
  * FILE: library/error_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -84,7 +84,7 @@ function runDebug($fileName, $functionName, $line, $info, $level = 0)
         }
 
         $current_timestamp = microtime(true);
-        $usecN = round($current_timestamp - floor($current_timestamp), 5);
+        $usecN = number_format($current_timestamp - floor($current_timestamp), 5);
 
         // Lose the decimal point and everything to the left of it
         $usecD = str_replace('0.', '', $usecN);
@@ -407,6 +407,6 @@ function wildcard_handler($errNum, $errMsg, $errFile, $errLine, $errContext)
     $saveContent .= print_r($errContext['aiml_pattern_wildcards'], true) . "\n---------------------------------------------------------------\n";
 
     save_file(_LOG_PATH_ . 'wildcard_errors.txt', $saveContent, true);
-    die('Check the logs!');
+    die(json_encode(array('error' => 'Check the logs!', 'botsay' => 'Houston, we have a problem!')));
 }
 

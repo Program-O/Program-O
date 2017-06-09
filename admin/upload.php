@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.6
  * FILE: upload.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -164,8 +164,8 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
 
     # Read new file into the XML parser
     /** @noinspection SqlDialectInspection */
-    $sql = 'INSERT INTO `aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`) VALUES
-    (NULL, :bot_id, :aiml, :pattern, :that, :template, :topic, :fileName);';
+    $sql = 'INSERT INTO `aiml` (`id`, `bot_id`, `pattern`, `thatpattern`, `template`, `topic`, `filename`) VALUES
+    (NULL, :bot_id, :pattern, :that, :template, :topic, :fileName);';
 
     # Validate the incoming document
     /*******************************************************/

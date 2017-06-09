@@ -14,6 +14,8 @@ admin/editAIML.htm
 config/global_config.php
 config/global_config*.php
 global_config.php
+!chatbot/debug/
+!chatbot/debug/profile.php
 chatbot/debug/*.txt
 library/reference/*.txt
 logs/*.log

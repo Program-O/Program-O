@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.6
  * FILE: srai_lookup.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-26-2014
@@ -65,6 +65,7 @@ $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
  */
 function fillLookup()
 {
+    set_time_limit(0);
     global $dbConn;
     // <srai>XEDUCATELANG <star index="1"/> XSPLIT <star index="2"/> XSPLIT <star index="3"/>XSPLIT</srai>
     $starArray = array('~<star[ ]?/>~i', '~<star index="\d+"[ ]?\/>~');
@@ -117,7 +118,7 @@ function fillLookup()
             $srai = substr($AIMLtemplate, $start, $len);
             $srai = preg_replace($starArray, '*', $srai); // replace references to <star> with the * wildcard
             $srai = _strtoupper($srai);
-            $srai = trim(str_replace('<SRAI>', '', $srai));
+            $srai = trim(str_ireplace('<SRAI>', '', $srai));
 
             if (strstr($srai, '<') == false)
             {

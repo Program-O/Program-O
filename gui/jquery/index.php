@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.6
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -129,6 +129,8 @@ function jq_get_convo_id()
         // put all your jQuery goodness in here.
         $('#talkform').submit(function (e) {
             e.preventDefault();
+            $('#urlwarning').empty();
+            $('.botsay').html('(Thinking...)');
             var user = $('#say').val();
             $('.usersay').text(user);
             var formdata = $("#talkform").serialize();
