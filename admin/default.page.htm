@@ -380,6 +380,10 @@ between the start and end section tags are the only parts of the template that a
 <div id="pTitle">[bot_name]'s Conversation Logs</div>
 <p>[convo]</p>
 <!-- Section ConversationLogs1 End -->
+<!-- Section UnknownInputs Start -->
+<div id="pTitle">[bot_name]'s Unknown Inputs</div>
+<p>[unk_inp]</p>
+<!-- Section UnknownInputs End -->
 <!-- Section SpellcheckForm Start -->
 <fieldset style="margin-bottom: 3px;">
     <form id="spellCheck" action="index.php?page=spellcheck&amp;group=[group]" method="post">
@@ -922,7 +926,7 @@ between the start and end section tags are the only parts of the template that a
     }
 
     input.search-input-text {
-        margin-left: -14px;
+        /*margin-left: -14px;*/
     }
 
     #showHelp {
@@ -1083,7 +1087,7 @@ between the start and end section tags are the only parts of the template that a
     }
 
     input.search-input-text {
-        margin-left: -14px;
+        /*margin-left: -14px;*/
     }
 
     #showHelp {

@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.6
+ * Version: 2.6.4
  * FILE: unknown_inputs.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-12-2014
@@ -22,7 +22,7 @@ $show = (isset ($get_vars['showing'])) ? $get_vars['showing'] : "last 20";
 
 //showThis($show)
 $show_this = showThis($show);
-$convo = (isset ($get_vars['id'])) ? getuserConvo($get_vars['id'], $show) : "Please select a conversation from the side bar.";
+$convo = (isset ($get_vars['id'])) ? get_unknown_inputs($get_vars['id'], $show) : "Please select a user from the side bar.";
 $user_list = (isset ($get_vars['id'])) ? getUserList($get_vars['id'], $show) : getUserList($_SESSION['poadmin']['bot_id'], $show);
 $bot_name = (isset ($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'unknown';
 $upperScripts = $template->getSection('UpperScripts');
@@ -42,7 +42,7 @@ $noRightNav = '';
 
 $headerTitle = 'Actions:';
 $pageTitle = 'My-Program O - Chat Logs';
-$mainContent = $template->getSection('ConversationLogs1');
+$mainContent = $template->getSection('UnknownInputs');
 $mainTitle = 'Chat Logs';
 
 $rightNav = str_replace('[rightNavLinks]', $show_this . $user_list, $rightNav);
@@ -50,7 +50,7 @@ $rightNav = str_replace('[navHeader]', $navHeader, $rightNav);
 $rightNav = str_replace('[headerTitle]', 'Log Actions:', $rightNav);
 
 $mainContent = str_replace('[show_this]', '', $mainContent);
-$mainContent = str_replace('[convo]', $convo, $mainContent);
+$mainContent = str_replace('[unk_inp]', $convo, $mainContent);
 $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
 
 /**
@@ -90,7 +90,7 @@ function getUserList($bot_id, $showing)
     $linkTag = $template->getSection('NavLink');
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= ([repl_date]) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC";
+    $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `unknown_inputs`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= ([repl_date]) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC";
     $showarray = array("last 20", "previous week", "previous 2 weeks", "previous month", "last 6 months", "this year", "previous year", "all years");
 
     switch ($showing)
@@ -120,18 +120,18 @@ function getUserList($bot_id, $showing)
             break;
         case "all time" :
             /** @noinspection SqlDialectInspection */
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC;";
+            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `unknown_inputs`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC;";
             //$repl_date = time();
             $repl_date = false;
             break;
         case 'last 20':
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC limit 20;";
+            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `unknown_inputs`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC limit 20;";
             //$repl_date = time();
             $repl_date = false;
             break;
         default :
             /** @noinspection SqlDialectInspection */
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC;";
+            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `unknown_inputs`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC;";
             //$repl_date = time();
             $repl_date = false;
     }
@@ -163,9 +163,9 @@ function getUserList($bot_id, $showing)
 
             $tmpLink = str_replace('[linkClass]', " class=\"$linkClass\"", $linkTag);
             $tmpLink = str_replace('[linkOnclick]', '', $tmpLink);
-            $tmpLink = str_replace('[linkHref]', "href=\"index.php?page=logs&showing=$showing&id=$user_id#$user_id\" name=\"$user_id\"", $tmpLink);
+            $tmpLink = str_replace('[linkHref]', "href=\"index.php?page=unknown_inputs&showing=$showing&id=$user_id#$user_id\" name=\"$user_id\"", $tmpLink);
             $tmpLink = str_replace('[linkTitle]', " title=\"Show entries for user $userName\"", $tmpLink);
-            $tmpLink = str_replace('[linkLabel]', "USER:$userName($TOT)", $tmpLink);
+            $tmpLink = str_replace('[linkLabel]', "USER: $userName ($TOT)", $tmpLink);
 
             $anchor = "            <a name=\"$user_id\" />\n";
             $anchor = '';
@@ -204,7 +204,7 @@ function showThis($showing = "last 20")
     }
 
     $form = <<<endForm
-        <form name="showthis" method="post" action="index.php?page=logs">
+        <form name="showthis" method="post" action="index.php?page=unknown_inputs">
           <select name="showing" id="showing">
 $options
           </select>
@@ -216,12 +216,12 @@ endForm;
 }
 
 /**
- * Function getuserConvo
+ * Function get_unknown_inputs
  *
  * @param $id
  * @return mixed|string
  */
-function getuserConvo($id)
+function get_unknown_inputs($id)
 {
     global $dbConn;
 
@@ -237,33 +237,18 @@ function getuserConvo($id)
     //get undefined defaults from the db
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT *  FROM `unknown_inputs` WHERE `bot_id` = :bot_id AND `user_id` = :user_id ORDER BY `id` ASC";
-    $list = "<hr><br/><h4>$title conversations for user: $id</h4>";
+    $list = "<hr><br/><h4>Unknown inputs for user: $user_name (ID #$id)</h4>";
     $list .= "<div class=\"convolist\">";
 
     $params = array(
         ':bot_id' => $bot_id,
-        ':user_id' => $user_id,
+        ':user_id' => $id,
     );
     $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {
-        $thisdate = date("Y-m-d", strtotime($row['timestamp']));
-
-        if ($thisdate != $lasttimestamp)
-        {
-            if ($i > 1 && $showing == 'last 20') {
-                break;
-            }
-
-            $date = date("Y-m-d");
-            $list .= "<hr><br/><h4>Conversation#$i $thisdate</h4>";
-            $i++;
-        }
-
-        $list .= "<br><span style=\"color:DARKBLUE;\">$user_name: " . $row['input'] . "</span>";
-        $list .= "<br><span style=\"color:GREEN;\">$bot_name: " . $row['response'] . "</span>";
-        $lasttimestamp = $thisdate;
+        $list .= "<br><span style=\"color:DARKBLUE;\">{$row['input']}</span>";
     }
 
     $list .= "</div>";
@@ -271,4 +256,3 @@ function getuserConvo($id)
 
     return $list;
 }
-

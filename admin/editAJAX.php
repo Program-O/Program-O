@@ -262,10 +262,10 @@ function insertAIML()
     else
     {
         /** @noinspection SqlDialectInspection */
-        $sth = $dbConn->prepare("INSERT INTO `aiml` (`id`,`bot_id`, `aiml`, `pattern`,`thatpattern`,`template`,`topic`,`filename`) " . "VALUES (NULL, ?, ?, ?, ?, ?, ?,'admin_added.aiml')");
+        $sth = $dbConn->prepare("INSERT INTO `aiml` (`id`,`bot_id`, `pattern`,`thatpattern`,`template`,`topic`,`filename`) " . "VALUES (NULL, ?, ?, ?, ?, ?,'admin_added.aiml')");
 
         try {
-            $sth->execute(array($bot_id, $aiml, $pattern, $thatpattern, $aimltemplate, $topic));
+            $sth->execute(array($bot_id, $pattern, $thatpattern, $aimltemplate, $topic));
         }
         catch (Exception $e)
         {

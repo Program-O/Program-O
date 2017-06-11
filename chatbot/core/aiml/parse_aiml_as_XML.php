@@ -1236,8 +1236,6 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $sql = '';
     $failure = false;
     $category = $element->category;
-    $aiml = $category->asXML();
-    $params[':aiml'] = $aiml;
     $catXpath = $element->xpath('//eval');
 
     // pull out the necessary info to save to the DB
@@ -1270,11 +1268,10 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $params[':template'] = $template2store;
 
     /** @noinspection SqlDialectInspection */
-    $sql = 'INSERT INTO `aiml_userdefined` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `user_id`)
+    $sql = 'INSERT INTO `aiml_userdefined` (`id`, `bot_id`, `pattern`, `thatpattern`, `template`, `user_id`)
       VALUES (
         NULL,
         :bot_id,
-        :aiml,
         :pattern,
         :thatpattern,
         :template,

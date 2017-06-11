@@ -125,6 +125,7 @@
         <xs:element ref="aiml:star"/>
         <xs:element ref="aiml:person"/>
         <xs:element ref="aiml:person2"/>
+        <xs:element ref="aiml:ol"/>
         <xs:element ref="aiml:ul"/>
         <xs:element ref="aiml:p"/>
         <xs:element ref="aiml:bot"/>
@@ -625,7 +626,7 @@
       </xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:NMTOKEN">
-      <xs:pattern value="_(blank|self|parent|top)|[A-Za-z]\c*"/>
+      <xs:pattern value="_(new|blank|self|parent|top)|[A-Za-z]\c*"/>
     </xs:restriction>
   </xs:simpleType>  
   
@@ -657,7 +658,6 @@
       <xs:group ref="aiml:misc.inline"/>
     </xs:choice>
   </xs:group>
-
 
   <xs:element name="script">
     <xs:complexType mixed="true">
@@ -698,6 +698,13 @@
   </xs:element>
   
   <xs:element name="ul">
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded">
+        <xs:element ref="aiml:li"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ol">
     <xs:complexType>
       <xs:sequence maxOccurs="unbounded">
         <xs:element ref="aiml:li"/>

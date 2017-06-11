@@ -173,16 +173,17 @@ function db_write($sql, $params = null, $multi = false, $file = 'unknown', $func
     }
     catch (Exception $e)
     {
-        $paramsText = print_r($params, true);
+        $errParams = ($multi) ? $row : $params;
+        $paramsText = print_r($errParams, true);
         $pdoError = print_r($dbConn->errorInfo(), true);
 
         /** @noinspection PhpUndefinedVariableInspection */
         $psError = print_r($sth->errorInfo(), true);
         $eMessage = $e->getMessage();
-
+        $errSQL = db_parseSQL($sql, $errParams);
         $errorMessage = <<<endMessage
 Bad SQL encountered in file $file, line #$line. SQL:
-$sql
+$errSQL
 PDO Error:
 $pdoError
 PDOStatement Error:
@@ -192,12 +193,16 @@ $eMessage;
 Parameters:
 $paramsText
 endMessage;
+$file = str_replace(DIRECTORY_SEPARATOR, '/', $file);
+$fpArray = explode('/', $file);
+$fn = array_pop($fpArray);
+$errLogPath = "{$fn}.{$function}.error.log";
 
-        error_log($errorMessage, 3, _LOG_PATH_ . 'db_write.txt');
+        error_log($errorMessage, 3, _LOG_PATH_ . $errLogPath);
 
         $rdMessage = <<<endMessage
 An error was generated while writing to the database in file $file at line $line, in the function $function.
-SQL: $sql
+SQL: $errSQL
 PDO error: $pdoError
 PDOStatement error: $psError
 endMessage;

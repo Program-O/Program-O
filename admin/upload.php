@@ -245,7 +245,6 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
 
                         $params[] = array(
                             ':bot_id' => $bot_id,
-                            ':aiml' => $aiml_add,
                             ':pattern' => $pattern,
                             ':that' => $that,
                             ':template' => $template,
@@ -279,7 +278,6 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
                     $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
                     $params[] = array(
                         ':bot_id' => $bot_id,
-                        ':aiml' => $aiml_add,
                         ':pattern' => $pattern,
                         ':that' => $that,
                         ':template' => $template,
