@@ -76,6 +76,7 @@ $template = new Template("$thisPath/default.page.htm");
 $githubVersion = getCurrentVersion($branch);
 
 $upToDate = '<strong>Program O</strong><br>Current Local Version: ' . VERSION . '<br>Current GitHub Version: ' . $githubVersion . '<br>Current Branch: ' . $branches[$branch];
+//$upToDate .= "<br>Database Name: {$dbn}";
 
 $newVersionAvailable = "Program O $githubVersion is now available for the "
     . $branches[$branch] . ' branch. <a href="https://github.com/Program-O/Program-O/archive/' . $branch

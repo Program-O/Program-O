@@ -216,6 +216,7 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
     $lcInput = _strtolower($input);
 
     if ($lcInput == $default_aiml_pattern) {
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "The input ({$lcInput}) matched the default pattern, so no entry was made.", 2);
         return;
     }
 
@@ -228,6 +229,7 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
         ':user_id' => $user_id,
     );
     $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
+    if ($numRows > 0) runDebug(__FILE__, __FUNCTION__, __LINE__, 'Entry successfully added!', 2);
 }
 
 /**

@@ -46,7 +46,7 @@ function unset_all_bad_pattern_matches(&$convoArr, $allrows, $lookingfor)
     //the end......
     $tmp_count = number_format(count($allrows));
     runDebug(__FILE__, __FUNCTION__, __LINE__, "NEW FUNC Searching through {$tmp_count} rows to unset bad matches", 4);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'The allrows array:' . print_r($allrows, true), 4);
+    //runDebug(__FILE__, __FUNCTION__, __LINE__, 'The allrows array:' . print_r($allrows, true), 4);
 
     // If no pattern was found, exit early
     if (($allrows[0]['pattern'] == "no results") && (count($allrows) == 1))
@@ -940,10 +940,11 @@ function get_aiml_to_parse($convoArr)
     $allrows = score_matches($convoArr, $allrows, $lookingfor);
     //get the highest scoring row
     $WinningCategory = get_highest_scoring_row($convoArr, $allrows, $lookingfor);
+    $curPattern = _strtolower($WinningCategory['pattern']);
 
     // If the selected category's pattern is the default pickup category, store the input in the unknown inputs table
     //if (_strtolower($WinningCategory['pattern']) == $default_aiml_pattern && _strtolower($lookingfor) != $default_aiml_pattern)
-    if (_strtolower($WinningCategory['pattern']) == $default_aiml_pattern) // && _strtolower($lookingfor) != $default_aiml_pattern)
+    if (($curPattern == $default_aiml_pattern || $curPattern == '*') && _strtolower($lookingfor) != $default_aiml_pattern) //
     {
         $bot_id = $convoArr['conversation']['bot_id'];
         $user_id = $convoArr['conversation']['user_id'];

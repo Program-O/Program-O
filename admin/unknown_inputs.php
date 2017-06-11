@@ -165,7 +165,7 @@ function getUserList($bot_id, $showing)
             $tmpLink = str_replace('[linkOnclick]', '', $tmpLink);
             $tmpLink = str_replace('[linkHref]', "href=\"index.php?page=unknown_inputs&showing=$showing&id=$user_id#$user_id\" name=\"$user_id\"", $tmpLink);
             $tmpLink = str_replace('[linkTitle]', " title=\"Show entries for user $userName\"", $tmpLink);
-            $tmpLink = str_replace('[linkLabel]', "USER: $userName ($TOT)", $tmpLink);
+            $tmpLink = str_replace('[linkLabel]', "USER ID #{$user_id}:$userName($TOT)", $tmpLink);
 
             $anchor = "            <a name=\"$user_id\" />\n";
             $anchor = '';
