@@ -125,7 +125,7 @@ function getUserList($bot_id, $showing)
             $repl_date = false;
             break;
         case 'last 20':
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC limit 20;";
+            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = '$bot_id' GROUP BY `user_id` ORDER BY ABS(`user_id`) DESC limit 20;";
             //$repl_date = time();
             $repl_date = false;
             break;
