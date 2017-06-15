@@ -6,7 +6,7 @@ Readme info:
 - Date: May 17th 2014
 
 **NEWS:** Version 2.6.6 is out, with improved performance! Please see the
-[CHANGELOG](changelog.md) for details!
+[CHANGELOG](CHANGELOG.md) for details!
 
 ## Introduction
 
