@@ -31,6 +31,10 @@ if (isset($post_vars))
     {
         $msg .= 'No files were selected for download. Please select at least one file.';
     }
+    elseif (!class_exists('ZipArchive')) {
+        // check if ZipArchive is enabled on the server
+        $msg .= 'Please enable ZipArchive on your server to download the zip file.';
+    }
     else
     {
         $fileNames = $post_vars['filenames'];
