@@ -349,7 +349,12 @@ function processUpload()
             #file_put_contents(_LOG_PATH_ . 'upload.type.txt', 'Type = ' . $_FILES['aimlfile']['type']);
             if ($_FILES['aimlfile']['type'] == 'application/zip' or $_FILES['aimlfile']['type'] == 'application/x-zip-compressed')
             {
-                return processZip($file);
+                //check for ZipArchive class
+                if (!class_exists('ZipArchive')) {   
+                    $msg .= 'The PHP ZipArchive class is not available on this server, so Zip files cannot be uploaded. However, individual AIML files can be uploaded. We apologise for the inconvenience.';
+                }else{
+                    return processZip($file);
+                }
             }
             else
             {
