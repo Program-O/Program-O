@@ -11,6 +11,9 @@
 
 $content = '';
 $status = '';
+//assume ZipArchive is enabled by default
+$ZIPenabled = true; 
+$downloadLinks = ''; //download links for single files
 
 /** @noinspection PhpUndefinedVariableInspection */
 $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
@@ -31,34 +34,55 @@ if (isset($post_vars))
     {
         $msg .= 'No files were selected for download. Please select at least one file.';
     }
-    elseif (!class_exists('ZipArchive')) {
-        // check if ZipArchive is enabled on the server
-        $msg .= 'Please enable ZipArchive on your server to download the zip file.';
-    }
     else
     {
-        $fileNames = $post_vars['filenames'];
-        // clear out old zip file if it exists, to prepare for the new one.
-        if(file_exists(_DOWNLOAD_PATH_ . $zipFilename)) unlink(_DOWNLOAD_PATH_ . $zipFilename);
-        $zip = new ZipArchive();
-        $success = $zip->open(_DOWNLOAD_PATH_ . $zipFilename, ZipArchive::CREATE);
+        // check if ZipArchive is enabled on the server
+        if (!class_exists('ZipArchive')) {   
+            $msg .= 'The PHP ZipArchive class is not available on this server, so Zip files cannot be downloaded. However, individual AIML files can be downloaded. We apologise for the inconvenience. <br/><br/>';
+            //assume ZipArchive is not enabled
+            $ZIPenabled = false;
+        }
 
-        if ($success === true)
+        $fileNames = $post_vars['filenames'];
+
+        if($ZIPenabled)
         {
+            // clear out old zip file if it exists, to prepare for the new one.
+            if(file_exists(_DOWNLOAD_PATH_ . $zipFilename)) unlink(_DOWNLOAD_PATH_ . $zipFilename);
+            $zip = new ZipArchive();
+            $success = $zip->open(_DOWNLOAD_PATH_ . $zipFilename, ZipArchive::CREATE);
+
+            if ($success === true)
+            {
+                foreach ($fileNames as $filename)
+                {
+                    $curZipContent = ($type == 'SQL') ? getSQLByFileName($filename) : getAIMLByFileName($filename);
+                    $filename = ($type == 'SQL') ? str_replace('.aiml', '.sql', $filename) : $filename;
+                    $zip->addFromString($filename, $curZipContent);
+                }
+
+                $zip->close();
+                $_SESSION['send_file'] = $zipFilename;
+                $_SESSION['referer'] = $referer;
+
+                header("Refresh: 5; url=file.php");
+
+                $msg .= "The file $zipFilename is being processed. If the download doesn't start within a few seconds, please click <a href=\"file.php\">here</a>.\n";
+            }
+        }else{
+            //lets download all selected files individually
             foreach ($fileNames as $filename)
             {
-                $curZipContent = ($type == 'SQL') ? getSQLByFileName($filename) : getAIMLByFileName($filename);
+                $curFileContent = ($type == 'SQL') ? getSQLByFileName($filename) : getAIMLByFileName($filename);
                 $filename = ($type == 'SQL') ? str_replace('.aiml', '.sql', $filename) : $filename;
-                $zip->addFromString($filename, $curZipContent);
+                //delete old aiml files
+                if(file_exists(_DOWNLOAD_PATH_ . $filename)) unlink(_DOWNLOAD_PATH_ . $filename);
+                file_put_contents(_DOWNLOAD_PATH_ . $filename, $curFileContent);
+                //get the download links
+                $downloadLinks .= "<a href=\"file.php?singlefile=" . $filename . "\">". $filename . "</a> . ";
             }
 
-            $zip->close();
-            $_SESSION['send_file'] = $zipFilename;
-            $_SESSION['referer'] = $referer;
-
-            header("Refresh: 5; url=file.php");
-
-            $msg .= "The file $zipFilename is being processed. If the download doesn't start within a few seconds, please click <a href=\"file.php\">here</a>.\n";
+            $msg .= "The file(s) <b>\"" . implode(', ', $fileNames) . "\"</b> have been processed. Click on the filename(s) at the bottom of the page to download individually.";
         }
     }
 }
@@ -81,6 +105,8 @@ $headerTitle = 'Actions:';
 $pageTitle = "My-Program O - Download AIML files";
 
 $mainContent = $content;
+//add individual links of AIML files if available
+$mainContent .= "<p><center>" . $downloadLinks . "</center></p>"; 
 $mainTitle = "Download AIML files for the bot named  $bot_name [helpLink]";
 $mainContent = str_replace('[showHelp]', $showHelp, $mainContent);
 $mainContent = str_replace('[status]', $status, $mainContent);

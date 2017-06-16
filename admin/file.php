@@ -35,6 +35,21 @@ $pageBack = $_SESSION['referer'];
 $req_file = $_SESSION['send_file'];
 $fileserver_path = dirname(__FILE__) . '/downloads';
 
+// For single AIML files
+if(isset($_GET['singlefile']))
+{
+    $filename = trim($_GET['singlefile']);
+    
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/force-download');
+    header('Content-Length: ' . filesize("$fileserver_path/$filename"));
+    header('Content-Disposition: attachment; filename=' . $filename);
+
+    print file_get_contents("$fileserver_path/$filename");
+
+    exit;
+}
+
 if (strstr($pageBack, 'google') !== false)
 {
     header("Location: $pageBack");
