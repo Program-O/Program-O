@@ -19,6 +19,9 @@ if (!file_exists('../config/global_config.php'))
 /** @noinspection PhpIncludeInspection */
 require_once('../config/global_config.php');
 
+/** @noinspection PhpIncludeInspection */
+require_once(_LIB_PATH_ . 'misc_functions.php');
+
 // set up error logging and display
 ini_set('log_errors', true);
 ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
@@ -34,6 +37,28 @@ session_start();
 $pageBack = $_SESSION['referer'];
 $req_file = $_SESSION['send_file'];
 $fileserver_path = dirname(__FILE__) . '/downloads';
+
+$allowed_get_vars = array(
+    // Make sure to put at least something in here, like this:
+    'singlefile' => FILTER_DEFAULT,
+    //see http://php.net/manual/en/filter.constants.php for available options
+);
+$get_vars = clean_inputs($allowed_get_vars);
+
+// For single AIML files
+if(isset($get_vars['singlefile']))
+{
+    $filename = $get_vars['singlefile'];
+    
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/force-download');
+    header('Content-Length: ' . filesize("$fileserver_path/$filename"));
+    header('Content-Disposition: attachment; filename=' . $filename);
+
+    print file_get_contents("$fileserver_path/$filename");
+
+    exit;
+}
 
 if (strstr($pageBack, 'google') !== false)
 {
