@@ -17,6 +17,10 @@ chdir(_ADMIN_PATH_);
 
 $validationStatus = '';
 $msg = '';
+
+$ZIPenabled = class_exists('ZipArchive');
+// $ZIPenabled = false; // debugging and testing - comment out when complete
+
 libxml_use_internal_errors(true);
 $_SESSION['failCount'] = 0;
 
@@ -350,9 +354,12 @@ function processUpload()
             if ($_FILES['aimlfile']['type'] == 'application/zip' or $_FILES['aimlfile']['type'] == 'application/x-zip-compressed')
             {
                 //check for ZipArchive class
-                if (!class_exists('ZipArchive')) {   
+                if (!$ZIPenabled)
+                {
                     $msg .= 'The PHP ZipArchive class is not available on this server, so Zip files cannot be uploaded. However, individual AIML files can be uploaded. We apologise for the inconvenience.';
-                }else{
+                }
+                else
+                {
                     return processZip($file);
                 }
             }

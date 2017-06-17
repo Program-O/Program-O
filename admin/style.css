@@ -282,7 +282,7 @@ span.eightyPercent textarea.wide {
 
 .errMsg {
     min-width: 250px;
-    max-width: 45%;
+    max-width: 500px !important;
     min-height: 32px;
     max-height: 95%;
     width: auto;
@@ -300,6 +300,12 @@ span.eightyPercent textarea.wide {
     right: 15px;
     z-index: 99;
     border-radius: 12px;
+}
+
+.dlLink {
+    margin-right: 1.5em;
+    float: left;
+    display: inline-block;
 }
 
 .errMsgContent {

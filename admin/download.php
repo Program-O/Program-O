@@ -12,8 +12,10 @@
 $content = '';
 $status = '';
 //assume ZipArchive is enabled by default
-$ZIPenabled = true; 
+$ZIPenabled = class_exists('ZipArchive');
+// $ZIPenabled = false; // debugging and testing - comment out when complete
 $downloadLinks = ''; //download links for single files
+$dlLinkTemplate = '<a class="dlLink" href="file.php?singlefile=[filename]" target="_blank">[filename]</a>';
 
 /** @noinspection PhpUndefinedVariableInspection */
 $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
@@ -36,13 +38,6 @@ if (isset($post_vars))
     }
     else
     {
-        // check if ZipArchive is enabled on the server
-        if (!class_exists('ZipArchive')) {   
-            $msg .= 'The PHP ZipArchive class is not available on this server, so Zip files cannot be downloaded. However, individual AIML files can be downloaded. We apologise for the inconvenience. <br/><br/>';
-            //assume ZipArchive is not enabled
-            $ZIPenabled = false;
-        }
-
         $fileNames = $post_vars['filenames'];
 
         if($ZIPenabled)
@@ -71,6 +66,7 @@ if (isset($post_vars))
             }
         }else{
             //lets download all selected files individually
+            $msg .= 'The PHP ZipArchive class is not available on this server, so Zip files cannot be downloaded. However, individual AIML files can be downloaded. We apologise for the inconvenience. <br/><br/>';
             foreach ($fileNames as $filename)
             {
                 $curFileContent = ($type == 'SQL') ? getSQLByFileName($filename) : getAIMLByFileName($filename);
@@ -79,10 +75,11 @@ if (isset($post_vars))
                 if(file_exists(_DOWNLOAD_PATH_ . $filename)) unlink(_DOWNLOAD_PATH_ . $filename);
                 file_put_contents(_DOWNLOAD_PATH_ . $filename, $curFileContent);
                 //get the download links
-                $downloadLinks .= "<a href=\"file.php?singlefile=" . $filename . "\">". $filename . "</a> . ";
+                $downloadLinks .= str_replace('[filename]', trim($filename), $dlLinkTemplate);
             }
-
-            $msg .= "The file(s) <b>\"" . implode(', ', $fileNames) . "\"</b> have been processed. Click on the filename(s) at the bottom of the page to download individually.";
+            $fnList = implode(', ', $fileNames);
+            $fnList = replace_last(', ', ' and ', $fnList);
+            $msg .= "The file(s) <b> $fnList </b> have been processed. Click on the filename(s) below to download individually.<br/>$downloadLinks";
         }
     }
 }
@@ -106,7 +103,7 @@ $pageTitle = "My-Program O - Download AIML files";
 
 $mainContent = $content;
 //add individual links of AIML files if available
-$mainContent .= "<p><center>" . $downloadLinks . "</center></p>"; 
+//$mainContent .= "<p><center>" . $downloadLinks . "</center></p>";
 $mainTitle = "Download AIML files for the bot named  $bot_name [helpLink]";
 $mainContent = str_replace('[showHelp]', $showHelp, $mainContent);
 $mainContent = str_replace('[status]', $status, $mainContent);
@@ -340,5 +337,16 @@ function renderMain()
     $content = str_replace('[file_checkboxes]', $file_checkboxes, $content);
 
     return $content;
+}
+
+function replace_last($search, $replace, $subject)
+{
+    $pos = strripos($subject, $search);
+    if(false !== $pos)
+    {
+        $sLen = strlen($search);
+        $subject = substr_replace($subject, $replace, $pos, $sLen);
+    }
+    return $subject;
 }
 
