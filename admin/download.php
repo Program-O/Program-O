@@ -102,8 +102,6 @@ $headerTitle = 'Actions:';
 $pageTitle = "My-Program O - Download AIML files";
 
 $mainContent = $content;
-//add individual links of AIML files if available
-//$mainContent .= "<p><center>" . $downloadLinks . "</center></p>";
 $mainTitle = "Download AIML files for the bot named  $bot_name [helpLink]";
 $mainContent = str_replace('[showHelp]', $showHelp, $mainContent);
 $mainContent = str_replace('[status]', $status, $mainContent);

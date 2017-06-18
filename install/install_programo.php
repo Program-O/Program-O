@@ -36,6 +36,7 @@ $dirArray = glob(_ADMIN_PATH_ . "ses_*",GLOB_ONLYDIR);
 $session_dir = (empty($dirArray)) ? create_session_dirname() : basename($dirArray[0]);
 $dupPS = "$path_separator$path_separator";
 $session_dir = str_replace($dupPS, $path_separator, $session_dir); // remove double path separators when necessary
+$session_dir = rtrim($session_dir, PATH_SEPARATOR);
 $full_session_path = _ADMIN_PATH_ . $session_dir;
 
 define('_SESSION_PATH_', $full_session_path);
@@ -236,10 +237,45 @@ function Save()
 
     if (empty ($row))
     {
+        $sqlArray = file('new.sql', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($sqlArray as $sql)
+        {
+            $sth = $dbConn->prepare($sql);
+            try {
+                $insertSuccess = $sth->execute();
+                if (!$insertSuccess){
+                    throw new Exception('SQL operation failed!');
+                }
+            }
+            catch(Exception $e)
+            {
+                $words = explode(' ', $sql);
+                switch (strtoupper($words[0]))
+                {
+                    case 'DROP':
+                        $table = trim($words[4], '`;');
+                        break;
+                    case 'CREATE':
+                        $table = trim($words[5], '`');
+                        break;
+                    case 'ALTER':
+                        $table = trim($words[2], '`');
+                        break;
+                    default:
+                        $words[0] .= ' data into';
+                        $table = trim($words[2], '`');
+                }
+                $errMsg = "Error while attempting to {$words[0]} the {$table} table. SQL:\n$sql\n-----------------------------------------------\n";
+                error_log($errMsg, 3, _LOG_PATH_ . 'install.sql.error.log');
+            }
+
+        }
+/*
         $sql = file_get_contents('new.sql');
         $sth = $dbConn->prepare($sql);
         $sth->execute();
         $affectedRows = $sth->rowCount();
+*/
     }
     else
     {
