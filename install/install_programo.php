@@ -270,12 +270,6 @@ function Save()
             }
 
         }
-/*
-        $sql = file_get_contents('new.sql');
-        $sth = $dbConn->prepare($sql);
-        $sth->execute();
-        $affectedRows = $sth->rowCount();
-*/
     }
     else
     {
