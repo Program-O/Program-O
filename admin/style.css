@@ -1311,3 +1311,14 @@ input.search-input-text, textarea.newCat {
     text-indent: 0;
     padding: 3px 5px !important;
 }
+.ext_true {
+    font-weight: bold;
+    color: #080;
+}
+.ext_false {
+    font-weight: bold;
+    color: #800;
+}
+.odd {background-color: #FFE;}
+.even {background-color: #EEF;}
+.checklist {max-width: 50%;}

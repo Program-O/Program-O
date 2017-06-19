@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.6.6
+* Version: 2.6.7
 * FILE: install_programo.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: FEB 01 2016
@@ -15,22 +15,40 @@ session_start();
 $thisFile = __FILE__;
 # Test for PHP version 5+
 $fatalError = '';
-$myPHP_Version = (float) phpversion();
+$myPHP_Version = phpversion();
 $pdoSupport = (class_exists('PDO'));
-
-if ($myPHP_Version < 5.3) {
-    $fatalError .= "<p class='red bold'>We're sorry, but Program O requires PHP version 5.3.0 or greater to function. Please ask your hosting provider to upgrade.</p>";
-}
-
-if (!$pdoSupport) {
-    $fatalError .= "<p class='red bold'>Support for PHP Data Objects (PDO) was not detected! This is required for Program O to function. Please ask your hosting provider to upgrade.</p>";
-}
+$version_compare = version_compare(phpversion(), '5.3.0');
 
 $no_unicode_message = (function_exists('mb_check_encoding')) ? '' : "<p class=\"red bold\">Warning! Unicode Support is not available on this server. Non-English languages will not display properly. Please ask your hosting provider to enable the PHP mbstring extension to correct this.</p>\n";
+$no_zip_message = (extension_loaded('zip')) ? '' : "<p class=\"red bold\">Warning! The 'zip' PHP extension is not available. As a result, the upload and download of AIML files will be limited to individual files. Please ask your hosting provider to enable the PHP zip extension to correct this.</p>\n";
 $errorMessage = (!empty ($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';
 $errorMessage .= $no_unicode_message;
+$errorMessage .= $no_zip_message;
+
+$pdoExtensionsArray = array(
+    'PDO_CUBRID',
+    'PDO_DBLIB',
+    'PDO_FIREBIRD',
+    'PDO_IBM',
+    'PDO_INFORMIX',
+    'PDO_MYSQL',
+    'PDO_SQLSRV',
+    'PDO_OCI',
+    'PDO_ODBC',
+    'PDO_PGSQL',
+    'PDO_SQLITE',
+    'PDO_4D'
+);
+$recommendedExtensionsArray = array(
+    'curl',
+    'zip',
+    'mbstring',
+);
+
 
 require_once ('install_config.php');
+require_once (_LIB_PATH_ . 'template.class.php');
+$template = new Template('install.tpl.htm');
 
 $dirArray = glob(_ADMIN_PATH_ . "ses_*",GLOB_ONLYDIR);
 $session_dir = (empty($dirArray)) ? create_session_dirname() : basename($dirArray[0]);
@@ -52,8 +70,8 @@ foreach ($writeCheckArray as $key => $folder)
         if (false === $test)
         {
             $dirExists = (file_exists($folder)) ? 'true' : 'false';
-            $perms = fileperms($folder);
-            $txtPerms = showPerms($perms);
+            $permissions = fileperms($folder);
+            $txtPerms = showPerms($permissions);
             error_log("The folder $folder is not writable. Folder exists?: $dirExists. Permissions: $txtPerms." . PHP_EOL, 3, '../logs/install.log');
 
             $errFlag = true;
@@ -96,8 +114,7 @@ ini_set("error_log", _LOG_PATH_ . "install.error.log");
 
 $myHost = $_SERVER['SERVER_NAME'];
 chdir(dirname(realpath(__FILE__)));
-$page_template = file_get_contents('install.tpl.htm');
-$page = (isset ($_REQUEST['page'])) ? $_REQUEST['page'] : 1;
+$page = (isset ($_REQUEST['page'])) ? $_REQUEST['page'] : 0;
 $action = (isset ($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 $message = '';
 
@@ -105,16 +122,71 @@ if (!empty ($action)) {
     $message = $action($page);
 }
 
-$pageTemplate = 'Container';
-$pageNotes = ucwords("Page $page Notes");
-$content = getSection('Header', $page_template, false);
-$content .= getSection($pageTemplate, $page_template);
-$content .= getSection('Footer', $page_template);
-$content .= getSection("jQuery$page", $page_template);
-$notes = getSection($pageNotes, $page_template);
-$submitButton = getSection('SubmitButton', $page_template);
-$main = ($page == 1) ? getSection('InstallForm', $page_template) : $message;
-$main = (empty($fatalError)) ? $main : $fatalError;
+$content = $template->getSection('Header');
+$content .= $template->getSection('Container');
+$content .= $template->getSection('Footer');
+$content .= $template->getSection("jQuery$page");
+$notes = $template->getSection(ucwords("Page $page Notes"));
+$submitButton = $template->getSection('SubmitButton');
+switch ((int) $page)
+{
+    case 0:
+        $pvpf = ($version_compare >= 0) ? 'true' : 'false';
+        $main = $template->getSection('Checklist');
+        $liTemplate = '                            <li class="[oe]">PDO [ext] extension enabled?: <span class="ext_[tf] floatRight">[tf]</span></li>' . PHP_EOL;
+        $pdo_reqs = '';
+        $oddEven = 0;
+        $reqs_met = false;
+        foreach ($pdoExtensionsArray as $ext)
+        {
+            $oeClass = ($oddEven % 2 === 0) ? 'odd' : 'even';
+            $tf = (extension_loaded($ext)) ? 'true' : 'false';
+            $curLi = $liTemplate;
+            $curLi = str_replace('[ext]', $ext, $curLi);
+            $curLi = str_replace('[oe]', $oeClass, $curLi);
+            $curLi = str_replace('[tf]', $tf, $curLi);
+            if ($tf === 'false') $curLi = '';
+            $pdo_reqs .= $curLi;
+            if ($tf !== 'false') $oddEven++;
+        }
+        if (empty($pdo_reqs))
+        {
+            $pdo_reqs = $liTemplate;
+            $pdo_reqs = str_replace('[oe]', 'even', $pdo_reqs);
+            $pdo_reqs = str_replace('[ext]', '', $pdo_reqs);
+            $pdo_reqs = str_replace('[tf]', 'false', $pdo_reqs);
+        }
+        else $reqs_met = true;
+        $main = str_replace('[pdo_reqs]', rtrim($pdo_reqs), $main);
+        $rec_exts = '';
+        $oddEven = 0;
+        foreach ($recommendedExtensionsArray as $ext)
+        {
+            $oeClass = ($oddEven % 2 === 0) ? 'odd' : 'even';
+            $curLi = $liTemplate;
+            $tf = (extension_loaded($ext)) ? 'true' : 'false';
+            $curLi = str_replace('[ext]', $ext, $curLi);
+            $curLi = str_replace('[oe]', $oeClass, $curLi);
+            $curLi = str_replace('[tf]', $tf, $curLi);
+            $rec_exts .= $curLi;
+            $oddEven++;
+        }
+        $main = str_replace('[rec_exts]', rtrim($rec_exts), $main);
+        $main = str_replace('[pgo_version]', VERSION, $main);
+        $main = str_replace('[pvpf]', $pvpf, $main);
+        $main = str_replace('[version]', $myPHP_Version, $main);
+        $continueLink = ($reqs_met) ? $template->getSection('ContinueLink') : '<div class="center">Please correct the items above in order to continue.</div>' . PHP_EOL;
+        $main .= $continueLink;
+        $main = str_replace('[blank]', '', $main);
+        $main .= $no_unicode_message;
+        $main .= $no_zip_message;
+        //file_put_contents(_LOG_PATH_ . 'newMain.txt', $main);
+        break;
+    case 1:
+        $main = $template->getSection('InstallForm');
+        break;
+    default: $main = $message;
+}
 $tmpSearchArray = array();
 
 $content = str_replace('[mainPanel]', $main, $content);
@@ -129,43 +201,9 @@ $content = str_replace("\r\n", "\n", $content);
 $content = str_replace("\n\n", "\n", $content);
 $content = str_replace('[admin_url]', _ADMIN_URL_, $content);
 $content .= '</body></html>';
+$content = str_replace('[mainPanel]', $main, $content);
 
 exit($content);
-
-/**
- * Function getSection
- *
- * @param $sectionName
- * @param $page_template
- * @param bool $notFoundReturn
- * @return string
- */
-function getSection($sectionName, $page_template, $notFoundReturn = true)
-{
-    $sectionStart = str_replace('[section]', $sectionName, SECTION_START);
-    $sectionStartLen = strlen($sectionStart);
-    $sectionEnd = str_replace('[section]', $sectionName, SECTION_END);
-    $startPos = strpos($page_template, $sectionStart, 0);
-
-    if ($startPos === false)
-    {
-      if ($notFoundReturn) {
-          return '';
-      }
-      else {
-          $startPos = 0;
-      }
-    }
-    else {
-        $startPos += $sectionStartLen;
-    }
-
-    $endPos = strpos($page_template, $sectionEnd, $startPos) - 1;
-    $sectionLen = $endPos - $startPos;
-    $out = substr($page_template, $startPos, $sectionLen);
-
-    return trim($out);
-}
 
 /**
  * Function Save
@@ -174,7 +212,7 @@ function getSection($sectionName, $page_template, $notFoundReturn = true)
  */
 function Save()
 {
-    global $page_template, $error_response, $session_dir;
+    global $template, $error_response, $session_dir;
 
     $tagSearch = array();
     $varReplace = array();
@@ -379,10 +417,10 @@ function Save()
     }
 
     if (empty($errorMessage)) {
-        $out = getSection('InstallComplete', $page_template);
+        $out = $template->getSection('InstallComplete');
     }
     else {
-        $out = getSection('InstallError', $page_template);
+        $out = $template->getSection('InstallError');
     }
 
     return $out . $errorMessage;
@@ -403,9 +441,9 @@ function create_session_dirname()
     return $out;
 }
 
-function showPerms ($perms)
+function showPerms ($permissions)
 {
-    switch ($perms & 0xF000) {
+    switch ($permissions & 0xF000) {
         case 0xC000: // socket
             $info = 's';
             break;
@@ -432,25 +470,25 @@ function showPerms ($perms)
     }
 
 // Owner
-    $info .= (($perms & 0x0100) ? 'r' : '-');
-    $info .= (($perms & 0x0080) ? 'w' : '-');
-    $info .= (($perms & 0x0040) ?
-                (($perms & 0x0800) ? 's' : 'x' ) :
-                (($perms & 0x0800) ? 'S' : '-'));
+    $info .= (($permissions & 0x0100) ? 'r' : '-');
+    $info .= (($permissions & 0x0080) ? 'w' : '-');
+    $info .= (($permissions & 0x0040) ?
+                (($permissions & 0x0800) ? 's' : 'x' ) :
+                (($permissions & 0x0800) ? 'S' : '-'));
 
 // Group
-    $info .= (($perms & 0x0020) ? 'r' : '-');
-    $info .= (($perms & 0x0010) ? 'w' : '-');
-    $info .= (($perms & 0x0008) ?
-                (($perms & 0x0400) ? 's' : 'x' ) :
-                (($perms & 0x0400) ? 'S' : '-'));
+    $info .= (($permissions & 0x0020) ? 'r' : '-');
+    $info .= (($permissions & 0x0010) ? 'w' : '-');
+    $info .= (($permissions & 0x0008) ?
+                (($permissions & 0x0400) ? 's' : 'x' ) :
+                (($permissions & 0x0400) ? 'S' : '-'));
 
 // World
-    $info .= (($perms & 0x0004) ? 'r' : '-');
-    $info .= (($perms & 0x0002) ? 'w' : '-');
-    $info .= (($perms & 0x0001) ?
-                (($perms & 0x0200) ? 't' : 'x' ) :
-                (($perms & 0x0200) ? 'T' : '-'));
+    $info .= (($permissions & 0x0004) ? 'r' : '-');
+    $info .= (($permissions & 0x0002) ? 'w' : '-');
+    $info .= (($permissions & 0x0001) ?
+                (($permissions & 0x0200) ? 't' : 'x' ) :
+                (($permissions & 0x0200) ? 'T' : '-'));
 
     return $info;
 }

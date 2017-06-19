@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.6
+ * Version: 2.6.7
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -563,8 +563,10 @@ function login()
     $pw_hash = md5($post_vars['pw']);
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `myprogramo` WHERE user_name = :user_name AND password = :pw_hash";
+    $sql = 'SELECT * FROM `myprogramo` WHERE user_name = :user_name AND password = :pw_hash;';
     $params = array(':user_name' => $user_name, ':pw_hash' => $pw_hash);
+    $debugSQL = db_parseSQL($sql, $params);
+    save_file(_LOG_PATH_ . 'login.sql.txt', $debugSQL);
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (!empty($row))

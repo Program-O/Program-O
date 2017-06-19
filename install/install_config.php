@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.6
+ * Version: 2.6.7
  * FILE: config/install_config.php
  * AUTHOR: Elizabeth Perreau and Dave Morton AND DAVE MORTON
  * DATE: FEB 01 2016
@@ -17,17 +17,19 @@
 
 $path_separator = DIRECTORY_SEPARATOR;
 $parentFolder = dirname(__DIR__) . $path_separator;
-define('_BASE_PATH_', $parentFolder);
 
 //------------------------------------------------------------------------
 // Define paths for include files
 //------------------------------------------------------------------------
 
-define('_ADMIN_PATH_',   _BASE_PATH_  . "admin$path_separator");
-define('_CONF_PATH_',    _BASE_PATH_  . "config$path_separator");
-define('_LOG_PATH_',     _BASE_PATH_  . "logs$path_separator");
-define('_DEBUG_PATH_',   _BASE_PATH_  . "chatbot{$path_separator}debug$path_separator");
-define('_INSTALL_PATH_', _BASE_PATH_  . "install$path_separator");
+define('_BASE_PATH_', $parentFolder);
+define('_ADMIN_PATH_',    _BASE_PATH_  . "admin{$path_separator}");
+define('_LIB_PATH_',      _BASE_PATH_  . "library{$path_separator}");
+define('_CONF_PATH_',     _BASE_PATH_  . "config{$path_separator}");
+define('_LOG_PATH_',      _BASE_PATH_  . "logs{$path_separator}");
+define('_DEBUG_PATH_',    _BASE_PATH_  . "chatbot{$path_separator}debug{$path_separator}");
+define('_INSTALL_PATH_',  _BASE_PATH_  . "install{$path_separator}");
+define('VERSION', trim(file_get_contents(_BASE_PATH_ . 'version.txt'))); # Program O version
 
 //------------------------------------------------------------------------
 // Define URL paths

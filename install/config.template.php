@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.6
+ * Version: 2.6.7
  * FILE: config/global_config.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -245,7 +245,7 @@ $debugArr = array();
 //------------------------------------------------------------------------
 // Configure mbstring parameters
 //------------------------------------------------------------------------
-define('IS_MB_ENABLED', (function_exists('mb_internal_encoding')) ? true : false);
+define('IS_MB_ENABLED', (extension_loaded('mbstring')) ? true : false);
 
 if (IS_MB_ENABLED)
 {
