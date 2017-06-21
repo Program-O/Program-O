@@ -3,7 +3,7 @@
 Readme info:
 - Version: 2.6.7
 - Authors: Elizabeth Perreau and Dave Morton
-- Date: May 17th 2014
+- Date: June 19th 2014
 
 **NEWS:** Version 2.6.7 is out, with a new feature! Please see the
 [CHANGELOG](CHANGELOG.md) for details!

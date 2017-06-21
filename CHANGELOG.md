@@ -4,20 +4,21 @@
 
 - Version: 2.6.7
 - Authors: Elizabeth Perreau and Dave Morton
-- Date: June 9th 2017
+- Date: June 19th 2017
 
 
 ##Version History:
 
 2.6.7   Requirements Checklist
 
-    A new "Requirements Checklist" has been added to the install script to show botmasters
-    what PHP extensions are required and their current state, as well as whether the current
-    PHP version is sufficient to run Program O. It also shows the current state of the three
-    "recommended" PHP extensions (cURL, zip and mbstring). The install script will provide
-    warnings about the missing recommended extensions, but will allow the user to continue
-    if all other requirements are met. If the PHP version is too low, or there are no suitable
-    PDO extensions available, then an error message is displayed, and installation is halted.
+A new "Requirements Checklist" has been added to the install script to show botmasters what PHP
+extensions are required and their current state, as well as whether the current PHP version is
+sufficient to run Program O. It also shows the current state of the three "recommended" PHP
+extensions (cURL, zip and mbstring). The install script will provide warnings about the missing
+recommended extensions, but will allow the user to continue if all other requirements are met.
+If the PHP version is too low, or there are no suitable PDO extensions available, then an error
+message is displayed, and installation is halted.
+
 
 2.6.6   Improvements to the Database, Code Streamlining
 
