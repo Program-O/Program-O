@@ -828,7 +828,7 @@ function find_userdefined_aiml($convoArr)
     $bot_id = $convoArr['conversation']['bot_id'];
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
     $c_id = $convoArr['conversation']['convo_id']; //$convoArr['conversation'][''];user_id
-    $lookingfor = $convoArr['aiml']['lookingfor'];
+    $lookingfor = _strtoupper($convoArr['aiml']['lookingfor']);
     $params = array(
         ':user_id' => $c_id,
         ':bot_id'  => $bot_id

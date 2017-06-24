@@ -231,8 +231,18 @@ endMessage;
     {
         foreach ($params as $key => $value)
         {
-            $value = (is_numeric($value)) ? $value : "'$value'";
-            $out = str_replace($key, $value, $out);
+            if (is_numeric($key)) // deal with unnamed placeholders (?)
+            {
+                $limit = 1;
+                $search = '/\?/';
+                $value = (is_numeric($value)) ? $value : "'$value'"; // if $value is a string, encase it in quotes
+                $out = preg_replace($search, $value, $out, $limit);
+            }
+            else // handle named parameters
+            {
+                $value = (is_numeric($value)) ? $value : "'$value'"; // if $value is a string, encase it in quotes
+                $out = str_replace($key, $value, $out);
+            }
         }
     }
     return $out;

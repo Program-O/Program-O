@@ -356,7 +356,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Change or edit the current bot"',
             '[linkLabel]' => 'Current Bot: ([curBot])'
         ),
-        array(
+        array( # Bot Personality
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=botpersonality"',
             '[linkOnclick]' => '',
@@ -364,7 +364,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Edit your bot\'s personality"',
             '[linkLabel]' => 'Bot Personality'
         ),
-        array(
+        array( # Conversation Logs
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=logs"',
             '[linkOnclick]' => '',
@@ -372,7 +372,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="View the Conversation Logs"',
             '[linkLabel]' => 'Conversation Logs'
         ),
-        array(
+        array( # Unknown inputs
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=unknown_inputs"',
             '[linkOnclick]' => '',
@@ -380,7 +380,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="View Unknown Inputs"',
             '[linkLabel]' => 'Unknown Inputs'
         ),
-        array(
+        array( # Teach
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=teach"',
             '[linkOnclick]' => '',
@@ -388,7 +388,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Train your bot"',
             '[linkLabel]' => 'Teach'
         ),
-        array(
+        array( # Upload AIML
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=upload"',
             '[linkOnclick]' => '',
@@ -396,7 +396,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Upload AIML files"',
             '[linkLabel]' => 'Upload AIML'
         ),
-        array(
+        array( # Download AIML
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=download"',
             '[linkOnclick]' => '',
@@ -404,7 +404,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Download AIML files"',
             '[linkLabel]' => 'Download AIML'
         ),
-        array(
+        array( # Clear AIML categories
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=clear"',
             '[linkOnclick]' => '',
@@ -412,7 +412,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Clear AIML Categories"',
             '[linkLabel]' => 'Clear AIML Categories'
         ),
-        array(
+        array( # Spellcheck
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=spellcheck"',
             '[linkOnclick]' => '',
@@ -420,7 +420,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Edit the SpellCheck entries"',
             '[linkLabel]' => 'Spell Check'
         ),
-        array(
+        array( # Word censor
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=wordcensor"',
             '[linkOnclick]' => '',
@@ -428,13 +428,21 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Edit the Word Censor entries"',
             '[linkLabel]' => 'Word Censor'
         ),
-        array(
+        array( # Edit AIML
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=editAiml"',
             '[linkOnclick]' => '',
             '[linkAlt]' => ' alt="Search and edit specific AIML categories"',
             '[linkTitle]' => ' title="Search and edit specific AIML categories"',
             '[linkLabel]' => 'Search/Edit AIML'
+        ),
+        array( # Edit user-defined AIML ( from <learn> tag)
+            '[linkClass]' => ' class="[curClass]"',
+            '[linkHref]' => ' href="index.php?page=editUDAiml"',
+            '[linkOnclick]' => '',
+            '[linkAlt]' => ' alt="Search and edit specific AIML categories"',
+            '[linkTitle]' => ' title="Search and edit specific AIML categories"',
+            '[linkLabel]' => 'User Defined AIML'
         ),
         array(
             '[linkClass]' => ' class="[curClass]"',

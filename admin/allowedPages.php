@@ -101,6 +101,9 @@ $allowed_pages = array(
     'editAiml' => array(
         'page' => FILTER_SANITIZE_STRING,
     ),
+    'editUDAiml' => array(
+        'page' => FILTER_SANITIZE_STRING,
+    ),
     'logs' => array(
         'showing' => FILTER_SANITIZE_STRING,
         'id' => FILTER_SANITIZE_STRING,

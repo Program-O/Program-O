@@ -1175,6 +1175,43 @@ between the start and end section tags are the only parts of the template that a
         <script type="text/javascript" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="scripts/editAiml.js"></script>
 <!-- Section EditAimlPage End -->
+<!-- Section EditUDAimlPage Start -->
+[blank]
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"/>
+        <style type="text/css">
+            .dataTables_wrapper .dataTables_paginate .paginate_button {padding: 0;}
+            table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {padding: 1px 2px 1px 0;}
+            input.search-input-text {margin-left: -14px;}
+            #showHelp {top: -15px;}
+        </style>
+        <div class="holder">
+            <table id="AIML_UD" class="datatable-table">
+                <thead>
+                    <tr>
+                        <th id="th_id" title="Sort by Table ID">ID</th>
+                        <th id="th_user_id" title="Sort by User ID">User ID</th>
+                        <th id="th_pattern" title="Sort by User input">Pattern</th>
+                        <th id="th_that" title="Sort by Previous bot response">thatpattern</th>
+                        <th id="th_template" title="Sort by Bot response">Template</th>
+                    </tr>
+                </thead>
+                <thead>
+                    <tr class="filters">
+                        <th id="f_id"><input type="text" data-column="0" class="search-input-text" placeholder="ID Search"></th>
+                        <th id="f_user_id"><input type="text" data-column="4" class="search-input-text" placeholder="user ID Search"></th>
+                        <th id="f_pattern"><input type="text" data-column="1" class="search-input-text" placeholder="pattern Search"></th>
+                        <th id="f_thatpattern"><input type="text" data-column="2" class="search-input-text" placeholder="thatpattern Search"></th>
+                        <th id="f_template"><input type="text" data-column="3" class="search-input-text" placeholder="template Search"></th>
+                    </tr>
+                </thead>
+            </table>
+            <div class='search-msg'></div>
+        </div>
+[showHelp]
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script type="text/javascript" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="scripts/editUDAiml.js"></script>
+<!-- Section EditUDAimlPage End -->
 <!-- Section DataTable Start -->
 [blank]
         <div class="editaiml-table">

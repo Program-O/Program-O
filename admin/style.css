@@ -1302,3 +1302,7 @@ input.search-input-text, textarea.newCat {
     overflow: auto;
 }
 .taj {text-align: justify;}
+#AIML_UD td {
+    border-bottom: 0.5px solid gray;
+    border-right: 0.5px solid gray;
+}
