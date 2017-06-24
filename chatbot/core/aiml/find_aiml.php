@@ -186,6 +186,7 @@ function unset_all_bad_pattern_matches(&$convoArr, $allrows, $lookingfor)
         $relevantRows[$i]['pattern'] = "no results";
         $relevantRows[$i]['thatpattern'] = '';
         $relevantRows[$i]['topic'] = '';
+        $relevantRows[$i]['template'] = $error_response;
         $relevantRows[$i]['score'] = 0;
     }
 

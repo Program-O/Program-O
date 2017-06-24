@@ -102,25 +102,46 @@ function intisaliseUser($convoArr)
         $sb = $_SERVER['HTTP_USER_AGENT'];
     }
     /** @noinspection SqlDialectInspection */
-    $sql = "INSERT INTO `$dbn`.`users` (`id`, `user_name`, `session_id`, `bot_id`, `chatlines` ,`ip` ,`referer` ,`browser` ,`date_logged_on` ,`last_update`, `state`)
-  VALUES ( NULL , '$username', '$convo_id', $bot_id, '0', '$sa', '$sr', '$sb', CURRENT_TIMESTAMP , CURRENT_TIMESTAMP, '')";
+    $sql = <<<endSQL
+INSERT INTO `users`
+        (`id`, `user_name`, `session_id`, `bot_id`, `chatlines`,`ip`, `referer`, `browser`, `date_logged_on` , `last_update`    , `state`)
+ VALUES (NULL, :username  , :convo_id   , :bot_id , '0'        , :sa, :sr      , :sb      , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ''     );
+endSQL;
 
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
+    $params = array(
+        ':username' => $username,
+        ':convo_id' => $convo_id,
+        ':bot_id'   => $bot_id,
+        ':sa'       => $sa,
+        ':sr'       => $sr,
+        ':sb'       => $sb,
+    );
 
-    $user_id = $dbConn->lastInsertId();
+    $debugSQL = db_parseSQL($sql, $params);
+
+    //$sth = $dbConn->prepare($sql);
+    //$sth->execute();
+    $numRows = db_write($sql, $params);
+
+    $user_id = db_lastInsertId();
     $convoArr['conversation']['user_id'] = $user_id;
     $convoArr['conversation']['totallines'] = 0;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "intisaliseUser #$user_id SQL: $sql", 3);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "intisaliseUser #$user_id SQL: $debugSQL", 3);
 
 
     //add the username to the client properties....
     /** @noinspection SqlDialectInspection */
-    $sql = "INSERT INTO `$dbn`.`client_properties` (`id`,`user_id`,`bot_id`,`name`,`value`)
-  VALUES ( NULL , '$user_id', $bot_id, 'name', '$username')";
+    $sql = 'INSERT INTO `client_properties` (`id`,`user_id`,`bot_id`,`name`,`value`)
+  VALUES (NULL, :user_id, :bot_id, \'name\', :username);';
 
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
+    $params = array(
+        ':user_id' => $user_id,
+        ':bot_id'   => $bot_id,
+        ':username' => $username,
+    );
+    //$sth = $dbConn->prepare($sql);
+    //$sth->execute();
+    $numRows = db_write($sql, $params);
 
 
     return $convoArr;

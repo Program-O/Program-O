@@ -9,16 +9,34 @@
  * DATE: 12-12-2014
  * DETAILS: Displays chat logs for the currently selected chatbot
  ***************************************/
-$allowed_get_vars = array(
-    // Make sure to put at least something in here, like this:
-    'page' => FILTER_DEFAULT,
-    'showing' => FILTER_DEFAULT,
-    'id'   => FILTER_VALIDATE_INT,
-    //see http://php.net/manual/en/filter.constants.php for available options
-);
-$get_vars = clean_inputs($allowed_get_vars);
+    $e_all = defined('E_DEPRECATED') ? E_ALL & ~E_DEPRECATED : E_ALL;
+    require_once('../config/global_config.php');
+    require_once(_LIB_PATH_ . 'misc_functions.php');
+    require_once(_LIB_PATH_ . 'error_functions.php');
+    require_once(_LIB_PATH_ . 'PDO_functions.php');
+    error_reporting($e_all);
+    ini_set('log_errors', true);
+    ini_set('error_log', _LOG_PATH_ . 'logs_php.error.log');
+    ini_set('html_errors', false);
+    ini_set('display_errors', false);
+    if (!isset($dbConn)) $dbConn = db_open();
 
-$show = (isset ($get_vars['showing'])) ? $get_vars['showing'] : "last 20";
+    $session_name = 'PGO_Admin';
+    session_name($session_name);
+    session_start();
+
+    $allowed_get_vars = array(
+    // Make sure to put at least something in here, like this:
+        'page' => FILTER_DEFAULT,
+        'action' => FILTER_DEFAULT,
+        'showing' => FILTER_DEFAULT,
+        'id'   => FILTER_VALIDATE_INT,
+    //see http://php.net/manual/en/filter.constants.php for available options
+    );
+    $get_vars = clean_inputs($allowed_get_vars);
+    if (isset($get_vars['action']) && function_exists($get_vars['action'])) $get_vars['action']();
+
+    $show = (isset ($get_vars['showing'])) ? $get_vars['showing'] : "last 20";
 
 //showThis($show)
 $show_this = showThis($show);
@@ -26,6 +44,8 @@ $convo = (isset ($get_vars['id'])) ? getuserConvo($get_vars['id'], $show) : "Ple
 $user_list = (isset ($get_vars['id'])) ? getUserList($get_vars['id'], $show) : getUserList($_SESSION['poadmin']['bot_id'], $show);
 $bot_name = (isset ($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'unknown';
 $upperScripts = $template->getSection('UpperScripts');
+$lowerScripts = $template->getSection('LogoLinkScript');
+$lowerScripts .= $template->getSection('CLScript');
 
 $topNav = $template->getSection('TopNav');
 $leftNav = $template->getSection('LeftNav');
@@ -60,7 +80,6 @@ $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
  */
 function getUserNames()
 {
-    global $dbConn;
     $nameList = array();
 
     /** @noinspection SqlDialectInspection */
@@ -82,68 +101,56 @@ function getUserNames()
 function getUserList($bot_id, $showing)
 {
     //db globals
-    global $template, $get_vars, $dbConn;
+    global $template, $get_vars;
 
     $nameList = getUserNames();
     $curUserid = (isset ($get_vars['id'])) ? $get_vars['id'] : -1;
     $bot_id = $_SESSION['poadmin']['bot_id'];
     $linkTag = $template->getSection('NavLink');
+    $ts = '';
 
-    /** @noinspection SqlDialectInspection */
-    $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= ([repl_date]) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC";
-    $showarray = array("last 20", "previous week", "previous 2 weeks", "previous month", "last 6 months", "this year", "previous year", "all years");
+    $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= [ts] GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC;";
 
     switch ($showing)
     {
         case "today" :
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= DATE(NOW()) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC;";
-            $repl_date = false;
+            $ts = 'DATE(NOW())';
             break;
         case "previous week" :
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= DATE(NOW()) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC;";
-            $repl_date = false;
+            $ts = 'DATE(NOW() - interval 1 week)';
+            break;
         case "previous 2 weeks" :
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= DATE(NOW() - interval 2 week) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC;";
-            $repl_date = false;
+            $ts = 'DATE(NOW() - interval 2 week)';
             break;
         case "previous month" :
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= DATE(NOW() - interval 1 month) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC;";
-            $repl_date = false;
+            $ts = 'DATE(NOW() - interval 1 month)';
             break;
         case "previous 6 months" :
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= DATE(NOW() - interval 6 month) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC;";
-            $repl_date = false;
+            $ts = 'DATE(NOW() - interval 6 month)';
             break;
         case "past 12 months" :
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE bot_id = :bot_id AND DATE(`timestamp`) >= DATE(NOW() - interval 1 year) GROUP BY `user_id`, `convo_id` ORDER BY ABS(`user_id`) ASC;";
-            $repl_date = false;
+            $ts = 'DATE(NOW() - interval 1 year)';
             break;
         case "all time" :
-            /** @noinspection SqlDialectInspection */
-            $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = :bot_id GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC;";
-            //$repl_date = time();
-            $repl_date = false;
+            $ts = '0';
             break;
         case 'last 20':
+            /** @noinspection SqlDialectInspection */
             $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = :bot_id GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC limit 20;";
-            //$repl_date = time();
-            $repl_date = false;
             break;
         default :
             /** @noinspection SqlDialectInspection */
             $sql = "SELECT DISTINCT(`user_id`),COUNT(`user_id`) AS TOT FROM `conversation_log`  WHERE  bot_id = :bot_id GROUP BY `user_id` ORDER BY ABS(`user_id`) ASC;";
-            //$repl_date = time();
-            $repl_date = false;
     }
 
     $list = '<div class="userlist"><ul>';
 
-    $sql = str_replace('[repl_date]', $repl_date, $sql);
+    $sql = str_replace('[ts]', $ts, $sql);
     $params = array(
         ':bot_id' => $bot_id,
-        ':repl_date' => $repl_date
     );
-    if (false === $repl_date) unset($params[':repl_date']);
+    $debugSQL = db_parseSQL($sql, $params);
+    save_file(_LOG_PATH_ . __FUNCTION__ . '.sql.txt', $debugSQL);
     $rows = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $numRows = count($rows);
 
@@ -224,87 +231,133 @@ endForm;
  */
 function getuserConvo($id, $showing)
 {
-    global $dbConn;
-
     $bot_name = (isset ($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'Bot';
     $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
     $nameList = getUserNames();
     $user_name = (!empty($nameList[$id])) ? $nameList[$id] : 'Unknown';
-    $sqladd = '';
+    $ts = '';
+    $ats = '';
+    /** @noinspection SqlDialectInspection */
+    $sql = 'SELECT *  FROM `conversation_log` WHERE `bot_id` = :bot_id AND `user_id` = :user_id  AND DATE(`timestamp`) >= [ts] ORDER BY `id` DESC;';
 
     switch ($showing)
     {
-        case "today" :
-            $sqladd = "AND DATE(`timestamp`) = '" . date('Y-m-d') . "'";
-            $title = "Today's ";
+        case 'today' :
+            $ts = 'DATE(NOW())';
+            $title = "Today's Conversations for user: $user_name (ID #{$id})";
             break;
-        case "previous week" :
-            $lastweek = strtotime("-1 week");
-            $sqladd = "AND DATE(`timestamp`) >= '" . $lastweek . "'";
-            $title = "Last week's ";
+        case 'previous week' :
+            $ts = 'DATE(NOW() - interval 1 week)';
+            $title = "Conversations for user: $user_name (ID #{$id}) for the past week";
             break;
-        case "previous 2 weeks" :
-            $lasttwoweek = strtotime("-2 week");
-            $sqladd = "AND DATE(`timestamp`) >= '" . $lasttwoweek . "'";
-            $title = "Last two week's ";
+        case 'previous 2 weeks' :
+            $ts = 'DATE(NOW() - interval 2 week)';
+            $title = "Conversations for user: $user_name (ID #{$id}) for the past two weeks";
             break;
-        case "previous month" :
-            $lastmonth = strtotime("-1 month");
-            $sqladd = "AND DATE(`timestamp`) >= '" . $lastmonth . "'";
-            $title = "Last month's ";
+        case 'previous month' :
+            $ts = 'DATE(NOW() - interval 1 month)';
+            $title = "Conversations for user: $user_name (ID #{$id}) for the past month";
             break;
-        case "previous 6 months" :
-            $lastsixmonth = strtotime("-6 month");
-            $sqladd = "AND DATE(`timestamp`) >= '" . $lastsixmonth . "'";
-            $title = "Last six month's ";
+        case 'previous 6 months' :
+            $ts = 'DATE(NOW() - interval 6 month)';
+            $title = "Conversations for user: $user_name (ID #{$id}) for the past six months";
             break;
-        case "past 12 months" :
-            $lastyear = strtotime("-1 year");
-            $sqladd = "AND DATE(`timestamp`) >= '" . $lastyear . "'";
-            $title = "Last twelve month's ";
+        case 'past 12 months' :
+            $ts = 'DATE(NOW() - interval 1 year)';
+            $title = "Conversations for user: $user_name (ID #{$id}) for the past year";
             break;
-        case "all time" :
-            $sql = "";
-            $title = "All ";
+        case 'last 20':
+            /** @noinspection SqlDialectInspection */
+            $sql = 'SELECT *  FROM `conversation_log` WHERE `bot_id` = :bot_id AND `user_id` = :user_id ORDER BY `id` DESC limit 20;';
+            $title = "Last 20 Conversation entries for user: $user_name (ID #{$id})";
+            $ats = '0 limit 20';
+            break;
+        case 'all time' :
+            $sql = 'SELECT *  FROM `conversation_log` WHERE `bot_id` = :bot_id AND `user_id` = :user_id ORDER BY `id` DESC;';
+            $title = "All conversations for user: $user_name (ID #{$id})";
+            $ats = 'foo';
             break;
         default :
-            $sqladd = "";
-            $title = "Last ";
+            $title = "(ERROR! Unexpected value for showing: {$showing}!)";
     }
-    $lasttimestamp = "";
-    $i = 1;
 
     //get undefined defaults from the db
-    /** @noinspection SqlDialectInspection */
-    $sql = "SELECT *  FROM `conversation_log` WHERE `bot_id` = '$bot_id' AND `user_id` = $id $sqladd ORDER BY `id` ASC";
-    $list = "<hr><br/><h4>$title conversations for user: $id</h4>";
-    $list .= "<div class=\"convolist\">";
+    $params = array(
+        ':bot_id'  => $bot_id,
+        ':user_id' => $id,
+    );
+    $sql = str_replace('[ts]', $ts, $sql);
+    $ts = (!empty($ats)) ? $ats : $ts;
+    $clearLink = <<<endLink
+ <a href="#" class="cl_del" data-sr="[sr]">Clear logs for this conversation</a>
+endLink;
+    $list = "<hr><br/><h4>{$title}:</h4>";
+    $list .= '<div class="convolist">';
+    $debugSQL = db_parseSQL($sql, $params);
+    save_file(_LOG_PATH_ . __FUNCTION__ . '.sql.txt', $debugSQL);
 
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
-
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
+    $storedRows = array();
+    $queries = array();
+    $lasttimestamp = '';
+    $i = 1;
     foreach ($result as $row)
     {
-        $thisdate = date("Y-m-d", strtotime($row['timestamp']));
+        extract($row);
+        $response = stripslashes($response);
+        $thisdate = date("Y-m-d", strtotime($timestamp));
+        $storedRowsIndex =  "{$bot_id}_{$user_id}_{$thisdate}";
+        if (!isset($storedRows[$storedRowsIndex])) $storedRows[$storedRowsIndex] = array();
+        if (!isset($queries[$storedRowsIndex])) $queries[$storedRowsIndex] = array();
+        $storedRows[$storedRowsIndex][] = $id;
+        $queries[$storedRowsIndex][] = $sql;
 
         if ($thisdate != $lasttimestamp)
         {
             if ($i > 1 && $showing == 'last 20') {
                 break;
             }
-
-            $date = date("Y-m-d");
-            $list .= "<hr><br/><h4>Conversation#$i $thisdate</h4>";
+            $cl = str_replace('[sr]', $storedRowsIndex, $clearLink);
+            $list .= "<hr><br/><h4>Conversation#$i $thisdate $cl</h4>";
             $i++;
         }
 
-        $list .= "<br><span style=\"color:DARKBLUE;\">$user_name: " . $row['input'] . "</span>";
-        $list .= "<br><span style=\"color:GREEN;\">$bot_name: " . $row['response'] . "</span>";
+        $list .= "<br><span data-id=\"{$id}\" style=\"color:DARKBLUE;\">$user_name: {$input}</span>";
+        $list .= "<br><span style=\"color:GREEN;\">$bot_name: {$response}</span>";
         $lasttimestamp = $thisdate;
     }
-
     $list .= "</div>";
     $list = str_ireplace('<script', '&lt;script', $list);
+    $_SESSION['stored_rows'] = $storedRows;
+    $_SESSION['cl_sql'] = 'Foo!';
 
     return $list;
+}
+
+function clearLogs()
+{
+    $out = array();
+    $allowed_get_vars = array(
+        'sr'      => FILTER_DEFAULT,
+    );
+    $get_vars = clean_inputs($allowed_get_vars);
+    $out['get_vars'] = print_r($get_vars, true);
+    extract($get_vars);
+    $storedRows = $_SESSION['stored_rows'];
+
+    $idRegEx =implode(' OR `id` = ', $storedRows[$sr]);
+    list($bot_id, $user_id, $timestamp) = explode('_', $sr);
+    $sql = "DELETE from `conversation_log` where id = $idRegEx;";
+    save_file(_LOG_PATH_ . 'clearLogs.sql.txt', $sql);
+    $numRows = db_write($sql);
+    If ($numRows > 0)
+    {
+        $out['message'] = "Conversation log altered. {$numRows} entries deleted.";
+    }
+    else
+    {
+        $out['message'] = 'Deletion of log entries failed. Please check the error logs.';
+    }
+    exit (json_encode($out));
 }
 

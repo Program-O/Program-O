@@ -11,15 +11,35 @@
 
 session_name('PGO_install');
 session_start();
+require_once ('install_config.php');
+require_once (_LIB_PATH_ . 'template.class.php');
+require_once (_LIB_PATH_ . 'misc_functions.php');
+require_once (_LIB_PATH_ . 'error_functions.php');
+require_once (_LIB_PATH_ . 'PDO_functions.php');
 
-$thisFile = __FILE__;
-# Test for PHP version 5+
-$fatalError = '';
+ini_set("display_errors", 0);
+ini_set("log_errors", true);
+ini_set("error_log", _LOG_PATH_ . "install.error.log");
+
+define('PHP_SELF', $_SERVER['SCRIPT_NAME']); # This is more secure than $_SERVER['PHP_SELF'], and returns more or less the same thing
+$input_vars = clean_inputs();
+
+$clearDB = false;
+if (isset($input_vars['clearDB']))
+{
+    $clearDB = true;
+    $_SESSION['clearDB'] = $clearDB;
+}
+
+
+# Test for required version and extensions
 $myPHP_Version = phpversion();
+//$myPHP_Version = '5.2.9'; # debugging/testing - must be commented out for functionality.
 $pdoSupport = (class_exists('PDO'));
-$version_compare = version_compare(phpversion(), '5.3.0');
+$php_min_version = '5.3.0';
+$version_compare = version_compare($myPHP_Version, $php_min_version);
 
-$no_unicode_message = (function_exists('mb_check_encoding')) ? '' : "<p class=\"red bold\">Warning! Unicode Support is not available on this server. Non-English languages will not display properly. Please ask your hosting provider to enable the PHP mbstring extension to correct this.</p>\n";
+$no_unicode_message = (extension_loaded('mbstring')) ? '' : "<p class=\"red bold\">Warning! Unicode Support is not available on this server. Non-English languages will not display properly. Please ask your hosting provider to enable the PHP mbstring extension to correct this.</p>\n";
 $no_zip_message = (extension_loaded('zip')) ? '' : "<p class=\"red bold\">Warning! The 'zip' PHP extension is not available. As a result, the upload and download of AIML files will be limited to individual files. Please ask your hosting provider to enable the PHP zip extension to correct this.</p>\n";
 $errorMessage = (!empty ($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';
 $errorMessage .= $no_unicode_message;
@@ -46,20 +66,19 @@ $recommendedExtensionsArray = array(
 );
 
 
-require_once ('install_config.php');
-require_once (_LIB_PATH_ . 'template.class.php');
 $template = new Template('install.tpl.htm');
 
-$dirArray = glob(_ADMIN_PATH_ . "ses_*",GLOB_ONLYDIR);
+// check/set/create the sessions folder
+$dirArray = glob(_ADMIN_PATH_ . "ses_*", GLOB_ONLYDIR);
 $session_dir = (empty($dirArray)) ? create_session_dirname() : basename($dirArray[0]);
-$dupPS = "$path_separator$path_separator";
+$dupPS = "{$path_separator}{$path_separator}";
 $session_dir = str_replace($dupPS, $path_separator, $session_dir); // remove double path separators when necessary
 $session_dir = rtrim($session_dir, PATH_SEPARATOR);
 $full_session_path = _ADMIN_PATH_ . $session_dir;
 
 define('_SESSION_PATH_', $full_session_path);
 
-$writeCheckArray = array('config' => _CONF_PATH_, 'debug' => _DEBUG_PATH_, 'logs' => _LOG_PATH_);
+$writeCheckArray = array('config' => _CONF_PATH_, 'debug' => _DEBUG_PATH_, 'logs' => _LOG_PATH_, 'session' => _SESSION_PATH_);
 $errFlag = false;
 
 foreach ($writeCheckArray as $key => $folder)
@@ -72,7 +91,7 @@ foreach ($writeCheckArray as $key => $folder)
             $dirExists = (file_exists($folder)) ? 'true' : 'false';
             $permissions = fileperms($folder);
             $txtPerms = showPerms($permissions);
-            error_log("The folder $folder is not writable. Folder exists?: $dirExists. Permissions: $txtPerms." . PHP_EOL, 3, '../logs/install.log');
+            error_log("The {$key} folder ({$folder}) is not writable. Folder exists?: $dirExists. Permissions: $txtPerms." . PHP_EOL, 3, '../logs/install.log');
 
             $errFlag = true;
             $errorMessage .= "<p class=\"red bold\">The $key folder cannot be written to, or does not exist. Please correct this before you continue.</p>";
@@ -104,18 +123,10 @@ if ($errFlag) {
     $errorMessage .= $additionalInfo;
 }
 
-define('SECTION_START', '<!-- Section [section] Start -->'); # search params for start and end of sections
-define('SECTION_END', '<!-- Section [section] End -->'); # search params for start and end of sections
-define('PHP_SELF', $_SERVER['SCRIPT_NAME']); # This is more secure than $_SERVER['PHP_SELF'], and returns more or less the same thing
-
-ini_set("display_errors", 0);
-ini_set("log_errors", true);
-ini_set("error_log", _LOG_PATH_ . "install.error.log");
-
 $myHost = $_SERVER['SERVER_NAME'];
 chdir(dirname(realpath(__FILE__)));
-$page = (isset ($_REQUEST['page'])) ? $_REQUEST['page'] : 0;
-$action = (isset ($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+$page = (isset ($input_vars['page'])) ? $input_vars['page'] : 0;
+$action = (isset ($input_vars['action'])) ? $input_vars['action'] : '';
 $message = '';
 
 if (!empty ($action)) {
@@ -149,12 +160,18 @@ switch ((int) $page)
             $pdo_reqs .= $curLi;
             if ($tf !== 'false') $oddEven++;
         }
-        if (empty($pdo_reqs))
+        $reqs_not_met = '';
+        if (empty($pdo_reqs)) # || true # Again, debugging/testing code, to be commented out for actual use.
         {
             $pdo_reqs = $liTemplate;
             $pdo_reqs = str_replace('[oe]', 'even', $pdo_reqs);
             $pdo_reqs = str_replace('[ext]', '', $pdo_reqs);
             $pdo_reqs = str_replace('[tf]', 'false', $pdo_reqs);
+            $reqs_not_met .= 'There are no PDO extensions available, so the install process cannot continue.<br>';
+        }
+        elseif ($pvpf == 'false')
+        {
+            $reqs_not_met .= "Your PHP version ({$myPHP_Version}) is older than the minimum required version of {$php_min_version}, so the install process cannot continue.<br>";
         }
         else $reqs_met = true;
         $main = str_replace('[pdo_reqs]', rtrim($pdo_reqs), $main);
@@ -175,12 +192,11 @@ switch ((int) $page)
         $main = str_replace('[pgo_version]', VERSION, $main);
         $main = str_replace('[pvpf]', $pvpf, $main);
         $main = str_replace('[version]', $myPHP_Version, $main);
-        $continueLink = ($reqs_met) ? $template->getSection('ContinueLink') : '<div class="center">Please correct the items above in order to continue.</div>' . PHP_EOL;
+        $continueLink = ($reqs_met) ? $template->getSection('Page0ContinueForm') :'<div class="center bold red">' .  $reqs_not_met . 'Please correct the items above in order to continue.</div>' . PHP_EOL;
         $main .= $continueLink;
         $main = str_replace('[blank]', '', $main);
         $main .= $no_unicode_message;
         $main .= $no_zip_message;
-        //file_put_contents(_LOG_PATH_ . 'newMain.txt', $main);
         break;
     case 1:
         $main = $template->getSection('InstallForm');
@@ -188,6 +204,7 @@ switch ((int) $page)
     default: $main = $message;
 }
 $tmpSearchArray = array();
+$content .= "\n    </body>\n</html>";
 
 $content = str_replace('[mainPanel]', $main, $content);
 $content = str_replace('[http_host]', $myHost, $content);
@@ -200,8 +217,8 @@ $content = str_replace('[cr4]', "\n ", $content);
 $content = str_replace("\r\n", "\n", $content);
 $content = str_replace("\n\n", "\n", $content);
 $content = str_replace('[admin_url]', _ADMIN_URL_, $content);
-$content .= '</body></html>';
 $content = str_replace('[mainPanel]', $main, $content);
+$content = str_replace('[blank]', '', $content);
 
 exit($content);
 
@@ -214,39 +231,54 @@ function Save()
 {
     global $template, $error_response, $session_dir;
 
+    // Do we want to start with a fresh, empty database?
+    if (isset($_SESSION['clearDB']))
+    {
+        $clearDB = true;
+        unset($_SESSION['clearDB']);
+    }
+    // initialize some variables and set some defaults
     $tagSearch = array();
     $varReplace = array();
     $pattern = "RANDOM PICKUP LINE";
-    $errorMessage = '';
-    #$error_response = "No AIML category found. This is a Default Response.";
+    $error_response = "No AIML category found. This is a Default Response.";
     $conversation_lines = '1';
     $remember_up_to = '10';
     $_SESSION['errorMessage'] = '';
 
-    // First off, write the config file
-    $myPostVars = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-    ksort($myPostVars);
 
     $configContents = file_get_contents(_INSTALL_PATH_ . 'config.template.php');
     $configContents = str_replace('[session_dir]', $session_dir, $configContents);
     clearstatcache();
 
+    // First off, create the sessions folder and set permissions if it doesn't exist
     if (!file_exists(_SESSION_PATH_))
     {
-        // Create the sessions folder, and set permissions
         mkdir(_SESSION_PATH_, 0755);
 
         // Place an empty index file in the sessions folder to prevent direct access to the folder from a web browser
         file_put_contents(_SESSION_PATH_ . 'index.html', '');
     }
 
+    // Write the config file from all of the posted form values
+
+    // Get the posted values, sanitize them and put them into an array
+    $myPostVars = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
+    // Sort the array - not strictly necessary, but we're doing it anyway
+    ksort($myPostVars);
+
+    // Create the SEARCH and REPLACE arrays
     foreach ($myPostVars as $key => $value)
     {
         $tagSearch[] = "[$key]";
         $varReplace[] = $value;
     }
 
+    // Replace all [placeholder] tags with the posted values
     $configContents = str_replace($tagSearch, $varReplace, $configContents);
+
+    // Write the new config file
     $saveFile = file_put_contents(_CONF_PATH_ . 'global_config.php', $configContents);
 
     // Now, update the data to the database, starting with making sure the tables are installed
@@ -255,33 +287,19 @@ function Save()
     $dbu = $myPostVars['dbu'];
     $dbp = $myPostVars['dbp'];
 
-    try
-    {
-        $dbConn = new PDO("mysql:host=$dbh;dbname=$dbn;charset=utf8", $dbu, $dbp);
-        $dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $dbConn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    }
-    catch (Exception $e)
-    {
-        header('Content-type: text/plain');
-        var_dump($e);
-        exit('Cannot connect to the database! ' . $e->getMessage());
-    }
+    // Open the database to begin storing stuff
+    $dbConn = db_open();
 
-    $sql = "show tables;";
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fetch();
-
-    if (empty ($row))
+    // Check to see if the database is empty, or if the user checked the "clear DB" option
+    $row = db_fetch('show tables');
+    if (empty ($row) || true === $clearDB)
     {
         $sqlArray = file('new.sql', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($sqlArray as $sql)
         {
-            $sth = $dbConn->prepare($sql);
             try {
-                $insertSuccess = $sth->execute();
-                if (!$insertSuccess){
+                $insertSuccess = db_write($sql, null, __FILE__, __FUNCTION__, __LINE__, false);
+                if (false === $insertSuccess){
                     throw new Exception('SQL operation failed!');
                 }
             }
@@ -315,17 +333,14 @@ function Save()
         try {
             /** @noinspection SqlNoDataSourceInspection */
             $sql = 'SELECT bot_id FROM srai_lookup;';
-            $sth = $dbConn->prepare($sql);
-            $sth->execute();
-            $result = $sth->fetchAll();
+            $result = db_fetchAll($sql);
         }
         catch(Exception $e) {
             try {
                 /** @noinspection SqlDialectInspection */
                 /** @noinspection SqlNoDataSourceInspection */
                 $sql = "DROP TABLE IF EXISTS `srai_lookup`; CREATE TABLE IF NOT EXISTS `srai_lookup` (`id` int(11) NOT NULL AUTO_INCREMENT, `bot_id` int(11) NOT NULL, `pattern` text NOT NULL, `template_id` int(11) NOT NULL, PRIMARY KEY (`id`), KEY `pattern` (`pattern`(64)) COMMENT 'Search against this for performance boost') ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1;";
-                $sth = $dbConn->prepare($sql);
-                $sth->execute();
+                $affectedRows = db_write($sql, null, __FILE__, __FUNCTION__, __LINE__, false);
             }
             catch(Exception $e) {
               $errorMessage .= 'Could not add SRAI lookup table! Error is: ' . $e->getMessage();
@@ -336,17 +351,13 @@ function Save()
     /** @noinspection SqlDialectInspection */
     /** @noinspection SqlNoDataSourceInspection */
     $sql = 'SELECT `error_response` FROM `bots` WHERE 1 limit 1';
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fetch();
+    $row = db_fetch($sql);
     $error_response = $row['error_response'];
 
     /** @noinspection SqlDialectInspection */
     /** @noinspection SqlNoDataSourceInspection */
     $sql = 'SELECT `bot_id` FROM `bots`;';
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fetchAll();
+    $result = db_fetchAll($sql);
 
     if (count($result) == 0)
     {
@@ -378,9 +389,7 @@ function Save()
 
         try
         {
-            $sth = $dbConn->prepare($sql);
-            $sth->execute();
-            $affectedRows = $sth->rowCount();
+            $affectedRows = db_write($sql, null, __FILE__, __FUNCTION__, __LINE__, false);
             $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new bot!';
         }
         catch(Exception $e) {
@@ -395,9 +404,7 @@ function Save()
     /** @noinspection SqlDialectInspection */
     /** @noinspection SqlNoDataSourceInspection */
     $sql = "SELECT id FROM `myprogramo` WHERE `user_name` = '$adm_dbu' AND `password` = '$encrypted_adm_dbp';";
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $result = $sth->fetchAll();
+    $result = db_fetchAll($sql);
 
     if (count($result) == 0)
     {
@@ -406,9 +413,7 @@ function Save()
         $sql = "INSERT ignore INTO `myprogramo` (`id`, `user_name`, `password`, `last_ip`) VALUES(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
 
         try {
-            $sth = $dbConn->prepare($sql);
-            $sth->execute();
-            $affectedRows = $sth->rowCount();
+            $affectedRows = db_write($sql, null, __FILE__, __FUNCTION__, __LINE__, false);
             $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new Admin!';
         }
         catch(Exception $e) {

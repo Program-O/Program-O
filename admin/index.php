@@ -73,10 +73,17 @@ $branch = (!empty($_SESSION['useBranch'])) ? $_SESSION['useBranch'] : 'master';
 // Begin script execution
 $thisPath = dirname(__FILE__);
 $template = new Template("$thisPath/default.page.htm");
-$githubVersion = getCurrentVersion($branch);
+$githubVersion = trim(getCurrentVersion($branch));
+$currentLocalVersion = VERSION;
 
-$upToDate = '<strong>Program O</strong><br>Current Local Version: ' . VERSION . '<br>Current GitHub Version: ' . $githubVersion . '<br>Current Branch: ' . $branches[$branch];
-//$upToDate .= "<br>Database Name: {$dbn}";
+$upToDate = <<<endUTD
+
+            <strong>Program O</strong><br>
+            Current Local Version: $currentLocalVersion<br>
+            Current GitHub Version: $githubVersion<br>
+            Current Branch: {$branches[$branch]}<br>
+            <!-- Current Database Name: {$dbn} -->
+endUTD;
 
 $newVersionAvailable = "Program O $githubVersion is now available for the "
     . $branches[$branch] . ' branch. <a href="https://github.com/Program-O/Program-O/archive/' . $branch

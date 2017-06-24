@@ -256,7 +256,7 @@ function clean_inputs($options = null)
 {
     $referer = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : false;
     $host = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : false;
-    if (false === $host || false === $referer) die ('CSRF failure!');
+    if (false === $host || (false === $referer && 'localhost' !== $host)) die ('CSRF failure!');
     $formVars = array_merge($_GET, $_POST);
 
     switch (true)

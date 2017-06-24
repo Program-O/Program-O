@@ -18,15 +18,17 @@
     </div>[cr6]
  <!-- Section Header End -->
 <!-- Section Container Start -->
-      <div id="container">
+[blank]      <div id="container">
         [mainPanel]
-        <div id="leftWarning" class="floatLeft bold red"></div>
-        <div id="rightWarning" class="floatRight bold red"></div>
+        <div id="leftWarning" class="floatLeft w48 bold red"></div>
+        <div id="rightWarning" class="floatRight w48 bold red"></div>
       </div>[cr4]
 <!-- Section Container End -->
 <!-- Section Footer Start -->
-    <div class="spacer">&nbsp;</div>
+[blank]    <div class="spacer">&nbsp;</div>
 <!-- Section Footer End -->
+<!-- Section jQuery0 Start -->
+<!-- Section jQuery0 End -->
 <!-- Section jQuery1 Start -->
     <script type="text/javascript" src="../scripts/tzDetect.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
@@ -96,6 +98,8 @@
       }
     </script>
 <!-- Section jQuery1 End -->
+<!-- Section jQuery2 Start -->
+<!-- Section jQuery2 End -->
 <!-- Section InstallForm Start -->
   [errorMessage]
   <form name="installForm" id="installForm" action="[PHP_SELF]" method="post">
@@ -289,9 +293,9 @@
             </div>
 <!-- Section Page 2 Notes End -->
 <!-- Section Checklist Start -->
-[blank]            <div class="checklist m0a">
-                <p>
-                    Hi, and welcome to the Program O [pgo_version] installer. There's a lot to do, so let's get started.
+[blank]    <div class="checklist m0a">
+                <p class="taj">
+                    Hi, and welcome to the Program O version [pgo_version] installer. There's a lot to do, so let's get started.
                     First off, let's check your server to see if Program O will run smoothly (or at all) here. Please
                     note the checklist below. It shows the state of your PHP version, and any necessary (or recommended)
                     PHP extensions that Program O needs. <span class="ext_false">false</span> indicated a missing
@@ -299,9 +303,9 @@
                 </p>
                 <h2 class="center">Program O Requirements Checklist</h2>
                 <ul class="prereqs">
-                    <li>PHP Version >= 5.3.0: <span class="ext_[pvpf] floatRight">[version]</span></li>
+                    <li class="even">PHP Version >= 5.3.0: <span class="ext_[pvpf] floatRight">[version]</span></li>
                     <li>
-                        PHP PDO extensions (NOTE: At least one of these must be enabled)
+                        PHP PDO extensions (NOTE: At least one enabled extension must be listed below)
                         <ul>
 [pdo_reqs]
                         </ul>
@@ -320,5 +324,14 @@
                     <a href="install_programo.php?page=1">Continue</a>
                 </div>
 <!-- Section ContinueLink End -->
-  </body>
+<!-- Section Page0ContinueForm Start -->
+[blank]        <form action="install_programo.php" method="post" class="center">
+            <input id="cbClearDB" name="clearDB" type="checkbox" value="1" checked="checked">
+            <input type="hidden" name="page" value="1">
+            <label for="cbClearDB">Drop all tables from Database (fresh start - Recommended, but make sure you backup your data!)</label><br>
+            <input name="" type="submit" value="Continue">
+</form>
+<!-- Section Page0ContinueForm End -->
+[blank]
+    </body>
 </html>

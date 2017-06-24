@@ -47,9 +47,9 @@ function db_open()
  *
  * @return null
  */
-function db_close()
+function db_close($inPGO = true)
 {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'This DB is now closed. You don\'t have to go home, but you can\'t stay here.', 2);
+    if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, 'This DB is now closed. You don\'t have to go home, but you can\'t stay here.', 2);
     return null;
 }
 
@@ -65,7 +65,7 @@ function db_close()
  *
  * @return mixed $out - Either the row of data from the DB query, or false, if the query fails
  */
-function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown')
+function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
 {
     global $dbConn;
     //error_log(print_r($dbConn, true), 3, _LOG_PATH_ . 'dbConn.txt');
@@ -84,7 +84,7 @@ function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown'
 
         /** @noinspection PhpUndefinedVariableInspection */
         $psError = print_r($sth->errorInfo(), true);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while extracting a row of data from the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
+        if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while extracting a row of data from the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
         return false;
     }
 }
@@ -101,7 +101,7 @@ function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown'
  *
  * @return mixed $out - Either an array of data from the DB query, or false, if the query fails
  */
-function db_fetchAll($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown')
+function db_fetchAll($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
 {
     global $dbConn;
 
@@ -127,7 +127,7 @@ PDO error: $pdoError
 PDO_statement error: $psError
 
 endMsg;
-        runDebug(__FILE__, __FUNCTION__, __LINE__, $errMsg, 0);
+        if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, $errMsg, 0);
         return false;
     }
 }
@@ -145,7 +145,7 @@ endMsg;
  *
  * @return mixed $out - Either the number of rows affected by the DB query
  */
-function db_write($sql, $params = null, $multi = false, $file = 'unknown', $function = 'unknown', $line = 'unknown')
+function db_write($sql, $params = null, $multi = false, $file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
 {
     global $dbConn;
     $newLine = PHP_EOL;
@@ -207,7 +207,7 @@ PDO error: $pdoError
 PDOStatement error: $psError
 endMessage;
 
-        runDebug(__FILE__, __FUNCTION__, __LINE__, $rdMessage, 0);
+        if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, $rdMessage, 0);
         return false;
     }
 }
@@ -236,6 +236,12 @@ endMessage;
         }
     }
     return $out;
+}
+
+function db_lastInsertId($name = null)
+{
+    global $dbConn;
+    return $dbConn->lastInsertId($name);
 }
 
 

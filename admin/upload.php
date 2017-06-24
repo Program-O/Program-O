@@ -329,7 +329,7 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
  */
 function processUpload()
 {
-    global $msg;
+    global $msg, $ZIPenabled;
     // Validate the uploaded file
     if ($_FILES['aimlfile']['size'] === 0 || empty($_FILES['aimlfile']['tmp_name']))
     {
