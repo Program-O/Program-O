@@ -75,6 +75,19 @@ $dupPS = "{$path_separator}{$path_separator}";
 $session_dir = str_replace($dupPS, $path_separator, $session_dir); // remove double path separators when necessary
 $session_dir = rtrim($session_dir, PATH_SEPARATOR);
 $full_session_path = _ADMIN_PATH_ . $session_dir;
+clearstatcache();
+$sd_exists = file_exists($full_session_path);
+if (!$sd_exists)
+{
+    $md = mkdir($full_session_path, 0755);
+    if (!$md)
+    {
+        $session_path_error = "The generated session path({$full_session_path}) could not be created. Default session path will be used instead.";
+        error_log($session_path_error, 3, _LOG_PATH_ . 'install.error.log');
+        $full_session_path = session_save_path();
+        $errorMessage .= $session_path_error;
+    }
+}
 
 define('_SESSION_PATH_', $full_session_path);
 
@@ -91,7 +104,7 @@ foreach ($writeCheckArray as $key => $folder)
             $dirExists = (file_exists($folder)) ? 'true' : 'false';
             $permissions = fileperms($folder);
             $txtPerms = showPerms($permissions);
-            error_log("The {$key} folder ({$folder}) is not writable. Folder exists?: $dirExists. Permissions: $txtPerms." . PHP_EOL, 3, '../logs/install.log');
+            error_log("The {$key} folder ({$folder}) is not writable. Folder exists?: $dirExists. Permissions: $txtPerms." . PHP_EOL, 3, _LOG_PATH_ . 'install.error.log');
 
             $errFlag = true;
             $errorMessage .= "<p class=\"red bold\">The $key folder cannot be written to, or does not exist. Please correct this before you continue.</p>";
@@ -442,7 +455,7 @@ function create_session_dirname()
     global $path_separator;
     $randBytes = openssl_random_pseudo_bytes(12);
     $suffix = bin2hex($randBytes);
-    $out = "ses_$suffix$path_separator";
+    $out = "ses_{$suffix{}$path_separator}";
     return $out;
 }
 
