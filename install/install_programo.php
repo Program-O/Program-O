@@ -455,7 +455,7 @@ function create_session_dirname()
     global $path_separator;
     $randBytes = openssl_random_pseudo_bytes(12);
     $suffix = bin2hex($randBytes);
-    $out = "ses_{$suffix{}$path_separator}";
+    $out = "ses_{$suffix}{$path_separator}";
     return $out;
 }
 
