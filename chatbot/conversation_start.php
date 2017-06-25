@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: chatbot/conversation_start.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -220,9 +220,9 @@ if (!empty($say)) {
     $convoArr['time_start'] = $time_start;
     $convoArr = load_bot_config($convoArr);
     //if totallines isn't set then this is new user
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Debug level = $debug_level", 0);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Default debug level = $debug_level", 0);
     $debug_level = isset($convoArr['conversation']['debug_level']) ? $convoArr['conversation']['debug_level'] : $debug_level;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Debug level = $debug_level", 0);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Current debug level = $debug_level", 0);
     $convoArr['conversation']['rawSay'] = $rawSay;
 
     if (!isset ($convoArr['conversation']['totallines'])) {

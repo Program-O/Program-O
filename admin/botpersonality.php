@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: botpersonality.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-26-2014
@@ -117,7 +117,7 @@ function getBot()
 
         $inputs .= "<!-- colCount = $colCount -->\n";
 
-        if (($colCount > 0) and ($colCount < 3))
+        if (($colCount > 0) && ($colCount < 3))
         {
             for ($n = 0; $n < (3 - $colCount); $n++)
             {

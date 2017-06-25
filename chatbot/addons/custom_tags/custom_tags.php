@@ -93,7 +93,7 @@ function parse_math_tag($convoArr, simpleXMLElement $element, $parentName, $leve
 
     switch (true)
     {
-        case (!in_array(strtoupper($operator), $operatorArray)):
+        case (!in_array(_strtoupper($operator), $operatorArray)):
             return 'Invalid math function!';
             break;
         case (!is_numeric($operand1)):

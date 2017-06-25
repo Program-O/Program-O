@@ -88,9 +88,8 @@ $vCenter = floor($Y / 2);
 
 $capString = ""; // This is the 'question string' to present to the user, and is built later
 $capKeys = array('red', 'green', 'blue', 'man', 'woman', 'cat', 'dog', 'fish', 'one', 'two', 'three', 'four', 'circle', 'square', 'triangle');
-$capKeyCount = count($capKeys);
-$capNum = rand(0, $capKeyCount - 1);
-$capKey = $capKeys[$capNum];
+$index = array_rand($capKeys);
+$capKey = $capKeys[$index];
 
 $objectWord = '';
 $fn = '';

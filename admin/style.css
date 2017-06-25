@@ -282,7 +282,7 @@ span.eightyPercent textarea.wide {
 
 .errMsg {
     min-width: 250px;
-    max-width: 45%;
+    max-width: 500px !important;
     min-height: 32px;
     max-height: 95%;
     width: auto;
@@ -300,6 +300,12 @@ span.eightyPercent textarea.wide {
     right: 15px;
     z-index: 99;
     border-radius: 12px;
+}
+
+.dlLink {
+    margin-right: 1.5em;
+    float: left;
+    display: inline-block;
 }
 
 .errMsgContent {
@@ -582,7 +588,7 @@ span.eightyPercent textarea.wide {
     top: 160px;
     right: 25px;
     bottom: 70px;
-    width: 170px;
+    width: 205px;
     min-height: 25%;
     overflow: hidden;
     margin: 0;
@@ -646,7 +652,7 @@ span.eightyPercent textarea.wide {
     top: 160px;
     bottom: 70px;
     left: 250px;
-    right: 205px;
+    right: 240px;
     background-color: #FFFFCC;
     overflow: hidden;
     min-height: 25%;
@@ -935,18 +941,6 @@ div#AIML_List {
 [disabled="disabled"] { /* Text and background colour, medium red on light yellow */
     color: #500;
     background-color: #EDD;
-}
-
-.floatRight {
-    /*  float: right;
-      clear: none;*/
-    width: 48%;
-}
-
-.floatLeft {
-    /*  float: left;
-      clear: none;*/
-    width: 48%;
 }
 
 table.botForm {
@@ -1269,39 +1263,46 @@ input.search-input-text, textarea.newCat {
     margin: 0 auto;
 }
 
-.w5 {
-    width: 5%;
-}
-
-.w10 {
-    width: 10%;
-}
-
-.w15 {
-    width: 15%;
-}
-
-.w20 {
-    width: 20%;
-}
-
-.w25 {
-    width: 25%;
-}
-
-.w30 {
-    width: 30%;
-}
-
-.w40 {
-    width: 40%;
-}
-
-.w50 {
-    width: 50%;
-}
+.w5 {width: 5%;}
+.w10 {width: 10%;}
+.w15 {width: 15%;}
+.w20 {width: 20%;}
+.w25 {width: 25%;}
+.w30 {width: 30%;}
+.w40 {width: 40%;}
+.w48 {width: 48%;}
+.w50 {width: 50%;}
+.w80 {width: 80%;}
+.w100 {width: 100%;}
 
 .editable {
     text-indent: 0;
     padding: 3px 5px !important;
+}
+.ext_true {
+    font-weight: bold;
+    color: #0C0;
+}
+.ext_false {
+    font-weight: bold;
+    color: #C00;
+}
+.odd {background-color: #FFE;}
+.even {background-color: #EEF;}
+.checklist {max-width: 50%;}
+#test {
+    position: absolute;
+    top: 147px;
+    right: 240px;
+    z-index: 200;
+    background-color: pink;
+    width: auto;
+    padding: 12px;
+    max-width: 50%;
+    overflow: auto;
+}
+.taj {text-align: justify;}
+#AIML_UD td {
+    border-bottom: 0.5px solid gray;
+    border-right: 0.5px solid gray;
 }

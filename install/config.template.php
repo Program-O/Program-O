@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: config/global_config.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -14,24 +14,24 @@
 
 $path_separator = DIRECTORY_SEPARATOR;
 $parentFolder = dirname(__DIR__) . $path_separator;
-define('_BASE_PATH_', $parentFolder);
+define('IS_WINDOWS',      ($path_separator === '/') ? false : true);
 
 //------------------------------------------------------------------------
 // Define paths for include files
 //------------------------------------------------------------------------
 
-define('_ADMIN_PATH_',   _BASE_PATH_  . "admin$path_separator");
-define('_BOTCORE_PATH_', _BASE_PATH_  . "chatbot{$path_separator}core$path_separator");
-define('_LIB_PATH_',     _BASE_PATH_  . "library$path_separator");
-define('_ADDONS_PATH_',  _BASE_PATH_  . "chatbot{$path_separator}addons$path_separator");
-define('_CONF_PATH_',    _BASE_PATH_  . "config$path_separator");
-define('_LOG_PATH_',     _BASE_PATH_  . "logs$path_separator");
-define('_DEBUG_PATH_',   _BASE_PATH_  . "chatbot{$path_separator}debug$path_separator");
-define('_INSTALL_PATH_', _BASE_PATH_  . "install$path_separator");
-define('_UPLOAD_PATH_',  _ADMIN_PATH_ . "uploads$path_separator");
-define('_DOWNLOAD_PATH_',  _ADMIN_PATH_ . "downloads$path_separator");
-define('IS_WINDOWS',     (DIRECTORY_SEPARATOR == '/') ? false : true);
-define('_SESSION_PATH_', _ADMIN_PATH_ . '[session_dir]' . $path_separator);
+define('_BASE_PATH_', $parentFolder);
+define('_ADMIN_PATH_',    _BASE_PATH_  . "admin{$path_separator}");
+define('_BOTCORE_PATH_',  _BASE_PATH_  . "chatbot{$path_separator}core{$path_separator}");
+define('_LIB_PATH_',      _BASE_PATH_  . "library{$path_separator}");
+define('_ADDONS_PATH_',   _BASE_PATH_  . "chatbot{$path_separator}addons{$path_separator}");
+define('_CONF_PATH_',     _BASE_PATH_  . "config{$path_separator}");
+define('_LOG_PATH_',      _BASE_PATH_  . "logs{$path_separator}");
+define('_DEBUG_PATH_',    _BASE_PATH_  . "chatbot{$path_separator}debug{$path_separator}");
+define('_INSTALL_PATH_',  _BASE_PATH_  . "install{$path_separator}");
+define('_UPLOAD_PATH_',   _ADMIN_PATH_ . "uploads{$path_separator}");
+define('_DOWNLOAD_PATH_', _ADMIN_PATH_ . "downloads{$path_separator}");
+define('_SESSION_PATH_',  _ADMIN_PATH_ . "[session_dir]{$path_separator}");
 
 //------------------------------------------------------------------------
 // Define URL paths
@@ -74,15 +74,24 @@ ini_set('html_errors', false);
 ini_set('display_errors', false);
 
 //------------------------------------------------------------------------
-// DB and time zone settings
+// Time zone settings
 //------------------------------------------------------------------------
 $time_zone_locale = '[time_zone_locale]'; // a full list can be found at http://uk.php.net/manual/en/timezones.php
-$dbh     = '[dbh]';  # dev remote server location
-$dbPort  = '[dbPort]';    # dev database name/prefix
-$dbn     = '[dbn]';    # dev database name/prefix
-$dbu     = '[dbu]';       # dev database username
-$dbp     = '[dbp]';  # dev database password
-//these are the admin DB settings in case you want make the admin a different db user with more privs
+
+//------------------------------------------------------------------------
+// DB settings
+//------------------------------------------------------------------------
+# remote server location
+$dbh     = '[dbh]';
+# database port
+$dbPort  = '[dbPort]';
+# database name
+$dbn     = '[dbn]';
+# database username
+$dbu     = '[dbu]';
+# database password
+$dbp     = '[dbp]';
+//Login credentials for the admin page
 $adm_dbu    = '[adm_dbu]';
 $adm_dbp    = '[adm_dbp]';
 
@@ -95,6 +104,26 @@ $adm_dbp    = '[adm_dbp]';
 // the actual parent bot is set later on in program o there is no need to edit this value
 //------------------------------------------------------------------------
 $bot_parent_id = 1;
+
+//------------------------------------------------------------------------
+// Define some bot option constants
+//------------------------------------------------------------------------
+
+/*
+     It has been suggested that the "winning" response be the first category found with the highest score,
+     rather than a random selection from all high scoring responses. It was also suggested that the most
+     recent (e.g. the last) response should be chosen, with newer AIML categories superseding older ones.
+     At some point this will be an option that will be placed in the admin pages on a per-bot basis, but
+     for now it's just a random pick. That said, however, I'm going to start adding code for the other
+     two options now. Feel free to change the value of $which_response to one of the three constants
+     defined here.
+*/
+
+define('BOT_USE_RANDOM_RESPONSE', 0);
+define('BOT_USE_FIRST_RESPONSE', 1);
+define('BOT_USE_LAST_RESPONSE', 2);
+
+$which_response = BOT_USE_RANDOM_RESPONSE;
 
 
 //Used to populate the stack when first initialized
@@ -216,7 +245,7 @@ $debugArr = array();
 //------------------------------------------------------------------------
 // Configure mbstring parameters
 //------------------------------------------------------------------------
-define('IS_MB_ENABLED', (function_exists('mb_internal_encoding')) ? true : false);
+define('IS_MB_ENABLED', (extension_loaded('mbstring')) ? true : false);
 
 if (IS_MB_ENABLED)
 {

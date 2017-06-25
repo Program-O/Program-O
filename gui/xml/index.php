@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 07-23-2013
@@ -20,7 +20,8 @@ ini_set('display_errors', false);
 require_once('parseBBCode.php');
 
 // Experimental code
-$base_URL = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
+$protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443 || $_SERVER['HTTP_X_FORWARDED_PORT'] == 443) ? "https://" : "http://";
+$base_URL = $protocol . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
 $this_path = str_replace(DIRECTORY_SEPARATOR, '/', realpath(dirname(__FILE__)));  // The current location of this file, normalized to use forward slashes
 $this_path = str_replace($_SERVER['DOCUMENT_ROOT'], $base_URL, $this_path);       // transform it from a file path to a URL
 $url = str_replace('gui/xml', 'chatbot/conversation_start.php', $this_path);      // and set it to the correct script location

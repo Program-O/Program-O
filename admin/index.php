@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -73,9 +73,17 @@ $branch = (!empty($_SESSION['useBranch'])) ? $_SESSION['useBranch'] : 'master';
 // Begin script execution
 $thisPath = dirname(__FILE__);
 $template = new Template("$thisPath/default.page.htm");
-$githubVersion = getCurrentVersion($branch);
+$githubVersion = trim(getCurrentVersion($branch));
+$currentLocalVersion = VERSION;
 
-$upToDate = '<strong>Program O</strong><br>Current Local Version: ' . VERSION . '<br>Current GitHub Version: ' . $githubVersion . '<br>Current Branch: ' . $branches[$branch];
+$upToDate = <<<endUTD
+
+            <strong>Program O</strong><br>
+            Current Local Version: $currentLocalVersion<br>
+            Current GitHub Version: $githubVersion<br>
+            Current Branch: {$branches[$branch]}<br>
+            <!-- Current Database Name: {$dbn} -->
+endUTD;
 
 $newVersionAvailable = "Program O $githubVersion is now available for the "
     . $branches[$branch] . ' branch. <a href="https://github.com/Program-O/Program-O/archive/' . $branch
@@ -348,7 +356,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Change or edit the current bot"',
             '[linkLabel]' => 'Current Bot: ([curBot])'
         ),
-        array(
+        array( # Bot Personality
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=botpersonality"',
             '[linkOnclick]' => '',
@@ -356,7 +364,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Edit your bot\'s personality"',
             '[linkLabel]' => 'Bot Personality'
         ),
-        array(
+        array( # Conversation Logs
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=logs"',
             '[linkOnclick]' => '',
@@ -364,7 +372,15 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="View the Conversation Logs"',
             '[linkLabel]' => 'Conversation Logs'
         ),
-        array(
+        array( # Unknown inputs
+            '[linkClass]' => ' class="[curClass]"',
+            '[linkHref]' => ' href="index.php?page=unknown_inputs"',
+            '[linkOnclick]' => '',
+            '[linkAlt]' => ' alt="View Unknown Inputs for this bot"',
+            '[linkTitle]' => ' title="View Unknown Inputs"',
+            '[linkLabel]' => 'Unknown Inputs'
+        ),
+        array( # Teach
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=teach"',
             '[linkOnclick]' => '',
@@ -372,7 +388,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Train your bot"',
             '[linkLabel]' => 'Teach'
         ),
-        array(
+        array( # Upload AIML
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=upload"',
             '[linkOnclick]' => '',
@@ -380,7 +396,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Upload AIML files"',
             '[linkLabel]' => 'Upload AIML'
         ),
-        array(
+        array( # Download AIML
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=download"',
             '[linkOnclick]' => '',
@@ -388,7 +404,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Download AIML files"',
             '[linkLabel]' => 'Download AIML'
         ),
-        array(
+        array( # Clear AIML categories
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=clear"',
             '[linkOnclick]' => '',
@@ -396,7 +412,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Clear AIML Categories"',
             '[linkLabel]' => 'Clear AIML Categories'
         ),
-        array(
+        array( # Spellcheck
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=spellcheck"',
             '[linkOnclick]' => '',
@@ -404,7 +420,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Edit the SpellCheck entries"',
             '[linkLabel]' => 'Spell Check'
         ),
-        array(
+        array( # Word censor
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=wordcensor"',
             '[linkOnclick]' => '',
@@ -412,13 +428,21 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Edit the Word Censor entries"',
             '[linkLabel]' => 'Word Censor'
         ),
-        array(
+        array( # Edit AIML
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=editAiml"',
             '[linkOnclick]' => '',
             '[linkAlt]' => ' alt="Search and edit specific AIML categories"',
             '[linkTitle]' => ' title="Search and edit specific AIML categories"',
             '[linkLabel]' => 'Search/Edit AIML'
+        ),
+        array( # Edit user-defined AIML ( from <learn> tag)
+            '[linkClass]' => ' class="[curClass]"',
+            '[linkHref]' => ' href="index.php?page=editUDAiml"',
+            '[linkOnclick]' => '',
+            '[linkAlt]' => ' alt="Search and edit specific AIML categories"',
+            '[linkTitle]' => ' title="Search and edit specific AIML categories"',
+            '[linkLabel]' => 'User Defined AIML'
         ),
         array(
             '[linkClass]' => ' class="[curClass]"',
@@ -554,8 +578,10 @@ function login()
     $pw_hash = md5($post_vars['pw']);
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `myprogramo` WHERE user_name = :user_name AND password = :pw_hash";
+    $sql = 'SELECT * FROM `myprogramo` WHERE user_name = :user_name AND password = :pw_hash;';
     $params = array(':user_name' => $user_name, ':pw_hash' => $pw_hash);
+    $debugSQL = db_parseSQL($sql, $params);
+    save_file(_LOG_PATH_ . 'login.sql.txt', $debugSQL);
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (!empty($row))

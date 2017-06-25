@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: misc_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-22-2013
@@ -28,14 +28,14 @@ function get_cURL($url, $options = array(), $params = array())
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        if (is_array($options) and count($options) > 0)
+        if (is_array($options) && count($options) > 0)
         {
             foreach ($options as $key => $value) {
                 curl_setopt($ch, $key, $value);
             }
         }
 
-        if (is_array($params) and count($params) > 0)
+        if (is_array($params) && count($params) > 0)
         {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
@@ -212,9 +212,11 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
 {
     global $dbConn, $dbn;
 
-    $default_aiml_pattern = get_convo_var($convoArr, 'conversation', 'default_aiml_pattern');
+    $default_aiml_pattern = _strtolower(get_convo_var($convoArr, 'conversation', 'default_aiml_pattern'));
+    $lcInput = _strtolower($input);
 
-    if ($input == $default_aiml_pattern) {
+    if ($lcInput == $default_aiml_pattern) {
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "The input ({$lcInput}) matched the default pattern, so no entry was made.", 2);
         return;
     }
 
@@ -227,6 +229,7 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
         ':user_id' => $user_id,
     );
     $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
+    if ($numRows > 0) runDebug(__FILE__, __FUNCTION__, __LINE__, 'Entry successfully added!', 2);
 }
 
 /**
@@ -253,7 +256,7 @@ function clean_inputs($options = null)
 {
     $referer = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : false;
     $host = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : false;
-    if (false === $host || false === $referer) die ('CSRF failure!');
+    if (false === $host || (false === $referer && 'localhost' !== $host)) die ('CSRF failure!');
     $formVars = array_merge($_GET, $_POST);
 
     switch (true)

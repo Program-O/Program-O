@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: select_bots.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-09-2014
@@ -310,9 +310,9 @@ function updateBotSelection()
     }
     $format = filter_input(INPUT_POST, 'format');
 
-    if (strtoupper($format) !== strtoupper($format))
+    if (_strtoupper($format) !== _strtoupper($format))
     {
-        $format = strtoupper($format);
+        $format = _strtoupper($format);
         $cfn = _CONF_PATH_ . 'global_config.php';
         $configFile = file(_CONF_PATH_ . 'global_config.php', FILE_IGNORE_NEW_LINES);
         $search = '    $format = \'' . $format . '\';';

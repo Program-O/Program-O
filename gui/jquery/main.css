@@ -164,4 +164,83 @@ body {
     right: 47px;
 }
 
+        h3 {
+            text-align: center;
+        }
 
+        hr {
+            width: 80%;
+            color: green;
+            margin-left: 0;
+        }
+
+        .user_name {
+            color: rgb(16, 45, 178);
+        }
+
+        .bot_name {
+            color: rgb(204, 0, 0);
+        }
+
+        #shameless_plug, #urlwarning {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid red;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-shadow: 2px 2px 2px 0 #808080;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        #urlwarning {
+            right: auto;
+            left: 10px;
+            width: 50%;
+            font-size: large;
+            font-weight: bold;
+            background-color: white;
+        }
+
+        .leftside {
+            text-align: right;
+            float: left;
+            width: 48%;
+        }
+
+        .rightside {
+            text-align: left;
+            float: right;
+            width: 48%;
+        }
+
+        .centerthis {
+            width: 90%;
+        }
+
+        #chatdiv {
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        p.center {
+            text-align: center;
+        }
+
+        hr.center {
+            margin: 0 auto;
+        }
+
+        #convo_id {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border: 1px solid red;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-shadow: 2px 2px 2px 0 #808080;
+            padding: 5px;
+            border-radius: 5px;
+        }

@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: upload.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -17,6 +17,10 @@ chdir(_ADMIN_PATH_);
 
 $validationStatus = '';
 $msg = '';
+
+$ZIPenabled = class_exists('ZipArchive');
+// $ZIPenabled = false; // debugging and testing - comment out when complete
+
 libxml_use_internal_errors(true);
 $_SESSION['failCount'] = 0;
 
@@ -164,8 +168,8 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
 
     # Read new file into the XML parser
     /** @noinspection SqlDialectInspection */
-    $sql = 'INSERT INTO `aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`) VALUES
-    (NULL, :bot_id, :aiml, :pattern, :that, :template, :topic, :fileName);';
+    $sql = 'INSERT INTO `aiml` (`id`, `bot_id`, `pattern`, `thatpattern`, `template`, `topic`, `filename`) VALUES
+    (NULL, :bot_id, :pattern, :that, :template, :topic, :fileName);';
 
     # Validate the incoming document
     /*******************************************************/
@@ -245,7 +249,6 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
 
                         $params[] = array(
                             ':bot_id' => $bot_id,
-                            ':aiml' => $aiml_add,
                             ':pattern' => $pattern,
                             ':that' => $that,
                             ':template' => $template,
@@ -279,7 +282,6 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
                     $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
                     $params[] = array(
                         ':bot_id' => $bot_id,
-                        ':aiml' => $aiml_add,
                         ':pattern' => $pattern,
                         ':that' => $that,
                         ':template' => $template,
@@ -291,32 +293,6 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
 
             if (!empty($params))
             {
-                $topic = "";
-                $fullCategory = $category->asXML();
-
-                $pattern = trim($category->pattern);
-                $pattern = str_replace("'", ' ', $pattern);
-                $pattern = _strtoupper($pattern);
-
-                $that = $category->that;
-                $template = $category->template->asXML();
-                //strip out the <template> tags, as they aren't needed
-                $template = substr($template, 10);
-                $tLen = strlen($template);
-                $template = substr($template, 0, $tLen - 11);
-                $template = trim($template);
-                # Strip CRLF and LF from category (Windows/mac/*nix)
-                $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
-                $params[] = array(
-                    ':bot_id' => $bot_id,
-                    ':aiml' => $aiml_add,
-                    ':pattern' => $pattern,
-                    ':that' => $that,
-                    ':template' => $template,
-                    ':topic' => '',
-                    ':fileName' => $fileName
-                );
-
                 $rowCount = db_write($sql, $params, true, __FILE__, __FUNCTION__, __LINE__);
                 $success = ($rowCount !== false) ? true : false;
             }
@@ -353,7 +329,7 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
  */
 function processUpload()
 {
-    global $msg;
+    global $msg, $ZIPenabled;
     // Validate the uploaded file
     if ($_FILES['aimlfile']['size'] === 0 || empty($_FILES['aimlfile']['tmp_name']))
     {
@@ -377,7 +353,15 @@ function processUpload()
             #file_put_contents(_LOG_PATH_ . 'upload.type.txt', 'Type = ' . $_FILES['aimlfile']['type']);
             if ($_FILES['aimlfile']['type'] == 'application/zip' or $_FILES['aimlfile']['type'] == 'application/x-zip-compressed')
             {
-                return processZip($file);
+                //check for ZipArchive class
+                if (!$ZIPenabled)
+                {
+                    $msg .= 'The PHP ZipArchive class is not available on this server, so Zip files cannot be uploaded. However, individual AIML files can be uploaded. We apologise for the inconvenience.';
+                }
+                else
+                {
+                    return processZip($file);
+                }
             }
             else
             {

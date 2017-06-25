@@ -3,7 +3,7 @@
 /***************************************
  * www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: chatbot/core/aiml/parse_aiml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -143,7 +143,7 @@ function swapPerson($convoArr, $person, $input)
         buildVerbList($name, $gender);
     }
 
-    // <person2> = swap first with second poerson (e.g. I with you)
+    // <person2> = swap first with second person (e.g. I with you)
     // <person> swap with third person (e.g. I with he,she,it)
     switch ($gender)
     {
@@ -318,7 +318,7 @@ function set_wildcards($convoArr, $pattern, $type)
         $curCA = print_r($curCA, true);
 
         runDebug(__FILE__, __FUNCTION__, __LINE__, "We have pattern stars to process!", 2);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Current Convo Array:\n$curCA", 2);
+        //runDebug(__FILE__, __FUNCTION__, __LINE__, "Current Convo Array:\n$curCA", 2);
 
         if (!isset ($convoArr['aiml']['user_raw']))
         {
@@ -418,7 +418,7 @@ function run_srai(&$convoArr, $now_look_for_this)
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
 
-    if ($bot_parent_id != 0 and $bot_parent_id != $bot_id)
+    if ($bot_parent_id != 0 && $bot_parent_id != $bot_id)
     {
         $sql_bot_select = " (bot_id = '$bot_id' OR bot_id = '$bot_parent_id') ";
     }
@@ -430,7 +430,7 @@ function run_srai(&$convoArr, $now_look_for_this)
     /* disabling srai_lookup    runDebug(__FILE__, __FUNCTION__, __LINE__,'Checking for entries in the srai_lookup table.', 2);
         runDebug(__FILE__, __FUNCTION__, __LINE__,"google bot_id = $bot_id", 2);
         $lookingfor = $convoArr['aiml']['lookingfor'];
-        //$now_look_for_this = strtoupper($now_look_for_this);
+        //$now_look_for_this = _strtoupper($now_look_for_this);
         $sql = "select `template_id` from `$dbn`.`srai_lookup` where `pattern` = '$now_look_for_this' and $sql_bot_select;";
         runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = $sql", 2);
         $row = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);

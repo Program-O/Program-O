@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: allowedVars.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 01-19-2015
@@ -101,6 +101,9 @@ $allowed_pages = array(
     'editAiml' => array(
         'page' => FILTER_SANITIZE_STRING,
     ),
+    'editUDAiml' => array(
+        'page' => FILTER_SANITIZE_STRING,
+    ),
     'logs' => array(
         'showing' => FILTER_SANITIZE_STRING,
         'id' => FILTER_SANITIZE_STRING,
@@ -159,6 +162,10 @@ $allowed_pages = array(
         'clearDB' => FILTER_SANITIZE_STRING,
         'bot_id' => FILTER_SANITIZE_STRING,
         'action' => FILTER_SANITIZE_STRING,
+        'page' => FILTER_SANITIZE_STRING,
+    ),
+    'unknown_inputs' => array(
+        'id' => FILTER_SANITIZE_STRING,
         'page' => FILTER_SANITIZE_STRING,
     ),
     'wordcensor' => array(

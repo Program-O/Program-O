@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -22,7 +22,12 @@ if (is_nan($bot_id) || empty($bot_id))
 setcookie('bot_id', $bot_id);
 
 // Experimental code
-$base_URL = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
+$HXFP  = (isset($_SERVER['HTTP_X_FORWARDED_PORT'])) ? $_SERVER['HTTP_X_FORWARDED_PORT'] : '';
+$HSP   = (isset($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : '';
+$HTTPS = (isset($_SERVER['HTTPS'])) ? $_SERVER['HTTPS'] : '';
+$HHOST = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
+$protocol = ((!empty($HTTPS) && $HTTPS != 'off') || $HSP == 443 || $HXFP == 443) ? "https://" : "http://";
+$base_URL = $protocol . $HHOST;                                   // set domain name for the script
 $this_path = str_replace(DIRECTORY_SEPARATOR, '/', realpath(dirname(__FILE__)));  // The current location of this file, normalized to use forward slashes
 $this_path = str_replace($_SERVER['DOCUMENT_ROOT'], $base_URL, $this_path);       // transform it from a file path to a URL
 $url = str_replace('gui/jquery', 'chatbot/conversation_start.php', $this_path);   // and set it to the correct script location
@@ -62,95 +67,15 @@ function jq_get_convo_id()
 <html>
 <head>
     <meta charset="UTF-8"/>
+    <meta name="Description" content="A Free Open Source AIML PHP MySQL Chatbot called Program-O. Version2"/>
+    <meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2"/>
     <title>Program O jQuery GUI Examples</title>
     <link rel="stylesheet" type="text/css" href="main.css" media="all"/>
     <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"/>
-
-    <meta name="Description" content="A Free Open Source AIML PHP MySQL Chatbot called Program-O. Version2"/>
-    <meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2"/>
-    <style type="text/css">
-        h3 {
-            text-align: center;
-        }
-
-        hr {
-            width: 80%;
-            color: green;
-            margin-left: 0;
-        }
-
-        .user_name {
-            color: rgb(16, 45, 178);
-        }
-
-        .bot_name {
-            color: rgb(204, 0, 0);
-        }
-
-        #shameless_plug, #urlwarning {
-            position: absolute;
-            right: 10px;
-            bottom: 10px;
-            border: 1px solid red;
-            box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            box-shadow: 2px 2px 2px 0 #808080;
-            padding: 5px;
-            border-radius: 5px;
-        }
-
-        #urlwarning {
-            right: auto;
-            left: 10px;
-            width: 50%;
-            font-size: large;
-            font-weight: bold;
-            background-color: white;
-        }
-
-        .leftside {
-            text-align: right;
-            float: left;
-            width: 48%;
-        }
-
-        .rightside {
-            text-align: left;
-            float: right;
-            width: 48%;
-        }
-
-        .centerthis {
-            width: 90%;
-        }
-
-        #chatdiv {
-            margin-top: 20px;
-            text-align: center;
-            width: 100%;
-        }
-
-        p.center {
-            text-align: center;
-        }
-
-        hr.center {
-            margin: 0 auto;
-        }
-
-        #convo_id {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            border: 1px solid red;
-            box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            box-shadow: 2px 2px 2px 0 #808080;
-            padding: 5px;
-            border-radius: 5px;
-        }
-    </style>
+    <script type="text/javascript">
+    var URL = '<?php echo $url ?>';
+    </script>
 </head>
 <body>
 <h3>Program O JSON GUI</h3>
@@ -208,12 +133,15 @@ function jq_get_convo_id()
         // put all your jQuery goodness in here.
         $('#talkform').submit(function (e) {
             e.preventDefault();
+            $('#urlwarning').empty();
+            $('.botsay').html('(Thinking...)');
             var user = $('#say').val();
             $('.usersay').text(user);
             var formdata = $("#talkform").serialize();
             $('#say').val('');
             $('#say').focus();
-            $.get('<?php echo $url ?>', formdata, function (data) {
+            $.get(URL, formdata, function (data) {
+                console.info('Data =', data);
                 var b = data.botsay;
                 if (b.indexOf('[img]') >= 0) {
                     b = showImg(b);
@@ -226,8 +154,10 @@ function jq_get_convo_id()
                     $('.usersay').text(usersay);
                 }
                 $('.botsay').html(b);
+                $('#urlwarning').hide();
             }, 'json').fail(function (xhr, textStatus, errorThrown) {
-                $('#urlwarning').html("Something went wrong! Error = " + errorThrown);
+                console.error('XHR =', xhr.responseText);
+                $('#urlwarning').html("Something went wrong! Error = " + errorThrown).show();
             });
             return false;
         });

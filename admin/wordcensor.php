@@ -3,7 +3,6 @@
 $msg = '';
 $upperScripts = <<<endScript
 
-    <script type="text/javascript" src="scripts/tablesorter.min.js"></script>
     <script type="text/javascript">
 <!--
       var state = 'hidden';
@@ -124,7 +123,7 @@ function wcPaginate()
     $prevLink = ($prev > 0) ? str_replace('[group]', $prev, $link) : '';
     $curLink = "- $curStart ";
 
-    if (empty ($firstLink) and empty ($prevLink))
+    if (empty ($firstLink) && empty ($prevLink))
     {
         $curLink = $curStart;
     }

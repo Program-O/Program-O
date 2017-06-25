@@ -1,11 +1,12 @@
 # [Program O](http://www.program-o.com)
 
 Readme info:
-- Version: 2.6.4
+- Version: 2.6.7
 - Authors: Elizabeth Perreau and Dave Morton
-- Date: May 17th 2014
+- Date: June 19th 2014
 
-**NEWS:** Nothing new to report, really. Just got tired of seeing "news" about version 2.4.6 here, which was over a year old.
+**NEWS:** Version 2.6.7 is out, with a new feature! Please see the
+[CHANGELOG](CHANGELOG.md) for details!
 
 ## Introduction
 
