@@ -135,7 +135,7 @@ function add_text_tags($input)
 function implode_recursive($glue, $input, $file = 'unknown', $function = 'unknown', $line = 'unknown')
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Imploding an array into a string. (recursively, if necessary)', 2);
-    #runDebug(__FILE__, __FUNCTION__, __LINE__, "This function was called from $file, function $function at line $line.", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Input: ' . print_r($input, true) . "\n", 2);
     if (empty($input)) {
         return '';
     }
@@ -938,7 +938,7 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
                 }
                 else
                 {
-                    $pick = $pick->asXML();
+                    //$pick = $pick->asXML();
                 }
             }
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($pick, true), 4);
@@ -959,6 +959,7 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
 
         return $error_response;
     }
+
 
     $children = (is_object($pick)) ? $pick->children() : null;
 
