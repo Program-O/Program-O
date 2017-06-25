@@ -1059,7 +1059,7 @@ function parse_html_tag($convoArr, $element, $parentName, $level)
     $tagName = preg_replace('/[^a-z]+/', '', $openTag);
 
     // If tag is not a break element add the closing tag
-    if ($tagName != 'br') {
+    if (!in_array($tagName, array('area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param', 'track', 'wbr'))) {
         $response_string .= $closeTag;
     }
 
