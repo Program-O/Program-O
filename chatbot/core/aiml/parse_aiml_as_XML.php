@@ -1055,7 +1055,13 @@ function parse_html_tag($convoArr, $element, $parentName, $level)
     {
         $response_string .= implode_recursive(' ', parseTemplateRecursive($convoArr, $kid, $level + 1), __FILE__, __FUNCTION__, __LINE__); //
     }
-    $response_string .= $closeTag;
+
+    $tagName = preg_replace('/[^a-z]+/', '', $openTag);
+
+    // If tag is not a break element add the closing tag
+    if (!in_array($tagName, array('area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param', 'track', 'wbr'))) {
+        $response_string .= $closeTag;
+    }
 
     return $response_string;
 }
