@@ -126,6 +126,7 @@
         <xs:element ref="aiml:person"/>
         <xs:element ref="aiml:person2"/>
         <xs:element ref="aiml:ul"/>
+        <xs:element ref="aiml:ol"/>
         <xs:element ref="aiml:p"/>
         <xs:element ref="aiml:bot"/>
         <xs:element ref="aiml:that"/>
@@ -347,6 +348,14 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="ol">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="aiml:li"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="aiml:attrs"/>
+    </xs:complexType>
+  </xs:element>
 
   <xs:simpleType name="Number">
     <xs:restriction base="xs:nonNegativeInteger">
