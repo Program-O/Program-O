@@ -125,7 +125,6 @@
         <xs:element ref="aiml:star"/>
         <xs:element ref="aiml:person"/>
         <xs:element ref="aiml:person2"/>
-        <xs:element ref="aiml:ol"/>
         <xs:element ref="aiml:ul"/>
         <xs:element ref="aiml:p"/>
         <xs:element ref="aiml:bot"/>
@@ -166,9 +165,177 @@
          <xs:element ref="aiml:google"/>
          <xs:element ref="aiml:script"/>
          <xs:element ref="aiml:font"/>
+         <xs:element ref="aiml:hr"/>
+         <xs:element ref="aiml:area"/>
+         <xs:element ref="aiml:base"/>
+         <xs:element ref="aiml:col"/>
+         <xs:element ref="aiml:link"/>
+         <xs:element ref="aiml:meta"/>
+         <xs:element ref="aiml:param"/>
+         <xs:element ref="aiml:pre"/>
     </xs:choice>
   </xs:complexType>
 
+
+
+  <xs:element name="param">
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="value"/>
+      <xs:attribute name="valuetype" default="data">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="data"/>
+            <xs:enumeration value="ref"/>
+            <xs:enumeration value="object"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="type" type="aiml:ContentType"/>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="meta">
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attribute name="http-equiv"/>
+      <xs:attribute name="name"/>
+      <xs:attribute name="content" use="required"/>
+      <xs:attribute name="scheme"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="link">
+    <xs:complexType>
+      <xs:attributeGroup ref="aiml:attrs"/>
+      <xs:attribute name="charset" type="aiml:Charset"/>
+      <xs:attribute name="href" type="aiml:URI"/>
+      <xs:attribute name="type" type="aiml:ContentType"/>
+      <xs:attribute name="rel" type="aiml:LinkTypes"/>
+      <xs:attribute name="rev" type="aiml:LinkTypes"/>
+      <xs:attribute name="media" type="aiml:MediaDesc"/>
+      <xs:attribute name="target" type="aiml:FrameTarget"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="Charset">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="LinkTypes">
+    <xs:restriction base="xs:NMTOKENS"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="MediaDesc">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[^,]+(,\s*[^,]+)*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <xs:attributeGroup name="focus">
+    <xs:attribute name="accesskey" type="aiml:Character"/>
+    <xs:attribute name="tabindex" type="aiml:tabindexNumber"/>
+    <xs:attribute name="onfocus" type="aiml:Script"/>
+    <xs:attribute name="onblur" type="aiml:Script"/>
+  </xs:attributeGroup>
+
+  <xs:element name="area">
+    <xs:complexType>
+      <xs:attributeGroup ref="aiml:attrs"/>
+      <xs:attributeGroup ref="aiml:focus"/>
+      <xs:attribute name="shape" default="rect" type="aiml:Shape"/>
+      <xs:attribute name="coords" type="aiml:Coords"/>
+      <xs:attribute name="href" type="aiml:URI"/>
+      <xs:attribute name="nohref">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="nohref"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="alt" use="required" type="aiml:Text"/>
+      <xs:attribute name="target" type="aiml:FrameTarget"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="Script">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="tabindexNumber">
+    <xs:restriction base="aiml:Number">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="32767"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Shape">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="rect"/>
+      <xs:enumeration value="circle"/>
+      <xs:enumeration value="poly"/>
+      <xs:enumeration value="default"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+    <xs:simpleType name="Coords">
+    <xs:restriction base="xs:string">
+      <xs:pattern
+          value="[-+]?(\d+|\d+(\.\d+)?%)(,\s*[-+]?(\d+|\d+(\.\d+)?%))*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="base">
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attribute name="href" type="aiml:URI"/>
+      <xs:attribute name="target" type="aiml:FrameTarget"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="pre">
+    <xs:complexType mixed="true">
+      <xs:complexContent>
+        <xs:extension base="aiml:pre.content">
+          <xs:attributeGroup ref="aiml:attrs"/>
+         <xs:attribute name="width" type="aiml:Number"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="pre.content" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="aiml:a"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:element name="hr">
+    <xs:complexType>
+      <xs:attributeGroup ref="aiml:attrs"/>
+      <xs:attribute name="align">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="left"/>
+            <xs:enumeration value="center"/>
+            <xs:enumeration value="right"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="noshade">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="noshade"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="size" type="aiml:Pixels"/>
+      <xs:attribute name="width" type="aiml:Length"/>
+    </xs:complexType>
+  </xs:element>
 
   <xs:element name="b">
     <xs:complexType mixed="true">
@@ -626,7 +793,7 @@
       </xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:NMTOKEN">
-      <xs:pattern value="_(new|blank|self|parent|top)|[A-Za-z]\c*"/>
+      <xs:pattern value="_(blank|self|parent|top)|[A-Za-z]\c*"/>
     </xs:restriction>
   </xs:simpleType>  
   
@@ -658,6 +825,7 @@
       <xs:group ref="aiml:misc.inline"/>
     </xs:choice>
   </xs:group>
+
 
   <xs:element name="script">
     <xs:complexType mixed="true">
@@ -698,13 +866,6 @@
   </xs:element>
   
   <xs:element name="ul">
-    <xs:complexType>
-      <xs:sequence maxOccurs="unbounded">
-        <xs:element ref="aiml:li"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="ol">
     <xs:complexType>
       <xs:sequence maxOccurs="unbounded">
         <xs:element ref="aiml:li"/>
