@@ -32,7 +32,16 @@ function db_open()
         $dbConn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
     }
     catch (Exception $e) {
-        exit('Program O has encountered a problem with connecting to the database. With any luck, the following message will help: ' . $e->getMessage());
+        //exit('Program O has encountered a problem with connecting to the database. With any luck, the following information will help: ' . $e->getMessage());
+        $errMsg = <<<endMsg
+Program O has encountered a problem with connecting to the database. With any luck, the following information will help:<br>
+Error message: {$e->getMessage()}<br>
+Host: {$dbh}<br>
+Port: {$dbPort}<br>
+User: {$dbu}<br>
+Pass: {$dbp}<br>
+endMsg;
+        exit($errMsg);
     }
 
     return $dbConn;

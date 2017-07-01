@@ -757,6 +757,14 @@ between the start and end section tags are the only parts of the template that a
                 var parent = document.getElementById(element);
                 parent.style.display = 'block';
             }
+            function showProgressImg() {
+                var img = '<img src="images/progressbar.gif"/>';
+                var closeButton = document.getElementById('closeButton');
+                var errMsg = document.getElementById('errMsg');
+                errMsg.style.display = 'block';
+                errMsg.innerHTML += closeButton.innerHTML;
+                errMsg.innerHTML += img + '<p>Please wait...</p>';
+            }
             var logoStatus = getCookie('display');
             logoStatus = (logoStatus == 'Hide' || logoStatus == 'Show') ? logoStatus : 'Show';
             var func = logoStatus + 'Logo()';
@@ -949,7 +957,7 @@ between the start and end section tags are the only parts of the template that a
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <input type="submit" name="action" id="action" value="upload"/>
+                        <input type="submit" name="action" id="action" value="upload" onclick="showProgressImg()"/>
                     </td>
                 </tr>
             </table>
