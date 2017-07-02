@@ -131,7 +131,7 @@ switch ((int) $page)
             $txtPerms = showPerms($permissions);
             $writeErrorTemplate = "            <li style=\"color: black\">The {$key} folder ({$folder}) is not writable.<span class=\"floatRight\"> Permissions: {$txtPerms}</span></li>";
             $writeFlag = (is_writable($folder)) ? true : (chmod($folder, 0755));
-            $writeFlag = ($key !== 'debug') ? true : false; // Debugging/testing code. Comment out unless testing or debugging
+            //$writeFlag = ($key !== 'debug') ? true : false; // Debugging/testing code. Comment out unless testing or debugging
             $writeErrorText .= ($writeFlag) ? '' : $writeErrorTemplate;
             $errFlag = (!$writeFlag) ? true: $errFlag;
             $curSpan = str_replace('[perms]', $txtPerms, $curSpan);
