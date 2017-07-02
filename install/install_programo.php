@@ -56,7 +56,7 @@ foreach ($writeCheckArray as $key => $folder)
             error_log("The folder $folder is not writable. Folder exists?: $dirExists. Permissions: $txtPerms." . PHP_EOL, 3, '../logs/install.log');
 
             $errFlag = true;
-            $errorMessage .= "<p class=\"red bold\">The $key folder cannot be written to, or does not exist. Please correct this before you continue.</p>";
+            $errorMessage .= "<p class=\"red bold\">The $key folder located here: $folder cannot be written to, or does not exist. Please correct this before you continue.</p>";
         }
         else
         {
