@@ -153,7 +153,7 @@ function runSearch()
     /** @noinspection PhpUndefinedVariableInspection */
     $sql = "SELECT id, user_id, pattern, thatpattern, template FROM `aiml_userdefined` " . "WHERE `bot_id` = ? AND ($searchTerms) order by $orderBy limit $start, $length;"; //
     $debugSQL = db_parseSQL($sql, $searchParams);
-    file_put_contents(_LOG_PATH_ . 'editUDAJAX.sql.txt', $debugSQL);
+    //file_put_contents(_LOG_PATH_ . 'editUDAJAX.sql.txt', $debugSQL);
     $result = db_fetchAll($sql, $searchParams, __FILE__, __FUNCTION__, __LINE__);
 
     /** @noinspection PhpUndefinedVariableInspection */

@@ -658,7 +658,7 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
     $bestResponse = array();
     $defined_constants = get_defined_constants(true);
     $my_constants = $defined_constants['user'];
-    save_file(_LOG_PATH_ . 'constants.txt', print_r($my_constants, true));
+    //save_file(_LOG_PATH_ . 'constants.txt', print_r($my_constants, true));
     if ($resultCount > 0)
     {
         $first_match = $tmpArr[0];

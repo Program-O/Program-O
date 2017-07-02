@@ -42,6 +42,7 @@ $showHelp = $template->getSection('ClearShowHelp');
 $mainTitle = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
 $mainContent = str_replace('[showHelp]', $showHelp, $mainContent);
 $mainContent = str_replace('[upperScripts]', $upperScripts, $mainContent);
+$mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
 
 /**
  * Function clearAIML
@@ -53,8 +54,9 @@ function clearAIML()
 {
     global $dbn, $bot_id, $bot_name, $dbConn;
     /** @noinspection SqlDialectInspection */
-    $sql = "DELETE FROM `aiml` WHERE `bot_id` = $bot_id;";
-    $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "DELETE FROM `aiml` WHERE `bot_id` = :bot_id;";
+    $params = array(':bot_id' => $bot_id);
+    $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
     $msg = "<strong>All AIML categories cleared for $bot_name!</strong><br />";
 
     return $msg;

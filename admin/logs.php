@@ -21,10 +21,6 @@
     ini_set('display_errors', false);
     if (!isset($dbConn)) $dbConn = db_open();
 
-    $session_name = 'PGO_Admin';
-    session_name($session_name);
-    session_start();
-
     $allowed_get_vars = array(
     // Make sure to put at least something in here, like this:
         'page' => FILTER_DEFAULT,
@@ -150,7 +146,7 @@ function getUserList($bot_id, $showing)
         ':bot_id' => $bot_id,
     );
     $debugSQL = db_parseSQL($sql, $params);
-    save_file(_LOG_PATH_ . __FUNCTION__ . '.sql.txt', $debugSQL);
+    //save_file(_LOG_PATH_ . __FUNCTION__ . '.sql.txt', $debugSQL);
     $rows = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $numRows = count($rows);
 
@@ -294,7 +290,7 @@ endLink;
     $list = "<hr><br/><h4>{$title}:</h4>";
     $list .= '<div class="convolist">';
     $debugSQL = db_parseSQL($sql, $params);
-    save_file(_LOG_PATH_ . __FUNCTION__ . '.sql.txt', $debugSQL);
+    //save_file(_LOG_PATH_ . __FUNCTION__ . '.sql.txt', $debugSQL);
 
     $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $storedRows = array();
@@ -348,7 +344,7 @@ function clearLogs()
     $idRegEx =implode(' OR `id` = ', $storedRows[$sr]);
     list($bot_id, $user_id, $timestamp) = explode('_', $sr);
     $sql = "DELETE from `conversation_log` where id = $idRegEx;";
-    save_file(_LOG_PATH_ . 'clearLogs.sql.txt', $sql);
+    //save_file(_LOG_PATH_ . 'clearLogs.sql.txt', $sql);
     $numRows = db_write($sql);
     If ($numRows > 0)
     {

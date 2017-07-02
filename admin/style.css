@@ -249,6 +249,11 @@ span.eightyPercent textarea.wide {
     text-align: center;
 }
 
+.clrFrmTDBottom {
+    vertical-align: bottom !important;
+    margin: 14px auto 0 auto !important;
+}
+
 .bold {
     font-weight: bold;
 }
@@ -992,6 +997,12 @@ table td#notes {
     clear: none;
 }
 
+.floatLeft {
+    float: left;
+    clear: none;
+}
+.tal {text-align: left;}
+
 #helpLink1 {
     float: left;
     margin-bottom: 10px;
@@ -1009,7 +1020,7 @@ td input[type="checkbox"], input[type="radio"], td select {
 
 .formTable {
     border: none;
-    width: 98%;
+    width: 48%;/**/
     margin: 10px auto;
     padding: 5px;
 }

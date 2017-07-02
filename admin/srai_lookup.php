@@ -131,7 +131,7 @@ function fillLookup()
         }
     }
 
-    save_file(_LOG_PATH_ . 'srai_lookup.patterns.txt', print_r($patterns, true));
+    //save_file(_LOG_PATH_ . 'srai_lookup.patterns.txt', print_r($patterns, true));
 
     /** @noinspection SqlDialectInspection */
     $patternSQL = 'SELECT id FROM aiml WHERE pattern = :pattern AND bot_id = :bot_id ORDER BY id limit 1;';

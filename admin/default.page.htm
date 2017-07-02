@@ -759,11 +759,11 @@ between the start and end section tags are the only parts of the template that a
             }
             function showProgressImg() {
                 var img = '<img src="images/progressbar.gif"/>';
-                var closeButton = document.getElementById('closeButton');
+                var closeButton = '<div class="closeButton" id="closeButton" onclick="closeStatus(\'errMsg\')" title="Click to hide">&nbsp;</div>';
                 var errMsg = document.getElementById('errMsg');
                 errMsg.style.display = 'block';
-                errMsg.innerHTML += closeButton.innerHTML;
-                errMsg.innerHTML += img + '<p>Please wait...</p>';
+                errMsg.innerHTML = '';
+                errMsg.innerHTML = closeButton + img + '<p>Please wait...</p>';
             }
             var logoStatus = getCookie('display');
             logoStatus = (logoStatus == 'Hide' || logoStatus == 'Show') ? logoStatus : 'Show';
@@ -908,7 +908,7 @@ between the start and end section tags are the only parts of the template that a
         <div id="uploadForm" class="fullWidth noBorder">
             <p>
                 Use this uploader to add AIML categories to your chatbot's database. You have the option
-                to upload either individual AIML files, or ZIP archive files of up to 2MB in size.
+                to upload either individual AIML files, or ZIP archive files of up to [fs_limit_title] in size.
                 This uploader no longer performs XML validation, so you need to validate your AIML files prior to
                 uploading them. It's <strong><u>STRONGLY SUGGESTED</u></strong> that you use either W3School's
                 <a href="http://www.w3schools.com/xml/xml_validator.asp" target="_blank">XML Validator</a>,
@@ -1338,23 +1338,20 @@ between the start and end section tags are the only parts of the template that a
                         </td>
                         <td>
                             <input type="radio" name="action" id="actionClearAll" value="clear">
-                            <label for="actionClearAll" style="width: 250px">Clear <strong>ALL</strong> AIML categories (Purge
-                                database)</label>
+                            <label for="actionClearAll" style="width: 250px">Clear <b><u>ALL</u></b> AIML categories for [bot_name]</label>
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">
-                            <select name="clearFile" id="clearFile" size="1" style="margin: 14px;"
+                        <td class="center">
+                            <select name="clearFile" id="clearFile" size="1" class="clrFrmTDBottom"
                                     onclick="document.getElementById('actionClearFile').checked = true"
                                     onchange="document.getElementById('actionClearFile').checked = true">
                                 <option value="null" selected="selected">Choose a file</option>
                                 [selectOptions]
                             </select>
                         </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <input type="submit" name="" value="Submit">
+                        <td class="center" style="vertical-align: baseline">
+                            <input class="clrFrmTDBottom" type="submit" name="" value="Submit">
                         </td>
                     </tr>
                 </table>

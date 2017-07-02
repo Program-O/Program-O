@@ -96,51 +96,6 @@ if (!$sd_exists)
 
 define('_SESSION_PATH_', $full_session_path);
 
-$writeCheckArray = array('config' => _CONF_PATH_, 'debug' => _DEBUG_PATH_, 'logs' => _LOG_PATH_, 'session' => _SESSION_PATH_);
-$errFlag = false;
-
-foreach ($writeCheckArray as $key => $folder)
-{
-    if (!is_writable($folder))
-    {
-        $test = file_put_contents("{$folder}test.txt", $key);
-        if (false === $test)
-        {
-            $dirExists = (file_exists($folder)) ? 'true' : 'false';
-            $permissions = fileperms($folder);
-            $txtPerms = showPerms($permissions);
-            error_log("The {$key} folder ({$folder}) is not writable. Folder exists?: $dirExists. Permissions: $txtPerms." . PHP_EOL, 3, _LOG_PATH_ . 'install.error.log');
-
-            $errFlag = true;
-            $errorMessage .= "<p class=\"red bold\">The $key folder cannot be written to, or does not exist. Please correct this before you continue.</p>";
-        }
-        else
-        {
-            unlink("{$folder}test.txt");
-        }
-    }
-}
-
-$additionalInfo = <<<endInfo
-  <p>
-    This is usually a permissions issue, and most often occurs with Linux-based systems. Check
-    file/folder permissions for the following directories:
-    <ul>
-      <li>The base install folder (where you unzipped or uploaded the script to)</li>
-      <li>admin</li>
-      <li>config</li>
-      <li>chatbot/debug</li>
-    </ul>
-    Permissions for these folders should be 0755. If they are not, then you need to change that. If you
-    have trouble with this, or have questions, please report the issue on
-    <a href="https://github.com/Program-O/Program-O/issues">our GitHub page</a>.
-  </p>
-endInfo;
-
-if ($errFlag) {
-    $errorMessage .= $additionalInfo;
-}
-
 $myHost = $_SERVER['SERVER_NAME'];
 chdir(dirname(realpath(__FILE__)));
 $page = (isset ($input_vars['page'])) ? $input_vars['page'] : 0;
@@ -160,12 +115,55 @@ $submitButton = $template->getSection('SubmitButton');
 switch ((int) $page)
 {
     case 0:
-        $pvpf = ($version_compare >= 0) ? 'true' : 'false';
         $main = $template->getSection('Checklist');
+        $writeCheckArray = array('config' => _CONF_PATH_, 'debug' => _DEBUG_PATH_, 'logs' => _LOG_PATH_, 'session' => _SESSION_PATH_);
+        $writeCheckKeys  = array('config' => '[cfw]', 'debug' => '[dfw]', 'logs' => '[lfw]', 'session' => '[sfw]');
+        $writeCheckRepl  = array();
+        $errFlag = false;
+        $writableTemplate = '<span class="ext_[tf] floatRight">[tf]</span>';
+        $writeErrorText = '';
+        foreach ($writeCheckArray as $key => $folder)
+        {
+            $testFile = "{$folder}_test.txt";
+            $searchTag = $writeCheckKeys[$key];
+            $curSpan = $writableTemplate;
+            $permissions = fileperms($folder);
+            $txtPerms = showPerms($permissions);
+            $writeErrorTemplate = "            <li style=\"color: black\">The {$key} folder ({$folder}) is not writable.<span class=\"floatRight\"> Permissions: {$txtPerms}</span></li>";
+            $writeFlag = (is_writable($folder)) ? true : (chmod($folder, 0755));
+            $writeFlag = ($key !== 'debug') ? true : false; // Debugging/testing code. Comment out unless testing or debugging
+            $writeErrorText .= ($writeFlag) ? '' : $writeErrorTemplate;
+            $errFlag = (!$writeFlag) ? true: $errFlag;
+            $curSpan = str_replace('[perms]', $txtPerms, $curSpan);
+            $curSpan = str_replace('[tf]', ($writeFlag) ? 'true' : 'false', $curSpan);
+            $main = str_replace($searchTag, $curSpan, $main);
+        }
+
+        $additionalInfo = <<<endInfo
+        <div class="m0a w50">
+            <p>
+                The following folders had permissions problems that PHP could not fix. This is usually an 'ownership' issue, and
+                most often occurs with Linux-based systems. Please check owner and group settings for the following directories:
+                <ul class="tal">
+$writeErrorText
+                </ul>
+                <hr/>
+                Owner and group for these folders should be the same as those of your web server software. If they are not, then you
+                need to change that. If you have trouble with this, or have questions, please report the issue on
+                <a href="https://github.com/Program-O/Program-O/issues">our GitHub page</a>.
+            </p>
+        </div>
+endInfo;
+
+        $reqs_not_met = '';
+        if ($errFlag) {
+            $reqs_not_met .= $additionalInfo;
+        }
+
+        $pvpf = ($version_compare >= 0) ? 'true' : 'false';
         $liTemplate = '                            <li class="[oe]">PDO [ext] extension enabled?: <span class="ext_[tf] floatRight">[tf]</span></li>' . PHP_EOL;
         $pdo_reqs = '';
         $oddEven = 0;
-        $reqs_met = false;
         foreach ($pdoExtensionsArray as $ext)
         {
             $oeClass = ($oddEven % 2 === 0) ? 'odd' : 'even';
@@ -178,7 +176,6 @@ switch ((int) $page)
             $pdo_reqs .= $curLi;
             if ($tf !== 'false') $oddEven++;
         }
-        $reqs_not_met = '';
         if (empty($pdo_reqs)) # || true # Again, debugging/testing code, to be commented out for actual use.
         {
             $pdo_reqs = $liTemplate;
@@ -191,7 +188,7 @@ switch ((int) $page)
         {
             $reqs_not_met .= "Your PHP version ({$myPHP_Version}) is older than the minimum required version of {$php_min_version}, so the install process cannot continue.<br>";
         }
-        else $reqs_met = true;
+        $reqs_met = empty($reqs_not_met);
         $main = str_replace('[pdo_reqs]', rtrim($pdo_reqs), $main);
         $rec_exts = '';
         $oddEven = 0;

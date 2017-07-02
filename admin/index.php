@@ -581,7 +581,7 @@ function login()
     $sql = 'SELECT * FROM `myprogramo` WHERE user_name = :user_name AND password = :pw_hash;';
     $params = array(':user_name' => $user_name, ':pw_hash' => $pw_hash);
     $debugSQL = db_parseSQL($sql, $params);
-    save_file(_LOG_PATH_ . 'login.sql.txt', $debugSQL);
+    //save_file(_LOG_PATH_ . 'login.sql.txt', $debugSQL);
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (!empty($row))
