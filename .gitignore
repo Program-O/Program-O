@@ -14,8 +14,6 @@ admin/editAIML.htm
 config/global_config.php
 config/global_config*.php
 global_config.php
-!chatbot/debug/
-!chatbot/debug/profile.php
 chatbot/debug/*.txt
 library/reference/*.txt
 logs/*.log
@@ -24,7 +22,6 @@ backups
 backups/*
 patch.php
 DOM_ProofOfConcept
-_*
 
 #################
 ## WeBuilder/ Rapid PHP
@@ -89,8 +86,8 @@ local.properties
 *.sln.docstates
 
 # Build results
-[Dd]ebug/
-[Rr]elease/
+./[Dd]ebug/
+./[Rr]elease/
 *_i.c
 *_p.c
 *.ilk
