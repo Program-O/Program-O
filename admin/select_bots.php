@@ -72,7 +72,7 @@ function getBotParentList($current_parent)
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT * FROM `bots` WHERE bot_active = '1'";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
     $options = '                  <option value="0"[noBot]>No Parent Bot</option>';
 
     foreach ($result as $row)
@@ -262,10 +262,10 @@ function updateBotSelection()
     $msg = '';
     $bot_id = $post_vars['bot_id'];
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM bots WHERE bot_id = $bot_id;";
-    $result = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT * FROM bots WHERE bot_id = :bot_id;";
+    $params = array(':bot_id' => $bot_id);
+    $result = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $sql = '';
-    $params = array();
     $skipVars = array('bot_id', 'action', 'useBranch');
 
     foreach ($post_vars as $key => $value)
@@ -284,13 +284,14 @@ function updateBotSelection()
         if ($result[$key] != $post_vars[$key])
         {
             /** @noinspection SqlDialectInspection */
-            $sql .= "UPDATE `bots` SET `$key` = '$safeVal' WHERE `bot_id` = $bot_id limit 1;\n";
+            $sql .= "UPDATE `bots` SET `$key` = :{$key}_safeVal WHERE `bot_id` = :bot_id limit 1;\n";
+            $params["{$key}_safeVal"] = $safeVal;
         }
     }
 
     if (!empty($sql))
     {
-        $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows == 0)
         {
@@ -406,68 +407,69 @@ function make_bot_predicates($bot_id)
 
     $sql = <<<endSQL
 INSERT INTO `botpersonality` VALUES
-  (NULL,  $bot_id, 'age', ''),
-  (NULL,  $bot_id, 'baseballteam', ''),
-  (NULL,  $bot_id, 'birthday', ''),
-  (NULL,  $bot_id, 'birthplace', ''),
-  (NULL,  $bot_id, 'botmaster', ''),
-  (NULL,  $bot_id, 'boyfriend', ''),
-  (NULL,  $bot_id, 'build', ''),
-  (NULL,  $bot_id, 'celebrities', ''),
-  (NULL,  $bot_id, 'celebrity', ''),
-  (NULL,  $bot_id, 'class', ''),
-  (NULL,  $bot_id, 'email', ''),
-  (NULL,  $bot_id, 'emotions', ''),
-  (NULL,  $bot_id, 'ethics', ''),
-  (NULL,  $bot_id, 'etype', ''),
-  (NULL,  $bot_id, 'family', ''),
-  (NULL,  $bot_id, 'favoriteactor', ''),
-  (NULL,  $bot_id, 'favoriteactress', ''),
-  (NULL,  $bot_id, 'favoriteartist', ''),
-  (NULL,  $bot_id, 'favoriteauthor', ''),
-  (NULL,  $bot_id, 'favoriteband', ''),
-  (NULL,  $bot_id, 'favoritebook', ''),
-  (NULL,  $bot_id, 'favoritecolor', ''),
-  (NULL,  $bot_id, 'favoritefood', ''),
-  (NULL,  $bot_id, 'favoritemovie', ''),
-  (NULL,  $bot_id, 'favoritesong', ''),
-  (NULL,  $bot_id, 'favoritesport', ''),
-  (NULL,  $bot_id, 'feelings', ''),
-  (NULL,  $bot_id, 'footballteam', ''),
-  (NULL,  $bot_id, 'forfun', ''),
-  (NULL,  $bot_id, 'friend', ''),
-  (NULL,  $bot_id, 'friends', ''),
-  (NULL,  $bot_id, 'gender', ''),
-  (NULL,  $bot_id, 'genus', ''),
-  (NULL,  $bot_id, 'girlfriend', ''),
-  (NULL,  $bot_id, 'hockeyteam', ''),
-  (NULL,  $bot_id, 'kindmusic', ''),
-  (NULL,  $bot_id, 'kingdom', ''),
-  (NULL,  $bot_id, 'language', ''),
-  (NULL,  $bot_id, 'location', ''),
-  (NULL,  $bot_id, 'looklike', ''),
-  (NULL,  $bot_id, 'master', ''),
-  (NULL,  $bot_id, 'msagent', ''),
-  (NULL,  $bot_id, 'name', '$bot_name'),
-  (NULL,  $bot_id, 'nationality', ''),
-  (NULL,  $bot_id, 'order', ''),
-  (NULL,  $bot_id, 'orientation', ''),
-  (NULL,  $bot_id, 'party', ''),
-  (NULL,  $bot_id, 'phylum', ''),
-  (NULL,  $bot_id, 'president', ''),
-  (NULL,  $bot_id, 'question', ''),
-  (NULL,  $bot_id, 'religion', ''),
-  (NULL,  $bot_id, 'sign', ''),
-  (NULL,  $bot_id, 'size', ''),
-  (NULL,  $bot_id, 'species', ''),
-  (NULL,  $bot_id, 'talkabout', ''),
-  (NULL,  $bot_id, 'version', ''),
-  (NULL,  $bot_id, 'vocabulary', ''),
-  (NULL,  $bot_id, 'wear', ''),
-  (NULL,  $bot_id, 'website', '');
+    (NULL,  :bot_id, 'age', ''),
+    (NULL,  :bot_id, 'baseballteam', ''),
+    (NULL,  :bot_id, 'birthday', ''),
+    (NULL,  :bot_id, 'birthplace', ''),
+    (NULL,  :bot_id, 'botmaster', ''),
+    (NULL,  :bot_id, 'boyfriend', ''),
+    (NULL,  :bot_id, 'build', ''),
+    (NULL,  :bot_id, 'celebrities', ''),
+    (NULL,  :bot_id, 'celebrity', ''),
+    (NULL,  :bot_id, 'class', ''),
+    (NULL,  :bot_id, 'email', ''),
+    (NULL,  :bot_id, 'emotions', ''),
+    (NULL,  :bot_id, 'ethics', ''),
+    (NULL,  :bot_id, 'etype', ''),
+    (NULL,  :bot_id, 'family', ''),
+    (NULL,  :bot_id, 'favoriteactor', ''),
+    (NULL,  :bot_id, 'favoriteactress', ''),
+    (NULL,  :bot_id, 'favoriteartist', ''),
+    (NULL,  :bot_id, 'favoriteauthor', ''),
+    (NULL,  :bot_id, 'favoriteband', ''),
+    (NULL,  :bot_id, 'favoritebook', ''),
+    (NULL,  :bot_id, 'favoritecolor', ''),
+    (NULL,  :bot_id, 'favoritefood', ''),
+    (NULL,  :bot_id, 'favoritemovie', ''),
+    (NULL,  :bot_id, 'favoritesong', ''),
+    (NULL,  :bot_id, 'favoritesport', ''),
+    (NULL,  :bot_id, 'feelings', ''),
+    (NULL,  :bot_id, 'footballteam', ''),
+    (NULL,  :bot_id, 'forfun', ''),
+    (NULL,  :bot_id, 'friend', ''),
+    (NULL,  :bot_id, 'friends', ''),
+    (NULL,  :bot_id, 'gender', ''),
+    (NULL,  :bot_id, 'genus', ''),
+    (NULL,  :bot_id, 'girlfriend', ''),
+    (NULL,  :bot_id, 'hockeyteam', ''),
+    (NULL,  :bot_id, 'kindmusic', ''),
+    (NULL,  :bot_id, 'kingdom', ''),
+    (NULL,  :bot_id, 'language', ''),
+    (NULL,  :bot_id, 'location', ''),
+    (NULL,  :bot_id, 'looklike', ''),
+    (NULL,  :bot_id, 'master', ''),
+    (NULL,  :bot_id, 'msagent', ''),
+    (NULL,  :bot_id, 'name', ':bot_name'),
+    (NULL,  :bot_id, 'nationality', ''),
+    (NULL,  :bot_id, 'order', ''),
+    (NULL,  :bot_id, 'orientation', ''),
+    (NULL,  :bot_id, 'party', ''),
+    (NULL,  :bot_id, 'phylum', ''),
+    (NULL,  :bot_id, 'president', ''),
+    (NULL,  :bot_id, 'question', ''),
+    (NULL,  :bot_id, 'religion', ''),
+    (NULL,  :bot_id, 'sign', ''),
+    (NULL,  :bot_id, 'size', ''),
+    (NULL,  :bot_id, 'species', ''),
+    (NULL,  :bot_id, 'talkabout', ''),
+    (NULL,  :bot_id, 'version', ''),
+    (NULL,  :bot_id, 'vocabulary', ''),
+    (NULL,  :bot_id, 'wear', ''),
+    (NULL,  :bot_id, 'website', '');
 endSQL;
+    $params = array(':bot_id' => $bot_id);
 
-    $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
+    $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
     if ($affectedRows > 0)
     {
@@ -493,8 +495,9 @@ function changeBot()
     if ($post_vars['bot_id'] != "new")
     {
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT * FROM `bots` WHERE bot_id = '$botId'";
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $sql = "SELECT * FROM `bots` WHERE bot_id = :botId";
+        4params = array(':botId' => $botId);
+        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
         $count = count($row);
 
         if ($count > 0)
@@ -532,7 +535,7 @@ function getChangeList()
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT * FROM `bots` ORDER BY bot_name";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
     $options = '                <option value="new">Add New Bot</option>' . "\n";
 
     foreach ($result as $row)

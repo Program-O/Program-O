@@ -108,14 +108,15 @@ function load_blank_stack($convoArr)
 function load_default_bot_values($convoArr)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Loading db bot personality properties", 4);
-    global $dbConn, $dbn, $bot_id;
+    global $dbn, $bot_id;
 
     //set in global config file
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `$dbn`.`botpersonality` WHERE `bot_id` = '" . $bot_id . "'";
-
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "load db bot personality values SQL: $sql", 3);
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT * FROM `$dbn`.`botpersonality` WHERE `bot_id` = :bot_id;";
+    $params = array(':bot_id' => $bot_id);
+    $debugSQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "load db bot personality values SQL: $debugSQL", 3);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {
@@ -336,13 +337,16 @@ function push_on_front_convoArr($arrayIndex, $value, $convoArr)
 function load_bot_config($convoArr)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading config data for the current bot.', 2);
-    global $dbConn, $dbn, $format, $pattern, $conversation_lines, $remember_up_to, $debugemail, $debug_level, $debug_mode, $save_state, $error_response;
+    global $dbn, $format, $pattern, $conversation_lines, $remember_up_to, $debugemail, $debug_level, $debug_mode, $save_state, $error_response;
 
     //get the values from the db
+    $bot_id = $convoArr['conversation']['bot_id'];
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = '" . $convoArr['conversation']['bot_id'] . "'";
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "load bot config SQL: $sql", 3);
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = :bot_id;";
+    $params = array(':bot_id' => $bot_id);
+    $debugSQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "load bot config SQL: $debugSQL", 3);
+    $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (count($row) > 0)
     {
@@ -390,7 +394,7 @@ function load_bot_config($convoArr)
 function log_conversation($convoArr)
 {
     //db globals
-    global $dbConn, $dbn;
+    global $dbn;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Saving the conversation to the DB.', 2);
     //clean and set
     $usersay = $convoArr['aiml']['user_raw'];
@@ -432,8 +436,7 @@ function log_conversation($convoArr)
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving conservation SQL: $sql", 3);
     //file_put_contents(_LOG_PATH_ . 'init_convo.log_convo.sql.txt', print_r($sql, true) . "\nParams = " . print_r($params, true) . "\n");
 
-    $sth = $dbConn->prepare($sql);
-    $sth->execute($params);
+    $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
     return $convoArr;
 }
@@ -449,7 +452,7 @@ function log_conversation($convoArr)
 function log_conversation_state($convoArr)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Logging the state of the conversation.', 2);
-    global $dbConn, $dbn, $user_name;
+    global $dbn, $user_name;
     //get undefined defaults from the db
     runDebug(__FILE__, __FUNCTION__, __LINE__, "logging state", 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "user name = $user_name. Stored user name = " . $convoArr['conversation']['user_name'], 4);
@@ -468,8 +471,7 @@ function log_conversation_state($convoArr)
                 WHERE `id` = '$user_id' LIMIT 1";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "updating conversation state SQL: $sql", 3);
 
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
+    $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
     return $convoArr;
 }
@@ -484,14 +486,16 @@ function log_conversation_state($convoArr)
  */
 function get_conversation_state($convoArr)
 {
-    global $dbConn, $dbn, $unknown_user;
+    global $dbn, $unknown_user;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "getting state", 4);
     $user_id = $convoArr['conversation']['user_id'];
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `$dbn`.`users` WHERE `id` = '$user_id' LIMIT 1";
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation state SQL: $sql", 3);
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT * FROM `$dbn`.`users` WHERE `id` = :user_id LIMIT 1";
+    $params = array(':user_id' => $user_id);
+    $debugSQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation state SQL: $debugSQL", 3);
+    $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (($row) && (count($row) > 0))
     {
@@ -530,9 +534,11 @@ function check_set_bot($convoArr)
 
     //get the values from the db
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = $bot_id AND `bot_active` = 1;";
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Making sure the bot exists. SQL = $sql", 3);
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT * FROM `$dbn`.`bots` WHERE bot_id = :bot_id AND `bot_active` = 1;";
+    $params = array(':bot_id' => $bot_id);
+    $debugSQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Making sure the bot exists. SQL = $debugSQL", 3);
+    $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (($row) && (count($row) > 0))
     {
@@ -602,7 +608,7 @@ function check_set_convo_id($convoArr)
  */
 function check_set_user($convoArr)
 {
-    global $dbConn, $dbn, $unknown_user;
+    global $dbn, $unknown_user;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Checking and setting the user info, as needed.', 2);
     //check to see if user_name has been set if not set as default
     $convo_id = (isset ($convoArr['conversation']['convo_id'])) ? $convoArr['conversation']['convo_id'] : session_id();
@@ -690,7 +696,7 @@ function check_set_format($convoArr)
 function load_that($convoArr)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading the THAT array.', 2);
-    global $dbConn, $dbn, $remember_up_to, $bot_id;
+    global $dbn, $remember_up_to, $bot_id;
 
     $remember_up_to = (!empty ($convoArr['conversation']['remember_up_to'])) ? $convoArr['conversation']['remember_up_to'] : $remember_up_to;
     $user_id = $convoArr['conversation']['user_id'];
@@ -698,10 +704,14 @@ function load_that($convoArr)
     $limit = $remember_up_to;
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `input`, `response` FROM `$dbn`.`conversation_log` WHERE `user_id` = $user_id AND `bot_id` = $bot_id ORDER BY `id` DESC limit $limit;"; // desc
-
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation log entries for the current user. SQL:\n$sql", 3);
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT `input`, `response` FROM `$dbn`.`conversation_log` WHERE `user_id` = :user_id AND `bot_id` = :bot_id ORDER BY `id` DESC limit $limit;"; // desc
+    $params = array(
+        ':bot_id' => $bot_id,
+        ':user_id' => $user_id
+    );
+    $debugSQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Getting conversation log entries for the current user. SQL:\n$debugSQL", 3);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if ($result)
     {

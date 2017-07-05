@@ -72,8 +72,12 @@ function clearAIMLByFileName($filename)
 {
     global $dbn, $bot_id, $dbConn;
     /** @noinspection SqlDialectInspection */
-    $sql = "DELETE FROM `aiml` WHERE `filename` LIKE '$filename' AND `bot_id` = $bot_id;";
-    $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "DELETE FROM `aiml` WHERE `filename` LIKE ':filename' AND `bot_id` = :bot_id;";
+    $params = array(
+    ':bot_id' => $bot_id,
+    ':filename' => $filename,
+    );
+    $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
     $msg = "<br/><strong>AIML categories cleared for file $filename!</strong><br />";
 
     return $msg;
@@ -89,8 +93,9 @@ function buildSelOpts()
 {
     global $bot_id, $bot_name, $msg;
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT DISTINCT filename FROM `aiml` WHERE `bot_id` = $bot_id ORDER BY `filename`;";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT DISTINCT filename FROM `aiml` WHERE `bot_id` = :bot_id ORDER BY `filename`;";
+    $params = array(':bot_id' => $bot_id);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (count($result) == 0)
     {

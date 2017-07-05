@@ -42,8 +42,9 @@ function get_user_id($convoArr)
 
     //get undefined defaults from the db
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `$dbn`.`users` WHERE `session_id` = '" . $convoArr['conversation']['convo_id'] . "' limit 1";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = 'SELECT * FROM `$dbn`.`users` WHERE `session_id` = :convo_id limit 1;';
+    $params = array(':convo_id' => $convoArr['conversation']['convo_id']);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $count = count($result);
 
     if ($count > 0)

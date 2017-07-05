@@ -68,8 +68,9 @@ function delAIML($id)
     if ($id != "")
     {
         /** @noinspection SqlDialectInspection */
-        $sql = "DELETE FROM `aiml` WHERE `id` = '$id' LIMIT 1";
-        $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
+        $sql = "DELETE FROM `aiml` WHERE `id` = :id LIMIT 1";
+        $params = array(':id' => $id);
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows == 0)
         {

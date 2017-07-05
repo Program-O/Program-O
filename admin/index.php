@@ -612,7 +612,7 @@ function login()
 
         /** @noinspection SqlDialectInspection */
         $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $row = db_fetch($sql,null, __FILE__, __FUNCTION__, __LINE__);
         $count = count($row);
 
         if ($count > 0)

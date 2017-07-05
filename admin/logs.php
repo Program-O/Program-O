@@ -80,7 +80,7 @@ function getUserNames()
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT `id`, `user_name` FROM `users` WHERE 1 order by `id`;";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
     foreach ($result as $row) {
         $nameList[$row['id']] = $row['user_name'];
     }

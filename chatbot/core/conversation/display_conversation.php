@@ -30,8 +30,9 @@ function get_conversation_to_display($convoArr)
     if (empty ($bot_name))
     {
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `bot_name` FROM `bots` WHERE `bot_id` = $bot_id limit 1;";
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $sql = "SELECT `bot_name` FROM `bots` WHERE `bot_id` = :bot_id limit 1;";
+        $params = array(':bot_id' => $convoArr['conversation']['bot_id']);
+        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
         $bot_name = $row['bot_name'];
     }
 
@@ -43,17 +44,20 @@ function get_conversation_to_display($convoArr)
         $limit = "";
     }
 
-    /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `$dbn`.`conversation_log`
-        WHERE
-        `user_id` = '" . $convoArr['conversation']['user_id'] . "'
-        AND `bot_id` = '" . $convoArr['conversation']['bot_id'] . "'
-        AND `convo_id` = '" . $convoArr['conversation']['convo_id'] . "'
-        ORDER BY id DESC $limit ";
+    $sql = "SELECT * FROM `$dbn`.`conversation_log` WHERE
+        `user_id` = :user_id
+        AND `bot_id` = :bot_id
+        AND `convo_id` = :convo_id
+        ORDER BY id DESC $limit";
+    $params = array(
+        ':bot_id'   => $convoArr['conversation']['bot_id'],
+        ':convo_id' => $convoArr['conversation']['convo_id'],
+        ':user_id'  => $convoArr['conversation']['user_id'],
+    );
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql", 3);
 
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (count($result) > 0)
     {

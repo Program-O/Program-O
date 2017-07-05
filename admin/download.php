@@ -148,8 +148,11 @@ function getAIMLByFileName($filename)
     $fileContent = str_replace($fileNameSearch, $cleanedFilename, $fileContent);
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT DISTINCT topic FROM aiml WHERE filename LIKE '$cleanedFilename';";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT DISTINCT topic FROM aiml WHERE filename LIKE :cleanedFilename;";
+        $params = array(
+            ':cleanedFilename' => $cleanedFilename
+        );
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {
@@ -164,8 +167,12 @@ function getAIMLByFileName($filename)
         }
 
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT pattern, thatpattern, template FROM aiml WHERE topic LIKE '$topic' AND filename LIKE '$cleanedFilename';";
-        $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $sql = "SELECT pattern, thatpattern, template FROM aiml WHERE topic LIKE ':topic' AND filename LIKE :cleanedFilename;";
+        $params = array(
+            ':topic' => $topic,
+            ':cleanedFilename' => $cleanedFilename
+        );
+        $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
         foreach ($result as $row)
         {
@@ -225,7 +232,8 @@ function getSQLByFileName($filename)
     $topicArray = array();
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM aiml WHERE filename LIKE '$cleanedFilename' ORDER BY id ASC;";
+    $sql = "SELECT * FROM aiml WHERE filename LIKE ':cleanedFilename' ORDER BY id ASC;";
+    $params = array(':cleanedFilename' => $cleanedFilename);
     $fileContent = file_get_contents('SQL_Header.dat');
 
     $fileContent = str_replace('[botmaster_name]', $botmaster_name, $fileContent);
@@ -239,7 +247,7 @@ function getSQLByFileName($filename)
     $fileContent = str_replace('[curDate]', $curDate, $fileContent);
     $fileContent = str_replace('[fileName]', $cleanedFilename, $fileContent);
 
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {
@@ -278,8 +286,9 @@ function getCheckboxes()
     global $bot_id, $bot_name, $msg;
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT DISTINCT filename FROM `aiml` WHERE `bot_id` = $bot_id ORDER BY `filename`;";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT DISTINCT filename FROM `aiml` WHERE `bot_id` = :bot_id ORDER BY `filename`;";
+    $params = array(':bot_id' => $bot_id);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (count($result) == 0)
     {

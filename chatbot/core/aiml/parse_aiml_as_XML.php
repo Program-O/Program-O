@@ -482,10 +482,16 @@ function parse_get_tag($convoArr, $element, $parentName, $level)
     if (empty ($response))
     {
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = $user_id AND `bot_id` = $bot_id AND `name` = '$var_name';";
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the DB for $var_name - sql:\n$sql", 3);
+        $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = :user_id AND `bot_id` = :bot_id AND `name` = :var_name;";
+        $params = array(
+            ':bot_id' => $bot_id,
+            ':user_id' => $user_id,
+            ':var_name' => $var_name
+        );
+        $debugSQL = db_parseSQL($sql, $params);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the DB for $var_name - sql:\n$debugSQL", 3);
 
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
         if (($row) && (count($row) > 0))
         {
@@ -535,19 +541,23 @@ function parse_set_tag(&$convoArr, $element, $parentName, $level)
         $escaped_var_value = $var_value;
 
         /** @noinspection SqlDialectInspection */
-        $sql = "UPDATE `$dbn`.`users` SET `user_name` = '$escaped_var_value' WHERE `id` = $user_id;";
+        $sql = "UPDATE `$dbn`.`users` SET `user_name` = '$escaped_var_value' WHERE `id` = :user_id;";
+        $params = array(
+            ':user_id' => $user_id,
+            ':escaped_var_value' => $escaped_var_value
+        );
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Updating user name in the DB. SQL:\n$sql", 3);
 
-        $sth = $dbConn->prepare($sql);
-        $sth->execute();
+        $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
-        $numRows = $sth->rowCount();
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `user_name` FROM `$dbn`.`users` WHERE `id` = $user_id limit 1;";
+        $sql = "SELECT `user_name` FROM `$dbn`.`users` WHERE `id` = :user_id limit 1;";
+        $params = array(':user_id' => $user_id);
 
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the users table to see if the value has changed. - SQL:\n$sql", 3);
+        $debugSQL = db_parseSQL($sql, $params);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the users table to see if the value has changed. - SQL:\n$debugSQL", 3);
 
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
         $rowCount = count($row);
 
         if ($rowCount != 0)
@@ -569,10 +579,16 @@ function parse_set_tag(&$convoArr, $element, $parentName, $level)
     }
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = $user_id AND `bot_id` = $bot_id AND `name` = '$var_name';";
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$sql", 3);
+    $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = :user_id AND `bot_id` = :bot_id AND `name` = :var_name;";
+    $params = array(
+        ':user_id'  => $user_id,
+        ':bot_id'   => $bot_id,
+        ':var_name' => $var_name
+    );
+    $debugSQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$debugSQL", 3);
 
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $rowCount = count($result);
 
     /** @noinspection PhpSillyAssignmentInspection */

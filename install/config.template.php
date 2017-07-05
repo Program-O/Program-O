@@ -143,11 +143,11 @@ $debugemail = '[debugemail]';
 
 /*
  * $debug_level - The level of messages to show the user
- * 0=none,
- * 1=errors only
- * 1=error+general,
- * 2=error+general+sql,
- * 3=everything
+ * 0 = none,
+ * 1 = errors only
+ * 2 = error + general,
+ * 3 = error + general + sql,
+ * 4 = everything
  */
 $debug_level = '[debug_level]';
 

@@ -171,8 +171,9 @@ if (!empty($say)) {
         $confirm = $sth->rowCount();
         // Get user id, so that we can clear the client properties
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `id` FROM `$dbn`.`users` WHERE `session_id` = '$new_convo_id' limit 1;";
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $sql = "SELECT `id` FROM `$dbn`.`users` WHERE `session_id` = :new_convo_id limit 1;";
+        $params = array(':new_convo_id' => $new_convo_id);
+        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
         if ($row !== false) {
             $user_id = $row['id'];

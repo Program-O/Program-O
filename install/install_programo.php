@@ -29,12 +29,6 @@ $dbu    = null;
 $dbp    = null;
 $dbPort = 3306;
 
-$clearDB = false;
-if (isset($input_vars['clearDB']))
-{
-    $clearDB = true;
-    $_SESSION['clearDB'] = $clearDB;
-}
 
 
 # Test for required version and extensions
@@ -44,11 +38,7 @@ $pdoSupport = (class_exists('PDO'));
 $php_min_version = '5.3.0';
 $version_compare = version_compare($myPHP_Version, $php_min_version);
 
-$no_unicode_message = (extension_loaded('mbstring')) ? '' : "<p class=\"red bold\">Warning! Unicode Support is not available on this server. Non-English languages will not display properly. Please ask your hosting provider to enable the PHP mbstring extension to correct this.</p>\n";
-$no_zip_message = (extension_loaded('zip')) ? '' : "<p class=\"red bold\">Warning! The 'zip' PHP extension is not available. As a result, the upload and download of AIML files will be limited to individual files. Please ask your hosting provider to enable the PHP zip extension to correct this.</p>\n";
 $errorMessage = (!empty ($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';
-$errorMessage .= $no_unicode_message;
-$errorMessage .= $no_zip_message;
 
 $pdoExtensionsArray = array(
     'PDO_CUBRID',
@@ -210,8 +200,6 @@ endInfo;
         $continueLink = ($reqs_met) ? $template->getSection('Page0ContinueForm') :'<div class="center bold red">' .  $reqs_not_met . 'Please correct the items above in order to continue.</div>' . PHP_EOL;
         $main .= $continueLink;
         $main = str_replace('[blank]', '', $main);
-        $main .= $no_unicode_message;
-        $main .= $no_zip_message;
         break;
     case 1:
         $main = $template->getSection('InstallForm');
@@ -248,19 +236,12 @@ function Save()
     $errorMessage = '';
 
     // Do we want to start with a fresh, empty database?
-    $clearDB = false;
-    if (isset($_SESSION['clearDB']))
-    {
-        $clearDB = true;
-        unset($_SESSION['clearDB']);
-    }
     // initialize some variables and set some defaults
     $tagSearch = array();
     $varReplace = array();
-    $pattern = "RANDOM PICKUP LINE";
-    $error_response = "No AIML category found. This is a Default Response.";
-    $conversation_lines = '1';
-    $remember_up_to = '10';
+    $conversation_lines = 1;
+    $remember_up_to = 10;
+    $error_response = 'No AIML category found. This is a Default Response.';
     $_SESSION['errorMessage'] = '';
 
 
@@ -284,6 +265,9 @@ function Save()
 
     // Sort the array - not strictly necessary, but we're doing it anyway
     ksort($myPostVars);
+
+    // Check to see if the user wants a 'fresh start'
+    $clearDB = (isset($myPostVars['clearDB'])) ? true : false;
 
     // Create the SEARCH and REPLACE arrays
     foreach ($myPostVars as $key => $value)
@@ -316,7 +300,7 @@ function Save()
         foreach ($sqlArray as $sql)
         {
             try {
-                $insertSuccess = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__, false);
+                $insertSuccess = db_write($sql,null, false, __FILE__, __FUNCTION__, __LINE__, false);
                 if (false === $insertSuccess){
                     throw new Exception('SQL operation failed!');
                 }
@@ -358,7 +342,7 @@ function Save()
                 /** @noinspection SqlDialectInspection */
                 /** @noinspection SqlNoDataSourceInspection */
                 $sql = "DROP TABLE IF EXISTS `srai_lookup`; CREATE TABLE IF NOT EXISTS `srai_lookup` (`id` int(11) NOT NULL AUTO_INCREMENT, `bot_id` int(11) NOT NULL, `pattern` text NOT NULL, `template_id` int(11) NOT NULL, PRIMARY KEY (`id`), KEY `pattern` (`pattern`(64)) COMMENT 'Search against this for performance boost') ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Contains previously stored SRAI calls' AUTO_INCREMENT=1;";
-                $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__, false);
+                $affectedRows = db_write($sql,null, false, __FILE__, __FUNCTION__, __LINE__, false);
             }
             catch(Exception $e) {
               $errorMessage .= 'Could not add SRAI lookup table! Error is: ' . $e->getMessage();
@@ -379,35 +363,44 @@ function Save()
 
     if (count($result) == 0)
     {
+        $bot_id               = 1;
+        $bot_name             = $myPostVars['bot_name'];
+        $bot_desc             = $myPostVars['bot_desc'];
+        $bot_active           = $myPostVars['bot_active'];
+        $bot_parent_id        = 1;
+        $format               = $myPostVars['format'];
+        $save_state           = $myPostVars['save_state'];
+        $debugemail           = $myPostVars['debugemail'];
+        $debugshow            = $myPostVars['debug_level'];
+        $debugmode            = $myPostVars['debug_mode'];
+        $error_response       = $myPostVars['error_response'];
+        $default_aiml_pattern = 'RANDOM PICKUP LINE';
+
         /** @noinspection SqlDialectInspection */
         /** @noinspection SqlNoDataSourceInspection */
-        $sql_template = "
-            INSERT IGNORE INTO `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
-            VALUES ([default_bot_id], '[bot_name]', '[bot_desc]', '[bot_active]', '[bot_parent_id]', '[format]', '[save_state]',
-            '$conversation_lines', '$remember_up_to', '[debugemail]', '[debugshow]', '[debugmode]', '$error_response', '$pattern');";
+        $sql = 'insert ignore into `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
+    values ( :bot_id, :bot_name, :bot_desc, :bot_active, :bot_parent_id, :format, :save_state, :conversation_lines, :remember_up_to, :debugemail, :debugshow, :debugmode, :error_response, :default_aiml_pattern);';
 
-        $bot_id = 1;
-        $sql = str_replace('[default_bot_id]', $bot_id, $sql_template);
-        $sql = str_replace('[bot_name]', $myPostVars['bot_name'], $sql);
-        $sql = str_replace('[bot_desc]', $myPostVars['bot_desc'], $sql);
-        $sql = str_replace('[bot_active]', $myPostVars['bot_active'], $sql);
-        $sql = str_replace('[bot_parent_id]', 1, $sql);
-        $sql = str_replace('[format]', $myPostVars['format'], $sql);
-
-        // "Use PHP from DB setting
-        // "Update PHP in DB setting
-        $sql = str_replace('[save_state]', $myPostVars['save_state'], $sql);
-        $sql = str_replace('[conversation_lines]', $conversation_lines, $sql);
-        $sql = str_replace('[remember_up_to]', $remember_up_to, $sql);
-        $sql = str_replace('[debugemail]', $myPostVars['debugemail'], $sql);
-        $sql = str_replace('[debugshow]', $myPostVars['debug_level'], $sql);
-        $sql = str_replace('[debugmode]', $myPostVars['debug_mode'], $sql);
-        $sql = str_replace('[error_response]', $error_response, $sql);
-        $sql = str_replace('[aiml_pattern]', $pattern, $sql);
+        $params = array(
+            ':bot_id'               => $bot_id,
+            ':bot_name'             => $bot_name,
+            ':bot_desc'             => $bot_desc,
+            ':bot_active'           => $bot_active,
+            ':bot_parent_id'        => $bot_parent_id,
+            ':format'               => $format,
+            ':save_state'           => $save_state,
+            ':conversation_lines'   => $conversation_lines,
+            ':remember_up_to'       => $remember_up_to,
+            ':debugemail'           => $debugemail,
+            ':debugshow'            => $debugshow,
+            ':debugmode'            => $debugmode,
+            ':error_response'       => $error_response,
+            ':default_aiml_pattern' => $default_aiml_pattern,
+        );
 
         try
         {
-            $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__, false);
+            $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__, false);
             $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new bot!';
         }
         catch(Exception $e) {
@@ -428,10 +421,15 @@ function Save()
     {
         /** @noinspection SqlDialectInspection */
         /** @noinspection SqlNoDataSourceInspection */
-        $sql = "INSERT ignore INTO `myprogramo` (`id`, `user_name`, `password`, `last_ip`) VALUES(null, '$adm_dbu', '$encrypted_adm_dbp', '$cur_ip');";
+        $sql = "INSERT ignore INTO `myprogramo` (`id`, `user_name`, `password`, `last_ip`) VALUES(null, :adm_dbu, :encrypted_adm_dbp, :cur_ip);";
+        $params = array(
+            ':adm_dbu' => $adm_dbu,
+            ':encrypted_adm_dbp' => $encrypted_adm_dbp,
+            ':cur_ip' => $cur_ip,
+        );
 
         try {
-            $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__, false);
+            $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__, false);
             $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new Admin!';
         }
         catch(Exception $e) {

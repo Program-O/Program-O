@@ -30,8 +30,8 @@ $dbConn = db_open();
 
 /** @noinspection SqlDialectInspection */
 /** @noinspection SqlNoDataSourceInspection */
-$sql = "SELECT `bot_id`, `bot_name` FROM `$dbn`.`bots`;";
-$result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+$sql = 'SELECT `bot_id`, `bot_name` FROM `$dbn`.`bots`;';
+$result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
 $bots = array('bots' => array());
 
 foreach ($result as $row)

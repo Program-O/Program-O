@@ -155,7 +155,6 @@
               <td colspan="2" class="center">
                 <input name="page" value="2" type="hidden">
                 <input name="bot_id" value="1" type="hidden">
-                <input name="error_response" value="[error_response]" type="hidden">
                 <input name="action" id="action" type="submit" value="Save">
               </td>
             </tr>
@@ -207,9 +206,6 @@
                   <span class="helpButton" id="hb_adm_dbp"> </span>Confirm Admin Area Password</label></td>
               <td class="formw"><input name="adm_dbp_confirm" id="adm_dbp_confirm" type="password" /></td>
             </tr>
-            <!-- tr>
-              <td class="bold center underline" colspan="2">Debugging Options:</td>
-            </tr -->
             <tr>
               <td class="label"><label for="debug_level"><span class="helpButton" id="hb_debug_level"> </span>Debug Level</label></td>
               <td class="formw">
@@ -240,6 +236,12 @@
                   <option value="session" selected="selected">Session</option>
                   <option value="database">Database</option>
                 </select>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <input id="cbClearDB" name="clearDB" type="checkbox" value="1" checked="checked">
+                <label for="cbClearDB">Drop all tables from Database (fresh start - Recommended, but make sure you backup your data!)</label>
               </td>
             </tr>
           </table>
@@ -335,11 +337,9 @@
 <!-- Section ContinueLink End -->
 <!-- Section Page0ContinueForm Start -->
 [blank]        <form action="install_programo.php" method="post" class="center">
-            <input id="cbClearDB" name="clearDB" type="checkbox" value="1" checked="checked">
             <input type="hidden" name="page" value="1">
-            <label for="cbClearDB">Drop all tables from Database (fresh start - Recommended, but make sure you backup your data!)</label><br>
             <input name="" type="submit" value="Continue">
-</form>
+        </form>
 <!-- Section Page0ContinueForm End -->
 [blank]
     </body>

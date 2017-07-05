@@ -115,7 +115,7 @@ function scPaginate()
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT COUNT(*) FROM `spellcheck` WHERE 1";
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $row = db_fetch($sql,null, __FILE__, __FUNCTION__, __LINE__);
 
     $rowCount = $row['COUNT(*)'];
     $lastPage = intval($rowCount / 50);
@@ -179,7 +179,7 @@ function getMisspelledWords()
 
     $baseLink = $template->getSection('NavLink');
     $links = '      <div class="userlist">' . "\n";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
     $count = 0;
 
     foreach ($result as $row)
@@ -304,8 +304,12 @@ function runSpellSearch()
     $search = trim($post_vars['search']);
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `spellcheck` WHERE `missspelling` LIKE '%$search%' OR `correction` LIKE '%$search%' LIMIT 50";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT * FROM `spellcheck` WHERE `missspelling` LIKE :search1 OR `correction` LIKE :search2 LIMIT 50";
+    $params = array(
+        ':search1' => "%{$search}%",
+        ':search2' => "%{$search}%",
+    );
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $htmltbl = '<table>
                   <thead>
                     <tr>
@@ -362,9 +366,9 @@ function editSpellForm($id)
     $form   = $template->getSection('EditSpellForm');
 
     /** @noinspection SqlDialectInspection */
-    $sql    = "SELECT * FROM `spellcheck` WHERE `id` = '$id' LIMIT 1";
-
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql    = "SELECT * FROM `spellcheck` WHERE `id` = :id LIMIT 1";
+    $params = array(':id' => $id);
+    $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $uc_missspelling = _strtoupper($row['missspelling']);
     $uc_correction = _strtoupper($row['correction']);
 

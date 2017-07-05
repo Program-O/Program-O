@@ -440,8 +440,9 @@ function getAIML_List()
     global $dbConn, $dbn, $bot_id;
     $out = "                  <!-- Start List of Currently Stored AIML files -->\n";
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT DISTINCT filename FROM `aiml` WHERE `bot_id` = $bot_id ORDER BY `filename`;";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT DISTINCT filename FROM `aiml` WHERE `bot_id` = :bot_id ORDER BY `filename`;";
+    $params = array(':bot_id' => $bot_id);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {
@@ -470,7 +471,7 @@ function getBotList()
 
     /** @noinspection SqlDialectInspection */
     $sql = 'SELECT `bot_name`, `bot_id` FROM `bots` ORDER BY `bot_id`;';
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {

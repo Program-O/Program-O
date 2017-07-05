@@ -433,7 +433,7 @@ function run_srai(&$convoArr, $now_look_for_this)
         //$now_look_for_this = _strtoupper($now_look_for_this);
         $sql = "select `template_id` from `$dbn`.`srai_lookup` where `pattern` = '$now_look_for_this' and $sql_bot_select;";
         runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = $sql", 2);
-        $row = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $row = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Result = ' . print_r($row, true), 2);
         //$num_rows = count($row);
         $num_rows = 0;
@@ -443,7 +443,7 @@ function run_srai(&$convoArr, $now_look_for_this)
           $template_id = $row[0]['template_id'];
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Found a matching entry in the lookup table. Using ID# $template_id.", 2);
           $sql = "select `template` from `$dbn`.`aiml` where `id` = '$template_id';";
-          $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+          $row = db_fetch($sql,null, __FILE__, __FUNCTION__, __LINE__);
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Row found in AIML for ID $template_id: " . print_r($row, true), 2);
           if (!empty($row))
           {

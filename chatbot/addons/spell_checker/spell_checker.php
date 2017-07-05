@@ -119,7 +119,7 @@ function load_spelling_list()
 
     $_SESSION['spellcheck'] = array();
     $sql = "SELECT `missspelling`, `correction` FROM `$dbn`.`spellcheck`;";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
     $num_rows = count($result);
 
     if ($num_rows > 0)

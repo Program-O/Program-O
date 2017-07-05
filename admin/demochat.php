@@ -42,8 +42,9 @@ function showChatFrame()
 
     $qs = '?bot_id=' . $bot_id;
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `format` FROM `bots` WHERE `bot_id` = $bot_id limit 1;";
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT `format` FROM `bots` WHERE `bot_id` = :bot_id limit 1;";
+    $params = array(':bot_id' => $bot_id);
+    $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $format = strtolower($row['format']);
 
     switch ($format)

@@ -42,7 +42,7 @@ function initialise_censor($bot_id)
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT * FROM `$dbn`.`wordcensor` WHERE `bot_exclude` NOT LIKE '%[$bot_id]%'";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {

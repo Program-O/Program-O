@@ -790,11 +790,15 @@ function get_client_property($convoArr, $name)
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = $user_id AND `bot_id` = $bot_id AND `name` = '$name' limit 1;";
+    $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = :user_id AND `bot_id` = :bot_id AND `name` = '$name' limit 1;";
+    $params = array(
+        ':bot_id' => $bot_id,
+        ':user_id' => $user_id,
+    );
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for $name. SQL:\n$sql", 3);
 
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $rowCount = count($row);
 
     if ($rowCount != 0)
@@ -1065,7 +1069,7 @@ endSQL;
     {
         //sortByID($result);
         $tmp_rows = number_format($num_rows);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ($tmp_rows) potential AIML matches", 2);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "FOUND: ({$tmp_rows}) potential AIML matches", 2);
         //loop through results
 
         foreach ($result as $row)
@@ -1073,7 +1077,6 @@ endSQL;
             $row['score'] = 0;
             $row['current_that'] = _strtolower($lastthat);
             $row['aiml_id'] = $row['id'];
-            //$row['bot_id'] = $bot_id;
             $row['track_score'] = '';
             $allrows[] = $row;
             $mu = memory_get_usage(true);
@@ -1087,14 +1090,15 @@ endSQL;
     }
     else
     {
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Error: FOUND NO AIML matches in DB", 1);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Error: FOUND NO AIML matches in DB.', 1);
         addUnknownInput($convoArr, $lookingfor, $bot_id, $user_id);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Added input '$lookingfor' to the unknown_inputs table.", 1);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Added input '{$lookingfor}' to the unknown_inputs table.", 1);
 
         $allrows[$i]['aiml_id'] = "-1";
         $allrows[$i]['bot_id'] = $bot_id;
         $allrows[$i]['pattern'] = "no results";
         $allrows[$i]['thatpattern'] = '';
+        $allrows[$i]['template'] = $error_response;
         $allrows[$i]['topic'] = '';
     }
 
@@ -1115,8 +1119,12 @@ function get_topic($convoArr)
     $user_id = $convoArr['conversation']['user_id'];
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `value` FROM `client_properties` WHERE `user_id` = $user_id AND `bot_id` = $bot_id and `name` = 'topic';";
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT `value` FROM `client_properties` WHERE `user_id` = :user_id AND `bot_id` = :bot_id and `name` = 'topic';";
+    $params = array(
+        ':bot_id' => $bot_id,
+        ':user_id' => $user_id,
+    );
+    $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $num_rows = count($row);
     $retval = ($num_rows == 0) ? '' : $row['value'];
 
