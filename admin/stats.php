@@ -78,7 +78,7 @@ function getStats($interval)
 
     //get undefined defaults from the db
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT COUNT(DISTINCT(`user_id`)) AS TOT FROM `conversation_log` WHERE bot_id = '$bot_id' $sqladd";
+    $sql = "SELECT COUNT(DISTINCT(`user_id`)) AS TOT FROM `conversation_log` WHERE bot_id = :bot_id $sqladd";
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $res = $row['TOT'];
 
