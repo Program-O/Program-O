@@ -449,7 +449,7 @@ INSERT INTO `botpersonality` VALUES
     (NULL,  :bot_id, 'looklike', ''),
     (NULL,  :bot_id, 'master', ''),
     (NULL,  :bot_id, 'msagent', ''),
-    (NULL,  :bot_id, 'name', ':bot_name'),
+    (NULL,  :bot_id, 'name', :bot_name),
     (NULL,  :bot_id, 'nationality', ''),
     (NULL,  :bot_id, 'order', ''),
     (NULL,  :bot_id, 'orientation', ''),
@@ -467,7 +467,7 @@ INSERT INTO `botpersonality` VALUES
     (NULL,  :bot_id, 'wear', ''),
     (NULL,  :bot_id, 'website', '');
 endSQL;
-    $params = array(':bot_id' => $bot_id);
+    $params = array(':bot_id' => $bot_id, ':bot_name' => $bot_name);
 
     $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
