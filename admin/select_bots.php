@@ -496,7 +496,7 @@ function changeBot()
     {
         /** @noinspection SqlDialectInspection */
         $sql = "SELECT * FROM `bots` WHERE bot_id = :botId";
-        4params = array(':botId' => $botId);
+        $params = array(':botId' => $botId);
         $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
         $count = count($row);
 
