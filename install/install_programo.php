@@ -352,62 +352,79 @@ function Save()
 
     /** @noinspection SqlDialectInspection */
     /** @noinspection SqlNoDataSourceInspection */
-    $sql = 'SELECT `error_response` FROM `bots` WHERE 1 limit 1';
-    $row = db_fetch($sql);
-    $error_response = $row['error_response'];
-
-    /** @noinspection SqlDialectInspection */
-    /** @noinspection SqlNoDataSourceInspection */
     $sql = 'SELECT `bot_id` FROM `bots`;';
     $result = db_fetchAll($sql);
 
+    $bot_id               = 1;
+    $bot_name             = $myPostVars['bot_name'];
+    $bot_desc             = $myPostVars['bot_desc'];
+    $bot_active           = $myPostVars['bot_active'];
+    $bot_parent_id        = 1;
+    $format               = $myPostVars['format'];
+    $save_state           = $myPostVars['save_state'];
+    $debugemail           = $myPostVars['debugemail'];
+    $debugshow            = $myPostVars['debug_level'];
+    $debugmode            = $myPostVars['debug_mode'];
+    $error_response       = $myPostVars['error_response'];
+    $default_aiml_pattern = 'RANDOM PICKUP LINE';
+
+    $params = array(
+        ':bot_id'               => $bot_id,
+        ':bot_name'             => $bot_name,
+        ':bot_desc'             => $bot_desc,
+        ':bot_active'           => $bot_active,
+        ':bot_parent_id'        => $bot_parent_id,
+        ':format'               => $format,
+        ':save_state'           => $save_state,
+        ':conversation_lines'   => $conversation_lines,
+        ':remember_up_to'       => $remember_up_to,
+        ':debugemail'           => $debugemail,
+        ':debugshow'            => $debugshow,
+        ':debugmode'            => $debugmode,
+        ':error_response'       => $error_response,
+        ':default_aiml_pattern' => $default_aiml_pattern,
+    );
+
     if (count($result) == 0)
     {
-        $bot_id               = 1;
-        $bot_name             = $myPostVars['bot_name'];
-        $bot_desc             = $myPostVars['bot_desc'];
-        $bot_active           = $myPostVars['bot_active'];
-        $bot_parent_id        = 1;
-        $format               = $myPostVars['format'];
-        $save_state           = $myPostVars['save_state'];
-        $debugemail           = $myPostVars['debugemail'];
-        $debugshow            = $myPostVars['debug_level'];
-        $debugmode            = $myPostVars['debug_mode'];
-        $error_response       = $myPostVars['error_response'];
-        $default_aiml_pattern = 'RANDOM PICKUP LINE';
-
         /** @noinspection SqlDialectInspection */
         /** @noinspection SqlNoDataSourceInspection */
         $sql = 'insert ignore into `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
     values ( :bot_id, :bot_name, :bot_desc, :bot_active, :bot_parent_id, :format, :save_state, :conversation_lines, :remember_up_to, :debugemail, :debugshow, :debugmode, :error_response, :default_aiml_pattern);';
 
-        $params = array(
-            ':bot_id'               => $bot_id,
-            ':bot_name'             => $bot_name,
-            ':bot_desc'             => $bot_desc,
-            ':bot_active'           => $bot_active,
-            ':bot_parent_id'        => $bot_parent_id,
-            ':format'               => $format,
-            ':save_state'           => $save_state,
-            ':conversation_lines'   => $conversation_lines,
-            ':remember_up_to'       => $remember_up_to,
-            ':debugemail'           => $debugemail,
-            ':debugshow'            => $debugshow,
-            ':debugmode'            => $debugmode,
-            ':error_response'       => $error_response,
-            ':default_aiml_pattern' => $default_aiml_pattern,
-        );
-
-        try
-        {
-            $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__, false);
-            $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new bot!';
-        }
-        catch(Exception $e) {
-            $errorMessage .= $e->getMessage();
-        }
+    }
+    else
+    {
+        /** @noinspection SqlDialectInspection */
+        /** @noinspection SqlNoDataSourceInspection */
+        $sql = 'update `bots` set
+    `bot_name`             = :bot_name,
+    `bot_desc`             = :bot_desc,
+    `bot_active`           = :bot_active,
+    `bot_parent_id`        = :bot_parent_id,
+    `format`               = :format,
+    `save_state`           = :save_state,
+    `conversation_lines`   = :conversation_lines,
+    `remember_up_to`       = :remember_up_to,
+    `debugemail`           = :debugemail,
+    `debugshow`            = :debugshow,
+    `debugmode`            = :debugmode,
+    `error_response`       = :error_response,
+    `default_aiml_pattern` = :default_aiml_pattern
+where `bot_id` = :bot_id;
+    ';
     }
 
+    try
+    {
+        $debugSQL = db_parseSQL($sql, $params);
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__, false);
+        $errorMessage .= ($affectedRows > 0) ? '' : ' Could not create new bot!<br>';
+        $errorMessage .= ($affectedRows > 0) ? '' : "SQL: {$debugSQL}";
+    }
+    catch(Exception $e) {
+        $errorMessage .= $e->getMessage();
+    }
     $cur_ip = $_SERVER['REMOTE_ADDR'];
     $encrypted_adm_dbp = md5($myPostVars['adm_dbp']);
     $adm_dbu = $myPostVars['adm_dbu'];

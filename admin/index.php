@@ -14,6 +14,7 @@ $thisFile = __FILE__;
 if (!file_exists('../config/global_config.php'))
 {
     header('location: ../install/install_programo.php');
+    exit();
 }
 
 /** @noinspection PhpIncludeInspection */
@@ -50,7 +51,6 @@ session_start();
 $msg = '';
 
 // Get form inputs
-$pc = print_r($_GET, true) . "\n" . print_r($_POST, true);
 $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
 $page = ($page === false || $page === null) ? 'main' : $page;
 
@@ -156,7 +156,7 @@ if ($curPage == 'login' && !empty($_SESSION['poadmin']['logged_in']))
 }
 
 $_SESSION['poadmin']['curPage'] = $curPage;
-($curPage != 'logout' || $curPage == 'login') ? include("$curPage.php") : false;
+($curPage != 'logout' || $curPage == 'login') ? include("{$curPage}.php") : false;
 
 $bot_format_link = (!empty($bot_format)) ? "&amp;format=$bot_format" : '';
 $curPage = (isset($curPage)) ? $curPage : 'main';

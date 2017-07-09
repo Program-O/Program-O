@@ -701,10 +701,6 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
 
     // Add row data to the chatbot output
     $data = $bestResponse;
-    save_file(_LOG_PATH_ . 'newData.txt', print_r($data, true), true);
-    //$data['aiml_id'] = $data['id'];
-    //unset($data['id']);
-    unset($data['template']);
     $convoArr['conversation']['data'] = $data;
 
     //return the best response
@@ -879,7 +875,6 @@ endSQL;
     $sql = str_replace('[thatpattern_like]', $thatpattern_like, $sql);
 
     $debugSQL = db_parseSQL($sql, $params);
-    save_file(_LOG_PATH_ . 'find_userdefined_aiml.newSQL.txt', $debugSQL . PHP_EOL, true);
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined SQL:\n$debugSQL", 3);
 
@@ -1059,7 +1054,6 @@ endSQL;
     $sql = str_replace('[topic_like]', $topic_like, $sql);
 
     $debugSQL = db_parseSQL($sql, $params);
-    //save_file(_LOG_PATH_ . 'newSQL.txt', $debugSQL . PHP_EOL, true);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Core Match AIML sql:\n$debugSQL", 3);
     $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Query Process time...", 3);

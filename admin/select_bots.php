@@ -61,8 +61,6 @@ $mainTitle      = 'Choose/Edit a Bot';
  */
 function getBotParentList($current_parent)
 {
-    //db globals
-    global $dbConn;
 
     //get active bots from the db
     if (empty($current_parent))
@@ -105,7 +103,7 @@ function getBotParentList($current_parent)
  */
 function getSelectedBot()
 {
-    global $dbConn, $template, $pattern, $remember_up_to, $conversation_lines, $error_response, $curBot, $unknown_user;
+    global $template, $pattern, $remember_up_to, $conversation_lines, $error_response, $curBot, $unknown_user;
     $bot_conversation_lines = $conversation_lines;
     $bot_default_aiml_pattern = $pattern;
     $bot_error_response = $error_response;
@@ -256,7 +254,7 @@ function getSelectedBot()
  */
 function updateBotSelection()
 {
-    global $dbConn, $msg, $format, $post_vars, $branch;
+    global $msg, $format, $post_vars, $branch;
 
     $logFile = _LOG_URL_ . 'admin.error.log';
     $msg = '';
@@ -309,27 +307,25 @@ function updateBotSelection()
     else {
         $msg = 'Nothing seems to have been modified. No changes made.';
     }
+    $curFormat = $_SESSION['poadmin']['format'];
     $format = filter_input(INPUT_POST, 'format');
 
-    if (_strtoupper($format) !== _strtoupper($format))
+    if (_strtoupper($format) !== _strtoupper($curFormat))
     {
         $format = _strtoupper($format);
+        $_SESSION['poadmin']['format'] = $format;
         $cfn = _CONF_PATH_ . 'global_config.php';
-        $configFile = file(_CONF_PATH_ . 'global_config.php', FILE_IGNORE_NEW_LINES);
-        $search = '    $format = \'' . $format . '\';';
-        $replace = '    $format = \'' . $format . '\';';
-        $index = array_search($search, $configFile);
+        $configFileContent = file_get_contents(_CONF_PATH_ . 'global_config.php', FILE_IGNORE_NEW_LINES);
+        $search = "/format = '.*?';/";
+        $replace = "format = '{$format}';";
+        $test = preg_match($search, $configFileContent, $matches);
+        $configFileContent = preg_replace($search, $replace, $configFileContent);
+        $x = file_put_contents(_CONF_PATH_ . 'global_config.php', $configFileContent);
 
-        if (false === $index)
+        if (false === $x)
         {
             $msg .= "Error updating the config file. See the <a href=\"$logFile\">error log</a> for details.<br />";
             trigger_error("There was a problem with updating the default format in the config file. Please edit the value manually and submit a bug report.");
-        }
-        else
-        {
-            $configFile[$index] = $replace;
-            $configContent = implode("\n", $configFile);
-            $x = file_put_contents(_CONF_PATH_ . 'global_config.php', $configContent);
         }
     }
 
@@ -349,7 +345,7 @@ function updateBotSelection()
 function addBot()
 {
     //db globals
-    global $dbConn, $msg, $post_vars;
+    global $msg, $post_vars;
 
     foreach ($post_vars as $key => $value) {
         $$key = trim($value);
@@ -385,7 +381,7 @@ VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,
         $msg = "$bot_name Bot details could not be added.";
     }
 
-    $_SESSION['poadmin']['bot_id'] = $dbConn->lastInsertId();
+    $_SESSION['poadmin']['bot_id'] = db_lastInsertId();
     $bot_id = $_SESSION['poadmin']['bot_id'];
     $_SESSION['poadmin']['bot_name'] = $post_vars['bot_name'];
     $bot_name = $_SESSION['poadmin']['bot_name'];
@@ -402,7 +398,7 @@ VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,
  */
 function make_bot_predicates($bot_id)
 {
-    global $dbConn, $bot_name;
+    global $bot_name;
     $msg = '';
 
     $sql = <<<endSQL
@@ -489,7 +485,7 @@ endSQL;
  */
 function changeBot()
 {
-    global $dbConn, $msg, $bot_id, $post_vars, $branch;
+    global $msg, $bot_id, $post_vars, $branch;
     $botId = (isset($post_vars['bot_id'])) ? $post_vars['bot_id'] : $bot_id;
 
     if ($post_vars['bot_id'] != "new")
@@ -529,9 +525,8 @@ function changeBot()
  */
 function getChangeList()
 {
-    global $dbConn, $template;
+    global $template;
     $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
-    $botId = $bot_id;
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT * FROM `bots` ORDER BY bot_name";
@@ -540,9 +535,9 @@ function getChangeList()
 
     foreach ($result as $row)
     {
-        $options .= "<!-- bot ID = {$row['bot_id']}, $botId -->\n";
+        $options .= "<!-- bot ID = {$row['bot_id']}, {$bot_id} -->\n";
 
-        if ($botId == $row['bot_id'])
+        if ($bot_id == $row['bot_id'])
         {
             $sel = ' selected="selected"';
         }
