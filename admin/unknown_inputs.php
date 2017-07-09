@@ -149,7 +149,7 @@ function getUserList($bot_id, $showing)
 
     if ($numRows == 0 || false === $rows)
     {
-        $list .= '          <li>No log entries found</li>';
+        $list .= '          <li>No unknown inputs logged</li>';
     }
 
     else {

@@ -211,6 +211,7 @@ $content .= "\n    </body>\n</html>";
 
 $content = str_replace('[mainPanel]', $main, $content);
 $content = str_replace('[http_host]', $myHost, $content);
+$content = str_replace('[bot_default_aiml_pattern]', $pattern, $content);
 $content = str_replace('[error_response]', $error_response, $content);
 $content = str_replace('[notes]', $notes, $content);
 $content = str_replace('[PHP_SELF]', PHP_SELF, $content);

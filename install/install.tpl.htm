@@ -91,6 +91,7 @@
           helpWindow.highlight();
         }
       }
+      
       function validatePass() {
         var pw1 = $('#adm_dbp').val();
         var pw2 = $('#adm_dbp_confirm').val();
@@ -138,15 +139,33 @@
               <td class="label"><label for="format"><span class="helpButton" id="hb_format"> </span>Response Format</label></td>
               <td class="formw">
                 <select name="format" id="format" size="1">
-                  <option value="json" selected="selected">JSON</option>
-                  <option value="html">HTML</option>
-                  <option value="xml">XML</option>
+                  <option value="JSON" selected="selected">JSON (recommended)</option>
+                  <option value="HTML">HTML</option>
+                  <option value="XML">XML</option>
                 </select>
               </td>
             </tr>
             <tr>
-              <td class="label"><label for="error_response"><span class="helpButton" id="hb_error_response"> </span>Error Response String</label></td>
-              <td class="formw"><input type="text" name="error_response" id="error_response" value="[error_response]" /></td>
+                <td class="label">
+                    <label for="default_aiml_pattern">
+                        <span class="helpButton" id="hb_default_aiml_pattern"> </span>
+                        Default Pickup Line Pattern
+                    </label>
+                </td>
+                <td class="formw">
+                    <input type="text" name="default_aiml_pattern" id="default_aiml_pattern" value="[bot_default_aiml_pattern]"/>
+                </td>
+            </tr>
+            <tr>
+              <td class="label">
+                  <label for="error_response">
+                      <span class="helpButton" id="hb_error_response"> </span>
+                      Error Response String
+                  </label>
+              </td>
+              <td class="formw">
+                  <input type="text" name="error_response" id="error_response" value="[error_response]" />
+              </td>
             </tr>
             <tr>
               <td colspan="2" id="notes">[notes]</td>

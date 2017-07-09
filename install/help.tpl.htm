@@ -137,21 +137,21 @@
           </div>
         </div>
 
+        <div class="row" id="default_aiml_pattern">
+          <span class="label">Default Pickup Line Pattern</span>
+          <div class="description">
+            This is the "default" category that Program O searches for if nothing else matches. Traditionally
+            this is set to <strong>RANDOM PICKUP LINE</strong> or <strong>*</strong>, but it can be set to
+            pretty much anything (within reason). Whatever you set this to, just make sure that there is an
+            AIML category with a &lt;pattern&gt; that matches it.
+          </div>
+        </div>
+
         <div class="row" id="error_response">
           <span class="label">Error Response String</span>
           <div class="description">
             This is what your bot will say to the user if it encounters an internal error. What you set it to is
             completely up to you, but it <strong>must</strong> have a value of some sort.
-          </div>
-        </div>
-
-        <div class="row" id="pattern">
-          <span class="label">Default Pickup Line Pattern</span>
-          Default: *
-          <div class="description">
-            This is usually best kept as the default pattern, unless you're upgrading from Program O version 1.0,
-            which used "RANDOM PICKUP LINE" as the pattern. Even if you <em>are</em> upgrading, you can also leave
-            this value as * and modify your AIML pickup line category to use * for it's pattern.
           </div>
         </div>
 
@@ -189,7 +189,7 @@
                 <strong>JSON</strong> This option causes the script to parse the bot's output as a JSON
                 (<a href="http://en.wikipedia.org/wiki/JSON" target="_blank">JavaScript Object Notation</a>) object, which
                 your bot script can use to embed the responses within a currently open HTML page. This method is best
-                used by client-side scripts, such as <a href="http://jquery.com/">jQuery</a>.
+                used by client-side scripts, such as <a href="http://jquery.com/" target="_blank">jQuery</a>.
               </li>
               <li>
                 <strong>XML</strong> Program O can also parse the bot's output as an XML document, which can be used by either
@@ -198,7 +198,7 @@
                 configure.
               </li>
             </ul>
-            There are sample pages in the <a href="../gui/index.php">GUI directory</a> that you can
+            There are sample pages in the <a href="../gui/index.php" target="_blank">GUI directory</a> that you can
             examine and use, but bear in mind that these are simply example pages, and will likely require some
             modification prior to use.
           </div>
@@ -387,7 +387,7 @@
             </p>
             <p>
               The correct setting for the file permissions for the config file is 755. If you're unsure what this means, then have a look at
-              <a href="http://www.perlfect.com/articles/chmod.shtml">http://www.perlfect.com/articles/chmod.shtml</a> for a good tutorial
+              <a href="http://www.perlfect.com/articles/chmod.shtml" target="_blank">http://www.perlfect.com/articles/chmod.shtml</a> for a good tutorial
               about the CHMOD command, and what the various settings mean. For our purposes, that setting means that the config file can
               only be written to by the file's "owner", while everyone can read and execute the file. If the file can't be properly written
               to, then the script can't save the settings that you've set or changed, and your bot won't work correctly, so it's important

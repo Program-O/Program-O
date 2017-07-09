@@ -160,6 +160,7 @@ $debug_level = '[debug_level]';
  */
 $debug_mode = '[debug_mode]';
 $save_state = '[save_state]';
+$pattern = '[bot_default_aiml_pattern]';
 $error_response = '[error_response]';
 $unknown_user = 'Seeker';
 

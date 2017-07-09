@@ -152,7 +152,7 @@ function getUserList($bot_id, $showing)
 
     if ($numRows == 0 || false === $rows)
     {
-        $list .= '          <li>No log entries found</li>';
+        $list .= '          <li>No chat log entries found</li>';
     }
 
     else {
