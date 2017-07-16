@@ -167,7 +167,7 @@ function getAIMLByFileName($filename)
         }
 
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT pattern, thatpattern, template FROM aiml WHERE topic LIKE ':topic' AND filename LIKE :cleanedFilename;";
+        $sql = "SELECT pattern, thatpattern, template FROM aiml WHERE topic LIKE :topic AND filename LIKE :cleanedFilename;";
         $params = array(
             ':topic' => $topic,
             ':cleanedFilename' => $cleanedFilename

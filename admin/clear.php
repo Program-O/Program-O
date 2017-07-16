@@ -72,7 +72,7 @@ function clearAIMLByFileName($filename)
 {
     global $dbn, $bot_id, $dbConn;
     /** @noinspection SqlDialectInspection */
-    $sql = "DELETE FROM `aiml` WHERE `filename` LIKE ':filename' AND `bot_id` = :bot_id;";
+    $sql = "DELETE FROM `aiml` WHERE `filename` LIKE :filename AND `bot_id` = :bot_id;";
     $params = array(
     ':bot_id' => $bot_id,
     ':filename' => $filename,
