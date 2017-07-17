@@ -401,11 +401,11 @@ function parse_date_tag($convoArr, $element, $parentName, $level)
     $cur_locale = setlocale(LC_ALL, '');
 
     #$cur_locale = setlocale(LC_ALL, 'en_US');
-    $format = $element->attributes()->format;
+    $dtFormat = $element->attributes()->format;
     $locale = $element->attributes()->locale;
     $tz = $element->attributes()->timezone;
-    $format = (string)$format;
-    $format = (!empty($format)) ? $format : '%c';
+    $dtFormat = (string)$dtFormat;
+    $dtFormat = (!empty($dtFormat)) ? $dtFormat : '%c';
     $locale = (string)$locale . '.UTF8';
 
     if (!empty($locale)) {
@@ -417,8 +417,8 @@ function parse_date_tag($convoArr, $element, $parentName, $level)
     $tz = (!is_numeric($tz)) ? $tz : $tz_list[$tz];
     date_default_timezone_set($tz);
 
-    #$response = "$tz - " . strftime($format);
-    $response = strftime($format);
+    #$response = "$tz - " . strftime($dtFormat);
+    $response = strftime($dtFormat);
     #$response = $cur_locale;
     date_default_timezone_set($cur_timezone);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Date tag parsed. Returning $response", 4);

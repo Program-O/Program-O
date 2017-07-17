@@ -221,20 +221,23 @@ function get_xml($convoArr, $conversation)
 function display_conversation($convoArr)
 {
     $display = $convoArr['send_to_user'];
-    $format = (isset($convoArr['conversation']['format'])) ? strtolower(trim($convoArr['conversation']['format'])) : 'html';
+    $format = (isset($convoArr['conversation']['format'])) ? _strtolower(trim($convoArr['conversation']['format'])) : 'html';
 
     switch ($format)
     {
         case 'html' :
+        case 'HTML' :
             $display = str_ireplace('<![CDATA[', '', $display);
             $display = str_replace(']]>', '', $display);
             break;
         case 'xml' :
+        case 'XML' :
             header("Content-type: text/xml; charset=utf-8", false);
             header("Access-Control-Allow-Origin: *", false);
             echo trim($display);
             break;
         case 'json' :
+        case 'JSON' :
             header("Content-type: text/plain; charset=utf-8", false);
             header("Access-Control-Allow-Origin: *", false);
             echo trim($display);

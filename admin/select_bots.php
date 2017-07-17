@@ -307,12 +307,11 @@ function updateBotSelection()
     else {
         $msg = 'Nothing seems to have been modified. No changes made.';
     }
-    $curFormat = $_SESSION['poadmin']['format'];
-    $format = filter_input(INPUT_POST, 'format');
+    $curFormat = _strtolower($_SESSION['poadmin']['format']);
+    $format = _strtolower(filter_input(INPUT_POST, 'format'));
 
-    if (_strtolower($format) !== _strtolower($curFormat))
+    if ($format !== $curFormat)
     {
-        $format = _strtolower($format);
         $_SESSION['poadmin']['format'] = $format;
         $cfn = _CONF_PATH_ . 'global_config.php';
         $configFileContent = file_get_contents(_CONF_PATH_ . 'global_config.php', FILE_IGNORE_NEW_LINES);

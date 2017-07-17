@@ -36,10 +36,10 @@ else
 
     switch ($format)
     {
-        case 'JSON':
+        case 'json':
             $gui = 'jquery';
             break;
-        case 'XML':
+        case 'xml':
             $gui= 'xml';
             break;
         default:
