@@ -65,7 +65,7 @@ function showChatFrame()
     $url .= $qs;
     $out = $template->getSection('ChatDemo');
     $out = str_replace('[pageSource]', $url, $out);
-    $out = str_replace('[format]', strtoupper($format), $out);
+    $out = str_replace('[format]', strtolower($format), $out);
 
     return $out;
 }

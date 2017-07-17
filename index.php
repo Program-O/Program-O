@@ -32,7 +32,7 @@ else
 
     /** @noinspection PhpUndefinedVariableInspection */
     $format = (isset($get_vars['format'])) ? $get_vars['format'] : $format;
-    $format = _strtoupper($format);
+    $format = _strtolower($format);
 
     switch ($format)
     {
