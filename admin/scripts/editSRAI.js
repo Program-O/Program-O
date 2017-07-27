@@ -11,6 +11,12 @@ var draw = 1;
 var group = 1;
 var scrollY;
 var table;
+
+function getVhByScript(){
+    vhSmall = '40vh';
+    vhLarge = '52vh';
+}
+
 $(function () {
     $('#showHelp').hide();
     $('#SRAI_LOOKUP').on('click', '.editable textarea', function (e) {
@@ -47,7 +53,6 @@ $(function () {
     table = buildTable();
     $(window).on('resize', function () {
         if (typeof table === 'undefined') table = buildTable();
-        scrollY = changeHeight();
         $('.holder').height(scrollY);
         table.draw();
     });
@@ -166,12 +171,8 @@ function deleteRow(ele) {
     });
 }
 
-function changeHeight() {
-    return $(window).height() * 0.4;
-}
-
 function buildTable() {
-    scrollY = changeHeight();
+    var scrollY = (logoStatus === 'Show') ? vhSmall : vhLarge;
     var table = $('#SRAI_LOOKUP').DataTable({
         processing: true,
         serverSide: true,

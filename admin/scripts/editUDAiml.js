@@ -11,6 +11,12 @@ var draw = 1;
 var group = 1;
 var scrollY;
 var table;
+
+function getVhByScript(){
+    vhSmall = '40vh';
+    vhLarge = '60vh';
+}
+
 $(function () {
     var parentWidth = $('#AIML_UD').width();
     var w05p = parentWidth * 0.05 + 'px';
@@ -58,7 +64,6 @@ $(function () {
     table = buildTable();
     $(window).on('resize', function () {
         if (typeof table === 'undefined') table = buildTable();
-        scrollY = changeHeight();
         $('.holder').height(scrollY);
         table.draw(false);
     });
@@ -179,17 +184,13 @@ function deleteRow(ele) {
     });
 }
 
-function changeHeight() {
-    return $(window).height() * 0.4;
-}
-
 function buildTable() {
+    var scrollY = (logoStatus === 'Show') ? vhSmall : vhLarge;
     var parentWidth = $('#AIML_UD').width();
     var w05p = parentWidth * 0.05 + 'px';
     var w15p = parentWidth * 0.15 + 'px';
     var w25p = parentWidth * 0.25 + 'px';
     var w20p = parentWidth * 0.2 + 'px';
-    scrollY = changeHeight();
     var table = $('#AIML_UD').DataTable({
         processing: true,
         serverSide: true,

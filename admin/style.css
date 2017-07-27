@@ -1082,6 +1082,13 @@ select#bot_id {
     position: absolute;
     top: 5px;
     left: 5px;
+    padding-top: 0.55em;
+}
+
+#script_version div.horiz:last-of-type {
+    border-right: none;
+    padding-right: 0;
+    margin-right: 0;
 }
 
 dl.codebox {
@@ -1329,4 +1336,15 @@ input.search-input-text, textarea.newCat {
 #AIML_UD td {
     border-bottom: 0.5px solid gray;
     border-right: 0.5px solid gray;
+}
+.vert {
+    display: block;
+    margin: 0.1em;
+}
+.horiz {
+    display: inline-block;
+    margin: 0.1em;
+    margin-right: 0.55em;
+    border-right: 1px solid black;
+    padding-right: 0.55em
 }

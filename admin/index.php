@@ -78,10 +78,10 @@ $currentLocalVersion = VERSION;
 
 $upToDate = <<<endUTD
 
-            <strong>Program O</strong><br>
-            Current Local Version: $currentLocalVersion<br>
-            Current GitHub Version: $githubVersion<br>
-            Current Branch: {$branches[$branch]}<br>
+            <div class="vert"><strong>Program O</strong></div>
+            <div class="vert">Current Local Version: $currentLocalVersion</div>
+            <div class="vert">Current GitHub Version: $githubVersion</div>
+            <div class="vert">Current Branch: {$branches[$branch]}</div>
             <!-- Current Database Name: {$dbn} -->
 endUTD;
 

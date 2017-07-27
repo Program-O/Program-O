@@ -698,7 +698,16 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section LogoLink End -->
 <!-- Section LogoLinkScript Start -->
 [blank]
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
         <script type="text/javascript" id="lowerScripts">
+            var vhSmall = '40vh';
+            var vhLarge = '51vh';
+            if (typeof getVhByScript !== 'undefined') {
+                getVhByScript();
+            }
+
+            (logoStatus === 'Show') ? ShowLogo() : HideLogo();
+
             function ShowLogo() {
                 var body = document.body;
                 body.style.backgroundImage = 'url(images/repeated_header2.jpg)';
@@ -712,6 +721,8 @@ between the start and end section tags are the only parts of the template that a
                 main.style.top = '160px';
                 var rightNav = document.getElementById('right_nav');
                 if (rightNav) rightNav.style.top = '160px';
+                $('#script_version div').removeClass('horiz').addClass('vert');
+                $('div.dataTables_scrollBody').css('height', vhSmall);
             }
             function HideLogo() {
                 var body = document.body;
@@ -726,7 +737,10 @@ between the start and end section tags are the only parts of the template that a
                 main.style.top = '50px';
                 var rightNav = document.getElementById('right_nav');
                 if (rightNav) rightNav.style.top = '50px';
+                $('#script_version div').removeClass('vert').addClass('horiz');
+                $('div.dataTables_scrollBody').css('height', vhLarge);
             }
+
             function toggleLogo() {
                 if (logoStatus == 'Hide') {
                     logoStatus = 'Show';
