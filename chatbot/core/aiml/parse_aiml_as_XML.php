@@ -541,7 +541,7 @@ function parse_set_tag(&$convoArr, $element, $parentName, $level)
         $escaped_var_value = $var_value;
 
         /** @noinspection SqlDialectInspection */
-        $sql = "UPDATE `$dbn`.`users` SET `user_name` = '$escaped_var_value' WHERE `id` = :user_id;";
+        $sql = "UPDATE `$dbn`.`users` SET `user_name` = :escaped_var_value WHERE `id` = :user_id;";
         $params = array(
             ':user_id' => $user_id,
             ':escaped_var_value' => $escaped_var_value
