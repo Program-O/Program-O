@@ -39,7 +39,6 @@ if (empty ($_SESSION) || !isset ($_SESSION['poadmin']['uid']) || $_SESSION['poad
     error_log('Session vars: ' . print_r($_SESSION, true), 3, _LOG_PATH_ . 'session.txt');
     exit (json_encode(array('error' => "No session found")));
 }
-
 // Open the DB
 $dbConn = db_open();
 $action = (isset($form_vars['action'])) ? $form_vars['action'] : 'runSearch';

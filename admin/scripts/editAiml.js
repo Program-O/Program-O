@@ -182,6 +182,7 @@ function buildTable() {
         processing: true,
         serverSide: true,
         paging: true,
+        lengthMenu: [10,25,50,100,1000],
         scrollX: true,
         scrollY: scrollY,
         //scrollCollapse: true,

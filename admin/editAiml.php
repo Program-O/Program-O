@@ -27,4 +27,7 @@ $pageTitle = 'My-Program O - Search/Edit AIML';
 $mainTitle = 'Search/Edit AIML' . $template->getSection('HelpLink');
 $showHelp = $template->getSection('editAIMLShowHelp');
 $mainContent = str_replace('[showHelp]', $showHelp, $mainContent);
+$editScriptTemplate = '<script type="text/javascript" src="scripts/[editScript].js"></script>';
+$editScript = 'editAiml';
+$editScriptTag = str_replace('[editScript]', $editScript, $editScriptTemplate);
 

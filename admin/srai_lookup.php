@@ -12,6 +12,10 @@
 $post_vars = filter_input_array(INPUT_POST);
 $get_vars = filter_input_array(INPUT_GET);
 
+$editScriptTemplate = '<script type="text/javascript" src="scripts/[editScript].js"></script>';
+$editScript = 'srai_lookup';
+$editScriptTag = str_replace('[editScript]', $editScript, $editScriptTemplate);
+
 $form_vars = array_merge((array)$post_vars, (array)$get_vars);
 //exit('Form vars:<pre>' . PHP_EOL . print_r($form_vars, true));
 $action = (isset($form_vars['action'])) ? $form_vars['action'] : '';

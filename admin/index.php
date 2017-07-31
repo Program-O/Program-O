@@ -44,6 +44,8 @@ $branches = array(
     'dev' => 'Development'
 );
 
+$editScript = '';
+$editScriptTag = '';
 // Set session parameters
 $session_name = 'PGO_Admin';
 session_name($session_name);
@@ -222,6 +224,7 @@ $searches = array(
     '[bSelOptD]'        => $bSelOptD,
     '[bSelOptM]'        => $bSelOptM,
     '[bot_format_link]' => $bot_format_link,
+    '[editScriptTag]'   => $editScriptTag,
 );
 
 foreach ($searches as $search => $replace)
