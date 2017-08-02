@@ -16,11 +16,6 @@ if (!defined('SPELLCHECK_PATH'))
     define('SPELLCHECK_PATH', $this_folder);
 }
 
-if (empty($_SESSION['spellcheck_common_words']))
-{
-    $_SESSION['spellcheck_common_words'] = file(SPELLCHECK_PATH . 'spellcheck_common_words.dat', FILE_IGNORE_NEW_LINES);
-}
-
 $spellcheck_common_words = $_SESSION['commonWords'];
 
 /**
