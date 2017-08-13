@@ -215,10 +215,11 @@ function Save()
     $dbn = $myPostVars['dbn'];
     $dbu = $myPostVars['dbu'];
     $dbp = $myPostVars['dbp'];
+    $dbPort = $myPostVars['dbPort'];
 
     try
     {
-        $dbConn = new PDO("mysql:host=$dbh;dbname=$dbn;charset=utf8", $dbu, $dbp);
+        $dbConn = new PDO("mysql:host=$dbh;port=$dbPort;dbname=$dbn;charset=utf8", $dbu, $dbp);
         $dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $dbConn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
