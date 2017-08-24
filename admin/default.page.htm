@@ -723,7 +723,7 @@ between the start and end section tags are the only parts of the template that a
                 main.style.top = '160px';
                 var rightNav = document.getElementById('right_nav');
                 if (rightNav) rightNav.style.top = '160px';
-                $('#script_version div').removeClass('horiz').addClass('vert');
+                $('#script_version, #script_version div').removeClass('horiz').addClass('vert');
                 $('div.dataTables_scrollBody').css('height', vhSmall);
             }
             function HideLogo() {
@@ -739,7 +739,7 @@ between the start and end section tags are the only parts of the template that a
                 main.style.top = '50px';
                 var rightNav = document.getElementById('right_nav');
                 if (rightNav) rightNav.style.top = '50px';
-                $('#script_version div').removeClass('vert').addClass('horiz');
+                $('#script_version, #script_version div').removeClass('vert').addClass('horiz');
                 $('div.dataTables_scrollBody').css('height', vhLarge);
             }
 

@@ -1084,6 +1084,14 @@ select#bot_id {
     left: 5px;
     padding-top: 0.55em;
 }
+#script_version.horiz {
+    width: 38%;
+    overflow: hidden;
+    height: 1.2em;
+    font-size: 0.9em;
+    border-right: none;
+}
+
 
 #script_version div.horiz:last-of-type {
     border-right: none;

@@ -481,14 +481,6 @@ function makeLeftLinks()
         ),
         array(
             '[linkClass]' => '',
-            '[linkHref]' => ' href="#"',
-            '[linkOnclick]' => ' onclick="toggleLogo(); return false;"',
-            '[linkAlt]' => ' alt="Toggle the Logo"',
-            '[linkTitle]' => ' title="Toggle the Logo"',
-            '[linkLabel]' => 'Toggle the Logo'
-        ),
-        array(
-            '[linkClass]' => '',
             '[linkHref]' => ' href="' . _BASE_URL_ . '?bot_id=[botId][bot_format_link]"',
             '[linkOnclick]' => ' target="_blank"',
             '[linkAlt]' => ' alt="open the page for [curBot] in a new tab/window"',
@@ -510,6 +502,14 @@ function makeLeftLinks()
             '[linkAlt]' => ' alt="Log File Viewer"',
             '[linkTitle]' => ' title="Log File Viewer in a new tab/window"',
             '[linkLabel]' => 'Log File Viewer'
+        ),
+        array(
+            '[linkClass]' => '',
+            '[linkHref]' => ' href="#"',
+            '[linkOnclick]' => ' onclick="toggleLogo(); return false;"',
+            '[linkAlt]' => ' alt="Toggle the Logo"',
+            '[linkTitle]' => ' title="Toggle the Logo"',
+            '[linkLabel]' => 'Toggle the Logo'
         ),
     );
     return $out;
