@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: botpersonality.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-26-2014
@@ -86,8 +86,10 @@ function getBot()
 
     //get the current bot's personality table from the db
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `botpersonality` WHERE  `bot_id` = $bot_id";
-    $rows = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT * FROM `botpersonality` WHERE  `bot_id` = :bot_id";
+    $params = array(':bot_id' => $bot_id);
+
+    $rows = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $rowCount = count($rows);
 
     if ($rowCount > 0)
@@ -223,8 +225,9 @@ function updateBot()
     }
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `botpersonality` WHERE `bot_id` = $bot_id;";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT * FROM `botpersonality` WHERE `bot_id` = :bot_id;";
+    $params = array(':bot_id' => $bot_id);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $rows = array();
     $insertParams = array();
     $updateParams = array();

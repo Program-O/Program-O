@@ -249,6 +249,11 @@ span.eightyPercent textarea.wide {
     text-align: center;
 }
 
+.clrFrmTDBottom {
+    vertical-align: bottom !important;
+    margin: 14px auto 0 auto !important;
+}
+
 .bold {
     font-weight: bold;
 }
@@ -282,7 +287,7 @@ span.eightyPercent textarea.wide {
 
 .errMsg {
     min-width: 250px;
-    max-width: 45%;
+    max-width: 500px !important;
     min-height: 32px;
     max-height: 95%;
     width: auto;
@@ -300,6 +305,12 @@ span.eightyPercent textarea.wide {
     right: 15px;
     z-index: 99;
     border-radius: 12px;
+}
+
+.dlLink {
+    margin-right: 1.5em;
+    float: left;
+    display: inline-block;
 }
 
 .errMsgContent {
@@ -582,7 +593,7 @@ span.eightyPercent textarea.wide {
     top: 160px;
     right: 25px;
     bottom: 70px;
-    width: 170px;
+    width: 205px;
     min-height: 25%;
     overflow: hidden;
     margin: 0;
@@ -646,7 +657,7 @@ span.eightyPercent textarea.wide {
     top: 160px;
     bottom: 70px;
     left: 250px;
-    right: 205px;
+    right: 240px;
     background-color: #FFFFCC;
     overflow: hidden;
     min-height: 25%;
@@ -937,18 +948,6 @@ div#AIML_List {
     background-color: #EDD;
 }
 
-.floatRight {
-    /*  float: right;
-      clear: none;*/
-    width: 48%;
-}
-
-.floatLeft {
-    /*  float: left;
-      clear: none;*/
-    width: 48%;
-}
-
 table.botForm {
     width: 99.5%;
 }
@@ -998,12 +997,18 @@ table td#notes {
     clear: none;
 }
 
+.floatLeft {
+    float: left;
+    clear: none;
+}
+.tal {text-align: left;}
+
 #helpLink1 {
     float: left;
     margin-bottom: 10px;
 }
 
-td input, td select {
+td input, td select, td textarea {
     width: 95%;
     margin: 0 auto;
 }
@@ -1015,12 +1020,25 @@ td input[type="checkbox"], input[type="radio"], td select {
 
 .formTable {
     border: none;
-    width: 98%;
+    width: 48%;/**/
     margin: 10px auto;
     padding: 5px;
 }
 
 .formTable td {
+    border: none;
+    margin: 2px;
+    padding: 3px;
+}
+
+._formTable {
+    border: none;
+    width: 90%;/**/
+    margin: 20px auto;
+    padding: 5px;
+}
+
+._formTable td {
     border: none;
     margin: 2px;
     padding: 3px;
@@ -1064,6 +1082,21 @@ select#bot_id {
     position: absolute;
     top: 5px;
     left: 5px;
+    padding-top: 0.55em;
+}
+#script_version.horiz {
+    width: 38%;
+    overflow: hidden;
+    height: 1.2em;
+    font-size: 0.9em;
+    border-right: none;
+}
+
+
+#script_version div.horiz:last-of-type {
+    border-right: none;
+    padding-right: 0;
+    margin-right: 0;
 }
 
 dl.codebox {
@@ -1269,39 +1302,57 @@ input.search-input-text, textarea.newCat {
     margin: 0 auto;
 }
 
-.w5 {
-    width: 5%;
-}
-
-.w10 {
-    width: 10%;
-}
-
-.w15 {
-    width: 15%;
-}
-
-.w20 {
-    width: 20%;
-}
-
-.w25 {
-    width: 25%;
-}
-
-.w30 {
-    width: 30%;
-}
-
-.w40 {
-    width: 40%;
-}
-
-.w50 {
-    width: 50%;
-}
+.w5 {width: 5%;}
+.w10 {width: 10%;}
+.w15 {width: 15%;}
+.w20 {width: 20%;}
+.w25 {width: 25%;}
+.w30 {width: 30%;}
+.w40 {width: 40%;}
+.w48 {width: 48%;}
+.w50 {width: 50%;}
+.w80 {width: 80%;}
+.w100 {width: 100%;}
 
 .editable {
     text-indent: 0;
     padding: 3px 5px !important;
+}
+.ext_true {
+    font-weight: bold;
+    color: #0C0;
+}
+.ext_false {
+    font-weight: bold;
+    color: #C00;
+}
+.odd {background-color: #FFE;}
+.even {background-color: #EEF;}
+.checklist {max-width: 50%;}
+#test {
+    position: absolute;
+    top: 147px;
+    right: 240px;
+    z-index: 200;
+    background-color: pink;
+    width: auto;
+    padding: 12px;
+    max-width: 50%;
+    overflow: auto;
+}
+.taj {text-align: justify;}
+#AIML_UD td {
+    border-bottom: 0.5px solid gray;
+    border-right: 0.5px solid gray;
+}
+.vert {
+    display: block;
+    margin: 0.1em;
+}
+.horiz {
+    display: inline-block;
+    margin: 0.1em;
+    margin-right: 0.55em;
+    border-right: 1px solid black;
+    padding-right: 0.55em
 }

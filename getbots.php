@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.6.5
+* Version: 2.6.7
 * FILE: getbots.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 17TH 2014
@@ -31,7 +31,7 @@ $dbConn = db_open();
 /** @noinspection SqlDialectInspection */
 /** @noinspection SqlNoDataSourceInspection */
 $sql = "SELECT `bot_id`, `bot_name` FROM `$dbn`.`bots`;";
-$result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+$result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
 $bots = array('bots' => array());
 
 foreach ($result as $row)

@@ -3,7 +3,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.6.5
+* Version: 2.6.7
 * FILE: editSRAI.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: 05-26-2014
@@ -39,7 +39,6 @@ if (empty ($_SESSION) || !isset ($_SESSION['poadmin']['uid']) || $_SESSION['poad
     error_log('Session vars: ' . print_r($_SESSION, true), 3, _LOG_PATH_ . 'session.txt');
     exit (json_encode(array('error' => "No session found")));
 }
-
 // Open the DB
 $dbConn = db_open();
 $action = (isset($form_vars['action'])) ? $form_vars['action'] : 'runSearch';
@@ -70,8 +69,9 @@ function delSRAI($id)
     if ($id != "")
     {
         /** @noinspection SqlDialectInspection */
-        $sql = "DELETE FROM `srai_lookup` WHERE `id` = '$id' LIMIT 1";
-        $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
+        $sql = "DELETE FROM `srai_lookup` WHERE `id` = :id LIMIT 1";
+        $params = array(':id' => $id);
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows == 0)
         {

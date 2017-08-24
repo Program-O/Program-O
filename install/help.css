@@ -45,6 +45,12 @@ div.row span.label:hover, div.row span.formw:hover {
     background-color: #EEE;
 }
 
+div.description {
+    padding: 0.5em;
+    text-align: justify;
+    box-sizing: border-box;
+}
+
 .center {
     text-align: center;
 }

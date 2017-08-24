@@ -1,7 +1,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.4
+ * Version: 2.6.7
  * FILE: editAiml.js
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-11-2013
@@ -11,6 +11,12 @@ var draw = 1;
 var group = 1;
 var scrollY;
 var table;
+
+function getVhByScript(){
+    vhSmall = '51vh';
+    vhLarge = '63vh';
+}
+
 $(function () {
     $('#showHelp').hide();
     $('#AIML').on('click', '.editable textarea', function (e) {
@@ -48,7 +54,6 @@ $(function () {
     table = buildTable();
     $(window).on('resize', function () {
         if (typeof table === 'undefined') table = buildTable();
-        scrollY = changeHeight();
         $('.holder').height(scrollY);
         table.draw(false);
     });
@@ -171,16 +176,13 @@ function deleteRow(ele) {
     });
 }
 
-function changeHeight() {
-    return $(window).height() * 0.4;
-}
-
 function buildTable() {
-    scrollY = changeHeight();
+    var scrollY = (logoStatus === 'Show') ? vhSmall : vhLarge;
     var table = $('#AIML').DataTable({
         processing: true,
         serverSide: true,
         paging: true,
+        lengthMenu: [10,25,50,100,1000],
         scrollX: true,
         scrollY: scrollY,
         //scrollCollapse: true,

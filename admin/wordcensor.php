@@ -103,7 +103,7 @@ function wcPaginate()
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT COUNT(*) FROM `wordcensor` WHERE 1";
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $row = db_fetch($sql,null, __FILE__, __FUNCTION__, __LINE__);
     $rowCount = isset($row['COUNT(*)']) ? $row['COUNT(*)'] : 0;
     $lastPage = intval($rowCount / 50);
     $remainder = ($rowCount / 50) - $lastPage;
@@ -161,7 +161,7 @@ function getWordCensorWords()
     $baseLink = $template->getSection('NavLink');
     $links = '      <div class="userlist">' . "\n";
     $count = 0;
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {
@@ -286,7 +286,11 @@ function runWordCensorSearch()
 
     $search = trim($request_vars['search']);
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `wordcensor` WHERE `word_to_censor` LIKE '%$search%' OR `replace_with` LIKE '%$search%' LIMIT 50";
+    $sql = "SELECT * FROM `wordcensor` WHERE `word_to_censor` LIKE :search1 OR `replace_with` LIKE :search2 LIMIT 50";
+    $params = array(
+        ':search1' => "%{$search}%",
+        ':search2' => "%{$search}%",
+    );
     $htmltbl =
         '               <table>
                   <thead>
@@ -297,7 +301,7 @@ function runWordCensorSearch()
                     </tr>
                   </thead>
                 <tbody>';
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $i = 0;
 
     foreach ($result as $row)
@@ -352,8 +356,9 @@ function editWordCensorForm($id)
     $form = $template->getSection('EditWordCensorForm');
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `wordcensor` WHERE `censor_id` = '$id' LIMIT 1";
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT * FROM `wordcensor` WHERE `censor_id` = :id LIMIT 1";
+    $params = array(':id' => $id);
+    $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $uc_word_to_censor = _strtoupper($row['word_to_censor']);
     $uc_replace_with = _strtoupper($row['replace_with']);
 

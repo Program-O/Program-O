@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: members.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-12-2014
@@ -165,7 +165,7 @@ function getAdminsOpts()
 
     /** @noinspection SqlDialectInspection */
     $sql = 'SELECT id, user_name FROM myprogramo ORDER BY user_name;';
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {
@@ -194,8 +194,9 @@ function getMemberData($id)
 
     global $user_name, $dbConn;
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT id, user_name FROM myprogramo WHERE id = $id limit 1;";
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT id, user_name FROM myprogramo WHERE id = :id limit 1;";
+    $params = array(':id' => $id);
+    $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     return $row;
 }
@@ -211,7 +212,7 @@ function getNextID()
     global $dbConn;
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT id FROM myprogramo ORDER BY id DESC limit 1;";
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $row = db_fetch($sql,null, __FILE__, __FUNCTION__, __LINE__);
 
     return $row['id'] + 1;
 }

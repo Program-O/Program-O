@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: teach.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-11-2014
@@ -86,7 +86,6 @@ function insertAIML()
     //db globals
     global $template, $msg, $post_vars, $dbConn;
 
-    $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
     $aimltemplate = trim($post_vars['template']);
 
     $pattern = trim($post_vars['pattern']);
@@ -95,9 +94,6 @@ function insertAIML()
     $thatpattern = trim($post_vars['thatpattern']);
     $thatpattern = _strtoupper($thatpattern);
 
-    $aiml = str_replace('[pattern]', $pattern, $aiml);
-    $aiml = (empty ($thatpattern)) ? str_replace('[thatpattern]', "<that>$thatpattern</that>", $aiml) : $aiml;
-    $aiml = str_replace('[template]', $aimltemplate, $aiml);
 
     $fileName = trim($post_vars['filename']);
     if (!strstr($fileName, '.aiml')) $fileName .= '.aiml';
@@ -113,10 +109,9 @@ function insertAIML()
     else
     {
         /** @noinspection SqlDialectInspection */
-        $sql = 'INSERT INTO `aiml` (`id`,`bot_id`, `aiml`, `pattern`,`thatpattern`,`template`,`topic`,`filename`) VALUES (NULL, :bot_id, :aiml, :pattern, :thatpattern, :aimltemplate, :topic, :file)';
+        $sql = 'INSERT INTO `aiml` (`id`,`bot_id`, `pattern`,`thatpattern`,`template`,`topic`,`filename`) VALUES (NULL, :bot_id, :pattern, :thatpattern, :aimltemplate, :topic, :file)';
         $params = array(
             ':bot_id' => $bot_id,
-            ':aiml' => $aiml,
             ':pattern' => $pattern,
             ':thatpattern' => $thatpattern,
             ':aimltemplate' => $aimltemplate,

@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: srai_lookup.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-26-2014
@@ -11,6 +11,10 @@
 
 $post_vars = filter_input_array(INPUT_POST);
 $get_vars = filter_input_array(INPUT_GET);
+
+$editScriptTemplate = '<script type="text/javascript" src="scripts/[editScript].js"></script>';
+$editScript = 'srai_lookup';
+$editScriptTag = str_replace('[editScript]', $editScript, $editScriptTemplate);
 
 $form_vars = array_merge((array)$post_vars, (array)$get_vars);
 //exit('Form vars:<pre>' . PHP_EOL . print_r($form_vars, true));
@@ -65,6 +69,7 @@ $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
  */
 function fillLookup()
 {
+    set_time_limit(0);
     global $dbConn;
     // <srai>XEDUCATELANG <star index="1"/> XSPLIT <star index="2"/> XSPLIT <star index="3"/>XSPLIT</srai>
     $starArray = array('~<star[ ]?/>~i', '~<star index="\d+"[ ]?\/>~');
@@ -117,7 +122,7 @@ function fillLookup()
             $srai = substr($AIMLtemplate, $start, $len);
             $srai = preg_replace($starArray, '*', $srai); // replace references to <star> with the * wildcard
             $srai = _strtoupper($srai);
-            $srai = trim(str_replace('<SRAI>', '', $srai));
+            $srai = trim(str_ireplace('<SRAI>', '', $srai));
 
             if (strstr($srai, '<') == false)
             {
@@ -130,7 +135,7 @@ function fillLookup()
         }
     }
 
-    save_file(_LOG_PATH_ . 'srai_lookup.patterns.txt', print_r($patterns, true));
+    //save_file(_LOG_PATH_ . 'srai_lookup.patterns.txt', print_r($patterns, true));
 
     /** @noinspection SqlDialectInspection */
     $patternSQL = 'SELECT id FROM aiml WHERE pattern = :pattern AND bot_id = :bot_id ORDER BY id limit 1;';

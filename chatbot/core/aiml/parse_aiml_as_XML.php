@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: parse_aiml_as_xml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -135,7 +135,7 @@ function add_text_tags($input)
 function implode_recursive($glue, $input, $file = 'unknown', $function = 'unknown', $line = 'unknown')
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Imploding an array into a string. (recursively, if necessary)', 2);
-    #runDebug(__FILE__, __FUNCTION__, __LINE__, "This function was called from $file, function $function at line $line.", 4);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Input: ' . print_r($input, true) . "\n", 2);
     if (empty($input)) {
         return '';
     }
@@ -401,11 +401,11 @@ function parse_date_tag($convoArr, $element, $parentName, $level)
     $cur_locale = setlocale(LC_ALL, '');
 
     #$cur_locale = setlocale(LC_ALL, 'en_US');
-    $format = $element->attributes()->format;
+    $dtFormat = $element->attributes()->format;
     $locale = $element->attributes()->locale;
     $tz = $element->attributes()->timezone;
-    $format = (string)$format;
-    $format = (!empty($format)) ? $format : '%c';
+    $dtFormat = (string)$dtFormat;
+    $dtFormat = (!empty($dtFormat)) ? $dtFormat : '%c';
     $locale = (string)$locale . '.UTF8';
 
     if (!empty($locale)) {
@@ -417,8 +417,8 @@ function parse_date_tag($convoArr, $element, $parentName, $level)
     $tz = (!is_numeric($tz)) ? $tz : $tz_list[$tz];
     date_default_timezone_set($tz);
 
-    #$response = "$tz - " . strftime($format);
-    $response = strftime($format);
+    #$response = "$tz - " . strftime($dtFormat);
+    $response = strftime($dtFormat);
     #$response = $cur_locale;
     date_default_timezone_set($cur_timezone);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Date tag parsed. Returning $response", 4);
@@ -482,10 +482,16 @@ function parse_get_tag($convoArr, $element, $parentName, $level)
     if (empty ($response))
     {
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = $user_id AND `bot_id` = $bot_id AND `name` = '$var_name';";
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the DB for $var_name - sql:\n$sql", 3);
+        $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = :user_id AND `bot_id` = :bot_id AND `name` = :var_name;";
+        $params = array(
+            ':bot_id' => $bot_id,
+            ':user_id' => $user_id,
+            ':var_name' => $var_name
+        );
+        $debugSQL = db_parseSQL($sql, $params);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the DB for $var_name - sql:\n$debugSQL", 3);
 
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
         if (($row) && (count($row) > 0))
         {
@@ -535,19 +541,23 @@ function parse_set_tag(&$convoArr, $element, $parentName, $level)
         $escaped_var_value = $var_value;
 
         /** @noinspection SqlDialectInspection */
-        $sql = "UPDATE `$dbn`.`users` SET `user_name` = '$escaped_var_value' WHERE `id` = $user_id;";
+        $sql = "UPDATE `$dbn`.`users` SET `user_name` = :escaped_var_value WHERE `id` = :user_id;";
+        $params = array(
+            ':user_id' => $user_id,
+            ':escaped_var_value' => $escaped_var_value
+        );
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Updating user name in the DB. SQL:\n$sql", 3);
 
-        $sth = $dbConn->prepare($sql);
-        $sth->execute();
+        $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
-        $numRows = $sth->rowCount();
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `user_name` FROM `$dbn`.`users` WHERE `id` = $user_id limit 1;";
+        $sql = "SELECT `user_name` FROM `$dbn`.`users` WHERE `id` = :user_id limit 1;";
+        $params = array(':user_id' => $user_id);
 
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the users table to see if the value has changed. - SQL:\n$sql", 3);
+        $debugSQL = db_parseSQL($sql, $params);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the users table to see if the value has changed. - SQL:\n$debugSQL", 3);
 
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
         $rowCount = count($row);
 
         if ($rowCount != 0)
@@ -569,10 +579,16 @@ function parse_set_tag(&$convoArr, $element, $parentName, $level)
     }
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = $user_id AND `bot_id` = $bot_id AND `name` = '$var_name';";
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$sql", 3);
+    $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = :user_id AND `bot_id` = :bot_id AND `name` = :var_name;";
+    $params = array(
+        ':user_id'  => $user_id,
+        ':bot_id'   => $bot_id,
+        ':var_name' => $var_name
+    );
+    $debugSQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$debugSQL", 3);
 
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $rowCount = count($result);
 
     /** @noinspection PhpSillyAssignmentInspection */
@@ -938,7 +954,7 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
                 }
                 else
                 {
-                    $pick = $pick->asXML();
+                    //$pick = $pick->asXML();
                 }
             }
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($pick, true), 4);
@@ -959,6 +975,7 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
 
         return $error_response;
     }
+
 
     $children = (is_object($pick)) ? $pick->children() : null;
 
@@ -1054,7 +1071,13 @@ function parse_html_tag($convoArr, $element, $parentName, $level)
     {
         $response_string .= implode_recursive(' ', parseTemplateRecursive($convoArr, $kid, $level + 1), __FILE__, __FUNCTION__, __LINE__); //
     }
-    $response_string .= $closeTag;
+
+    $tagName = preg_replace('/[^a-z]+/', '', $openTag);
+
+    // If tag is not a break element add the closing tag
+    if (!in_array($tagName, array('area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param', 'track', 'wbr'))) {
+        $response_string .= $closeTag;
+    }
 
     return $response_string;
 }
@@ -1236,8 +1259,6 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $sql = '';
     $failure = false;
     $category = $element->category;
-    $aiml = $category->asXML();
-    $params[':aiml'] = $aiml;
     $catXpath = $element->xpath('//eval');
 
     // pull out the necessary info to save to the DB
@@ -1248,7 +1269,7 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $patternText = $pattern->asXML();
     $pattern2store = (!empty($patternEvalXpath)) ?
         quickParseEval($convoArr, $patternText, 'pattern', 0) :
-        $patternText;
+        remove_text_tag($patternText, 'pattern');
     $params[':pattern'] = $pattern2store;
 
     // thatpattern
@@ -1257,7 +1278,7 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $thatpatternText = $thatpattern->asXML();
     $thatpattern2store = (!empty($thatpatternEvalXpath)) ?
         quickParseEval($convoArr, $thatpatternText, 'that', 0) :
-        $thatpatternText;
+        remove_text_tag($thatpatternText, 'that');
     $params[':thatpattern'] = $thatpattern2store;
 
     // template
@@ -1266,15 +1287,14 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $templateText = $curTemplate->asXML();
     $template2store = (!empty($templateEvalXpath)) ?
         quickParseEval($convoArr, $templateText, 'template', 0) :
-        $templateText;
+        remove_text_tag($templateText, 'template');
     $params[':template'] = $template2store;
 
     /** @noinspection SqlDialectInspection */
-    $sql = 'INSERT INTO `aiml_userdefined` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `user_id`)
+    $sql = 'INSERT INTO `aiml_userdefined` (`id`, `bot_id`, `pattern`, `thatpattern`, `template`, `user_id`)
       VALUES (
         NULL,
         :bot_id,
-        :aiml,
         :pattern,
         :thatpattern,
         :template,
@@ -1288,6 +1308,18 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $sth->execute($params);
 
     return '';
+}
+
+/**
+ * Removes all text tags and the parent node
+ *
+ * @param $element
+ * @param $parentName
+ * @return mixed
+ */
+function remove_text_tag($element, $parentName)
+{
+    return str_replace(array('<text>', '</text>', "<$parentName>", "</$parentName>"), '', $element);
 }
 
 /**

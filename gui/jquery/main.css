@@ -244,3 +244,30 @@ body {
             padding: 5px;
             border-radius: 5px;
         }
+
+        hr.thick {
+            border-bottom: 3px solid black;
+            box-shadow: 3px 3px 8px -1px #696969;
+            margin: 1.5em auto;
+        }
+
+        .m0a {
+            margin: 0 auto;
+        }
+        #conversation {
+            border: 1px solid black;
+            border-radius: 1em;
+            padding: 1em;
+            margin: 0.5em auto;
+            min-height: 4em;
+            max-height: 20em; /* Adjust this as you see fit. */
+            overflow: auto;
+        }
+        .input {
+            color: #B22222;
+            font-weight: bold;
+        }
+        .response {
+            color: #0000CD;
+            font-weight: bold;
+        }

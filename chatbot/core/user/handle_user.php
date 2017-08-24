@@ -2,7 +2,7 @@
 /***************************************
  * www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: chatbot/core/user/handle_user.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -42,8 +42,9 @@ function get_user_id($convoArr)
 
     //get undefined defaults from the db
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `$dbn`.`users` WHERE `session_id` = '" . $convoArr['conversation']['convo_id'] . "' limit 1";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = 'SELECT * FROM `$dbn`.`users` WHERE `session_id` = :convo_id limit 1;';
+    $params = array(':convo_id' => $convoArr['conversation']['convo_id']);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $count = count($result);
 
     if ($count > 0)
@@ -102,25 +103,46 @@ function intisaliseUser($convoArr)
         $sb = $_SERVER['HTTP_USER_AGENT'];
     }
     /** @noinspection SqlDialectInspection */
-    $sql = "INSERT INTO `$dbn`.`users` (`id`, `user_name`, `session_id`, `bot_id`, `chatlines` ,`ip` ,`referer` ,`browser` ,`date_logged_on` ,`last_update`, `state`)
-  VALUES ( NULL , '$username', '$convo_id', $bot_id, '0', '$sa', '$sr', '$sb', CURRENT_TIMESTAMP , CURRENT_TIMESTAMP, '')";
+    $sql = <<<endSQL
+INSERT INTO `users`
+        (`id`, `user_name`, `session_id`, `bot_id`, `chatlines`,`ip`, `referer`, `browser`, `date_logged_on` , `last_update`    , `state`)
+ VALUES (NULL, :username  , :convo_id   , :bot_id , '0'        , :sa, :sr      , :sb      , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ''     );
+endSQL;
 
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
+    $params = array(
+        ':username' => $username,
+        ':convo_id' => $convo_id,
+        ':bot_id'   => $bot_id,
+        ':sa'       => $sa,
+        ':sr'       => $sr,
+        ':sb'       => $sb,
+    );
 
-    $user_id = $dbConn->lastInsertId();
+    $debugSQL = db_parseSQL($sql, $params);
+
+    //$sth = $dbConn->prepare($sql);
+    //$sth->execute();
+    $numRows = db_write($sql, $params);
+
+    $user_id = db_lastInsertId();
     $convoArr['conversation']['user_id'] = $user_id;
     $convoArr['conversation']['totallines'] = 0;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "intisaliseUser #$user_id SQL: $sql", 3);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "intisaliseUser #$user_id SQL: $debugSQL", 3);
 
 
     //add the username to the client properties....
     /** @noinspection SqlDialectInspection */
-    $sql = "INSERT INTO `$dbn`.`client_properties` (`id`,`user_id`,`bot_id`,`name`,`value`)
-  VALUES ( NULL , '$user_id', $bot_id, 'name', '$username')";
+    $sql = 'INSERT INTO `client_properties` (`id`,`user_id`,`bot_id`,`name`,`value`)
+  VALUES (NULL, :user_id, :bot_id, \'name\', :username);';
 
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
+    $params = array(
+        ':user_id' => $user_id,
+        ':bot_id'   => $bot_id,
+        ':username' => $username,
+    );
+    //$sth = $dbConn->prepare($sql);
+    //$sth->execute();
+    $numRows = db_write($sql, $params);
 
 
     return $convoArr;

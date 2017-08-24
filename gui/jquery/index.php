@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -22,7 +22,12 @@ if (is_nan($bot_id) || empty($bot_id))
 setcookie('bot_id', $bot_id);
 
 // Experimental code
-$base_URL = 'http://' . $_SERVER['HTTP_HOST'];                                   // set domain name for the script
+$HXFP  = (isset($_SERVER['HTTP_X_FORWARDED_PORT'])) ? $_SERVER['HTTP_X_FORWARDED_PORT'] : '';
+$HSP   = (isset($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : '';
+$HTTPS = (isset($_SERVER['HTTPS'])) ? $_SERVER['HTTPS'] : '';
+$HHOST = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '';
+$protocol = ((!empty($HTTPS) && $HTTPS != 'off') || $HSP == 443 || $HXFP == 443) ? "https://" : "http://";
+$base_URL = $protocol . $HHOST;                                   // set domain name for the script
 $this_path = str_replace(DIRECTORY_SEPARATOR, '/', realpath(dirname(__FILE__)));  // The current location of this file, normalized to use forward slashes
 $this_path = str_replace($_SERVER['DOCUMENT_ROOT'], $base_URL, $this_path);       // transform it from a file path to a URL
 $url = str_replace('gui/jquery', 'chatbot/conversation_start.php', $this_path);   // and set it to the correct script location
@@ -128,12 +133,15 @@ function jq_get_convo_id()
         // put all your jQuery goodness in here.
         $('#talkform').submit(function (e) {
             e.preventDefault();
+            $('#urlwarning').empty();
+            $('.botsay').html('(Thinking...)');
             var user = $('#say').val();
             $('.usersay').text(user);
             var formdata = $("#talkform").serialize();
             $('#say').val('');
             $('#say').focus();
             $.get(URL, formdata, function (data) {
+                console.info('Data =', data);
                 var b = data.botsay;
                 if (b.indexOf('[img]') >= 0) {
                     b = showImg(b);

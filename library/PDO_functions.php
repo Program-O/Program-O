@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: library/PDO_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -26,13 +26,22 @@ function db_open()
 
     try
     {
-        $dbConn = new PDO("mysql:host=$dbh;dbname=$dbn;charset=utf8", $dbu, $dbp);
+        $dbConn = new PDO("mysql:host=$dbh;port=$dbPort;dbname=$dbn;charset=utf8", $dbu, $dbp);
         $dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $dbConn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         $dbConn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
     }
     catch (Exception $e) {
-        exit('Program O has encountered a problem with connecting to the database. With any luck, the following message will help: ' . $e->getMessage());
+        //exit('Program O has encountered a problem with connecting to the database. With any luck, the following information will help: ' . $e->getMessage());
+        $errMsg = <<<endMsg
+Program O has encountered a problem with connecting to the database. With any luck, the following information will help:<br>
+Error message: {$e->getMessage()}<br>
+Host: {$dbh}<br>
+Port: {$dbPort}<br>
+User: {$dbu}<br>
+Pass: {$dbp}<br>
+endMsg;
+        exit($errMsg);
     }
 
     return $dbConn;
@@ -47,9 +56,9 @@ function db_open()
  *
  * @return null
  */
-function db_close()
+function db_close($inPGO = true)
 {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'This DB is now closed. You don\'t have to go home, but you can\'t stay here.', 2);
+    if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, 'This DB is now closed. You don\'t have to go home, but you can\'t stay here.', 2);
     return null;
 }
 
@@ -65,7 +74,7 @@ function db_close()
  *
  * @return mixed $out - Either the row of data from the DB query, or false, if the query fails
  */
-function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown')
+function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
 {
     global $dbConn;
     //error_log(print_r($dbConn, true), 3, _LOG_PATH_ . 'dbConn.txt');
@@ -84,7 +93,7 @@ function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown'
 
         /** @noinspection PhpUndefinedVariableInspection */
         $psError = print_r($sth->errorInfo(), true);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while extracting a row of data from the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
+        if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while extracting a row of data from the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
         return false;
     }
 }
@@ -101,7 +110,7 @@ function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown'
  *
  * @return mixed $out - Either an array of data from the DB query, or false, if the query fails
  */
-function db_fetchAll($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown')
+function db_fetchAll($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
 {
     global $dbConn;
 
@@ -117,7 +126,17 @@ function db_fetchAll($sql, $params = null, $file = 'unknown', $function = 'unkno
 
         /** @noinspection PhpUndefinedVariableInspection */
         $psError = print_r($sth->errorInfo(), true);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while extracting multiple rows of data from the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
+        $errSql = db_parseSQL($sql, $params);
+        $dParams = (!is_null($params)) ? print_r($params, true) : 'null';
+        $errMsg = <<<endMsg
+An error was generated while extracting multiple rows of data from the database in file $file at line $line, in the function $function.
+SQL: $errSql
+Params: $dParams
+PDO error: $pdoError
+PDO_statement error: $psError
+
+endMsg;
+        if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, $errMsg, 0);
         return false;
     }
 }
@@ -135,7 +154,7 @@ function db_fetchAll($sql, $params = null, $file = 'unknown', $function = 'unkno
  *
  * @return mixed $out - Either the number of rows affected by the DB query
  */
-function db_write($sql, $params = null, $multi = false, $file = 'unknown', $function = 'unknown', $line = 'unknown')
+function db_write($sql, $params = null, $multi = false, $file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
 {
     global $dbConn;
     $newLine = PHP_EOL;
@@ -163,16 +182,17 @@ function db_write($sql, $params = null, $multi = false, $file = 'unknown', $func
     }
     catch (Exception $e)
     {
-        $paramsText = print_r($params, true);
+        $errParams = ($multi) ? $row : $params;
+        $paramsText = print_r($errParams, true);
         $pdoError = print_r($dbConn->errorInfo(), true);
 
         /** @noinspection PhpUndefinedVariableInspection */
         $psError = print_r($sth->errorInfo(), true);
         $eMessage = $e->getMessage();
-
+        $errSQL = db_parseSQL($sql, $errParams);
         $errorMessage = <<<endMessage
 Bad SQL encountered in file $file, line #$line. SQL:
-$sql
+$errSQL
 PDO Error:
 $pdoError
 PDOStatement Error:
@@ -182,20 +202,65 @@ $eMessage;
 Parameters:
 $paramsText
 endMessage;
+$file = str_replace(DIRECTORY_SEPARATOR, '/', $file);
+$fpArray = explode('/', $file);
+$fn = array_pop($fpArray);
+$errLogPath = "{$fn}.{$function}.error.log";
 
-        error_log($errorMessage, 3, _LOG_PATH_ . 'db_write.txt');
+        error_log($errorMessage, 3, _LOG_PATH_ . $errLogPath);
 
         $rdMessage = <<<endMessage
 An error was generated while writing to the database in file $file at line $line, in the function $function.
-SQL: $sql
+SQL: $errSQL
 PDO error: $pdoError
 PDOStatement error: $psError
 endMessage;
 
-        runDebug(__FILE__, __FUNCTION__, __LINE__, $rdMessage, 0);
+        if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, $rdMessage, 0);
         return false;
     }
 }
 
+
+/**
+ * function db_parseSQL
+ *
+ * Converts a prepared statment query into a human readable version
+ *
+ * @param string $sql
+ * @param array $params
+ *
+ * @return string $out
+ */
+
+ function db_parseSQL ($sql, $params = null)
+{
+    $out = $sql;
+    if (is_array($params))
+    {
+        foreach ($params as $key => $value)
+        {
+            if (is_numeric($key)) // deal with unnamed placeholders (?)
+            {
+                $limit = 1;
+                $search = '/\?/';
+                $value = (is_numeric($value)) ? $value : "'$value'"; // if $value is a string, encase it in quotes
+                $out = preg_replace($search, $value, $out, $limit);
+            }
+            else // handle named parameters
+            {
+                $value = (is_numeric($value)) ? $value : "'$value'"; // if $value is a string, encase it in quotes
+                $out = str_replace($key, $value, $out);
+            }
+        }
+    }
+    return $out;
+}
+
+function db_lastInsertId($name = null)
+{
+    global $dbConn;
+    return $dbConn->lastInsertId($name);
+}
 
 

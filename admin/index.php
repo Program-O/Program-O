@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -14,6 +14,7 @@ $thisFile = __FILE__;
 if (!file_exists('../config/global_config.php'))
 {
     header('location: ../install/install_programo.php');
+    exit();
 }
 
 /** @noinspection PhpIncludeInspection */
@@ -43,6 +44,8 @@ $branches = array(
     'dev' => 'Development'
 );
 
+$editScript = '';
+$editScriptTag = '';
 // Set session parameters
 $session_name = 'PGO_Admin';
 session_name($session_name);
@@ -50,7 +53,6 @@ session_start();
 $msg = '';
 
 // Get form inputs
-$pc = print_r($_GET, true) . "\n" . print_r($_POST, true);
 $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
 $page = ($page === false || $page === null) ? 'main' : $page;
 
@@ -73,9 +75,17 @@ $branch = (!empty($_SESSION['useBranch'])) ? $_SESSION['useBranch'] : 'master';
 // Begin script execution
 $thisPath = dirname(__FILE__);
 $template = new Template("$thisPath/default.page.htm");
-$githubVersion = getCurrentVersion($branch);
+$githubVersion = trim(getCurrentVersion($branch));
+$currentLocalVersion = VERSION;
 
-$upToDate = '<strong>Program O</strong><br>Current Local Version: ' . VERSION . '<br>Current GitHub Version: ' . $githubVersion . '<br>Current Branch: ' . $branches[$branch];
+$upToDate = <<<endUTD
+
+            <div class="vert"><strong>Program O</strong></div>
+            <div class="vert">Current Local Version: $currentLocalVersion</div>
+            <div class="vert">Current GitHub Version: $githubVersion</div>
+            <div class="vert">Current Branch: {$branches[$branch]}</div>
+            <!-- Current Database Name: {$dbn} -->
+endUTD;
 
 $newVersionAvailable = "Program O $githubVersion is now available for the "
     . $branches[$branch] . ' branch. <a href="https://github.com/Program-O/Program-O/archive/' . $branch
@@ -148,7 +158,7 @@ if ($curPage == 'login' && !empty($_SESSION['poadmin']['logged_in']))
 }
 
 $_SESSION['poadmin']['curPage'] = $curPage;
-($curPage != 'logout' || $curPage == 'login') ? include("$curPage.php") : false;
+($curPage != 'logout' || $curPage == 'login') ? include("{$curPage}.php") : false;
 
 $bot_format_link = (!empty($bot_format)) ? "&amp;format=$bot_format" : '';
 $curPage = (isset($curPage)) ? $curPage : 'main';
@@ -214,6 +224,7 @@ $searches = array(
     '[bSelOptD]'        => $bSelOptD,
     '[bSelOptM]'        => $bSelOptM,
     '[bot_format_link]' => $bot_format_link,
+    '[editScriptTag]'   => $editScriptTag,
 );
 
 foreach ($searches as $search => $replace)
@@ -348,7 +359,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Change or edit the current bot"',
             '[linkLabel]' => 'Current Bot: ([curBot])'
         ),
-        array(
+        array( # Bot Personality
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=botpersonality"',
             '[linkOnclick]' => '',
@@ -356,7 +367,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Edit your bot\'s personality"',
             '[linkLabel]' => 'Bot Personality'
         ),
-        array(
+        array( # Conversation Logs
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=logs"',
             '[linkOnclick]' => '',
@@ -364,7 +375,15 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="View the Conversation Logs"',
             '[linkLabel]' => 'Conversation Logs'
         ),
-        array(
+        array( # Unknown inputs
+            '[linkClass]' => ' class="[curClass]"',
+            '[linkHref]' => ' href="index.php?page=unknown_inputs"',
+            '[linkOnclick]' => '',
+            '[linkAlt]' => ' alt="View Unknown Inputs for this bot"',
+            '[linkTitle]' => ' title="View Unknown Inputs"',
+            '[linkLabel]' => 'Unknown Inputs'
+        ),
+        array( # Teach
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=teach"',
             '[linkOnclick]' => '',
@@ -372,7 +391,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Train your bot"',
             '[linkLabel]' => 'Teach'
         ),
-        array(
+        array( # Upload AIML
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=upload"',
             '[linkOnclick]' => '',
@@ -380,7 +399,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Upload AIML files"',
             '[linkLabel]' => 'Upload AIML'
         ),
-        array(
+        array( # Download AIML
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=download"',
             '[linkOnclick]' => '',
@@ -388,7 +407,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Download AIML files"',
             '[linkLabel]' => 'Download AIML'
         ),
-        array(
+        array( # Clear AIML categories
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=clear"',
             '[linkOnclick]' => '',
@@ -396,7 +415,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Clear AIML Categories"',
             '[linkLabel]' => 'Clear AIML Categories'
         ),
-        array(
+        array( # Spellcheck
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=spellcheck"',
             '[linkOnclick]' => '',
@@ -404,7 +423,7 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Edit the SpellCheck entries"',
             '[linkLabel]' => 'Spell Check'
         ),
-        array(
+        array( # Word censor
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=wordcensor"',
             '[linkOnclick]' => '',
@@ -412,13 +431,21 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Edit the Word Censor entries"',
             '[linkLabel]' => 'Word Censor'
         ),
-        array(
+        array( # Edit AIML
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=editAiml"',
             '[linkOnclick]' => '',
             '[linkAlt]' => ' alt="Search and edit specific AIML categories"',
             '[linkTitle]' => ' title="Search and edit specific AIML categories"',
             '[linkLabel]' => 'Search/Edit AIML'
+        ),
+        array( # Edit user-defined AIML ( from <learn> tag)
+            '[linkClass]' => ' class="[curClass]"',
+            '[linkHref]' => ' href="index.php?page=editUDAiml"',
+            '[linkOnclick]' => '',
+            '[linkAlt]' => ' alt="Search and edit specific AIML categories"',
+            '[linkTitle]' => ' title="Search and edit specific AIML categories"',
+            '[linkLabel]' => 'User Defined AIML'
         ),
         array(
             '[linkClass]' => ' class="[curClass]"',
@@ -454,14 +481,6 @@ function makeLeftLinks()
         ),
         array(
             '[linkClass]' => '',
-            '[linkHref]' => ' href="#"',
-            '[linkOnclick]' => ' onclick="toggleLogo(); return false;"',
-            '[linkAlt]' => ' alt="Toggle the Logo"',
-            '[linkTitle]' => ' title="Toggle the Logo"',
-            '[linkLabel]' => 'Toggle the Logo'
-        ),
-        array(
-            '[linkClass]' => '',
             '[linkHref]' => ' href="' . _BASE_URL_ . '?bot_id=[botId][bot_format_link]"',
             '[linkOnclick]' => ' target="_blank"',
             '[linkAlt]' => ' alt="open the page for [curBot] in a new tab/window"',
@@ -483,6 +502,14 @@ function makeLeftLinks()
             '[linkAlt]' => ' alt="Log File Viewer"',
             '[linkTitle]' => ' title="Log File Viewer in a new tab/window"',
             '[linkLabel]' => 'Log File Viewer'
+        ),
+        array(
+            '[linkClass]' => '',
+            '[linkHref]' => ' href="#"',
+            '[linkOnclick]' => ' onclick="toggleLogo(); return false;"',
+            '[linkAlt]' => ' alt="Toggle the Logo"',
+            '[linkTitle]' => ' title="Toggle the Logo"',
+            '[linkLabel]' => 'Toggle the Logo'
         ),
     );
     return $out;
@@ -554,8 +581,10 @@ function login()
     $pw_hash = md5($post_vars['pw']);
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `myprogramo` WHERE user_name = :user_name AND password = :pw_hash";
+    $sql = 'SELECT * FROM `myprogramo` WHERE user_name = :user_name AND password = :pw_hash;';
     $params = array(':user_name' => $user_name, ':pw_hash' => $pw_hash);
+    $debugSQL = db_parseSQL($sql, $params);
+    //save_file(_LOG_PATH_ . 'login.sql.txt', $debugSQL);
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (!empty($row))
@@ -586,7 +615,7 @@ function login()
 
         /** @noinspection SqlDialectInspection */
         $sql = "SELECT * FROM `bots` WHERE bot_active = '1' ORDER BY bot_id ASC LIMIT 1";
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $row = db_fetch($sql,null, __FILE__, __FUNCTION__, __LINE__);
         $count = count($row);
 
         if ($count > 0)

@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: chatbot/core/conversation/display_conversation.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -30,8 +30,9 @@ function get_conversation_to_display($convoArr)
     if (empty ($bot_name))
     {
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `bot_name` FROM `bots` WHERE `bot_id` = $bot_id limit 1;";
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $sql = "SELECT `bot_name` FROM `bots` WHERE `bot_id` = :bot_id limit 1;";
+        $params = array(':bot_id' => $convoArr['conversation']['bot_id']);
+        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
         $bot_name = $row['bot_name'];
     }
 
@@ -43,17 +44,20 @@ function get_conversation_to_display($convoArr)
         $limit = "";
     }
 
-    /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM `$dbn`.`conversation_log`
-        WHERE
-        `user_id` = '" . $convoArr['conversation']['user_id'] . "'
-        AND `bot_id` = '" . $convoArr['conversation']['bot_id'] . "'
-        AND `convo_id` = '" . $convoArr['conversation']['convo_id'] . "'
-        ORDER BY id DESC $limit ";
+    $sql = "SELECT * FROM `$dbn`.`conversation_log` WHERE
+        `user_id` = :user_id
+        AND `bot_id` = :bot_id
+        AND `convo_id` = :convo_id
+        ORDER BY id DESC $limit";
+    $params = array(
+        ':bot_id'   => $convoArr['conversation']['bot_id'],
+        ':convo_id' => $convoArr['conversation']['convo_id'],
+        ':user_id'  => $convoArr['conversation']['user_id'],
+    );
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql", 3);
 
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (count($result) > 0)
     {
@@ -143,7 +147,7 @@ function get_json($convoArr, $conversation)
         $show_json['convo_id'] = $convoArr['conversation']['convo_id'];
         $show_json['usersay'] = stripslashes($conversation_subarray['input']);
         $show_json['botsay'] = stripslashes($conversation_subarray['response']);
-        $show_json['data'] = $convoArr['conversation']['data'];
+        $show_json['data'] = $convoArr['conversation'];
         $i++;
     }
 
@@ -217,20 +221,23 @@ function get_xml($convoArr, $conversation)
 function display_conversation($convoArr)
 {
     $display = $convoArr['send_to_user'];
-    $format = (isset($convoArr['conversation']['format'])) ? strtolower(trim($convoArr['conversation']['format'])) : 'html';
+    $format = (isset($convoArr['conversation']['format'])) ? _strtolower(trim($convoArr['conversation']['format'])) : 'html';
 
     switch ($format)
     {
         case 'html' :
+        case 'HTML' :
             $display = str_ireplace('<![CDATA[', '', $display);
             $display = str_replace(']]>', '', $display);
             break;
         case 'xml' :
+        case 'XML' :
             header("Content-type: text/xml; charset=utf-8", false);
             header("Access-Control-Allow-Origin: *", false);
             echo trim($display);
             break;
         case 'json' :
+        case 'JSON' :
             header("Content-type: text/plain; charset=utf-8", false);
             header("Access-Control-Allow-Origin: *", false);
             echo trim($display);

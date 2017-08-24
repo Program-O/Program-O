@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: upload.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -14,9 +14,55 @@ ini_set('max_execution_time', '0');
 ini_set('display_errors', false);
 ini_set('log_errors', true);
 chdir(_ADMIN_PATH_);
+// check max file upload size and max post size, see which is smaller, and limit upload size to that value
+$upload_max_filesize = ini_get('upload_max_filesize');
+$post_max_size = ini_get('post_max_size');
+$limit_search = '/(\d+)(\w)/';
+preg_match($limit_search, $upload_max_filesize, $umf_matches);
+preg_match($limit_search, $post_max_size, $pms_matches);
+$umf_value = $umf_matches[1];
+$umf_suffix = strtoupper($umf_matches[2]);
+switch ($umf_suffix)
+{
+    case 'K':
+        $umf_factor = 1000;
+        break;
+    case 'M':
+        $umf_factor = 1000 * 1000;
+        break;
+    case 'G':
+        $umf_factor = 1000 * 1000 * 1000;
+        break;
+    default: $umf_factor = 1;
+}
+$umf_limit = $umf_value * $umf_factor;
+
+$pms_value = $pms_matches[1];
+$pms_suffix = strtoupper($pms_matches[2]);
+switch ($pms_suffix)
+{
+    case 'K':
+        $pms_factor = 1000;
+        break;
+    case 'M':
+        $pms_factor = 1000 * 1000;
+        break;
+    case 'G':
+        $pms_factor = 1000 * 1000 * 1000;
+        break;
+    default: $pms_factor = 1;
+}
+$pms_limit = $pms_value * $pms_factor;
+$fs_limit = ($umf_limit >= $pms_limit) ? $pms_limit : $umf_limit;
+$fs_limit_title = ($umf_limit >= $pms_limit) ? $pms_matches[0] : $umf_matches[0];
+$fs_limit_title .= 'B';
 
 $validationStatus = '';
 $msg = '';
+
+$ZIPenabled = class_exists('ZipArchive');
+// $ZIPenabled = false; // debugging and testing - comment out when complete
+
 libxml_use_internal_errors(true);
 $_SESSION['failCount'] = 0;
 
@@ -58,8 +104,8 @@ $upperScripts = <<<endScript
         if (!file_upload.files) return false;
         var fileSize = file_upload.files[0].size;//.fileSize;
         var fileName = file_upload.files[0].name;//.fileSize;
-        if (fileSize > 2000000){
-          showError("The file " + fileName + " exceeds the file size limit of 2MB. Please choose a different file.")
+        if (fileSize > {$fs_limit}){
+          showError("The file " + fileName + " exceeds the file size limit of {$fs_limit_title}. Please choose a different file.")
           file_upload.value = null;
         }
         var fileType = file_upload.files[0].type;//.fileSize;
@@ -122,6 +168,7 @@ $mainContent = str_replace('[upload_content]', $uploadContent, $mainContent);
 $mainContent = str_replace('[showHelp]', $showHelp, $mainContent);
 $mainContent = str_replace('[AIML_List]', $AIML_List, $mainContent);
 $mainContent = str_replace('[all_bots]', $all_bots, $mainContent);
+$mainContent = str_replace('[fs_limit_title]', $fs_limit_title, $mainContent);
 
 $mainTitle = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainTitle);
 $mainTitle = str_replace('[errMsg]', $msg, $mainTitle);
@@ -137,9 +184,9 @@ $mainTitle = str_replace('[errMsg]', $msg, $mainTitle);
 function parseAIML($fn, $aimlContent, $from_zip = false)
 {
     global $dbConn, $msg, $debugmode, $bot_id, $charset;
+    $duplicates = array();
 
     $post_vars = filter_input_array(INPUT_POST);
-    file_put_contents(_LOG_PATH_ . 'post_vars.txt', print_r($post_vars, true));
 
     if (empty ($aimlContent))
     {
@@ -164,8 +211,8 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
 
     # Read new file into the XML parser
     /** @noinspection SqlDialectInspection */
-    $sql = 'INSERT INTO `aiml` (`id`, `bot_id`, `aiml`, `pattern`, `thatpattern`, `template`, `topic`, `filename`) VALUES
-    (NULL, :bot_id, :aiml, :pattern, :that, :template, :topic, :fileName);';
+    $sql = 'INSERT INTO `aiml` (`id`, `bot_id`, `pattern`, `thatpattern`, `template`, `topic`, `filename`) VALUES
+    (NULL, :bot_id, :pattern, :that, :template, :topic, :fileName);';
 
     # Validate the incoming document
     /*******************************************************/
@@ -242,16 +289,20 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
                         $template = trim($template);
                         # Strip CRLF and LF from category (Windows/mac/*nix)
                         $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
+                        $duplicatesIndex = hash('sha1', "{$topic} {$aiml_add}"); // use a HASH for the duplicates array's indices to save memory
+                        if (!in_array($duplicatesIndex, $duplicates))
+                        {
+                            $params[] = array(
+                                ':bot_id' => $bot_id,
+                                ':pattern' => $pattern,
+                                ':that' => $that,
+                                ':template' => $template,
+                                ':topic' => $topic,
+                                ':fileName' => $fileName
+                            );
+                            $duplicates[] = $duplicatesIndex;
+                        }
 
-                        $params[] = array(
-                            ':bot_id' => $bot_id,
-                            ':aiml' => $aiml_add,
-                            ':pattern' => $pattern,
-                            ':that' => $that,
-                            ':template' => $template,
-                            ':topic' => $topic,
-                            ':fileName' => $fileName
-                        );
                     }
                 }
             }
@@ -277,46 +328,24 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
                     $template = trim($template);
                     # Strip CRLF and LF from category (Windows/mac/*nix)
                     $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
-                    $params[] = array(
-                        ':bot_id' => $bot_id,
-                        ':aiml' => $aiml_add,
-                        ':pattern' => $pattern,
-                        ':that' => $that,
-                        ':template' => $template,
-                        ':topic' => '',
-                        ':fileName' => $fileName
-                    );
+                    $duplicatesIndex = hash('sha1', $aiml_add); // use a HASH for the duplicates array's indices to save memory
+                    if (!in_array($duplicatesIndex, $duplicates))
+                    {
+                        $params[] = array(
+                            ':bot_id' => $bot_id,
+                            ':pattern' => $pattern,
+                            ':that' => $that,
+                            ':template' => $template,
+                            ':topic' => '',
+                            ':fileName' => $fileName
+                        );
+                        $duplicates[] = $duplicatesIndex;
+                    }
                 }
             }
 
             if (!empty($params))
             {
-                $topic = "";
-                $fullCategory = $category->asXML();
-
-                $pattern = trim($category->pattern);
-                $pattern = str_replace("'", ' ', $pattern);
-                $pattern = _strtoupper($pattern);
-
-                $that = $category->that;
-                $template = $category->template->asXML();
-                //strip out the <template> tags, as they aren't needed
-                $template = substr($template, 10);
-                $tLen = strlen($template);
-                $template = substr($template, 0, $tLen - 11);
-                $template = trim($template);
-                # Strip CRLF and LF from category (Windows/mac/*nix)
-                $aiml_add = str_replace(array("\r\n", "\n"), '', $fullCategory);
-                $params[] = array(
-                    ':bot_id' => $bot_id,
-                    ':aiml' => $aiml_add,
-                    ':pattern' => $pattern,
-                    ':that' => $that,
-                    ':template' => $template,
-                    ':topic' => '',
-                    ':fileName' => $fileName
-                );
-
                 $rowCount = db_write($sql, $params, true, __FILE__, __FUNCTION__, __LINE__);
                 $success = ($rowCount !== false) ? true : false;
             }
@@ -353,13 +382,13 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
  */
 function processUpload()
 {
-    global $msg;
+    global $msg, $ZIPenabled, $fs_limit;
     // Validate the uploaded file
     if ($_FILES['aimlfile']['size'] === 0 || empty($_FILES['aimlfile']['tmp_name']))
     {
         $msg = 'No file was selected.';
     }
-    elseif ($_FILES['aimlfile']['size'] > 2000000)
+    elseif ($_FILES['aimlfile']['size'] > $fs_limit)
     {
         $msg = 'The file was too large.';
     }
@@ -377,7 +406,15 @@ function processUpload()
             #file_put_contents(_LOG_PATH_ . 'upload.type.txt', 'Type = ' . $_FILES['aimlfile']['type']);
             if ($_FILES['aimlfile']['type'] == 'application/zip' or $_FILES['aimlfile']['type'] == 'application/x-zip-compressed')
             {
-                return processZip($file);
+                //check for ZipArchive class
+                if (!$ZIPenabled)
+                {
+                    $msg .= 'The PHP ZipArchive class is not available on this server, so Zip files cannot be uploaded. However, individual AIML files can be uploaded. We apologise for the inconvenience.';
+                }
+                else
+                {
+                    return processZip($file);
+                }
             }
             else
             {
@@ -403,8 +440,9 @@ function getAIML_List()
     global $dbConn, $dbn, $bot_id;
     $out = "                  <!-- Start List of Currently Stored AIML files -->\n";
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT DISTINCT filename FROM `aiml` WHERE `bot_id` = $bot_id ORDER BY `filename`;";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT DISTINCT filename FROM `aiml` WHERE `bot_id` = :bot_id ORDER BY `filename`;";
+    $params = array(':bot_id' => $bot_id);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {
@@ -433,7 +471,7 @@ function getBotList()
 
     /** @noinspection SqlDialectInspection */
     $sql = 'SELECT `bot_name`, `bot_id` FROM `bots` ORDER BY `bot_id`;';
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {

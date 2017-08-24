@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: demochat.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-12-2014
@@ -42,8 +42,9 @@ function showChatFrame()
 
     $qs = '?bot_id=' . $bot_id;
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `format` FROM `bots` WHERE `bot_id` = $bot_id limit 1;";
-    $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT `format` FROM `bots` WHERE `bot_id` = :bot_id limit 1;";
+    $params = array(':bot_id' => $bot_id);
+    $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $format = strtolower($row['format']);
 
     switch ($format)
@@ -64,7 +65,7 @@ function showChatFrame()
     $url .= $qs;
     $out = $template->getSection('ChatDemo');
     $out = str_replace('[pageSource]', $url, $out);
-    $out = str_replace('[format]', strtoupper($format), $out);
+    $out = str_replace('[format]', strtolower($format), $out);
 
     return $out;
 }

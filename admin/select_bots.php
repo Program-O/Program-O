@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: select_bots.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-09-2014
@@ -61,8 +61,6 @@ $mainTitle      = 'Choose/Edit a Bot';
  */
 function getBotParentList($current_parent)
 {
-    //db globals
-    global $dbConn;
 
     //get active bots from the db
     if (empty($current_parent))
@@ -72,7 +70,7 @@ function getBotParentList($current_parent)
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT * FROM `bots` WHERE bot_active = '1'";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
     $options = '                  <option value="0"[noBot]>No Parent Bot</option>';
 
     foreach ($result as $row)
@@ -105,7 +103,7 @@ function getBotParentList($current_parent)
  */
 function getSelectedBot()
 {
-    global $dbConn, $template, $pattern, $remember_up_to, $conversation_lines, $error_response, $curBot, $unknown_user;
+    global $template, $pattern, $remember_up_to, $conversation_lines, $error_response, $curBot, $unknown_user;
     $bot_conversation_lines = $conversation_lines;
     $bot_default_aiml_pattern = $pattern;
     $bot_error_response = $error_response;
@@ -256,16 +254,16 @@ function getSelectedBot()
  */
 function updateBotSelection()
 {
-    global $dbConn, $msg, $format, $post_vars, $branch;
+    global $msg, $format, $post_vars, $branch;
 
     $logFile = _LOG_URL_ . 'admin.error.log';
     $msg = '';
     $bot_id = $post_vars['bot_id'];
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM bots WHERE bot_id = $bot_id;";
-    $result = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT * FROM bots WHERE bot_id = :bot_id;";
+    $params = array(':bot_id' => $bot_id);
+    $result = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $sql = '';
-    $params = array();
     $skipVars = array('bot_id', 'action', 'useBranch');
 
     foreach ($post_vars as $key => $value)
@@ -284,13 +282,14 @@ function updateBotSelection()
         if ($result[$key] != $post_vars[$key])
         {
             /** @noinspection SqlDialectInspection */
-            $sql .= "UPDATE `bots` SET `$key` = '$safeVal' WHERE `bot_id` = $bot_id limit 1;\n";
+            $sql .= "UPDATE `bots` SET `$key` = :{$key}_safeVal WHERE `bot_id` = :bot_id limit 1;\n";
+            $params["{$key}_safeVal"] = $safeVal;
         }
     }
 
     if (!empty($sql))
     {
-        $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows == 0)
         {
@@ -308,27 +307,24 @@ function updateBotSelection()
     else {
         $msg = 'Nothing seems to have been modified. No changes made.';
     }
-    $format = filter_input(INPUT_POST, 'format');
+    $curFormat = _strtolower($_SESSION['poadmin']['format']);
+    $format = _strtolower(filter_input(INPUT_POST, 'format'));
 
-    if (_strtoupper($format) !== _strtoupper($format))
+    if ($format !== $curFormat)
     {
-        $format = _strtoupper($format);
+        $_SESSION['poadmin']['format'] = $format;
         $cfn = _CONF_PATH_ . 'global_config.php';
-        $configFile = file(_CONF_PATH_ . 'global_config.php', FILE_IGNORE_NEW_LINES);
-        $search = '    $format = \'' . $format . '\';';
-        $replace = '    $format = \'' . $format . '\';';
-        $index = array_search($search, $configFile);
+        $configFileContent = file_get_contents(_CONF_PATH_ . 'global_config.php', FILE_IGNORE_NEW_LINES);
+        $search = "/format = '.*?';/";
+        $replace = "format = '{$format}';";
+        $test = preg_match($search, $configFileContent, $matches);
+        $configFileContent = preg_replace($search, $replace, $configFileContent);
+        $x = file_put_contents(_CONF_PATH_ . 'global_config.php', $configFileContent);
 
-        if (false === $index)
+        if (false === $x)
         {
             $msg .= "Error updating the config file. See the <a href=\"$logFile\">error log</a> for details.<br />";
             trigger_error("There was a problem with updating the default format in the config file. Please edit the value manually and submit a bug report.");
-        }
-        else
-        {
-            $configFile[$index] = $replace;
-            $configContent = implode("\n", $configFile);
-            $x = file_put_contents(_CONF_PATH_ . 'global_config.php', $configContent);
         }
     }
 
@@ -348,7 +344,7 @@ function updateBotSelection()
 function addBot()
 {
     //db globals
-    global $dbConn, $msg, $post_vars;
+    global $msg, $post_vars;
 
     foreach ($post_vars as $key => $value) {
         $$key = trim($value);
@@ -384,7 +380,7 @@ VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,
         $msg = "$bot_name Bot details could not be added.";
     }
 
-    $_SESSION['poadmin']['bot_id'] = $dbConn->lastInsertId();
+    $_SESSION['poadmin']['bot_id'] = db_lastInsertId();
     $bot_id = $_SESSION['poadmin']['bot_id'];
     $_SESSION['poadmin']['bot_name'] = $post_vars['bot_name'];
     $bot_name = $_SESSION['poadmin']['bot_name'];
@@ -401,73 +397,74 @@ VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,
  */
 function make_bot_predicates($bot_id)
 {
-    global $dbConn, $bot_name;
+    global $bot_name;
     $msg = '';
 
     $sql = <<<endSQL
 INSERT INTO `botpersonality` VALUES
-  (NULL,  $bot_id, 'age', ''),
-  (NULL,  $bot_id, 'baseballteam', ''),
-  (NULL,  $bot_id, 'birthday', ''),
-  (NULL,  $bot_id, 'birthplace', ''),
-  (NULL,  $bot_id, 'botmaster', ''),
-  (NULL,  $bot_id, 'boyfriend', ''),
-  (NULL,  $bot_id, 'build', ''),
-  (NULL,  $bot_id, 'celebrities', ''),
-  (NULL,  $bot_id, 'celebrity', ''),
-  (NULL,  $bot_id, 'class', ''),
-  (NULL,  $bot_id, 'email', ''),
-  (NULL,  $bot_id, 'emotions', ''),
-  (NULL,  $bot_id, 'ethics', ''),
-  (NULL,  $bot_id, 'etype', ''),
-  (NULL,  $bot_id, 'family', ''),
-  (NULL,  $bot_id, 'favoriteactor', ''),
-  (NULL,  $bot_id, 'favoriteactress', ''),
-  (NULL,  $bot_id, 'favoriteartist', ''),
-  (NULL,  $bot_id, 'favoriteauthor', ''),
-  (NULL,  $bot_id, 'favoriteband', ''),
-  (NULL,  $bot_id, 'favoritebook', ''),
-  (NULL,  $bot_id, 'favoritecolor', ''),
-  (NULL,  $bot_id, 'favoritefood', ''),
-  (NULL,  $bot_id, 'favoritemovie', ''),
-  (NULL,  $bot_id, 'favoritesong', ''),
-  (NULL,  $bot_id, 'favoritesport', ''),
-  (NULL,  $bot_id, 'feelings', ''),
-  (NULL,  $bot_id, 'footballteam', ''),
-  (NULL,  $bot_id, 'forfun', ''),
-  (NULL,  $bot_id, 'friend', ''),
-  (NULL,  $bot_id, 'friends', ''),
-  (NULL,  $bot_id, 'gender', ''),
-  (NULL,  $bot_id, 'genus', ''),
-  (NULL,  $bot_id, 'girlfriend', ''),
-  (NULL,  $bot_id, 'hockeyteam', ''),
-  (NULL,  $bot_id, 'kindmusic', ''),
-  (NULL,  $bot_id, 'kingdom', ''),
-  (NULL,  $bot_id, 'language', ''),
-  (NULL,  $bot_id, 'location', ''),
-  (NULL,  $bot_id, 'looklike', ''),
-  (NULL,  $bot_id, 'master', ''),
-  (NULL,  $bot_id, 'msagent', ''),
-  (NULL,  $bot_id, 'name', '$bot_name'),
-  (NULL,  $bot_id, 'nationality', ''),
-  (NULL,  $bot_id, 'order', ''),
-  (NULL,  $bot_id, 'orientation', ''),
-  (NULL,  $bot_id, 'party', ''),
-  (NULL,  $bot_id, 'phylum', ''),
-  (NULL,  $bot_id, 'president', ''),
-  (NULL,  $bot_id, 'question', ''),
-  (NULL,  $bot_id, 'religion', ''),
-  (NULL,  $bot_id, 'sign', ''),
-  (NULL,  $bot_id, 'size', ''),
-  (NULL,  $bot_id, 'species', ''),
-  (NULL,  $bot_id, 'talkabout', ''),
-  (NULL,  $bot_id, 'version', ''),
-  (NULL,  $bot_id, 'vocabulary', ''),
-  (NULL,  $bot_id, 'wear', ''),
-  (NULL,  $bot_id, 'website', '');
+    (NULL,  :bot_id, 'age', ''),
+    (NULL,  :bot_id, 'baseballteam', ''),
+    (NULL,  :bot_id, 'birthday', ''),
+    (NULL,  :bot_id, 'birthplace', ''),
+    (NULL,  :bot_id, 'botmaster', ''),
+    (NULL,  :bot_id, 'boyfriend', ''),
+    (NULL,  :bot_id, 'build', ''),
+    (NULL,  :bot_id, 'celebrities', ''),
+    (NULL,  :bot_id, 'celebrity', ''),
+    (NULL,  :bot_id, 'class', ''),
+    (NULL,  :bot_id, 'email', ''),
+    (NULL,  :bot_id, 'emotions', ''),
+    (NULL,  :bot_id, 'ethics', ''),
+    (NULL,  :bot_id, 'etype', ''),
+    (NULL,  :bot_id, 'family', ''),
+    (NULL,  :bot_id, 'favoriteactor', ''),
+    (NULL,  :bot_id, 'favoriteactress', ''),
+    (NULL,  :bot_id, 'favoriteartist', ''),
+    (NULL,  :bot_id, 'favoriteauthor', ''),
+    (NULL,  :bot_id, 'favoriteband', ''),
+    (NULL,  :bot_id, 'favoritebook', ''),
+    (NULL,  :bot_id, 'favoritecolor', ''),
+    (NULL,  :bot_id, 'favoritefood', ''),
+    (NULL,  :bot_id, 'favoritemovie', ''),
+    (NULL,  :bot_id, 'favoritesong', ''),
+    (NULL,  :bot_id, 'favoritesport', ''),
+    (NULL,  :bot_id, 'feelings', ''),
+    (NULL,  :bot_id, 'footballteam', ''),
+    (NULL,  :bot_id, 'forfun', ''),
+    (NULL,  :bot_id, 'friend', ''),
+    (NULL,  :bot_id, 'friends', ''),
+    (NULL,  :bot_id, 'gender', ''),
+    (NULL,  :bot_id, 'genus', ''),
+    (NULL,  :bot_id, 'girlfriend', ''),
+    (NULL,  :bot_id, 'hockeyteam', ''),
+    (NULL,  :bot_id, 'kindmusic', ''),
+    (NULL,  :bot_id, 'kingdom', ''),
+    (NULL,  :bot_id, 'language', ''),
+    (NULL,  :bot_id, 'location', ''),
+    (NULL,  :bot_id, 'looklike', ''),
+    (NULL,  :bot_id, 'master', ''),
+    (NULL,  :bot_id, 'msagent', ''),
+    (NULL,  :bot_id, 'name', :bot_name),
+    (NULL,  :bot_id, 'nationality', ''),
+    (NULL,  :bot_id, 'order', ''),
+    (NULL,  :bot_id, 'orientation', ''),
+    (NULL,  :bot_id, 'party', ''),
+    (NULL,  :bot_id, 'phylum', ''),
+    (NULL,  :bot_id, 'president', ''),
+    (NULL,  :bot_id, 'question', ''),
+    (NULL,  :bot_id, 'religion', ''),
+    (NULL,  :bot_id, 'sign', ''),
+    (NULL,  :bot_id, 'size', ''),
+    (NULL,  :bot_id, 'species', ''),
+    (NULL,  :bot_id, 'talkabout', ''),
+    (NULL,  :bot_id, 'version', ''),
+    (NULL,  :bot_id, 'vocabulary', ''),
+    (NULL,  :bot_id, 'wear', ''),
+    (NULL,  :bot_id, 'website', '');
 endSQL;
+    $params = array(':bot_id' => $bot_id, ':bot_name' => $bot_name);
 
-    $affectedRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
+    $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
     if ($affectedRows > 0)
     {
@@ -487,14 +484,15 @@ endSQL;
  */
 function changeBot()
 {
-    global $dbConn, $msg, $bot_id, $post_vars, $branch;
+    global $msg, $bot_id, $post_vars, $branch;
     $botId = (isset($post_vars['bot_id'])) ? $post_vars['bot_id'] : $bot_id;
 
     if ($post_vars['bot_id'] != "new")
     {
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT * FROM `bots` WHERE bot_id = '$botId'";
-        $row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $sql = "SELECT * FROM `bots` WHERE bot_id = :botId";
+        $params = array(':botId' => $botId);
+        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
         $count = count($row);
 
         if ($count > 0)
@@ -526,20 +524,19 @@ function changeBot()
  */
 function getChangeList()
 {
-    global $dbConn, $template;
+    global $template;
     $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
-    $botId = $bot_id;
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT * FROM `bots` ORDER BY bot_name";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
     $options = '                <option value="new">Add New Bot</option>' . "\n";
 
     foreach ($result as $row)
     {
-        $options .= "<!-- bot ID = {$row['bot_id']}, $botId -->\n";
+        $options .= "<!-- bot ID = {$row['bot_id']}, {$bot_id} -->\n";
 
-        if ($botId == $row['bot_id'])
+        if ($bot_id == $row['bot_id'])
         {
             $sel = ' selected="selected"';
         }

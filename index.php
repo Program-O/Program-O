@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.6.5
+* Version: 2.6.7
 * FILE: index.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: 02-13-2013
@@ -32,14 +32,14 @@ else
 
     /** @noinspection PhpUndefinedVariableInspection */
     $format = (isset($get_vars['format'])) ? $get_vars['format'] : $format;
-    $format = _strtoupper($format);
+    $format = _strtolower($format);
 
     switch ($format)
     {
-        case 'JSON':
+        case 'json':
             $gui = 'jquery';
             break;
-        case 'XML':
+        case 'xml':
             $gui= 'xml';
             break;
         default:

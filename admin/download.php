@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.5
+ * Version: 2.6.7
  * FILE: download.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-08-2014
@@ -11,6 +11,11 @@
 
 $content = '';
 $status = '';
+//assume ZipArchive is enabled by default
+$ZIPenabled = class_exists('ZipArchive');
+// $ZIPenabled = false; // debugging and testing - comment out when complete
+$downloadLinks = ''; //download links for single files
+$dlLinkTemplate = '<a class="dlLink" href="file.php?singlefile=[filename]" target="_blank">[filename]</a>';
 
 /** @noinspection PhpUndefinedVariableInspection */
 $bot_id = ($bot_id == 'new') ? 0 : $bot_id;
@@ -34,27 +39,47 @@ if (isset($post_vars))
     else
     {
         $fileNames = $post_vars['filenames'];
-        // clear out old zip file if it exists, to prepare for the new one.
-        if(file_exists(_DOWNLOAD_PATH_ . $zipFilename)) unlink(_DOWNLOAD_PATH_ . $zipFilename);
-        $zip = new ZipArchive();
-        $success = $zip->open(_DOWNLOAD_PATH_ . $zipFilename, ZipArchive::CREATE);
 
-        if ($success === true)
+        if($ZIPenabled)
         {
+            // clear out old zip file if it exists, to prepare for the new one.
+            if(file_exists(_DOWNLOAD_PATH_ . $zipFilename)) unlink(_DOWNLOAD_PATH_ . $zipFilename);
+            $zip = new ZipArchive();
+            $success = $zip->open(_DOWNLOAD_PATH_ . $zipFilename, ZipArchive::CREATE);
+
+            if ($success === true)
+            {
+                foreach ($fileNames as $filename)
+                {
+                    $curZipContent = ($type == 'SQL') ? getSQLByFileName($filename) : getAIMLByFileName($filename);
+                    $filename = ($type == 'SQL') ? str_replace('.aiml', '.sql', $filename) : $filename;
+                    $zip->addFromString($filename, $curZipContent);
+                }
+
+                $zip->close();
+                $_SESSION['send_file'] = $zipFilename;
+                $_SESSION['referer'] = $referer;
+
+                header("Refresh: 5; url=file.php");
+
+                $msg .= "The file $zipFilename is being processed. If the download doesn't start within a few seconds, please click <a href=\"file.php\">here</a>.\n";
+            }
+        }else{
+            //lets download all selected files individually
+            $msg .= 'The PHP ZipArchive class is not available on this server, so Zip files cannot be downloaded. However, individual AIML files can be downloaded. We apologise for the inconvenience. <br/><br/>';
             foreach ($fileNames as $filename)
             {
-                $curZipContent = ($type == 'SQL') ? getSQLByFileName($filename) : getAIMLByFileName($filename);
+                $curFileContent = ($type == 'SQL') ? getSQLByFileName($filename) : getAIMLByFileName($filename);
                 $filename = ($type == 'SQL') ? str_replace('.aiml', '.sql', $filename) : $filename;
-                $zip->addFromString($filename, $curZipContent);
+                //delete old aiml files
+                if(file_exists(_DOWNLOAD_PATH_ . $filename)) unlink(_DOWNLOAD_PATH_ . $filename);
+                file_put_contents(_DOWNLOAD_PATH_ . $filename, $curFileContent);
+                //get the download links
+                $downloadLinks .= str_replace('[filename]', trim($filename), $dlLinkTemplate);
             }
-
-            $zip->close();
-            $_SESSION['send_file'] = $zipFilename;
-            $_SESSION['referer'] = $referer;
-
-            header("Refresh: 5; url=file.php");
-
-            $msg .= "The file $zipFilename is being processed. If the download doesn't start within a few seconds, please click <a href=\"file.php\">here</a>.\n";
+            $fnList = implode(', ', $fileNames);
+            $fnList = replace_last(', ', ' and ', $fnList);
+            $msg .= "The file(s) <b> $fnList </b> have been processed. Click on the filename(s) below to download individually.<br/>$downloadLinks";
         }
     }
 }
@@ -123,8 +148,11 @@ function getAIMLByFileName($filename)
     $fileContent = str_replace($fileNameSearch, $cleanedFilename, $fileContent);
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT DISTINCT topic FROM aiml WHERE filename LIKE '$cleanedFilename';";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT DISTINCT topic FROM aiml WHERE filename LIKE :cleanedFilename;";
+        $params = array(
+            ':cleanedFilename' => $cleanedFilename
+        );
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {
@@ -139,8 +167,12 @@ function getAIMLByFileName($filename)
         }
 
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT pattern, thatpattern, template FROM aiml WHERE topic LIKE '$topic' AND filename LIKE '$cleanedFilename';";
-        $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+        $sql = "SELECT pattern, thatpattern, template FROM aiml WHERE topic LIKE :topic AND filename LIKE :cleanedFilename;";
+        $params = array(
+            ':topic' => $topic,
+            ':cleanedFilename' => $cleanedFilename
+        );
+        $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
         foreach ($result as $row)
         {
@@ -200,7 +232,8 @@ function getSQLByFileName($filename)
     $topicArray = array();
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM aiml WHERE filename LIKE '$cleanedFilename' ORDER BY id ASC;";
+    $sql = "SELECT * FROM aiml WHERE filename LIKE ':cleanedFilename' ORDER BY id ASC;";
+    $params = array(':cleanedFilename' => $cleanedFilename);
     $fileContent = file_get_contents('SQL_Header.dat');
 
     $fileContent = str_replace('[botmaster_name]', $botmaster_name, $fileContent);
@@ -214,7 +247,7 @@ function getSQLByFileName($filename)
     $fileContent = str_replace('[curDate]', $curDate, $fileContent);
     $fileContent = str_replace('[fileName]', $cleanedFilename, $fileContent);
 
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     foreach ($result as $row)
     {
@@ -253,8 +286,9 @@ function getCheckboxes()
     global $bot_id, $bot_name, $msg;
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT DISTINCT filename FROM `aiml` WHERE `bot_id` = $bot_id ORDER BY `filename`;";
-    $result = db_fetchAll($sql, null, __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT DISTINCT filename FROM `aiml` WHERE `bot_id` = :bot_id ORDER BY `filename`;";
+    $params = array(':bot_id' => $bot_id);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if (count($result) == 0)
     {
@@ -310,5 +344,16 @@ function renderMain()
     $content = str_replace('[file_checkboxes]', $file_checkboxes, $content);
 
     return $content;
+}
+
+function replace_last($search, $replace, $subject)
+{
+    $pos = strripos($subject, $search);
+    if(false !== $pos)
+    {
+        $sLen = strlen($search);
+        $subject = substr_replace($subject, $replace, $pos, $sLen);
+    }
+    return $subject;
 }
 
