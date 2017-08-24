@@ -223,8 +223,8 @@ in the affected table (aiml_userdefined). This is a necessary step**
 1. Refactored the code that deals with DB access to completely remove the
     last of the mysql_* functions, including "fallback support".
 2. Added an additional table to the database to handle looking up previously
-    used calls to <srai> tags. This will improve performance in the future,
-    in that if an <srai> tag is stored in the lookup table, the script doesn't
+    used calls to `<srai>` tags. This will improve performance in the future,
+    in that if an `<srai>` tag is stored in the lookup table, the script doesn't
     have to run through the entire AIML table to find it. If a suitable srai
     category is found that isn't already in the lookup table, it's added for
     future use. While the table is being added now, the feature is not yet
@@ -235,9 +235,9 @@ in the affected table (aiml_userdefined). This is a necessary step**
 
 1. Added PDO support for PHP versions that support it (and have it enabled),
     with a fallback to the original MySQL functions if no PDO support is detected
-2. Finally found the problem with template-side <that> tags not being displayed
+2. Finally found the problem with template-side `<that>` tags not being displayed
     correctly. Special thanks to Tom (AKA Slow Putzo) for the assist with this!
-3. Also fixed the long-standing bug with pattern-side <that> tags not being
+3. Also fixed the long-standing bug with pattern-side `<that>` tags not being
     scored and chosen correctly. Once again, Thanks Tom! :D
 4. Removed the DB stats page from the admin. It was more or less a failed
     experiment, and really needed to be removed.
@@ -268,7 +268,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
 
 2.2.2   Bug Fixes/versioning refactor
 
-1. Fixed a bug that prevented proper implementation of template-side <that> tags
+1. Fixed a bug that prevented proper implementation of template-side `<that>` tags
 2. updated and corrected the script version in all files that contain version information
 3. implemented functionality that sets the scripts internal version based on the contents
     of version.txt, rather than hard-coding it
@@ -291,16 +291,16 @@ in the affected table (aiml_userdefined). This is a necessary step**
 
 2.1.5   Bug fixes/merge to "Master" branch
 
-1. Corrected a bug that improperly ordered the collections of words gathered in <pattern> and <that> tags
+1. Corrected a bug that improperly ordered the collections of words gathered in `<pattern>` and `<that>` tags
 2. Corrected multiple minor bugs in the Download script that affected the use of said downloaded AIML
     files with Pandorabots.
 3. Adjusted the function that checks GitHub for the current version of the script, based on changes they
     made to their API. Also added some error handling, in case GitHub can't be reached.
 4. Modified some of the debugging output descriptors to avoid unnecessary and potentially confusing
     message duplication.
-5. Corrected a bug in the main SQL query that caused certain valid AIML categories that use the <that> tag
+5. Corrected a bug in the main SQL query that caused certain valid AIML categories that use the `<that>` tag
     to be missed in the main search.
-6. Added 'experimental' support for Pandorabots style <date> tags, adding functionality for both LOCALE
+6. Added 'experimental' support for Pandorabots style `<date>` tags, adding functionality for both LOCALE
     and TIMEZONE attributes (support for these attributes was mentioned previously, but not added at that
     time).
 7. Other minor cosmetic changes and typo corrections that didn't affect functionality.
@@ -323,9 +323,9 @@ in the affected table (aiml_userdefined). This is a necessary step**
 2.1.3   Added the last of the AIML tag functions/Refactored the DB/Multiple Bug Fixes
 
 1. Added functions for the remaining AIML tags:
-        <thatstar>
-        <topicstar>
-        <gossip>
+        `<thatstar>`
+        `<topicstar>`
+        `<gossip>`
 2. Refactored the database, standardizing field names across all of the tables.
 3. Refactored the admin pages, replacing $_GET, $_POST and $_REQUEST with input
     filtering functions.
@@ -344,18 +344,18 @@ in the affected table (aiml_userdefined). This is a necessary step**
 2.1.2   Added more AIML tag functions/Script Streamlining
 
 1. Added functions for the following AIML tags:
-       <condition>
-       <system>
-       <learn>
+       `<condition>`
+       `<system>`
+       `<learn>`
 2. I went through the entire script, looking for and deleting "orphaned" functions
     and streamlining code wherever possible.
 
 2.1.1   Added functions for some AIML tags
 
 1. Added functions for the following AIML tags:
-        <gender>
-        <person>
-        <person2>
+        `<gender>`
+        `<person>`
+        `<person2>`
 
 2.1.0   Major revision change / Bug fixes
 
@@ -401,7 +401,7 @@ in the affected table (aiml_userdefined). This is a necessary step**
 3. Updated the addon checkForBan, activating it, and adding functionality to add banned users
   to the list of banned IP addresses. It's still up to the botmaster to implement banning in
   their AIML files. To ban a user, insert the following into the apropriate AIML template:
-  <ban><get name="ip_address" /></ban>
+  `<ban><get name="ip_address" /></ban>`
           For further assistance, please check out the Program O Support Forums.
 
 2.0.5   Bug fixes
