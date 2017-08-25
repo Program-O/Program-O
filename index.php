@@ -12,7 +12,8 @@
 if (!file_exists('config/global_config.php'))
 {
     # No config exists we will run install
-    header('Location: install/install_programo.php');
+    //header('Location: install/install_programo.php');
+    exit('Program O exists, but is not installed. <a href="install/install_programo.php">Install Program O</a>');
 }
 else
 {
