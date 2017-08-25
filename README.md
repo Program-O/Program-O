@@ -15,16 +15,22 @@ chatbot information, including the AIML files used to formulate the chatbot's re
 
 ## System Requirements
 
-Program O requires PHP version 5.3.0 or higher to function. This is, to our knowledge,
-the only "hard" requirement in place. The script has been tested with various server
-software, including Apache 1.3 and IIS on Windows Millenia machines, with MySQL server
-versions of 5.0 and above.
+Program O requires PHP version 5.3.0 or higher to function. It also requires the following
+PHP extensions:
+
+- PDO (as well as at least one PDO driver)
+- cURL (for the admin page)
+
+While not strictly _required_, the following PHP extensions are strongly suggested:
+
+- mbString
+- Zip
 
 ## Configuration
 
 Program O supports the creation of multiple chatbots. The individual bots are configured
-from the admin area. Bot specific variables are stored in the database. Configuration
-of Program O itself is done in `/config/global_config.php`
+from the admin area. Bot specific settings and variables are stored in the database.
+Configuration of Program O itself is stored in `/config/global_config.php`.
 
 ## Using the bot
 
