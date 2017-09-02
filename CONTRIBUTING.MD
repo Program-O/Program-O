@@ -8,8 +8,6 @@ and we encourage everyone to join in on the fun! We just ask a few things before
 Before reporting new issues, please take the time to read [this wiki page](https://github.com/Program-O/Program-O/wiki/Reporting-Issues)
 in order to learn what information you can provide that can help up to help you.
 
-Please note we have a code of conduct, please follow it in all your interactions with the project.
-
 ## Pull Requests
 
 Please make all pull requests on the `DEV` branch. this is where we _actively_ work on Program O.
