@@ -1,1 +1,8 @@
-Before creating a new issue, please read [this wiki apge](https://github.com/Program-O/Program-O/wiki/Reporting-Issues) to learn what information we need to have in order to assist you. This will make the process easier and less stressful for everyone. Thanks.
+### Before we can help with your issue, please take the time to provide the following information:
+
+Program O version:             __________
+Which branch (master or dev):  __________
+OS/version:                    __________
+Server software/version:       __________
+Local or remote install:       __________
+
