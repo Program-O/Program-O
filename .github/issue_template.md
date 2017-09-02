@@ -1,0 +1,1 @@
+Before creating a new issue, please read [this wiki apge](https://github.com/Program-O/Program-O/wiki/Reporting-Issues) to learn what information we need to have in order to assist you. This will make the process easier and less stressful for everyone. Thanks.
