@@ -2,8 +2,7 @@
 
 Program O version:                    __________
 Which branch (master or dev):  __________
-PHP version:                             __________
 OS/version:                                __________
 Server software/version:           __________
-Local or remote install:              __________
+PHP version:                             __________
 
