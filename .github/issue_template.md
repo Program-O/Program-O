@@ -1,8 +1,9 @@
 ### Before we can help with your issue, please take the time to provide the following information:
 
-Program O version:             __________
+Program O version:                    __________
 Which branch (master or dev):  __________
-OS/version:                    __________
-Server software/version:       __________
-Local or remote install:       __________
+PHP version:                             __________
+OS/version:                                __________
+Server software/version:           __________
+Local or remote install:              __________
 
