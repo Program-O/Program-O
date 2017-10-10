@@ -1039,7 +1039,7 @@ function find_aiml_matches($convoArr)
     // The SQL template - There will ALWAYS be a pattern search, but not necessarily a thatpattern or topic.
     // There will also ALWAYS be a search for the default response category
     $sql = <<<endSQL
-SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic`, `template` FROM `$dbn`.`aiml` WHERE
+SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic`, `filename`, `template` FROM `$dbn`.`aiml` WHERE
     [sql_bot_like] AND ([pattern_like][thatpattern_like][topic_like]
         OR `pattern` LIKE '$default_aiml_pattern'
     )
