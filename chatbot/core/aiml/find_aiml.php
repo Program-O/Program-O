@@ -701,7 +701,7 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
 
     // Add row data to the chatbot output
     $data = $bestResponse;
-    $convoArr['conversation']['data'] = $data;
+    $convoArr['conversation']['aimlData'] = $data;
 
     //return the best response
     return $bestResponse;

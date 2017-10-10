@@ -147,7 +147,7 @@ function get_json($convoArr, $conversation)
         $show_json['convo_id'] = $convoArr['conversation']['convo_id'];
         $show_json['usersay'] = stripslashes($conversation_subarray['input']);
         $show_json['botsay'] = stripslashes($conversation_subarray['response']);
-        $show_json['data'] = $convoArr['conversation'];
+        $show_json['botData'] = $convoArr['conversation'];
         $i++;
     }
 
