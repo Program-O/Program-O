@@ -402,8 +402,11 @@ function parse_date_tag($convoArr, $element, $parentName, $level)
 
     #$cur_locale = setlocale(LC_ALL, 'en_US');
     $dtFormat = $element->attributes()->format;
+    if (!empty($dtFormat)) runDebug(__FILE__, __FUNCTION__, __LINE__, "Date format attribute = '{$dtFormat}'.", 4);
     $locale = $element->attributes()->locale;
+    if (!empty($locale)) runDebug(__FILE__, __FUNCTION__, __LINE__, "Date locale attribute = '{$locale}'.", 4);
     $tz = $element->attributes()->timezone;
+    if (!empty($tz)) runDebug(__FILE__, __FUNCTION__, __LINE__, "Date timezone attribute = '{$tz}'.", 4);
     $dtFormat = (string)$dtFormat;
     $dtFormat = (!empty($dtFormat)) ? $dtFormat : '%c';
     $locale = (string)$locale . '.UTF8';
@@ -419,6 +422,7 @@ function parse_date_tag($convoArr, $element, $parentName, $level)
 
     #$response = "$tz - " . strftime($dtFormat);
     $response = strftime($dtFormat);
+    $response = (empty($response) && $dtFormat == '%s') ? time() : $response;
     #$response = $cur_locale;
     date_default_timezone_set($cur_timezone);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Date tag parsed. Returning $response", 4);
