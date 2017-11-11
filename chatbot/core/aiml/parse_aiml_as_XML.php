@@ -1156,7 +1156,7 @@ function parse_that_tag($convoArr, $element, $parentName, $level)
 
         if ($index == intval($index))
         {
-            $response = $convoArr['that'][(int)$index];
+            $response = $convoArr['raw_that'][(int)$index];
             //$index .= ',1';
         }
 
@@ -1167,16 +1167,16 @@ function parse_that_tag($convoArr, $element, $parentName, $level)
             $index1 = intval($index1);
             $index2 = intval($index2);
 
-            $thatArray = $convoArr['that'];
+            $thatArray = $convoArr['raw_that'];
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'THAT array = ' . print_r($thatArray, true), 2);
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'index1 = ' . $index1, 2);
 
-            if (!empty($convoArr['that'][$index1][$index2]))
+            if (!empty($convoArr['raw_that'][$index1][$index2]))
             {
-                $response = $convoArr['that'][$index1][$index2];
+                $response = $convoArr['raw_that'][$index1][$index2];
             }
             else {
-                $response = '';
+                $response = $convoArr['raw_that'][$index1];
             }
         }
 
@@ -1184,7 +1184,7 @@ function parse_that_tag($convoArr, $element, $parentName, $level)
     }
     else
     {
-        $response_string = implode_recursive(' ', $convoArr['that'][1], __FILE__, __FUNCTION__, __LINE__);
+        $response_string = implode_recursive(' ', $convoArr['raw_that'][1], __FILE__, __FUNCTION__, __LINE__);
     }
 
     return $response_string;

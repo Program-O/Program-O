@@ -716,13 +716,16 @@ function load_that($convoArr)
     if ($result)
     {
         $tmpThatRows = array();
+        $tmpRawThatRows = array();
         $tmpInputRows = array();
         $tmpThat = array();
+        $tmpRawThat = array();
         $tmpInput = array();
         $puncuation = array(',', '?', ';', '!');
 
         foreach ($result as $row)
         {
+            $tmpRawThatRows[] = $row['response'];
             $tmpThatRows[] = $row['response'];
             $tmpInputRows[] = $row['input'];
         }
@@ -741,12 +744,22 @@ function load_that($convoArr)
         array_unshift($tmpThat, NULL);
         unset ($tmpThat[0]);
 
+        foreach ($tmpRawThatRows as $row)
+        {
+            $tmpRawThat[] = explode('.', $row);
+        }
+
+        array_unshift($tmpRawThat, NULL);
+        unset ($tmpRawThat[0]);
+        $convoArr['raw_that'] = $tmpRawThat;
+
         foreach ($tmpThat as $index => $value)
         {
             $value = implode_recursive(' ', $value, __FILE__, __FUNCTION__, __LINE__);
             $value = clean_that($value, __FILE__, __FUNCTION__, __LINE__);
             $convoArr = push_on_front_convoArr('that', $value, $convoArr);
         }
+
 
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading previous user inputs into the ~INPUT~ array.', 4);
         $tmpInputRows = array_reverse($tmpInputRows);
@@ -759,6 +772,7 @@ function load_that($convoArr)
 
         array_unshift($tmpThat, NULL);
         unset ($tmpThat[0]);
+
 
         foreach ($tmpInput as $index => $value)
         {
