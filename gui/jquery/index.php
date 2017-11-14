@@ -11,7 +11,8 @@
 
 $cookie_name = 'Program_O_JSON_GUI';
 $botId = filter_input(INPUT_GET, 'bot_id');
-$convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : jq_get_convo_id();
+$convoId = filter_input(INPUT_GET, 'convo_id');
+$convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : ($convoId !== false && $convoId !== null) ? $convoId : jq_get_convo_id();
 $bot_id = (isset($_COOKIE['bot_id'])) ? $_COOKIE['bot_id'] : ($botId !== false && $botId !== null) ? $botId : 1;
 
 if (is_nan($bot_id) || empty($bot_id))

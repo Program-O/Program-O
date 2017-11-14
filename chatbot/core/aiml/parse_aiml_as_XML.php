@@ -502,7 +502,7 @@ function parse_get_tag($convoArr, $element, $parentName, $level)
             $response = $row['value'];
         }
         else {
-            $response = 'undefined';
+            $response = ($var_name == 'name') ? $convoArr['conversation']['unknown_user'] : 'undefined';
         }
 
     }
