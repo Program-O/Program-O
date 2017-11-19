@@ -75,7 +75,7 @@ $branch = (!empty($_SESSION['useBranch'])) ? $_SESSION['useBranch'] : 'master';
 // Begin script execution
 $thisPath = dirname(__FILE__);
 $template = new Template("$thisPath/default.page.htm");
-$githubVersion = trim(getCurrentVersion($branch));
+$githubVersion = (isset($_SESSION['GitHubVersion']) && false !== $_SESSION['GitHubVersion']) ? $_SESSION['GitHubVersion'] : trim(getCurrentVersion($branch));
 $currentLocalVersion = VERSION;
 
 $upToDate = <<<endUTD

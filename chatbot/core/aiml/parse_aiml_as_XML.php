@@ -409,10 +409,12 @@ function parse_date_tag($convoArr, $element, $parentName, $level)
     if (!empty($tz)) runDebug(__FILE__, __FUNCTION__, __LINE__, "Date timezone attribute = '{$tz}'.", 4);
     $dtFormat = (string)$dtFormat;
     $dtFormat = (!empty($dtFormat)) ? $dtFormat : '%c';
-    $locale = (string)$locale . '.UTF8';
+    //$locale = (string)$locale . '.UTF8';
+    $locale = (string)$locale;
 
     if (!empty($locale)) {
         setlocale(LC_ALL, $locale);
+        //setlocale(LC_ALL, 'hu_utf8', 'Hungarian', 'hu.UTF-8', 'WINDOWS-1250', 'Hungarian_Hungary.1250'); // 			Hungarian_Hungary.1250
     }
 
     $tz = (string)$tz;

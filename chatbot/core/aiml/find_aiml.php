@@ -419,8 +419,8 @@ function score_matches($convoArr, $allrows, $pattern)
             {
                 $category_thatpattern_words = explode(" ", $category_thatpattern_lc);
                 $thatpattern_words = explode(" ", $that_lc);
-                save_file(_LOG_PATH_ . 'catThatPat.txt', $category_thatpattern_lc . PHP_EOL, true);
-                save_file(_LOG_PATH_ . 'ThatPat.txt', $that_lc . PHP_EOL, true);
+                //save_file(_LOG_PATH_ . 'catThatPat.txt', $category_thatpattern_lc . PHP_EOL, true);
+                //save_file(_LOG_PATH_ . 'ThatPat.txt', $that_lc . PHP_EOL, true);
                 foreach ($thatpattern_words as $word)
                 {
                     continue;
