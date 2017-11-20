@@ -201,4 +201,10 @@ $allowed_pages = array(
     'search' => array(
         'page' => FILTER_SANITIZE_STRING,
     ),
+    'person' => array(
+        'page' => FILTER_SANITIZE_STRING,
+        'action' => FILTER_SANITIZE_STRING,
+        'srch' => FILTER_SANITIZE_STRING,
+        'repl' => FILTER_SANITIZE_STRING,
+    ),
 );

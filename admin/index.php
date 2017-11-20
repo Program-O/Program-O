@@ -25,7 +25,7 @@ ini_set('log_errors', true);
 ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
 ini_set('html_errors', false);
 ini_set('display_errors', false);
-set_exception_handler("handle_exceptions");
+set_error_handler("handle_errors");
 
 //load shared files
 /** @noinspection PhpIncludeInspection */
@@ -41,7 +41,8 @@ require_once(_ADMIN_PATH_ . 'allowedPages.php');
 
 $branches = array(
     'master' => 'Master',
-    'dev' => 'Development'
+    'dev' => 'Development',
+    'person' => 'Person Tag Testing',
 );
 
 $editScript = '';
@@ -75,7 +76,7 @@ $branch = (!empty($_SESSION['useBranch'])) ? $_SESSION['useBranch'] : 'master';
 // Begin script execution
 $thisPath = dirname(__FILE__);
 $template = new Template("$thisPath/default.page.htm");
-$githubVersion = (isset($_SESSION['GitHubVersion']) && false !== $_SESSION['GitHubVersion']) ? $_SESSION['GitHubVersion'] : trim(getCurrentVersion($branch));
+$githubVersion = trim(getCurrentVersion($branch));
 $currentLocalVersion = VERSION;
 
 $upToDate = <<<endUTD
@@ -431,6 +432,14 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Edit the Word Censor entries"',
             '[linkLabel]' => 'Word Censor'
         ),
+        array( # person tag
+            '[linkClass]' => ' class="[curClass]"',
+            '[linkHref]' => ' href="index.php?page=person"',
+            '[linkOnclick]' => '',
+            '[linkAlt]' => ' alt="Person Transformations"',
+            '[linkTitle]' => ' title="Person Transformations"',
+            '[linkLabel]' => 'Person Transformations'
+        ),
         array( # Edit AIML
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=editAiml"',
@@ -557,14 +566,26 @@ function getCurrentVersion($branch)
  * @param exception $e
  * @return string
  */
-function handle_exceptions(Exception $e)
+
+/**
+ * Function handle_errors
+ *
+ * @param exception $e
+ * @return string
+ */
+function handle_errors($errNum, $errMsg, $errFile, $errLine, $errContext)
 {
     global $msg;
-    $trace = $e->getTrace();
-    file_put_contents(_LOG_PATH_ . 'admin.exception.log', print_r($trace, true), FILE_APPEND);
-    $msg .= $e->getMessage();
-
-    return 'logout';
+    $myMsg = <<<endErr
+    Program O has encountered an error. this may help:<br/>
+    Error # {$errNum}<br/>
+    Message: {$errMsg}<br/>
+endErr;
+    $context = print_r($errContext, true);
+    $msg .= $myMsg;
+    save_file(_LOG_PATH_ . 'handle_errors.context.txt', $context);
+    save_file(_LOG_PATH_ . 'handle_errors.txt', $myMsg);
+    logout();
 }
 
 function login()

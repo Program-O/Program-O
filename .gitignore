@@ -22,6 +22,7 @@ backups
 backups/*
 patch.php
 DOM_ProofOfConcept
+.htaccess
 
 #################
 ## WeBuilder/ Rapid PHP
