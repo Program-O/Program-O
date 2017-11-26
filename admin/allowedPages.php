@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: allowedVars.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 01-19-2015
@@ -200,5 +200,11 @@ $allowed_pages = array(
     ),
     'search' => array(
         'page' => FILTER_SANITIZE_STRING,
+    ),
+    'person' => array(
+        'page' => FILTER_SANITIZE_STRING,
+        'action' => FILTER_SANITIZE_STRING,
+        'srch' => FILTER_SANITIZE_STRING,
+        'repl' => FILTER_SANITIZE_STRING,
     ),
 );

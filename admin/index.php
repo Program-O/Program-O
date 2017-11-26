@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -25,7 +25,7 @@ ini_set('log_errors', true);
 ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
 ini_set('html_errors', false);
 ini_set('display_errors', false);
-set_exception_handler("handle_exceptions");
+set_error_handler('handle_errors', E_ALL | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
 
 //load shared files
 /** @noinspection PhpIncludeInspection */
@@ -41,7 +41,8 @@ require_once(_ADMIN_PATH_ . 'allowedPages.php');
 
 $branches = array(
     'master' => 'Master',
-    'dev' => 'Development'
+    'dev' => 'Development',
+    'person' => 'Person Tag Testing',
 );
 
 $editScript = '';
@@ -61,10 +62,8 @@ if (!array_key_exists($page, $allowed_pages))
     $msg = 'Invalid argument!';
 }
 
-$filters = $allowed_pages[$page];
-$post_vars = filter_input_array(INPUT_POST, $filters);
-$get_vars = filter_input_array(INPUT_GET, $filters);
-$input_vars = array_merge((array)$get_vars, (array)$post_vars);
+$allowed_input_vars = (isset($allowed_pages[$page])) ? $allowed_pages[$page] : array();
+$form_vars = clean_inputs($allowed_input_vars);
 
 // Set default values
 $bot_name = '<b class="red">not selected</b>';
@@ -95,7 +94,7 @@ $newVersionAvailable = "Program O $githubVersion is now available for the "
 $version = (version_compare(VERSION, $githubVersion, '>=')) ? $upToDate : $newVersionAvailable;
 $dbConn = db_open();
 
-if ($get_vars['page'] == 'logout')
+if ($page == 'logout')
 {
     logout();
 }
@@ -106,10 +105,10 @@ $curPage = 'logout';
 switch ($logged_in)
 {
     case true:
-        $curPage = (isset($get_vars['page'])) ? $get_vars['page'] : 'main';
+        $curPage = (isset($form_vars['page'])) ? $form_vars['page'] : 'main';
         break;
     default:
-        $curPage = ($get_vars['page'] == 'login') ? login() : 'logout';
+        $curPage = ($form_vars['page'] == 'login') ? login() : 'logout';
 }
 
 $name       = (isset($_SESSION['poadmin']['name'])) ? $_SESSION['poadmin']['name'] : '';
@@ -431,6 +430,16 @@ function makeLeftLinks()
             '[linkTitle]' => ' title="Edit the Word Censor entries"',
             '[linkLabel]' => 'Word Censor'
         ),
+/*
+        array( # person tag
+            '[linkClass]' => ' class="[curClass]"',
+            '[linkHref]' => ' href="index.php?page=person"',
+            '[linkOnclick]' => '',
+            '[linkAlt]' => ' alt="Person Transformations"',
+            '[linkTitle]' => ' title="Person Transformations"',
+            '[linkLabel]' => 'Person Transformations'
+        ),
+*/
         array( # Edit AIML
             '[linkClass]' => ' class="[curClass]"',
             '[linkHref]' => ' href="index.php?page=editAiml"',
@@ -557,28 +566,45 @@ function getCurrentVersion($branch)
  * @param exception $e
  * @return string
  */
-function handle_exceptions(Exception $e)
+
+/**
+ * Function handle_errors
+ *
+ * @param exception $e
+ * @return string
+ */
+function handle_errors($errNum, $errMsg, $errFile, $errLine, $errContext)
 {
     global $msg;
-    $trace = $e->getTrace();
-    file_put_contents(_LOG_PATH_ . 'admin.exception.log', print_r($trace, true), FILE_APPEND);
-    $msg .= $e->getMessage();
-
-    return 'logout';
+    $myMsg = <<<endErr
+    Program O has encountered an error. this may help:
+    Error # {$errNum}
+    Message: {$errMsg}
+    File: {$errFile}, line {$errLine}
+endErr;
+    $context = print_r($errContext, true);
+    $fn = str_ireplace('.php', '', $errFile);
+    $fn = str_ireplace(_ADMIN_PATH_, '', $fn);
+    $fn = str_ireplace(_BASE_PATH_, '', $fn);
+    save_file(_LOG_PATH_ . "admin.{$fn}.error.context.log", $context);
+    save_file(_LOG_PATH_ . "admin.{$fn}.error.log", $myMsg);
+    //logout();
+    $msg .= "<pre>$myMsg</pre>";
+    return true;
 }
 
 function login()
 {
-    global $post_vars, $get_vars, $dbConn, $msg;
+    global $form_vars, $dbConn, $msg;
 
-    if ((!isset($post_vars['user_name'])) || (!isset($post_vars['pw'])))
+    if ((!isset($form_vars['user_name'])) || (!isset($form_vars['pw'])))
     {
         return 'logout';
     }
 
     //$_SESSION['poadmin']['display'] = $hide_logo;
-    $user_name = $post_vars['user_name'];
-    $pw_hash = md5($post_vars['pw']);
+    $user_name = $form_vars['user_name'];
+    $pw_hash = md5($form_vars['pw']);
 
     /** @noinspection SqlDialectInspection */
     $sql = 'SELECT * FROM `myprogramo` WHERE user_name = :user_name AND password = :pw_hash;';

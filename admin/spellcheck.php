@@ -2,47 +2,21 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: spellcheck.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-09-2014
  * DETAILS: Displays the admin page for the spellcheck plugin and provides access to various features
  ***************************************/
+require_once(_LIB_PATH_ . 'misc_functions.php');
 $msg = '';
-$upperScripts = <<<endScript
 
-    <script type="text/javascript">
-<!--
-      var state = 'hidden';
-      function showhide(layer_ref) {
-        if (state == 'visible') {
-          state = 'hidden';
-        }
-        else {
-          state = 'visible';
-        }
-        if (document.all) { //IS IE 4 or 5 (or 6 beta)
-          eval( "document.all." + layer_ref + ".style.visibility = state");
-        }
-        if (document.layers) { //IS NETSCAPE 4 or below
-          document.layers[layer_ref].visibility = state;
-        }
-        if (document.getElementById && !document.all) {
-          maxwell_smart = document.getElementById(layer_ref);
-          maxwell_smart.style.visibility = state;
-        }
-      }
-//-->
-    </script>
-endScript;
-
-$post_vars = filter_input_array(INPUT_POST);
-$get_vars = filter_input_array(INPUT_GET);
-
-$group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
+$options = $allowed_pages['spellcheck'];
+$form_vars = clean_inputs($options);
+$group = (isset($form_vars['group'])) ? $form_vars['group'] : 1;
 $content = $template->getSection('SearchSpellForm');
-$sc_action = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : '';
-$sc_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : -1;
+$sc_action = isset($form_vars['action']) ? strtolower($form_vars['action']) : '';
+$sc_id = isset($form_vars['id']) ? $form_vars['id'] : -1;
 
 if (!empty($sc_action))
 {
@@ -111,7 +85,7 @@ $rightNav    = str_replace('[headerTitle]', scPaginate(), $rightNav);
  */
 function scPaginate()
 {
-    global $dbConn, $get_vars;
+    global $dbConn, $group;
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT COUNT(*) FROM `spellcheck` WHERE 1";
@@ -128,7 +102,7 @@ function scPaginate()
 
     $out = "Missspelled Words<br />\n50 words per page:<br />\n";
     $link = " - <a class=\"paginate\" href=\"index.php?page=spellcheck&amp;group=[group]\">[label]</a>";
-    $curStart = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
+    $curStart = $group;
     $firstPage = 1;
 
     $prev = ($curStart > ($firstPage + 1)) ? $curStart - 1 : -1;
@@ -163,16 +137,15 @@ function scPaginate()
  */
 function getMisspelledWords()
 {
-    global $dbConn, $template, $get_vars;
+    global $dbConn, $template, $group;
 
     # pagination variables
-    $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
     $_SESSION['poadmin']['group'] = $group;
     $startEntry = ($group - 1) * 50;
     $end = $group + 50;
     $_SESSION['poadmin']['page_start'] = $group;
 
-    $curID = (isset($get_vars['id'])) ? $get_vars['id'] : -1;
+    $curID = (isset($form_vars['id'])) ? $form_vars['id'] : -1;
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT `id`,`missspelling` FROM `spellcheck` WHERE 1 ORDER BY abs(`id`) ASC limit $startEntry, 50;";
@@ -214,10 +187,9 @@ function getMisspelledWords()
  */
 function spellCheckForm()
 {
-    global $template, $get_vars;
+    global $template, $group;
 
     $out = $template->getSection('SpellcheckForm');
-    $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
     $out = str_replace('[group]', $group, $out);
 
     return $out;
@@ -230,9 +202,9 @@ function spellCheckForm()
  */
 function insertSpell()
 {
-    global $dbConn, $template, $msg, $post_vars;
-    $correction = trim($post_vars['correction']);
-    $missspell = trim($post_vars['missspell']);
+    global $dbConn, $template, $msg, $form_vars;
+    $correction = trim($form_vars['correction']);
+    $missspell = trim($form_vars['missspell']);
 
     if (($correction == "") || ($missspell == ""))
     {
@@ -298,10 +270,10 @@ function delSpell($id)
  */
 function runSpellSearch()
 {
-    global $dbConn, $template, $post_vars;
+    global $dbConn, $template, $form_vars;
 
     $i = 0;
-    $search = trim($post_vars['search']);
+    $search = trim($form_vars['search']);
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT * FROM `spellcheck` WHERE `missspelling` LIKE :search1 OR `correction` LIKE :search2 LIMIT 50";
@@ -361,8 +333,7 @@ function runSpellSearch()
  */
 function editSpellForm($id)
 {
-    global $dbConn, $template, $get_vars;
-    $group = (isset($get_vars['group'])) ? $get_vars['group'] : 1;
+    global $dbConn, $template, $group;
     $form   = $template->getSection('EditSpellForm');
 
     /** @noinspection SqlDialectInspection */
@@ -382,11 +353,11 @@ function editSpellForm($id)
 
 function updateSpell()
 {
-    global $dbConn, $template, $msg, $post_vars;
+    global $dbConn, $template, $msg, $form_vars;
 
-    $missspelling = trim($post_vars['missspelling']);
-    $correction = trim($post_vars['correction']);
-    $id = trim($post_vars['id']);
+    $missspelling = trim($form_vars['missspelling']);
+    $correction = trim($form_vars['correction']);
+    $id = trim($form_vars['id']);
 
     if (($id == "") || ($missspelling == "") || ($correction == ""))
     {

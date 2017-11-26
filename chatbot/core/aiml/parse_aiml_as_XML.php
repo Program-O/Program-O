@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: parse_aiml_as_xml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -398,33 +398,52 @@ function parse_date_tag($convoArr, $element, $parentName, $level)
     );
 
     $cur_timezone = date_default_timezone_get();
-    $cur_locale = setlocale(LC_ALL, '');
+    $default_locale = setlocale(LC_ALL, '');
 
-    #$cur_locale = setlocale(LC_ALL, 'en_US');
     $dtFormat = $element->attributes()->format;
     if (!empty($dtFormat)) runDebug(__FILE__, __FUNCTION__, __LINE__, "Date format attribute = '{$dtFormat}'.", 4);
     $locale = $element->attributes()->locale;
     if (!empty($locale)) runDebug(__FILE__, __FUNCTION__, __LINE__, "Date locale attribute = '{$locale}'.", 4);
     $tz = $element->attributes()->timezone;
     if (!empty($tz)) runDebug(__FILE__, __FUNCTION__, __LINE__, "Date timezone attribute = '{$tz}'.", 4);
+
+    $ts = $element->attributes()->timestamp;
+    if (!empty($ts)) runDebug(__FILE__, __FUNCTION__, __LINE__, "Date timestamp attribute = '{$ts}'.", 4);
+
+    $offset = $element->attributes()->offset;
+    if (!empty($offset)) runDebug(__FILE__, __FUNCTION__, __LINE__, "Date offset attribute = '{$offset}'.", 4);
+
     $dtFormat = (string)$dtFormat;
     $dtFormat = (!empty($dtFormat)) ? $dtFormat : '%c';
-    $locale = (string)$locale . '.UTF8';
 
+    // set the locale
+    $locale = (string)$locale;
     if (!empty($locale)) {
         setlocale(LC_ALL, $locale);
     }
 
+    // set the applicable timezone, if given
     $tz = (string)$tz;
     $tz = (!empty($tz)) ? $tz : $cur_timezone;
-    $tz = (!is_numeric($tz)) ? $tz : $tz_list[$tz];
+    $tz = (is_numeric($tz)) ? $tz_list[$tz] : $tz;
     date_default_timezone_set($tz);
 
-    #$response = "$tz - " . strftime($dtFormat);
-    $response = strftime($dtFormat);
+    // set the applicable timestamp, if given
+    $ts = (int)$ts;
+    $ts = (0 !== $ts) ? $ts : time();
+
+    // set the applicable time offset, if given, based on the given (or default) timestamp
+    $offset = (string)$offset;
+    $timestamp = (!empty($offset)) ? strtotime($offset, $ts) : $ts;
+
+    // get the proper date string
+    $response = strftime($dtFormat, $timestamp);
     $response = (empty($response) && $dtFormat == '%s') ? time() : $response;
-    #$response = $cur_locale;
+    $response = utf8_encode($response);
+
+    // now put things back to their defaults
     date_default_timezone_set($cur_timezone);
+    setlocale(LC_ALL, $default_locale);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Date tag parsed. Returning $response", 4);
 
     return $response;

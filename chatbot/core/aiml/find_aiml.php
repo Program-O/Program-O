@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: find_aiml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -419,8 +419,6 @@ function score_matches($convoArr, $allrows, $pattern)
             {
                 $category_thatpattern_words = explode(" ", $category_thatpattern_lc);
                 $thatpattern_words = explode(" ", $that_lc);
-                save_file(_LOG_PATH_ . 'catThatPat.txt', $category_thatpattern_lc . PHP_EOL, true);
-                save_file(_LOG_PATH_ . 'ThatPat.txt', $that_lc . PHP_EOL, true);
                 foreach ($thatpattern_words as $word)
                 {
                     continue;
