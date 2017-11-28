@@ -108,7 +108,7 @@ switch ($logged_in)
         $curPage = (isset($form_vars['page'])) ? $form_vars['page'] : 'main';
         break;
     default:
-        $curPage = ($form_vars['page'] == 'login') ? login() : 'logout';
+        $curPage = (isset($form_vars['page']) && $form_vars['page'] == 'login') ? login() : 'logout';
 }
 
 $name       = (isset($_SESSION['poadmin']['name'])) ? $_SESSION['poadmin']['name'] : '';

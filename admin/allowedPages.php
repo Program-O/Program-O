@@ -95,7 +95,7 @@ $allowed_pages = array(
     ),
     'download' => array(
         'type' => FILTER_SANITIZE_STRING,
-        'filenames' => FILTER_SANITIZE_STRING,
+        'filenames' => FILTER_DEFAULT,
         'page' => FILTER_SANITIZE_STRING,
     ),
     'editAiml' => array(

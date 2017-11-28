@@ -25,7 +25,7 @@ $upperScripts = $template->getSection('UpperScripts');
 $allowed_get_vars = $allowed_pages['download'];
 $form_vars = clean_inputs($allowed_get_vars);
 
-//trigger_error('Test error', E_USER_NOTICE);
+//trigger_error('Test error: form vars =' . print_r($form_vars, true), E_USER_NOTICE);
 
 if (!empty($form_vars['type']) && !empty($form_vars['filenames']))
 {

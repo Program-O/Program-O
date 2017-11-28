@@ -252,26 +252,37 @@ function pretty_print_r($var)
     return trim($out, ",\n");
 }
 
-function clean_inputs($options = null)
+function clean_inputs($allowed_vars = null)
 {
     $referer = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : false;
     $host = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : false;
-    if (false === $host || (false === $referer && 'localhost' !== $host)) die ('CSRF failure!');
+    //if (false === $host || (false === $referer && ('localhost' !== $host && '127.0.0.1' !== $IP))) die ('CSRF failure!');
     $formVars = array_merge($_GET, $_POST);
+    $outArrays = array();
+    foreach ($formVars as $key => $value)
+    {
+        if (is_array($value)) $outArrays[$key] = filter_var_array($value, $allowed_vars[$key], false);
+    }
 
     switch (true)
     {
-        case (null === $options):
+        case (null === $allowed_vars):
             $out = filter_var_array($formVars);
             break;
-        case (!is_array($options)):
-            if (!isset($formVars[$options])) return false;
+        case (!is_array($allowed_vars)):
+            if (!isset($formVars[$allowed_vars])) return false;
             $vars = filter_var_array($formVars);
-            $out = $vars[$options];
+            $out = $vars[$allowed_vars];
             break;
         default:
-            $out = filter_var_array($formVars, $options, false);
+            $out = filter_var_array($formVars, $allowed_vars, false);
     }
-    return $out;
+    return array_merge($out, $outArrays);
 }
+
+
+
+
+
+
 
