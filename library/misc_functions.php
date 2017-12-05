@@ -254,32 +254,48 @@ function pretty_print_r($var)
 
 function clean_inputs($allowed_vars = null)
 {
+    $allowed_local_hosts = array(
+        '127.0.0.1',
+        '::1',
+        'localhost'
+    );
     $referer = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : false;
     $host = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : false;
-    //if (false === $host || (false === $referer && ('localhost' !== $host && '127.0.0.1' !== $IP))) die ('CSRF failure!');
+    if (false === $host || (false === $referer && (!in_array($host, $allowed_local_hosts)))) die ('CSRF failure!');
     $formVars = array_merge($_GET, $_POST);
+    //save_file(_LOG_PATH_ . 'misc_functions.clean_inputs.formVars.txt', print_r($formVars, true));
     $outArrays = array();
     foreach ($formVars as $key => $value)
     {
-        if (is_array($value)) $outArrays[$key] = filter_var_array($value, $allowed_vars[$key], false);
+        if (is_array($value)) $outArrays[$key] = clean_var($value);
     }
 
     switch (true)
     {
         case (null === $allowed_vars):
-            $out = filter_var_array($formVars);
+            $out = clean_var($formVars);
             break;
         case (!is_array($allowed_vars)):
             if (!isset($formVars[$allowed_vars])) return false;
-            $vars = filter_var_array($formVars);
+            $vars = clean_var($formVars);
             $out = $vars[$allowed_vars];
             break;
         default:
-            $out = filter_var_array($formVars, $allowed_vars, false);
+            $out = clean_var($formVars);
     }
     return array_merge($out, $outArrays);
 }
 
+function clean_var ($var)
+{
+    if (!is_array($var)) return filter_var($var, FILTER_SANITIZE_STRING);
+    $out = array();
+    foreach ($var as $key => $value)
+    {
+        $out[$key] = clean_var($value);
+    }
+    return $out;
+}
 
 
 

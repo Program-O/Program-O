@@ -6,7 +6,7 @@
 				<xs:element ref="aiml:category"/>
 				<xs:element ref="aiml:topic"/>
 			</xs:choice>
-			<xs:attribute name="version" type="xs:string" use="optional"/>
+			<xs:attribute name="version" type="xs:string" /> <!--  use="required" -->
 			<!--  use="required" -->
 		</xs:complexType>
 	</xs:element>

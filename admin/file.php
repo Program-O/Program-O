@@ -20,11 +20,15 @@ if (!file_exists('../config/global_config.php'))
 require_once('../config/global_config.php');
 
 /** @noinspection PhpIncludeInspection */
+require_once(_LIB_PATH_ . 'error_functions.php');
+/** @noinspection PhpIncludeInspection */
 require_once(_LIB_PATH_ . 'misc_functions.php');
+/** @noinspection PhpIncludeInspection */
+require_once(_ADMIN_PATH_ . 'allowedPages.php');
 
 // set up error logging and display
 ini_set('log_errors', true);
-ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
+ini_set('error_log', _LOG_PATH_ . 'admin.file.error.log');
 ini_set('html_errors', false);
 ini_set('display_errors', false);
 //load shared files

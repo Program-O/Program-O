@@ -410,3 +410,43 @@ function wildcard_handler($errNum, $errMsg, $errFile, $errLine, $errContext)
     die(json_encode(array('error' => 'Check the logs!', 'botsay' => 'Houston, we have a problem!')));
 }
 
+/**
+ * Function handle_errors
+ *
+ * @param (int)    $errNum
+ * @param (string) $errMsg
+ * @param (string) $errFile
+ * @param (int)    $errLine
+ * @param (array)  $errContext
+ * @return (boolean)
+ */
+function handle_errors($errNum, $errMsg, $errFile, $errLine, $errContext)
+{
+    global $msg;
+    if (!defined('ERROR_DEBUGGING')) define('ERROR_DEBUGGING', false); //just in case a fresh install hasn't been performed for some reason
+    $myMsg = <<<endErr
+    Program O has encountered an error. this may help:
+    Error # {$errNum}
+    Message: {$errMsg}
+    File: {$errFile}, line {$errLine}
+endErr;
+    // remove database credentials that might exist within the context
+    unset($errContext['dbu']); // Database access username
+    unset($errContext['dbp']); // Database access password
+    unset($errContext['adm_dbu']); // Admin user username
+    unset($errContext['adm_dbp']); // Admin user password
+    $context = print_r($errContext, true);
+    $fn = str_ireplace('.php', '', $errFile);
+    $fn = str_ireplace(_ADMIN_PATH_, '', $fn);
+    $fn = str_ireplace(_BASE_PATH_, '', $fn);
+
+    if (ERROR_DEBUGGING)
+    {
+        $contextDate = date('m.d.Y.H.i.s');
+        save_file(_LOG_PATH_ . "admin.{$fn}.error.context.{$contextDate}.log", $myMsg . PHP_EOL . "Context:" . PHP_EOL . $context);
+    }
+    else save_file(_LOG_PATH_ . "admin.{$fn}.error.log", $myMsg . PHP_EOL . PHP_EOL, true);
+    //logout();
+    $msg .= "<pre>$myMsg</pre>";
+    return true;
+}

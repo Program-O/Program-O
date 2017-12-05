@@ -19,17 +19,19 @@ require_once(_LIB_PATH_ . 'PDO_functions.php');
 require_once(_LIB_PATH_ . 'error_functions.php');
 /** @noinspection PhpIncludeInspection */
 require_once(_LIB_PATH_ . 'misc_functions.php');
+require_once(_ADMIN_PATH_ . 'allowedPages.php');
 
 ini_set('log_errors', true);
 ini_set('error_log', _LOG_PATH_ . 'editAJAX.error.log');
 ini_set('html_errors', false);
 ini_set('display_errors', false);
+set_error_handler('handle_errors', E_ALL | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
 
 $session_name = 'PGO_Admin';
 session_name($session_name);
 session_start();
-
-$form_vars = clean_inputs();
+$allowedVars = $allowed_pages['editAiml'];
+$form_vars = clean_inputs($allowedVars);
 $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
 
 if (empty ($_SESSION) || !isset ($_SESSION['poadmin']['uid']) || $_SESSION['poadmin']['uid'] == "")
@@ -95,6 +97,7 @@ function delAIML($id)
 function runSearch()
 {
     global $bot_id, $form_vars, $dbConn, $group;
+    //save_file(_LOG_PATH_ . 'editAJAX.runSearch.formVars.txt', print_r($form_vars, true));
     extract($form_vars);
 
     $search_fields = array('topic', 'filename', 'pattern', 'template', 'thatpattern');
@@ -287,5 +290,3 @@ function insertAIML()
 
     return $msg;
 }
-
-

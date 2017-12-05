@@ -17,7 +17,7 @@ The following bugs were found and fixed:
         were triggering errors in the code that parses the AIML `<date>` tag. This has been fixed.
     2.  While testing the fix for the `<date>` tag it was discovered that the downloads page
         was adding files to the Zip archive to be downloaded that didn't belong to the selected
-        chatbot. this isn't noticable when there is only one bot, but with multiple chatbots
+        chatbot. this isn't noticeable when there is only one bot, but with multiple chatbots
         it created an issue. This has also been fixed.
 
 ### Code Refactoring
@@ -30,6 +30,17 @@ The following bugs were found and fixed:
     detailed information about what's going on when errors, warnings or notices are triggered.
     Each script will now have their own log files, as well as error context log files in order to
     help isolate and identify bugs faster and more efficiently.
+
+    Program O's custom error handler for the admin pages has also been revamped and upgraded,
+    with more features and options being made available for debugging.  The error handler has been
+    moved into the library in order to make it more accessible to ALL admin scripts, and an
+    option has been added to create a "context" file that contains all variables defined at
+    the time an error was triggered. When this option is set to TRUE in the global config file
+    a new context log is created in the `logs` folder, with the filename of the script where
+    the error occurred, as well as the date and time (to the second) when the error was
+    triggered. **WARNING!** this option should only be enabled for long enough to troubleshoot
+    issues. It generates a new (and rather large) file for EVERY ERROR that's triggered, and
+    can add up fast.
 
 ### New <date> Tag Attributes
     While testing the `<date>` tag it was noticed that there was a decided lack of flexibility

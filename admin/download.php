@@ -9,6 +9,7 @@
  * DETAILS: Provides the ability to download a chatbot's AIML filesm either in AIML or SQL format.
  ***************************************/
 
+set_time_limit(0);
 $content = '';
 $status = '';
 //assume ZipArchive is enabled by default

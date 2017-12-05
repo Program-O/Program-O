@@ -25,7 +25,6 @@ ini_set('log_errors', true);
 ini_set('error_log', _LOG_PATH_ . 'admin.error.log');
 ini_set('html_errors', false);
 ini_set('display_errors', false);
-set_error_handler('handle_errors', E_ALL | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
 
 //load shared files
 /** @noinspection PhpIncludeInspection */
@@ -39,6 +38,7 @@ require_once(_LIB_PATH_ . 'template.class.php');
 /** @noinspection PhpIncludeInspection */
 require_once(_ADMIN_PATH_ . 'allowedPages.php');
 
+set_error_handler('handle_errors', E_ALL | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
 $branches = array(
     'master' => 'Master',
     'dev' => 'Development',
@@ -566,32 +566,6 @@ function getCurrentVersion($branch)
  * @param exception $e
  * @return string
  */
-
-/**
- * Function handle_errors
- *
- * @param exception $e
- * @return string
- */
-function handle_errors($errNum, $errMsg, $errFile, $errLine, $errContext)
-{
-    global $msg;
-    $myMsg = <<<endErr
-    Program O has encountered an error. this may help:
-    Error # {$errNum}
-    Message: {$errMsg}
-    File: {$errFile}, line {$errLine}
-endErr;
-    $context = print_r($errContext, true);
-    $fn = str_ireplace('.php', '', $errFile);
-    $fn = str_ireplace(_ADMIN_PATH_, '', $fn);
-    $fn = str_ireplace(_BASE_PATH_, '', $fn);
-    save_file(_LOG_PATH_ . "admin.{$fn}.error.context.log", $context);
-    save_file(_LOG_PATH_ . "admin.{$fn}.error.log", $myMsg);
-    //logout();
-    $msg .= "<pre>$myMsg</pre>";
-    return true;
-}
 
 function login()
 {
