@@ -111,6 +111,7 @@ function saveEdit(ele) {
     var template = row.find('.template').text();
     var topic = row.find('.topic').text();
     var filename = row.find('.filename').text();
+    console.log('pattern =', pattern, 'thatpattern =', thatpattern, 'template =', template, 'topic =', topic, 'filename =', filename);
     // Now gether all of the fields and send the updated information
     $.ajax({
         url: 'editAJAX.php',
@@ -187,6 +188,7 @@ function buildTable() {
         scrollY: scrollY,
         //scrollCollapse: true,
         autoWidth: false,
+        bAutoWidth: false,
         order: [1, 'asc'],
         ajax: 'editAJAX.php',
         columns: [
@@ -194,7 +196,7 @@ function buildTable() {
                 data: 'id',
                 searchable: true,
                 orderable: true,
-                width: '15%',
+                width: '50px',
                 render: function (data, type, full, meta) {
                     return 'ID: ' + data + '<br><div class="deleteRow" onclick="deleteRow($(this))" title="Delete this row"><br>Delete</div>';
                 }

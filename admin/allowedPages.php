@@ -80,7 +80,7 @@ $allowed_pages = array(
             'filter'    => FILTER_SANITIZE_STRING,
             'flags'     => FILTER_REQUIRE_ARRAY,
         ),
-        'bot_id' => FILTER_SANITIZE_STRING,
+        'bot_id' => FILTER_SANITIZE_NUMBER_INT,
         'func'   => FILTER_SANITIZE_STRING,
         'action' => FILTER_SANITIZE_STRING,
         'page'   => FILTER_SANITIZE_STRING,
@@ -108,6 +108,16 @@ $allowed_pages = array(
         'search'  => FILTER_SANITIZE_STRING,
         '_'       => FILTER_SANITIZE_STRING,
     ),
+    'editAJAX'    => array(
+    'action'      => FILTER_SANITIZE_STRING,
+    'id'          => FILTER_SANITIZE_NUMBER_INT,
+    'pattern'     => FILTER_UNSAFE_RAW,
+    'thatpattern' => FILTER_UNSAFE_RAW,
+    'template'    => FILTER_UNSAFE_RAW,
+    'topic'       => FILTER_UNSAFE_RAW,
+    'filename'    => FILTER_SANITIZE_STRING
+
+    ),
     'editUDAiml' => array(
         'page' => FILTER_SANITIZE_STRING,
     ),
@@ -124,7 +134,7 @@ $allowed_pages = array(
         'user_name'       => FILTER_SANITIZE_STRING,
         'password'        => FILTER_SANITIZE_STRING,
         'passwordConfirm' => FILTER_SANITIZE_STRING,
-        'id'              => FILTER_SANITIZE_STRING,
+        'id'              => FILTER_SANITIZE_NUMBER_INT,
         'action'          => FILTER_SANITIZE_STRING,
         'page'            => FILTER_SANITIZE_STRING,
     ),
@@ -143,7 +153,7 @@ $allowed_pages = array(
         'conversation_lines'   => FILTER_SANITIZE_STRING,
         'debugmode'            => FILTER_SANITIZE_STRING,
         'debugshow'            => FILTER_SANITIZE_STRING,
-        'bot_id'               => FILTER_SANITIZE_STRING,
+        'bot_id'               => FILTER_SANITIZE_NUMBER_INT,
         'action'               => FILTER_SANITIZE_STRING,
         'useBranch'            => FILTER_SANITIZE_STRING,
         'page'                 => FILTER_SANITIZE_STRING,
@@ -173,7 +183,7 @@ $allowed_pages = array(
         'page'    => FILTER_SANITIZE_STRING,
     ),
     'unknown_inputs' => array(
-        'id'   => FILTER_SANITIZE_STRING,
+        'id'   => FILTER_SANITIZE_NUMBER_INT,
         'page' => FILTER_SANITIZE_STRING,
     ),
     'wordcensor' => array(

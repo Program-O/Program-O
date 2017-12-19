@@ -273,24 +273,12 @@ function updateBotSelection()
             continue;
         }
 
-        $safeVal = addslashes($value);
-        /*
-              $value = str_replace("'", "\'", $value);
-              $value = str_replace("\\'", "\'", $value);
-              $value = str_replace('"', '\"', $value);
-              $value = str_replace('\\"', '\"', $value);
-        */
         if ($result[$key] != $post_vars[$key] && !in_array($key, $skipVars))
         {
             $newSet = $setTemplate;
             $newSet = str_replace('[key]', $key, $newSet);
             $repl .= $newSet;
             $params[":{$key}"] = $value;
-            /** @noinspection SqlDialectInspection */
-/*
-            $sql .= "UPDATE `bots` SET `$key` = :{$key}_safeVal WHERE `bot_id` = :bot_id limit 1;\n";
-            $params["{$key}_safeVal"] = $safeVal;
-*/
         }
     }
 
@@ -301,7 +289,6 @@ function updateBotSelection()
         save_file(_LOG_PATH_ . 'select_bots.update.params.txt', print_r($params, true));
         save_file(_LOG_PATH_ . 'select_bots.update.sql.txt', print_r($sql, true));
         $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
-        //$affectedRows = 0;
 
         if ($affectedRows == 0)
         {

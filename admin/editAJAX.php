@@ -20,6 +20,7 @@ require_once(_LIB_PATH_ . 'error_functions.php');
 /** @noinspection PhpIncludeInspection */
 require_once(_LIB_PATH_ . 'misc_functions.php');
 require_once(_ADMIN_PATH_ . 'allowedPages.php');
+$dbConn = db_open();
 
 ini_set('log_errors', true);
 ini_set('error_log', _LOG_PATH_ . 'editAJAX.error.log');
@@ -30,18 +31,16 @@ set_error_handler('handle_errors', E_ALL | E_USER_ERROR | E_USER_WARNING | E_USE
 $session_name = 'PGO_Admin';
 session_name($session_name);
 session_start();
-$allowedVars = $allowed_pages['editAiml'];
+$allowedVars = $allowed_pages['editAJAX'];
 $form_vars = clean_inputs($allowedVars);
 $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 1;
 
 if (empty ($_SESSION) || !isset ($_SESSION['poadmin']['uid']) || $_SESSION['poadmin']['uid'] == "")
 {
-    error_log('Session vars: ' . print_r($_SESSION, true), 3, _LOG_PATH_ . 'session.txt');
     exit (json_encode(array('error' => "No session found")));
 }
 
 // Open the DB
-$dbConn = db_open();
 $action = (isset($form_vars['action'])) ? $form_vars['action'] : 'runSearch';
 
 switch ($action)
@@ -97,7 +96,6 @@ function delAIML($id)
 function runSearch()
 {
     global $bot_id, $form_vars, $dbConn, $group;
-    //save_file(_LOG_PATH_ . 'editAJAX.runSearch.formVars.txt', print_r($form_vars, true));
     extract($form_vars);
 
     $search_fields = array('topic', 'filename', 'pattern', 'template', 'thatpattern');
@@ -119,7 +117,6 @@ function runSearch()
             $tmpSearch = str_replace('_', '\\_', $tmpSearch);
             $tmpSearch = str_replace('%', '\\$', $tmpSearch);
 
-            //if ($tmpSearch == '_') $tmpSearch = '\\_';
             $tmpName = $column['data'];
             $addWhere = "`$tmpName` like '%$tmpSearch%'";
             $where[] = $addWhere;
@@ -190,8 +187,8 @@ function runSearch()
  */
 function updateAIML()
 {
-    global $form_vars, $dbConn;
-
+    global $form_vars;
+    if(ERROR_DEBUGGING) trigger_error('Form vars:' . print_r($form_vars, true));
     $template = trim($form_vars['template']);
     $filename = trim($form_vars['filename']);
     $pattern = _strtoupper(trim($form_vars['pattern']));
@@ -206,27 +203,31 @@ function updateAIML()
     else
     {
         /** @noinspection SqlDialectInspection */
-        $sql = "UPDATE `aiml` SET `pattern`=?,`thatpattern`=?,`template`=?,`topic`=?,`filename`=? WHERE `id`=? LIMIT 1";
-        $sth = $dbConn->prepare($sql);
+        $sql = 'UPDATE `aiml` SET
+            `pattern`= :pattern,
+            `thatpattern`= :thatpattern,
+            `template`= :template,
+            `topic`= :topic,
+            `filename`= :filename
+             WHERE `id`= :id LIMIT 1;';
 
-        try
-        {
-            $sth->execute(array($pattern, $thatpattern, $template, $topic, $filename, $id));
-        }
-        catch (Exception $e)
-        {
-            header("HTTP/1.0 500 Internal Server Error");
-            throw ($e);
-        }
+        $params = array(
+            ':pattern' =>$pattern,
+            ':thatpattern' =>$thatpattern,
+            ':template' =>$template,
+            ':topic' =>$topic,
+            ':filename' =>$filename,
+            ':id' =>$id,
+        );
 
-        $affectedRows = $sth->rowCount();
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows > 0)
         {
             $msg = 'AIML Updated.';
         }
         else {
-            $msg = 'There was an error updating the AIML - no changes made.';
+            $msg = 'Unable to update the AIML - no changes made.<br/>This is most likely because no changes were detected.';
         }
     }
     return $msg;
@@ -241,9 +242,8 @@ function updateAIML()
 function insertAIML()
 {
     //db globals
-    global $msg, $form_vars, $dbConn, $bot_id;
+    global $msg, $form_vars, $bot_id;
 
-    $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
     $aimltemplate = trim($form_vars['template']);
 
     $pattern = trim($form_vars['pattern']);
@@ -252,12 +252,11 @@ function insertAIML()
     $thatpattern = trim($form_vars['thatpattern']);
     $thatpattern = _strtoupper($thatpattern);
 
-    $aiml = str_replace('[pattern]', $pattern, $aiml);
-    $aiml = (empty ($thatpattern)) ? str_replace('[thatpattern]', "<that>$thatpattern</that>", $aiml) : $aiml;
-    $aiml = str_replace('[template]', $aimltemplate, $aiml);
-
     $topic = trim($form_vars['topic']);
     $topic = _strtoupper($topic);
+
+    $filename = trim($form_vars['filename']);
+    if (empty($filename)) $filename = 'admin_added.aiml';
 
     if (($pattern == "") || ($aimltemplate == ""))
     {
@@ -266,18 +265,18 @@ function insertAIML()
     else
     {
         /** @noinspection SqlDialectInspection */
-        $sth = $dbConn->prepare("INSERT INTO `aiml` (`id`,`bot_id`, `pattern`,`thatpattern`,`template`,`topic`,`filename`) " . "VALUES (NULL, ?, ?, ?, ?, ?,'admin_added.aiml')");
-
-        try {
-            $sth->execute(array($bot_id, $pattern, $thatpattern, $aimltemplate, $topic));
-        }
-        catch (Exception $e)
-        {
-            header("HTTP/1.0 500 Internal Server Error");
-            throw ($e);
-        }
-
-        $affectedRows = $sth->rowCount();
+        $sql = "INSERT INTO `aiml` (`id`,`bot_id`, `pattern`, `thatpattern`, `template`, `topic`, `filename`)
+                             values(NULL, :bot_id, :pattern,  :thatpattern,  :template,  :topic,  :filename)";
+        $params = array(
+            ':bot_id' =>$bot_id,
+            ':pattern' =>$pattern,
+            ':thatpattern' =>$thatpattern,
+            ':template' =>$aimltemplate,
+            ':topic' =>$topic,
+            ':filename' =>$filename,
+        );
+        trigger_error(db_parseSQL($sql, $params));
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows > 0)
         {

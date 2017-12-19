@@ -1143,7 +1143,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section PersonPage End -->
 <!-- Section EditAimlPage Start -->
 [blank]
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"/>
+        <link rel="stylesheet" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"/>
         <style type="text/css">
             .dataTables_wrapper .dataTables_paginate .paginate_button {padding: 0;}
             table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {padding: 1px 2px 1px 0;}
@@ -1190,9 +1190,11 @@ between the start and end section tags are the only parts of the template that a
                         <td class="w15">
                             <textarea name="topic" rows="2" placeholder="Topic" class="newCat"></textarea>
                         </td>
+                        <td class="w15">
+                            <textarea name="filename" rows="2" placeholder="Filename" class="newCat">admin_added.aiml</textarea>
+                        </td>
                         <td class="w10">
                             <input id="btnSaveNewCat" name="" type="submit" value="Save Category">
-                            <input type="hidden" name="filename" value="admin_added.aiml"/>
                             <input type="hidden" name="action" value="add"/>
                         </td>
                     </tr>

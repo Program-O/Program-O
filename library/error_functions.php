@@ -436,13 +436,14 @@ endErr;
     unset($errContext['adm_dbu']); // Admin user username
     unset($errContext['adm_dbp']); // Admin user password
     $context = print_r($errContext, true);
-    $fn = str_ireplace('.php', '', $errFile);
-    $fn = str_ireplace(_ADMIN_PATH_, '', $fn);
-    $fn = str_ireplace(_BASE_PATH_, '', $fn);
+    $errFileSeparatorArray = explode(DIRECTORY_SEPARATOR, $errFile);
+    $fn = end($errFileSeparatorArray);
+    $fn = str_ireplace('.php', '', $fn);
 
     if (ERROR_DEBUGGING)
     {
-        $contextDate = date('m.d.Y.H.i.s');
+        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $contextDate = $now->format("m.d.Y.H.i.s.u");
         save_file(_LOG_PATH_ . "admin.{$fn}.error.context.{$contextDate}.log", $myMsg . PHP_EOL . "Context:" . PHP_EOL . $context);
     }
     else save_file(_LOG_PATH_ . "admin.{$fn}.error.log", $myMsg . PHP_EOL . PHP_EOL, true);

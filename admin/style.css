@@ -140,6 +140,36 @@ td.underline {
     border-bottom-width: 2px;
 }
 
+table.datatable-table th.sorting {
+    min-width: 9em;
+    max-width: 900px;
+}
+
+table.datatable-table td, table.datatable-table th {
+    min-width: 9em;
+    max-width: 900px;
+}
+
+table.datatable-table td input, table.datatable-table th input {
+    max-width: 900px;
+    float: left;
+}
+
+table.datatable-table td pre {
+    max-width: 900px;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+table.datatable-table td textarea {
+    margin: 0;
+    max-width: 900px;
+    min-height: 150px;
+    max-height: 350px;
+    padding: 0.5em 1em;
+}
+
 div.row span.formw {
     float: right;
     clear: none;
@@ -947,6 +977,12 @@ div#AIML_List {
     color: #500;
     background-color: #EDD;
 }
+
+.floatRight {width: 48%;}
+
+.floatLeft {width: 48%;}
+
+table#AIML tbody td, table#SRAI_LOOKUP tbody td {position: relative;}
 
 table.botForm {
     width: 99.5%;
