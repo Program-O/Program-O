@@ -118,6 +118,8 @@ function getSelectedBot()
     $sel_xml = '';
     $sel_json = '';
     $sel_yes = '';
+    $sel_ttsyes = '';
+    $sel_ttsno = '';
     $sel_no = '';
     $sel_fyes = '';
     $sel_fno = '';
@@ -168,6 +170,12 @@ function getSelectedBot()
             $sel_no = ' selected="selected"';
         }
 
+        if ($bot_tts_active == "1") {
+            $sel_ttsyes = ' selected="selected"';
+        } else {
+            $sel_ttsno = ' selected="selected"';
+        }
+
         if ($bot_save_state == "database") {
             $sel_db = ' selected="selected"';
         } else {
@@ -216,6 +224,7 @@ function getSelectedBot()
         $bot_name = 'new or unnamed bot';
         $bot_desc = '';
         $bot_active = '';
+        $bot_tts_active = '';
         $action = "add";
         $bot_format = '';
         $bot_conversation_lines = $conversation_lines;
@@ -231,7 +240,7 @@ function getSelectedBot()
     $parent_options = getBotParentList($bot_parent_id);
     $searches = array(
         '[bot_id]', '[bot_name]', '[aiml_count]', '[bot_desc]', '[parent_options]', '[sel_yes]', '[sel_no]',
-        '[sel_html]', '[sel_xml]', '[sel_json]', '[sel_session]', '[sel_db]', '[sel_fyes]',
+        '[sel_html]', '[sel_xml]', '[sel_json]', '[sel_session]', '[sel_db]', '[sel_fyes]', '[sel_ttsyes]', '[sel_ttsno]',
         '[sel_fno]', '[sel_fuyes]', '[sel_funo]', '[bot_conversation_lines]', '[remember_up_to]',
         '[bot_debugemail]', '[dm_]', '[dm_i]', '[dm_ii]', '[dm_iii]', '[ds_]', '[ds_i]', '[ds_ii]',
         '[ds_iii]', '[ds_iv]', '[action]', '[bot_default_aiml_pattern]', '[bot_error_response]', '[bot_unknown_user]', '[unknown_user]',
@@ -273,12 +282,24 @@ function updateBotSelection()
             continue;
         }
 
+        $safeVal = addslashes($value);
+        /*
+              $value = str_replace("'", "\'", $value);
+              $value = str_replace("\\'", "\'", $value);
+              $value = str_replace('"', '\"', $value);
+              $value = str_replace('\\"', '\"', $value);
+        */
         if ($result[$key] != $post_vars[$key] && !in_array($key, $skipVars))
         {
             $newSet = $setTemplate;
             $newSet = str_replace('[key]', $key, $newSet);
             $repl .= $newSet;
             $params[":{$key}"] = $value;
+            /** @noinspection SqlDialectInspection */
+            /*
+                        $sql .= "UPDATE `bots` SET `$key` = :{$key}_safeVal WHERE `bot_id` = :bot_id limit 1;\n";
+                        $params["{$key}_safeVal"] = $safeVal;
+            */
         }
     }
 
@@ -289,6 +310,7 @@ function updateBotSelection()
         save_file(_LOG_PATH_ . 'select_bots.update.params.txt', print_r($params, true));
         save_file(_LOG_PATH_ . 'select_bots.update.sql.txt', print_r($sql, true));
         $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
+        //$affectedRows = 0;
 
         if ($affectedRows == 0)
         {
@@ -351,12 +373,13 @@ function addBot()
 
     /** @noinspection PhpUndefinedVariableInspection */
     /** @noinspection SqlDialectInspection */
-    $sql = 'INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `error_response`)
-VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,:conversation_lines,:remember_up_to,:debugemail,:debugshow,:debugmode,:aiml_pattern,:error_response);';
+    $sql = 'INSERT INTO `bots`(`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `default_aiml_pattern`, `error_response`, `tts_active`)
+VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,:conversation_lines,:remember_up_to,:debugemail,:debugshow,:debugmode,:aiml_pattern,:error_response,:tts_active);';
     $params = array(
         ':bot_name'             => $bot_name,
         ':bot_desc'             => $bot_desc,
         ':bot_active'           => $bot_active,
+        ':tts_active'           => $tts_active,
         ':bot_parent_id'        => $bot_parent_id,
         ':format'               => $format,
         ':save_state'           => $save_state,
@@ -378,6 +401,8 @@ VALUES (NULL,:bot_name,:bot_desc,:bot_active,:bot_parent_id,:format,:save_state,
     else {
         $msg = "$bot_name Bot details could not be added.";
     }
+
+    $_SESSION['poadmin']['tts_active'] = $tts_active;
 
     $_SESSION['poadmin']['bot_id'] = db_lastInsertId();
     $bot_id = $_SESSION['poadmin']['bot_id'];
@@ -499,6 +524,8 @@ function changeBot()
             $_SESSION['poadmin']['format'] = $row['format'];
             $_SESSION['poadmin']['bot_id'] = $row['bot_id'];
             $_SESSION['poadmin']['bot_name'] = $row['bot_name'];
+            $_SESSION['poadmin']['tts_active'] = $row['tts_active'];
+
         }
         else
         {

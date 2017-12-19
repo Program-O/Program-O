@@ -30,6 +30,33 @@ $say = (!empty($form_vars['say'])) ? $form_vars['say'] : '';
 $convo_id = session_id();
 $format = (!empty($form_vars['format'])) ? _strtolower($form_vars['format']) : 'html';
 
+preg_match_all('/(?<=Bot:).+/i', strip_tags($display), $matches);
+$response = array_pop($matches)[0];
+
+$dbConn = db_open();
+
+$sql = "SELECT `tts_active` FROM `$dbn`.`bots` WHERE `bot_id` = '$bot_id' LIMIT 1;";
+$row = db_fetch($sql, null, __FILE__, __FUNCTION__, __LINE__);
+$tts_active = 0;
+
+db_close();
+
+if ($row !== false) {
+    $tts_active = $row['tts_active'];
+}
+
+function escapeJavaScript($str)
+{
+    $new_str = '';
+    $len = strlen($str);
+
+    for($i = 0; $i < $len; $i++) {
+        $new_str .= '\\x' . sprintf('%02x', ord(substr($str, $i, 1)));
+    }
+
+    return $new_str;
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -114,5 +141,9 @@ $format = (!empty($form_vars['format'])) ? _strtolower($form_vars['format']) : '
 <div id="shameless_plug">
     To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
 </div>
+<?php if ($tts_active > 0): ?>
+<script src="../../scripts/tts.js"></script>
+<script>speak("<?= escapeJavaScript($response); ?>");</script>
+<?php endif; ?>
 </body>
 </html>

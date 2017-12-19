@@ -66,6 +66,9 @@ $request_vars = array_merge((array)$get_vars, (array)$post_vars);
 $convo_id = (isset ($request_vars['convo_id'])) ? $request_vars['convo_id'] : get_convo_id();
 $bot_id = (isset ($request_vars['bot_id'])) ? $request_vars['bot_id'] : 1;
 
+$tts_active = 0;
+$response = '';
+
 if (!empty ($post_vars))
 {
     $options = array(
@@ -96,6 +99,7 @@ if (!empty ($post_vars))
         {
             $user_name = (string)$xml->user_name;
             $bot_name = (string)$xml->bot_name;
+            $tts_active = (int)$xml->tts_active;
             $chat = $xml->chat;
             $lines = $chat->xpath('line');
 
@@ -147,6 +151,18 @@ function validateConvoId($convo_id)
 {
     $id = htmlentities($convo_id);
     return ($id === $convo_id) ? $convo_id : get_convo_id();
+}
+
+function escapeJavaScript($str)
+{
+    $new_str = '';
+    $len = strlen($str);
+
+    for($i = 0; $i < $len; $i++) {
+        $new_str .= '\\x' . sprintf('%02x', ord(substr($str, $i, 1)));
+    }
+
+    return $new_str;
 }
 
 ?>
@@ -216,5 +232,9 @@ function validateConvoId($convo_id)
 <div id="shameless_plug">
     To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
 </div>
+<?php if ($tts_active > 0): ?>
+<script src="../../scripts/tts.js"></script>
+<script>speak("<?= escapeJavaScript($response); ?>");</script>
+<?php endif; ?>
 </body>
 </html>

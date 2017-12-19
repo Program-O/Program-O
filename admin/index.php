@@ -622,6 +622,7 @@ function login()
         {
             $_SESSION['poadmin']['bot_id'] = $row['bot_id'];
             $_SESSION['poadmin']['bot_name'] = $row['bot_name'];
+            $_SESSION['poadmin']['tts_active'] = $row['tts_active'];
         }
         else
         {

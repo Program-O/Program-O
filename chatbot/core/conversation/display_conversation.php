@@ -155,6 +155,7 @@ function get_json($convoArr, $conversation)
         $show_json['convo_id'] = $convoArr['conversation']['convo_id'];
         $show_json['usersay'] = stripslashes($conversation_subarray['input']);
         $show_json['botsay'] = stripslashes($conversation_subarray['response']);
+        $show_json['tts_active'] = $convoArr['conversation']['tts_active'];
         $show_json['botData'] = $convoArr['conversation'];
         $i++;
     }
@@ -175,7 +176,7 @@ function get_json($convoArr, $conversation)
  **/
 function get_xml($convoArr, $conversation)
 {
-    $addTags = array('bot_id', 'bot_name', 'user_id', 'user_name');
+    $addTags = array('bot_id', 'bot_name', 'user_id', 'user_name', 'tts_active');
     $program_o = new SimpleXMLElement('<program_o/>');
     $program_o->addChild('version', VERSION);
     $program_o->addChild('status');
