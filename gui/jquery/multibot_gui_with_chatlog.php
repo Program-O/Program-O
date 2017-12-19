@@ -189,6 +189,7 @@ function jq_get_convo_id()
     To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
 </div>
 <div id="urlwarning"><?php echo $display ?></div>
+<script src="../../scripts/tts.js"></script>
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 <script>
     window.jQuery || document.write('<script type="text/javascript" src="jquery-1.9.1.min.js">\x3C/script>');
@@ -232,7 +233,9 @@ function jq_get_convo_id()
                     b = makeLink(b);
                 }
                 var usersay = data.usersay;
-
+                if (data.tts_active > 0) {
+                    speak(b);
+                }
                 $('#chatlog').html($('#chatlog').html() + botSaid + b + "<br>\n");
             }, 'json').fail(function (xhr, textStatus, errorThrown) {
                 $('#urlwarning').html("Something went wrong! Error = " + errorThrown);

@@ -366,6 +366,7 @@ function Save()
     $bot_name             = $myPostVars['bot_name'];
     $bot_desc             = $myPostVars['bot_desc'];
     $bot_active           = $myPostVars['bot_active'];
+    $tts_active           = $myPostVars['tts_active'];
     $bot_parent_id        = 1;
     $format               = $myPostVars['format'];
     $save_state           = $myPostVars['save_state'];
@@ -380,6 +381,7 @@ function Save()
         ':bot_name'             => $bot_name,
         ':bot_desc'             => $bot_desc,
         ':bot_active'           => $bot_active,
+        ':tts_active'           => $tts_active,
         ':bot_parent_id'        => $bot_parent_id,
         ':format'               => $format,
         ':save_state'           => $save_state,
@@ -396,8 +398,8 @@ function Save()
     {
         /** @noinspection SqlDialectInspection */
         /** @noinspection SqlNoDataSourceInspection */
-        $sql = 'insert ignore into `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`)
-    values ( :bot_id, :bot_name, :bot_desc, :bot_active, :bot_parent_id, :format, :save_state, :conversation_lines, :remember_up_to, :debugemail, :debugshow, :debugmode, :error_response, :default_aiml_pattern);';
+        $sql = 'insert ignore into `bots` (`bot_id`, `bot_name`, `bot_desc`, `bot_active`, `bot_parent_id`, `format`, `save_state`, `conversation_lines`, `remember_up_to`, `debugemail`, `debugshow`, `debugmode`, `error_response`, `default_aiml_pattern`, `tts_active`)
+    values ( :bot_id, :bot_name, :bot_desc, :bot_active, :bot_parent_id, :format, :save_state, :conversation_lines, :remember_up_to, :debugemail, :debugshow, :debugmode, :error_response, :default_aiml_pattern, :tts_active);';
 
     }
     else
@@ -417,7 +419,8 @@ function Save()
     `debugshow`            = :debugshow,
     `debugmode`            = :debugmode,
     `error_response`       = :error_response,
-    `default_aiml_pattern` = :default_aiml_pattern
+    `default_aiml_pattern` = :default_aiml_pattern,
+    `tts_active`           = :tts_active
 where `bot_id` = :bot_id;
     ';
     }

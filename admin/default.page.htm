@@ -278,6 +278,17 @@ between the start and end section tags are the only parts of the template that a
                         </td>
                     </tr>
                     <tr>
+                        <td><label for="tts_active"><span class="label">Text-to-Speech Active</span></label></td>
+                        <td>
+                        <span class="formw">
+                          <select name="tts_active" id="tts_active">
+                            <option value="1" [sel_ttsyes]>Yes</option>
+                            <option value="0" [sel_ttsno]>No</option>
+                          </select>
+                        </span>
+                        </td>
+                    </tr>
+                    <tr>
                         <td colspan="2" class="center">
                             <span class="label">The chatbot "[bot_name]" has [aiml_count] AIML categories in the database.</span>
                         </td>

@@ -128,6 +128,7 @@ function jq_get_convo_id()
     To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
 </div>
 <div id="urlwarning"><?php echo $display ?></div>
+<script src="../../scripts/tts.js"></script>
 <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -153,6 +154,9 @@ function jq_get_convo_id()
                 var usersay = data.usersay;
                 if (user != usersay) {
                     $('.usersay').text(usersay);
+                }
+                if (data.tts_active > 0) {
+                    speak(b);
                 }
                 $('.botsay').html(b);
                 $('#urlwarning').hide();

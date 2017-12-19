@@ -553,6 +553,7 @@ function check_set_bot($convoArr)
         $convoArr['conversation']['bot_name'] = $row['bot_name'];
         $convoArr['conversation']['bot_id'] = $bot_id;
         $convoArr['conversation']['format'] = $row['format'];
+        $convoArr['conversation']['tts_active'] = $row['tts_active'];
         $convoArr['conversation']['unknown_user'] = $unknown_user;
         runDebug(__FILE__, __FUNCTION__, __LINE__, "BOT ID: $bot_id", 2);
     }
