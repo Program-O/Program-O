@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -189,7 +189,7 @@ function jq_get_convo_id()
     To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
 </div>
 <div id="urlwarning"><?php echo $display ?></div>
-<script type="text/javascript" src="//ajax.google_apis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 <script>
     window.jQuery || document.write('<script type="text/javascript" src="jquery-1.9.1.min.js">\x3C/script>');
 </script>

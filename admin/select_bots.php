@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: select_bots.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-09-2014
@@ -263,32 +263,31 @@ function updateBotSelection()
     $sql = "SELECT * FROM bots WHERE bot_id = :bot_id;";
     $params = array(':bot_id' => $bot_id);
     $result = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
-    $sql = '';
+    $sql = 'UPDATE `bots` [repl] WHERE `bot_id` = :bot_id;';
     $skipVars = array('bot_id', 'action', 'useBranch');
-
+    $setTemplate = ' set `[key]` = :[key],';
+    $repl = '';
     foreach ($post_vars as $key => $value)
     {
         if (in_array($key, $skipVars) || !isset($result[$key])) {
             continue;
         }
 
-        $safeVal = addslashes($value);
-        /*
-              $value = str_replace("'", "\'", $value);
-              $value = str_replace("\\'", "\'", $value);
-              $value = str_replace('"', '\"', $value);
-              $value = str_replace('\\"', '\"', $value);
-        */
-        if ($result[$key] != $post_vars[$key])
+        if ($result[$key] != $post_vars[$key] && !in_array($key, $skipVars))
         {
-            /** @noinspection SqlDialectInspection */
-            $sql .= "UPDATE `bots` SET `$key` = :{$key}_safeVal WHERE `bot_id` = :bot_id limit 1;\n";
-            $params["{$key}_safeVal"] = $safeVal;
+            $newSet = $setTemplate;
+            $newSet = str_replace('[key]', $key, $newSet);
+            $repl .= $newSet;
+            $params[":{$key}"] = $value;
         }
     }
 
-    if (!empty($sql))
+    if (!empty($repl))
     {
+        $repl = rtrim($repl, ',');
+        $sql = str_replace('[repl]', $repl, $sql);
+        save_file(_LOG_PATH_ . 'select_bots.update.params.txt', print_r($params, true));
+        save_file(_LOG_PATH_ . 'select_bots.update.sql.txt', print_r($sql, true));
         $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows == 0)

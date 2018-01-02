@@ -8,8 +8,6 @@ Disallow: /library
 Disallow: /logs
 Disallow: /scripts
 Disallow: /style.css
-Disallow: /aiml tag list.txt
-Disallow: /build.txt
 Disallow: /CHANGELOG
 Disallow: /fresh_install_README.txt
 Disallow: /LICENSE

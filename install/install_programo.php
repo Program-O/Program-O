@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.6.7
+* Version: 2.6.8
 * FILE: install_programo.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: FEB 01 2016
@@ -110,7 +110,7 @@ switch ((int) $page)
         $writeCheckKeys  = array('config' => '[cfw]', 'debug' => '[dfw]', 'logs' => '[lfw]', 'session' => '[sfw]');
         $writeCheckRepl  = array();
         $errFlag = false;
-        $writableTemplate = '<span class="ext_[tf] floatRight">[tf]</span>';
+        $writableTemplate = '<span class="ext_[tf] floatRight">[pf]</span>';
         $writeErrorText = '';
         foreach ($writeCheckArray as $key => $folder)
         {
@@ -126,6 +126,7 @@ switch ((int) $page)
             $errFlag = (!$writeFlag) ? true: $errFlag;
             $curSpan = str_replace('[perms]', $txtPerms, $curSpan);
             $curSpan = str_replace('[tf]', ($writeFlag) ? 'true' : 'false', $curSpan);
+            $curSpan = str_replace('[pf]', ($writeFlag) ? 'Pass' : 'Fail', $curSpan);
             $main = str_replace($searchTag, $curSpan, $main);
         }
 
@@ -151,17 +152,19 @@ endInfo;
         }
 
         $pvpf = ($version_compare >= 0) ? 'true' : 'false';
-        $liTemplate = '                            <li class="[oe]">PDO [ext] extension enabled?: <span class="ext_[tf] floatRight">[tf]</span></li>' . PHP_EOL;
+        $liTemplate = '                            <li class="[oe]">PDO [ext] extension enabled?: <span class="ext_[tf] floatRight">[pf]</span></li>' . PHP_EOL;
         $pdo_reqs = '';
         $oddEven = 0;
         foreach ($pdoExtensionsArray as $ext)
         {
             $oeClass = ($oddEven % 2 === 0) ? 'odd' : 'even';
             $tf = (extension_loaded($ext)) ? 'true' : 'false';
+            $pf = ($tf === 'true') ? 'Pass' : 'Fail';
             $curLi = $liTemplate;
             $curLi = str_replace('[ext]', $ext, $curLi);
             $curLi = str_replace('[oe]', $oeClass, $curLi);
             $curLi = str_replace('[tf]', $tf, $curLi);
+            $curLi = str_replace('[pf]', $pf, $curLi);
             if ($tf === 'false') $curLi = '';
             $pdo_reqs .= $curLi;
             if ($tf !== 'false') $oddEven++;
@@ -172,6 +175,7 @@ endInfo;
             $pdo_reqs = str_replace('[oe]', 'even', $pdo_reqs);
             $pdo_reqs = str_replace('[ext]', '', $pdo_reqs);
             $pdo_reqs = str_replace('[tf]', 'false', $pdo_reqs);
+            $pdo_reqs = str_replace('[pf]', 'Fail', $pdo_reqs);
             $reqs_not_met .= 'There are no PDO extensions available, so the install process cannot continue.<br>';
         }
         elseif ($pvpf == 'false')
@@ -187,9 +191,11 @@ endInfo;
             $oeClass = ($oddEven % 2 === 0) ? 'odd' : 'even';
             $curLi = $liTemplate;
             $tf = (extension_loaded($ext)) ? 'true' : 'false';
+            $pf = ($tf === 'true') ? 'Pass' : 'Fail';
             $curLi = str_replace('[ext]', $ext, $curLi);
             $curLi = str_replace('[oe]', $oeClass, $curLi);
             $curLi = str_replace('[tf]', $tf, $curLi);
+            $curLi = str_replace('[pf]', $pf, $curLi);
             $rec_exts .= $curLi;
             $oddEven++;
         }

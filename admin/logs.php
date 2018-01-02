@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: logs.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-12-2014
@@ -20,6 +20,12 @@
     ini_set('html_errors', false);
     ini_set('display_errors', false);
     if (!isset($dbConn)) $dbConn = db_open();
+    if (session_id() == '')
+    {
+        $session_name = 'PGO_Admin';
+        session_name($session_name);
+        session_start();
+    }
 
     $allowed_get_vars = array(
     // Make sure to put at least something in here, like this:
@@ -235,7 +241,7 @@ function getuserConvo($id, $showing)
     $ts = '';
     $ats = '';
     /** @noinspection SqlDialectInspection */
-    $sql = 'SELECT *  FROM `conversation_log` WHERE `bot_id` = :bot_id AND `user_id` = :user_id  AND DATE(`timestamp`) >= [ts] ORDER BY `id` DESC;';
+    $sql = 'SELECT *  FROM `conversation_log` WHERE `bot_id` = :bot_id AND `user_id` = :user_id  AND DATE(`timestamp`) >= [ts] ORDER BY `id` ASC;';
 
     switch ($showing)
     {
@@ -265,12 +271,12 @@ function getuserConvo($id, $showing)
             break;
         case 'last 20':
             /** @noinspection SqlDialectInspection */
-            $sql = 'SELECT *  FROM `conversation_log` WHERE `bot_id` = :bot_id AND `user_id` = :user_id ORDER BY `id` DESC limit 20;';
+            $sql = 'SELECT *  FROM `conversation_log` WHERE `bot_id` = :bot_id AND `user_id` = :user_id ORDER BY `id` ASC limit 20;';
             $title = "Last 20 Conversation entries for user: $user_name (ID #{$id})";
             $ats = '0 limit 20';
             break;
         case 'all time' :
-            $sql = 'SELECT *  FROM `conversation_log` WHERE `bot_id` = :bot_id AND `user_id` = :user_id ORDER BY `id` DESC;';
+            $sql = 'SELECT *  FROM `conversation_log` WHERE `bot_id` = :bot_id AND `user_id` = :user_id ORDER BY `id` ASC;';
             $title = "All conversations for user: $user_name (ID #{$id})";
             $ats = 'foo';
             break;

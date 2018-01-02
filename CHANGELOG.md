@@ -2,12 +2,87 @@
 
 ##CHANGELOG info:
 
-- Version: 2.6.7
+- Version: 2.6.8
 - Authors: Elizabeth Perreau and Dave Morton
 - Date: June 19th 2017
 
 
 ##Version History:
+
+2.6.8   Code Refactor, new <date> tag attributes
+
+### Bug Fixes
+The following bugs were found and fixed:
+    1.  A bug in Windows with certain locales (Hungarian, for example) have no UTF-8 support, so
+        were triggering errors in the code that parses the AIML `<date>` tag. This has been fixed.
+    2.  While testing the fix for the `<date>` tag it was discovered that the downloads page
+        was adding files to the Zip archive to be downloaded that didn't belong to the selected
+        chatbot. this isn't noticeable when there is only one bot, but with multiple chatbots
+        it created an issue. This has also been fixed.
+
+### Code Refactoring
+    A review of some of the admin pages has shown that some of the code that deals with input
+    variables from HTML forms was out of date, so some refactoring has been done to correct this.
+    Several admin pages were affected, with more to come in the near future.
+
+    Another thing that has been improved is error handling within the admin page system. Now all
+    errors within the admin pages will be logged from a central function that will provide more
+    detailed information about what's going on when errors, warnings or notices are triggered.
+    Each script will now have their own log files, as well as error context log files in order to
+    help isolate and identify bugs faster and more efficiently.
+
+    Program O's custom error handler for the admin pages has also been revamped and upgraded,
+    with more features and options being made available for debugging.  The error handler has been
+    moved into the library in order to make it more accessible to ALL admin scripts, and an
+    option has been added to create a "context" file that contains all variables defined at
+    the time an error was triggered. When this option is set to TRUE in the global config file
+    a new context log is created in the `logs` folder, with the filename of the script where
+    the error occurred, as well as the date and time (to the second) when the error was
+    triggered. **WARNING!** this option should only be enabled for long enough to troubleshoot
+    issues. It generates a new (and rather large) file for EVERY ERROR that's triggered, and
+    can add up fast.
+
+### New <date> Tag Attributes
+    While testing the `<date>` tag it was noticed that there was a decided lack of flexibility
+    with regard to what the tag could be used for; notably in the area of past or future dates.
+    The AIML specification only allowed for changing the format, timezone or the locale (language)
+    of the tag. This is fine if you're referring to the current date/time, but there was no way
+    to have the date shown for some time in the past or future. This has beeh addressed by adding
+    support for two new attributes for the `<date>` tag: `timestamp` and `offset`. These attributes
+    are optional and work as follows:
+
+    1. timestamp:
+        The timestamp defaults to the current Unix timestamp at the time the tag is parsed. It
+        requires a 32 bit signed integer if used, and equates to the number of seconds elapsed
+        from the [Unix Epoch](https://en.wikipedia.org/wiki/Unix_time).
+    2. offset
+        The offset attribute (which defaults to an empty string) provides a fairly simple way
+        to obtain past or future dates by specifying how many units of time (e.g. seconds,
+        minutes, etc.) to add or subtract. The following are some valid examples of time offsets:
+
+            * +1 hour
+            * -1 day (this is "yesterday")
+            * +3 weeks
+            * -5 years
+
+        Valid time units are:
+
+            * seconds    ('sec', 'second', 'seconds')
+            * minutes    ('min', 'minute', 'minutes')
+            * hours      ('hr', 'hour', 'hours')
+            * days       ('day', 'days')
+            * weeks      ('week', 'weeks')
+            * fortnights ('fortnight', 'fortnights')
+            * months     ('month', 'months')
+            * years      ('year', 'years')
+
+        This added flexibility allows for improved use of the `<date>` tag in situations
+        where a user might ask about information about past or future dates. For example,
+        if a user asks what the date will be in 3 weeks (`<date offset="+3 weeks"/>`), or what
+        day of the week yesterday was (`<date format="%A" offset="-1 day"/>`), the chatbot
+        can respond easily, without a lot of hoops to jump through.
+
+
 
 2.6.7   Requirements Checklist
 

@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: validateAIML.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 06-02-2014
@@ -16,16 +16,16 @@ if (!file_exists('../config/global_config.php'))
 
 /** @noinspection PhpIncludeInspection */
 require_once('../config/global_config.php');
+require_once(_LIB_PATH_ . 'error_functions.php');
+set_error_handler('handle_errors', E_ALL | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
+trigger_error('Test error');
 
 chdir(__DIR__);
-error_reporting(E_ALL);
-ini_set('display_errors', 0);
-ini_set('error_log', _LOG_PATH_ . 'validateAIML.error.log');
 
 $status = '';
 $displayAIML = '';
 $ip = $_SERVER['REMOTE_ADDR'];
-$ip = ($ip == '::1') ? 'localhost' : $ip;
+$ip = ($ip == '::1' || $ip == '127.0.0.1') ? 'localhost' : $ip;
 
 if (!empty ($_FILES))
 {
@@ -59,14 +59,19 @@ if (!empty ($_FILES))
         $aimlArray = explode("\n", $aimlFile);
         array_unshift($aimlArray, null);
         unset($aimlArray[0]);
+        $lineCount = count($aimlArray);
+        $padLength = 1 + ($lineCount > 10) + ($lineCount > 100) + ($lineCount > 1000) + ($lineCount > 10000);
 
         foreach ($aimlArray as $line => $content)
         {
+            $dispLine = str_pad($line, $padLength, ' ', STR_PAD_LEFT);
             $content = trim($content);
-            $displayAIML .= "    <div class=\"source\" id=\"line$line\"><pre>$line | " . htmlentities($content) . "</pre></div>\n";
+            $displayAIML .= "    <div class=\"source\" id=\"line$line\"><pre>$dispLine | " . htmlentities($content) . "</pre></div>\n";
         }
 
-        $xml = new DOMDocument('1.0', 'utf-8');
+        $xml = new DOMDocument('1.0', $charset);
+        $xml->preserveWhiteSpace = false;
+        $xml->formatOutput = true;
 
         if (!$xml->loadXML($aimlFile))
         {
@@ -149,6 +154,13 @@ function libxml_display_errors()
         .center {
             text-align: center;
         }
+        .source {
+            line-height: 0;
+            font-size: 1.1em;
+            margin: 0;
+            padding: 0;
+        }
+
     </style>
 </head>
 <body>

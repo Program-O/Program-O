@@ -15,13 +15,14 @@ config/global_config.php
 config/global_config*.php
 global_config.php
 chatbot/debug/*.txt
-library/reference/*.txt
+#library/reference/*.txt
 logs/*.log
 logs/*.txt
 backups
 backups/*
 patch.php
 DOM_ProofOfConcept
+.htaccess
 
 #################
 ## WeBuilder/ Rapid PHP

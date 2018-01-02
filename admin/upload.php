@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: upload.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -183,7 +183,7 @@ $mainTitle = str_replace('[errMsg]', $msg, $mainTitle);
  */
 function parseAIML($fn, $aimlContent, $from_zip = false)
 {
-    global $dbConn, $msg, $debugmode, $bot_id, $charset;
+    global $dbConn, $msg, $debugmode, $bot_id, $charset, $bot_name;
     $duplicates = array();
 
     $post_vars = filter_input_array(INPUT_POST);
@@ -196,6 +196,10 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
     $skipVal = (isset($post_vars['skipVal'])) ? true : false;
     //trigger_error(() ? "true" : 'false');
     $fileName = basename($fn);
+    if (isset($bot_name))
+    {
+        $fileName = str_replace("{$bot_name}.", '', $fileName);
+    }
     $success = false;
     $topic = '';
     #Clear the database of the old entries
@@ -247,7 +251,7 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
             $msg = wordwrap($msg, 80, "<br>\n");
             $_SESSION['failCount']++;
         }
-        elseif (!$skipVal && !$xml->schemaValidate('aiml.xsd'))
+        elseif (!$skipVal && !$xml->schemaValidate(_ADMIN_PATH_ . 'aiml.xsd'))
         {
             $msg = "<div class=\"center\"><b>A total of [count] error[plural] been found in the file $fileName.</b></div><br><br>\n";
             $xmlErrCount = 0;
@@ -382,7 +386,7 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
  */
 function processUpload()
 {
-    global $msg, $ZIPenabled, $fs_limit;
+    global $msg, $ZIPenabled, $fs_limit, $bot_name;
     // Validate the uploaded file
     if ($_FILES['aimlfile']['size'] === 0 || empty($_FILES['aimlfile']['tmp_name']))
     {
@@ -488,7 +492,7 @@ function getBotList()
  * Function upload_libxml_display_errors
  *
  * @param $fileName
- * @return string
+ * @return array
  */
 function upload_libxml_display_errors($fileName)
 {
@@ -547,6 +551,7 @@ function upload_libxml_display_error($error)
  */
 function processZip($fileName)
 {
+    global $bot_name;
     $out = '';
     $_SESSION['failCount'] = 0;
     $zipName = basename($fileName);
@@ -629,7 +634,7 @@ function validateAIML($xml)
     global $validationStatus;
     $out = true;
 
-    if (!$xml->schemaValidate('aiml.xsd'))
+    if (!$xml->schemaValidate(_ADMIN_PATH_ . 'aiml.xsd'))
     {
         get_errors();
         $out = false;

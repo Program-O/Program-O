@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -11,7 +11,8 @@
 
 $cookie_name = 'Program_O_JSON_GUI';
 $botId = filter_input(INPUT_GET, 'bot_id');
-$convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : jq_get_convo_id();
+$convoId = filter_input(INPUT_GET, 'convo_id');
+$convo_id = (isset($_COOKIE[$cookie_name])) ? $_COOKIE[$cookie_name] : ($convoId !== false && $convoId !== null) ? $convoId : jq_get_convo_id();
 $bot_id = (isset($_COOKIE['bot_id'])) ? $_COOKIE['bot_id'] : ($botId !== false && $botId !== null) ? $botId : 1;
 
 if (is_nan($bot_id) || empty($bot_id))
@@ -65,127 +66,117 @@ function jq_get_convo_id()
 ?>
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8"/>
-        <meta name="Description" content="A Free Open Source AIML PHP MySQL Chatbot called Program-O. Version2"/>
-        <meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2"/>
-        <title>Program O jQuery GUI Examples</title>
-        <link rel="stylesheet" type="text/css" href="main.css" media="all"/>
-        <style type="text/css">
-            #smallman {
-                background-image: url(small_man.png);
-                background-size: 45.3px;
-                width: 100%;
-                height: 66px;
-            }
-
-        </style>
-        <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
-        <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"/>
-        <script type="text/javascript">
-            var URL = '<?php echo $url ?>';
-        </script>
-    </head>
-    <body>
-        <h3>Program O JSON GUI</h3>
-        <p class="center">
-            This is a simple example of how to access the Program O chatbot using the JSON API. Feel free to change the HTML
-            code for this page to suit your specific needs. For more advanced uses, please visit us at
-            <a href="http://www.program-o.com/">Program O</a>.
-        </p>
-        <hr class="center">
-        <p class="center">
-            Please check out the Multi-bot example GUI <a href="multibot_gui_with_chatlog.php">here</a>.
-        </p>
-        <!-- The DIV below is for debugging purposes, and can be safely removed, if desired. -->
-        <div id="convo_id">Conversion ID: <?php echo $convo_id; ?></div>
-        <div class="centerthis">
-            <div class="rightside">
-                <div class="manspeech">
-                    <div class="triangle-border bottom blue">
-                        <div class="botsay">
-                            Hey!
-                        </div>
-                    </div>
-                </div>
-                <div class="man"></div>
-            </div>
-            <div class="leftside">
-                <div class="dogspeech">
-                    <div class="triangle-border-right bottom orange">
-                        <div class="usersay">&nbsp;</div>
-                    </div>
-                </div>
-                <br/>
-                <div class="dog"></div>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="Description" content="A Free Open Source AIML PHP MySQL Chatbot called Program-O. Version2"/>
+    <meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2"/>
+    <title>Program O jQuery GUI Examples</title>
+    <link rel="stylesheet" type="text/css" href="main.css" media="all"/>
+    <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"/>
+    <script type="text/javascript">
+    var URL = '<?php echo $url ?>';
+    </script>
+</head>
+<body>
+<h3>Program O JSON GUI</h3>
+<p class="center">
+    This is a simple example of how to access the Program O chatbot using the JSON API. Feel free to change the HTML
+    code for this page to suit your specific needs. For more advanced uses, please visit us at <a
+            href="http://www.program-o.com/">
+        Program O</a>.
+</p>
+<hr class="center">
+<p class="center">
+    Please check out the Multi-bot example GUI <a href="multibot_gui_with_chatlog.php">here</a>.
+</p>
+<!-- The DIV below is for debugging purposes, and can be safely removed, if desired. -->
+<div id="convo_id">Conversion ID: <?php echo $convo_id; ?></div>
+<div class="centerthis">
+    <div class="rightside">
+        <div class="manspeech">
+            <div class="triangle-border bottom blue">
+                <div class="botsay">Hey!</div>
             </div>
         </div>
-        <div class="clearthis"></div>
-        <div class="centerthis">
-            <form method="post" name="talkform" id="talkform" action="index.php">
-                <div id="chatdiv">
-                    <label for="submit">Say:</label>
-                    <input type="text" name="say" id="say" size="60"/>
-                    <input type="submit" name="submit" id="submit" class="submit" value="say"/>
-                    <input type="hidden" name="convo_id" id="convo_id" value="<?php echo $convo_id; ?>"/>
-                    <input type="hidden" name="bot_id" id="bot_id" value="<?php echo $bot_id; ?>"/>
-                    <input type="hidden" name="format" id="format" value="json"/>
-                </div>
-            </form>
+        <div class="man"></div>
+    </div>
+    <div class="leftside">
+        <div class="dogspeech">
+            <div class="triangle-border-right bottom orange">
+                <div class="usersay">&nbsp;</div>
+            </div>
         </div>
-        <div id="shameless_plug">
-            To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
+        <br/>
+        <div class="dog"></div>
+    </div>
+</div>
+<div class="clearthis"></div>
+<div class="centerthis">
+    <form method="post" name="talkform" id="talkform" action="index.php">
+        <div id="chatdiv">
+            <label for="submit">Say:</label>
+            <input type="text" name="say" id="say" size="60"/>
+            <input type="submit" name="submit" id="submit" class="submit" value="say"/>
+            <input type="hidden" name="convo_id" id="convo_id" value="<?php echo $convo_id; ?>"/>
+            <input type="hidden" name="bot_id" id="bot_id" value="<?php echo $bot_id; ?>"/>
+            <input type="hidden" name="format" id="format" value="json"/>
         </div>
-        <div id="urlwarning"><?php echo $display ?></div>
-        <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
-        <script type="text/javascript">
-            $(document).ready(function () {
-                // put all your jQuery goodness in here.
-                $('#talkform').submit(function (e) {
-                    e.preventDefault();
-                    $('#urlwarning').empty();
-                    $('.botsay').html('(Thinking...)');
-                    var user = $('#say').val();
-                    $('.usersay').text(user);
-                    var formdata = $("#talkform").serialize();
-                    $('#say').val('');
-                    $('#say').focus();
-                    $.get(URL, formdata, function (data) {
-                        console.info('Data =', data);
-                        var b = data.botsay;
-                        if (b.indexOf('[img]') >= 0) {
-                            b = showImg(b);
-                        }
-                        if (b.indexOf('[link') >= 0) {
-                            b = makeLink(b);
-                        }
-                        var usersay = data.usersay;
-                        if (user != usersay) {
-                            $('.usersay').text(usersay);
-                        }
-                        $('.botsay').html(b);
-                        $('#urlwarning').hide();
-                    }, 'json').fail(function (xhr, textStatus, errorThrown) {
-                        console.error('XHR =', xhr.responseText);
-                        $('#urlwarning').html("Something went wrong! Error = " + errorThrown).show();
-                    });
-                    return false;
-                });
+    </form>
+</div>
+<div id="shameless_plug">
+    To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
+</div>
+<div id="urlwarning"><?php echo $display ?></div>
+<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // put all your jQuery goodness in here.
+        $('#talkform').submit(function (e) {
+            e.preventDefault();
+            $('#urlwarning').empty();
+            $('.botsay').html('(Thinking...)');
+            var user = $('#say').val();
+            $('.usersay').text(user);
+            var formdata = $("#talkform").serialize();
+            $('#say').val('');
+            $('#say').focus();
+            $.get(URL, formdata, function (data) {
+                console.info('Data =', data);
+                var b = data.botsay;
+                if (b.indexOf('[img]') >= 0) {
+                    b = showImg(b);
+                }
+                if (b.indexOf('[link') >= 0) {
+                    b = makeLink(b);
+                }
+                var usersay = data.usersay;
+                if (user != usersay) {
+                    $('.usersay').text(usersay);
+                }
+                $('.botsay').html(b);
+                $('#urlwarning').hide();
+            }, 'json').fail(function (xhr, textStatus, errorThrown) {
+                console.error('XHR =', xhr.responseText);
+                $('#urlwarning').html("Something went wrong! Error = " + errorThrown).show();
             });
-            function showImg(input) {
-                var regEx = /\[img\](.*?)\[\/img\]/;
-                var repl = '<br><a href="$1" target="_blank"><img src="$1" alt="$1" width="150" /></a>';
-                var out = input.replace(regEx, repl);
-                console.log('out = ' + out);
-                return out
-            }
-            function makeLink(input) {
-                var regEx = /\[link=(.*?)\](.*?)\[\/link\]/;
-                var repl = '<a href="$1" target="_blank">$2</a>';
-                var out = input.replace(regEx, repl);
-                console.log('out = ' + out);
-                return out;
-            }
-        </script>
-    </body>
+            return false;
+        });
+    });
+    function showImg(input) {
+        var regEx = /\[img\](.*?)\[\/img\]/;
+        var repl = '<br><a href="$1" target="_blank"><img src="$1" alt="$1" width="150" /></a>';
+        var out = input.replace(regEx, repl);
+        console.log('out = ' + out);
+        return out
+    }
+    function makeLink(input) {
+        var regEx = /\[link=(.*?)\](.*?)\[\/link\]/;
+        var repl = '<a href="$1" target="_blank">$2</a>';
+        var out = input.replace(regEx, repl);
+        console.log('out = ' + out);
+        return out;
+    }
+</script>
+</body>
 </html>

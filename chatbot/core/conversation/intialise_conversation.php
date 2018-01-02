@@ -3,7 +3,7 @@
 /***************************************
  * www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: chatbot/core/conversation/intialise_conversation.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -427,14 +427,14 @@ function log_conversation($convoArr)
     )";
 
     $params = array(
-        ':usersay' => $usersay,
-        ':botsay' => $botsay,
-        ':user_id' => $user_id,
+        ':usersay'  => $usersay,
+        ':botsay'   => $botsay,
+        ':user_id'  => $user_id,
         ':convo_id' => $convo_id,
-        ':bot_id' => $bot_id,
+        ':bot_id'   => $bot_id,
     );
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving conservation SQL: $sql", 3);
-    //file_put_contents(_LOG_PATH_ . 'init_convo.log_convo.sql.txt', print_r($sql, true) . "\nParams = " . print_r($params, true) . "\n");
+    $displaySQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving conservation SQL: $displaySQL", 3);
 
     $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
@@ -716,13 +716,16 @@ function load_that($convoArr)
     if ($result)
     {
         $tmpThatRows = array();
+        $tmpRawThatRows = array();
         $tmpInputRows = array();
         $tmpThat = array();
+        $tmpRawThat = array();
         $tmpInput = array();
         $puncuation = array(',', '?', ';', '!');
 
         foreach ($result as $row)
         {
+            $tmpRawThatRows[] = $row['response'];
             $tmpThatRows[] = $row['response'];
             $tmpInputRows[] = $row['input'];
         }
@@ -741,12 +744,22 @@ function load_that($convoArr)
         array_unshift($tmpThat, NULL);
         unset ($tmpThat[0]);
 
+        foreach ($tmpRawThatRows as $row)
+        {
+            $tmpRawThat[] = explode('.', $row);
+        }
+
+        array_unshift($tmpRawThat, NULL);
+        unset ($tmpRawThat[0]);
+        $convoArr['raw_that'] = $tmpRawThat;
+
         foreach ($tmpThat as $index => $value)
         {
             $value = implode_recursive(' ', $value, __FILE__, __FUNCTION__, __LINE__);
             $value = clean_that($value, __FILE__, __FUNCTION__, __LINE__);
             $convoArr = push_on_front_convoArr('that', $value, $convoArr);
         }
+
 
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading previous user inputs into the ~INPUT~ array.', 4);
         $tmpInputRows = array_reverse($tmpInputRows);
@@ -759,6 +772,7 @@ function load_that($convoArr)
 
         array_unshift($tmpThat, NULL);
         unset ($tmpThat[0]);
+
 
         foreach ($tmpInput as $index => $value)
         {

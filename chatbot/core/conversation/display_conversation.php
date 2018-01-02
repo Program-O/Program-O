@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: chatbot/core/conversation/display_conversation.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -20,6 +20,7 @@
 function get_conversation_to_display($convoArr)
 {
     global $dbConn, $dbn, $bot_name, $unknown_user;
+    $orderedRows = array();
 
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
@@ -56,6 +57,8 @@ function get_conversation_to_display($convoArr)
     );
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "get_conversation SQL: $sql", 3);
+    $debugSQL = db_parseSQL($sql, $params);
+    //save_file(_LOG_PATH_ . 'gc2dsql.txt', $debugSQL);
 
     $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
@@ -68,7 +71,7 @@ function get_conversation_to_display($convoArr)
         $orderedRows = array_reverse($allrows, false);
     }
     else {
-        $orderedRows = array('id' => NULL, 'input' => "", 'response' => "", 'user_id' => $convoArr['conversation']['user_id'], 'bot_id' => $convoArr['conversation']['bot_id'], 'timestamp' => "");
+        $orderedRows[] = array('id' => NULL, 'input' => "", 'response' => "", 'user_id' => $convoArr['conversation']['user_id'], 'bot_id' => $convoArr['conversation']['bot_id'], 'timestamp' => "");
     }
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Found '" . count($result) . "' lines of conversation", 2);
@@ -113,6 +116,11 @@ function get_conversation($convoArr)
  **/
 function get_html($convoArr, $conversation)
 {
+    if (!is_array($conversation))
+    {
+        $tmp = $conversation;
+        $conversation = array($tmp);
+    }
     $show = "";
     $user_name = $convoArr['conversation']['user_name'];
     $bot_name = $convoArr['conversation']['bot_name'];
@@ -147,7 +155,7 @@ function get_json($convoArr, $conversation)
         $show_json['convo_id'] = $convoArr['conversation']['convo_id'];
         $show_json['usersay'] = stripslashes($conversation_subarray['input']);
         $show_json['botsay'] = stripslashes($conversation_subarray['response']);
-        $show_json['data'] = $convoArr['conversation'];
+        $show_json['botData'] = $convoArr['conversation'];
         $i++;
     }
 

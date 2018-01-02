@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.7
+ * Version: 2.6.8
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 02-15-2013
@@ -104,7 +104,7 @@ else
     $now_playing = ($iframeURL == 'about:blank') ? 'Viewer is empty' : "<strong>Viewing Debug File: $iframeURL</strong>";
     $optionTemplate = '            <option[fileSelected] value="[file]">[file]</option>' . "\n";
     $fileList = glob(_DEBUG_PATH_ . '*.txt');
-    if (empty($fileList)) $sel_msg = 'No Logs to View';
+    if (empty($fileList)) $sel_msg = 'No Debug Files to View';
 
     usort(
         $fileList,

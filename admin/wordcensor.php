@@ -1,40 +1,29 @@
 <?php
-
+/***************************************
+ * http://www.program-o.com
+ * PROGRAM O
+ * Version: 2.6.8
+ * FILE: wordcensor.php
+ * AUTHOR: Elizabeth Perreau and Dave Morton
+ * DATE: 12-09-2014
+ * DETAILS: Displays the admin page for the spellcheck plugin and provides access to various features
+ ***************************************/
 $msg = '';
-$upperScripts = <<<endScript
-
-    <script type="text/javascript">
-<!--
-      var state = 'hidden';
-      function showhide(layer_ref) {
-        if (state == 'visible') {
-          state = 'hidden';
-        }
-        else {
-          state = 'visible';
-        }
-        if (document.all) { //IS IE 4 or 5 (or 6 beta)
-          eval( "document.all." + layer_ref + ".style.visibility = state");
-        }
-        if (document.layers) { //IS NETSCAPE 4 or below
-          document.layers[layer_ref].visibility = state;
-        }
-        if (document.getElementById && !document.all) {
-          maxwell_smart = document.getElementById(layer_ref);
-          maxwell_smart.style.visibility = state;
-        }
-      }
-//-->
-    </script>
-endScript;
-
+/*
 $post_vars = filter_input_array(INPUT_POST);
 $get_vars = filter_input_array(INPUT_GET);
 $request_vars = (array)$post_vars + (array)$get_vars;
-$group = (isset ($request_vars['group'])) ? $request_vars['group'] : 1;
+*/
+require_once('../config/global_config.php');
+require_once(_ADMIN_PATH_ . 'allowedPages.php');
+
+$options = $allowed_pages['wordcensor'];
+$form_vars = clean_inputs($options);
+
+$group = (isset ($form_vars['group'])) ? $form_vars['group'] : 1;
 $content = $template->getSection('SearchWordCensorForm');
-$wc_action = isset ($request_vars['action']) ? strtolower($request_vars['action']) : '';
-$wc_id = isset ($request_vars['censor_id']) ? $request_vars['censor_id'] : -1;
+$wc_action = isset ($form_vars['action']) ? strtolower($form_vars['action']) : '';
+$wc_id = isset ($form_vars['censor_id']) ? $form_vars['censor_id'] : -1;
 
 if (!empty ($wc_action))
 {
@@ -99,7 +88,7 @@ $rightNav = str_replace('[headerTitle]', wcPaginate(), $rightNav);
  */
 function wcPaginate()
 {
-    global $dbConn, $request_vars;
+    global $dbConn, $group;
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT COUNT(*) FROM `wordcensor` WHERE 1";
@@ -115,7 +104,7 @@ function wcPaginate()
 
     $out = "Censored Words<br />\n50 words per page:<br />\n";
     $link = " - <a class=\"paginate\" href=\"index.php?page=wordcensor&amp;group=[group]\">[label]</a>";
-    $curStart = (isset ($request_vars['group'])) ? $request_vars['group'] : 1;
+    $curStart = $group;
     $firstPage = 1;
     $prev = ($curStart > ($firstPage + 1)) ? $curStart - 1 : -1;
     $next = ($lastPage > ($curStart + 1)) ? $curStart + 1 : -1;
@@ -146,15 +135,14 @@ function wcPaginate()
  */
 function getWordCensorWords()
 {
-    global $dbConn, $template, $request_vars;
+    global $dbConn, $template, $group, $form_vars;
 
-    $group = (isset ($request_vars['group'])) ? $request_vars['group'] : 1;
     $_SESSION['poadmin']['group'] = $group;
     $startEntry = ($group - 1) * 50;
     $startEntry = ($startEntry < 0) ? 0 : $startEntry;
     $end = $group + 50;
     $_SESSION['poadmin']['page_start'] = $group;
-    $curID = (isset ($request_vars['id'])) ? $request_vars['id'] : -1;
+    $curID = (isset ($form_vars['id'])) ? $form_vars['id'] : -1;
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT `censor_id`,`word_to_censor` FROM `wordcensor` WHERE 1 ORDER BY abs(`censor_id`) ASC limit $startEntry, 50;";
@@ -196,10 +184,9 @@ function getWordCensorWords()
  */
 function wordCensorForm()
 {
-    global $template, $request_vars;
+    global $template, $group;
 
     $out = $template->getSection('WordCensorForm');
-    $group = (isset ($request_vars['group'])) ? $request_vars['group'] : 1;
     $out = str_replace('[group]', $group, $out);
 
     return $out;
@@ -212,10 +199,10 @@ function wordCensorForm()
  */
 function insertWordCensor()
 {
-    global $dbConn, $template, $msg, $request_vars;
+    global $dbConn, $template, $msg, $form_vars;
 
-    $replace_with = trim($request_vars['replace_with']);
-    $word_to_censor = trim($request_vars['word_to_censor']);
+    $replace_with = trim($form_vars['replace_with']);
+    $word_to_censor = trim($form_vars['word_to_censor']);
 
     if (($replace_with == "") || ($word_to_censor == ""))
     {
@@ -282,9 +269,9 @@ function delWordCensor($id)
  */
 function runWordCensorSearch()
 {
-    global $dbConn, $template, $request_vars;
+    global $dbConn, $template, $form_vars;
 
-    $search = trim($request_vars['search']);
+    $search = trim($form_vars['search']);
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT * FROM `wordcensor` WHERE `word_to_censor` LIKE :search1 OR `replace_with` LIKE :search2 LIMIT 50";
     $params = array(
@@ -350,9 +337,8 @@ function runWordCensorSearch()
  */
 function editWordCensorForm($id)
 {
-    global $dbConn, $template, $request_vars, $dbConn;
+    global $dbConn, $template, $group, $dbConn;
 
-    $group = (isset ($request_vars['group'])) ? $request_vars['group'] : 1;
     $form = $template->getSection('EditWordCensorForm');
 
     /** @noinspection SqlDialectInspection */
@@ -372,11 +358,11 @@ function editWordCensorForm($id)
 
 function updateWordCensor()
 {
-    global $dbConn, $template, $msg, $request_vars;
+    global $dbConn, $template, $msg, $form_vars;
 
-    $word_to_censor = trim($request_vars['word_to_censor']);
-    $replace_with = trim($request_vars['replace_with']);
-    $id = trim($request_vars['censor_id']);
+    $word_to_censor = trim($form_vars['word_to_censor']);
+    $replace_with = trim($form_vars['replace_with']);
+    $id = trim($form_vars['censor_id']);
 
     if (($id == "") || ($word_to_censor == "") || ($replace_with == ""))
     {
