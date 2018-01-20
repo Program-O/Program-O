@@ -109,14 +109,18 @@ $allowed_pages = array(
         '_'       => FILTER_SANITIZE_STRING,
     ),
     'editAJAX'    => array(
-    'action'      => FILTER_SANITIZE_STRING,
-    'id'          => FILTER_SANITIZE_NUMBER_INT,
-    'pattern'     => FILTER_UNSAFE_RAW,
-    'thatpattern' => FILTER_UNSAFE_RAW,
-    'template'    => FILTER_UNSAFE_RAW,
-    'topic'       => FILTER_UNSAFE_RAW,
-    'filename'    => FILTER_SANITIZE_STRING
-
+        'action'      => FILTER_SANITIZE_STRING,
+        'id'          => FILTER_SANITIZE_NUMBER_INT,
+        'pattern'     => FILTER_UNSAFE_RAW,
+        'thatpattern' => FILTER_UNSAFE_RAW,
+        'template'    => FILTER_UNSAFE_RAW,
+        'topic'       => FILTER_UNSAFE_RAW,
+        'filename'    => FILTER_SANITIZE_STRING,
+        'start'       => FILTER_SANITIZE_STRING,
+        'draw'        => FILTER_SANITIZE_STRING,
+        'columns'     => FILTER_DEFAULT,
+        'order'       => FILTER_SANITIZE_STRING,
+        'length'      => FILTER_SANITIZE_STRING,
     ),
     'editUDAiml' => array(
         'page' => FILTER_SANITIZE_STRING,

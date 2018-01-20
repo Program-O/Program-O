@@ -275,7 +275,7 @@ function insertAIML()
             ':topic' =>$topic,
             ':filename' =>$filename,
         );
-        trigger_error(db_parseSQL($sql, $params));
+        db_parseSQL($sql, $params);
         $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows > 0)
