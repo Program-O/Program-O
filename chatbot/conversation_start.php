@@ -252,12 +252,11 @@ if (!empty($say)) {
     $display = $convoArr['send_to_user'];
     $time_start = $convoArr['time_start'];
     unset($convoArr['nounList']);
-    $final_convoArr = $convoArr;
 }
 else
 {
     $convoArr = intialise_convoArray($convoArr);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation intialised waiting user", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation initialized, awaiting user", 2);
     $convoArr['send_to_user'] = 'User input not detected.';
     $cva = print_r($convoArr, true);
     //error_log("Convo Array:\n$cva", 3, _LOG_PATH_ . 'convoArr.txt');

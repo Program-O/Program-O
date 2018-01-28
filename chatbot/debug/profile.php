@@ -24,6 +24,7 @@
   $debugEntries = explode("-----------------------", $fileContents);
   array_walk($debugEntries, function (& $val, & $idx) {$val = trim($val);});
   $profileArray = array();
+  $total_elapsed_time = 0;
   foreach ($debugEntries as $index => $entry) {
     // parse timings and collect variables
     @list($timings, $functions, $discard) = explode(PHP_EOL, $entry);
@@ -31,6 +32,9 @@
     $newtimings = preg_replace($timingsSepRegEx, '~', $timings);
     @list($dateTime, $et) = explode('~', $newtimings);
     @list ($date, $time) = explode(' ', $dateTime);
+    $calc_et = str_replace(' milliseconds', '', $et);
+    $fvet = floatval($calc_et);
+    $total_elapsed_time += $fvet;
 
     // parse functions and collect variables
     $functions = trim($functions, '[]'); // remove square brackets around the line
@@ -48,11 +52,11 @@
   usort($profileArray,'sort_et');
   echo
     "This profiler script gathers all of the information from the debug file you've selected and sorts it by the amount of elapsed
-time that each entry has taken in decending order. It then displays the information as an array, listing things like filename,
+time that each entry has taken in descending order. It then displays the information as an array, listing things like filename,
 the name of the function that was executed, the line number of the debug call, and what data was being presented. This will aid
 in troubleshooting performance bottlenecks by showing which actions are taking the longest.
 
-Here is the array of data:
+Here is the array of data ({$total_elapsed_time} milliseconds):
 ";
   print_r($profileArray);
 

@@ -485,49 +485,18 @@ function parse_get_tag($convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a GET tag. Oh, and getting a sandwich while I\'m at it.', 2);
     global $dbConn, $dbn, $remember_up_to;
-
-    $response = '';
-    $bot_id = $convoArr['conversation']['bot_id'];
-    $user_id = $convoArr['conversation']['user_id'];
-    $var_name = $element->attributes()->name;
-    $var_name = ($var_name == '*') ? $convoArr['aiml']['stars'][1] : $var_name;
-
+    $stars = $convoArr['aiml']['stars'];
+    $client_properties = $convoArr['client_properties'];
+    $cpKeys = array_keys($client_properties);
+    $var_name = (string)$element->attributes()->name;
+    $var_name = ($var_name == '*') ? $stars[1] : $var_name;
     for ($n = 2; $n <= $remember_up_to; $n++) # index multiple star values
     {
-        $var_name = ($var_name == "*$n") ? $convoArr['aiml']['stars'][$n] : $var_name;
+        $var_name = ($var_name == "*$n") ? $stars[$n] : $var_name;
     }
-
-    if (empty ($var_name))
-    {
-        $response = 'undefined';
-    }
-
-    if (empty ($response))
-    {
-        /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = :user_id AND `bot_id` = :bot_id AND `name` = :var_name;";
-        $params = array(
-            ':bot_id' => $bot_id,
-            ':user_id' => $user_id,
-            ':var_name' => $var_name
-        );
-        $debugSQL = db_parseSQL($sql, $params);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the DB for $var_name - sql:\n$debugSQL", 3);
-
-        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
-
-        if (($row) && (count($row) > 0))
-        {
-            $response = $row['value'];
-        }
-        else {
-            $response = ($var_name == 'name') ? $convoArr['conversation']['unknown_user'] : 'undefined';
-        }
-
-    }
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for $var_name is $response.", 4);
-
-    return $response;
+    $out = 'undefined';
+    if (in_array($var_name, $cpKeys)) $out = $client_properties[$var_name];
+    return $out;
 }
 
 /**
@@ -543,110 +512,15 @@ function parse_set_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing the SET tag.', 2);
     global $dbConn, $dbn, $user_name, $remember_up_to;
-
     $var_value = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $bot_id = $convoArr['conversation']['bot_id'];
-    $user_id = $convoArr['conversation']['user_id'];
     $var_name = (string)$element->attributes()->name;
     $var_name = ($var_name == '*') ? $convoArr['aiml']['stars'][1] : $var_name;
-
     for ($n = 2; $n <= $remember_up_to; $n++) # index multiple star values
     {
         $var_name = ($var_name == "*$n") ? $convoArr['aiml']['stars'][$n] : $var_name;
     }
-    $vn_type = gettype($var_name);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "var_name = $var_name and is type: $vn_type", 4);
-
-    if ($var_name == 'name')
-    {
-        $convoArr['client_properties'][$var_name] = $var_value;
-        $user_name = $var_value;
-        $escaped_var_value = $var_value;
-
-        /** @noinspection SqlDialectInspection */
-        $sql = "UPDATE `$dbn`.`users` SET `user_name` = :escaped_var_value WHERE `id` = :user_id;";
-        $params = array(
-            ':user_id' => $user_id,
-            ':escaped_var_value' => $escaped_var_value
-        );
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Updating user name in the DB. SQL:\n$sql", 3);
-
-        $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
-
-        /** @noinspection SqlDialectInspection */
-        $sql = "SELECT `user_name` FROM `$dbn`.`users` WHERE `id` = :user_id limit 1;";
-        $params = array(':user_id' => $user_id);
-
-        $debugSQL = db_parseSQL($sql, $params);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the users table to see if the value has changed. - SQL:\n$debugSQL", 3);
-
-        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
-        $rowCount = count($row);
-
-        if ($rowCount != 0)
-        {
-            $tmp_name = $row['user_name'];
-            runDebug(__FILE__, __FUNCTION__, __LINE__, "The value for the user's name is $tmp_name.", 4);
-        }
-
-    }
-    else {
-        $convoArr['client_properties'][$var_name] = $var_value;
-    }
-
-    $lc_var_name = _strtolower($var_name);
-
-    if ($lc_var_name == 'topic')
-    {
-        $convoArr['topic'][1] = $var_value;
-    }
-
-    /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `value` FROM `$dbn`.`client_properties` WHERE `user_id` = :user_id AND `bot_id` = :bot_id AND `name` = :var_name;";
-    $params = array(
-        ':user_id'  => $user_id,
-        ':bot_id'   => $bot_id,
-        ':var_name' => $var_name
-    );
-    $debugSQL = db_parseSQL($sql, $params);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking the client_properties table for the value of $var_name. - SQL:\n$debugSQL", 3);
-
-    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
-    $rowCount = count($result);
-
-    /** @noinspection PhpSillyAssignmentInspection */
-    $var_name = $var_name;
-    $var_name = str_replace("'", "\'", $var_name);
-
-    /** @noinspection PhpSillyAssignmentInspection */
-    $var_value = $var_value;
-    $var_value = str_replace("'", "\'", $var_value);
-
-    if ($rowCount == 0)
-    {
-        /** @noinspection SqlDialectInspection */
-        $sql = "INSERT INTO `$dbn`.`client_properties` (`id`, `user_id`, `bot_id`, `name`, `value`)
-      VALUES (NULL, $user_id, $bot_id, '$var_name', '$var_value');";
-
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "No value found for $var_name. Inserting $var_value into the table.", 4);
-    }
-    else
-    {
-        /** @noinspection SqlDialectInspection */
-        $sql = "UPDATE `$dbn`.`client_properties` SET `value` = '$var_value' WHERE `user_id` = $user_id AND `bot_id` = $bot_id AND `name` = '$var_name';";
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Value found for $var_name. Updating the table to  $var_value.", 4);
-    }
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Saving to DB - SQL:\n$sql", 3);
-
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-
-    $rowCount = $sth->rowCount();
-    $response = $var_value;
     $convoArr['client_properties'][$var_name] = $var_value;
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Value for $var_name has been set. Returning $var_value.", 4);
-
-    return $response;
+    return $var_value;
 }
 
 /**
