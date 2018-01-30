@@ -128,10 +128,10 @@ if (!empty($say)) {
     // Chect to see if the user is clearing properties
     $lc_say = _strtolower($say);
 
+    $convoArr = read_from_session();
     if ($lc_say == 'clear properties' || $lc_say == ':reset bot') {
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Clearing client properties and starting over.", 4);
 
-        $convoArr = read_from_session();
         $_SESSION = array();
         $user_id = (isset($convoArr['conversation']['user_id'])) ? $convoArr['conversation']['user_id'] : -1;
 
@@ -198,7 +198,6 @@ if (!empty($say)) {
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $bot_id . "\nFormat: " . $form_vars['format'], 2);
     //get the stored vars
-    $convoArr = read_from_session();
 
     if (!empty($form_vars['name'])) {
         $convoArr['conversation']['user_name'] = $user_name = $form_vars['name'];
