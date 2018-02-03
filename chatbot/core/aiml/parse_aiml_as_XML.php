@@ -352,6 +352,39 @@ function parse_thatstar_tag($convoArr, $element, $parentName, $level)
 }
 
 /**
+ * Parses the AIML <topicstar> tag
+ *
+ * @param array $convoArr
+ * @param SimpleXMLElement $element
+ * @param string $parentName
+ * @param int $level
+ * @return array
+ */
+function parse_topicstar_tag($convoArr, $element, $parentName, $level)
+{
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a TOPICSTAR tag.', 2);
+    $response = array();
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "parse_topicstar_tag called from the $parentName tag at level $level. element = " . $element->asXML(), 4);
+    $attributes = $element->attributes();
+
+    if ($attributes->count() != 0)
+    {
+        $index = $element->attributes()->index;
+    }
+    else {
+        $index = 1;
+    }
+
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "topicstar index = $index.", 4);
+    $star = $convoArr['topic_star'][(int)$index];
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$star' to the response array.", 4);
+    $response[] = $star;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Index value = $index, topicstar value = $star", 4);
+
+    return $response;
+}
+
+/**
  * Parses the AIML <date> tag
  *
  * @param array $convoArr

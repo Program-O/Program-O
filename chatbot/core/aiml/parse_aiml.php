@@ -359,20 +359,18 @@ function set_wildcards($convoArr, $pattern, $type)
     // Set that stars (match against just the first instance of that for now - need to work out something for all instances, though)
     $aiml_thatpattern = $convoArr['aiml']['thatpattern'];
     $tp = trim($aiml_thatpattern);
-    $tp = str_replace("+", "\+", $tp);
-    /*
-        $tp = str_replace("*", "(.*)", $tp);
-        $tp = str_replace("_", "(.*)", $tp);
-    */
+    $tp = str_replace("+", "+", $tp);
     $tp = str_replace(" * ", " (\S*) ", $tp);
     $tp = str_replace(" _ ", " (\S*) ", $tp);
     $tp = str_replace("* ", "(\S*) ", $tp);
     $tp = str_replace("_ ", "(\S*) ", $tp);
-    $tp = str_replace(" *", " (.*)", $tp);
-    $tp = str_replace(" _", " (.*)", $tp);
-    $tp = str_replace("*", "(.*)", $tp);
-    $tp = str_replace("_", "(.*)", $tp);
-    $thatpattern_wildcards = str_replace("_", "(.*)?", str_replace("*", "(.*)?", $aiml_thatpattern));
+    $tp = str_replace(" ", " (.)", $tp);
+    $tp = str_replace(" ", " (.)", $tp);
+    $tp = str_replace("", "(.*)", $tp);
+    $tp = str_replace("", "(.)", $tp);
+    $tp = str_replace("(\S(.))", "(.)", $tp);
+    $tp = str_replace("(.(.))", "(.)", $tp);
+    $thatpattern_wildcards = str_replace("_", "(.)?", str_replace("", "(.)?", $aiml_thatpattern));
 
     if ($thatpattern_wildcards != $aiml_thatpattern)
     {
@@ -396,6 +394,49 @@ function set_wildcards($convoArr, $pattern, $type)
         }
         else {
             runDebug(__FILE__, __FUNCTION__, __LINE__, "Something is not right here.", 2);
+        }
+    }
+
+    $aiml_topic = $convoArr['aiml']['topic'];
+    if (!empty($aiml_topic))
+    {
+        $top = trim($aiml_topic);
+        $top = str_replace("+", "+", $top);
+        $top = str_replace(" * ", " (\S*) ", $top);
+        $top = str_replace(" _ ", " (\S*) ", $top);
+        $top = str_replace("* ", "(\S*) ", $top);
+        $top = str_replace("_ ", "(\S*) ", $top);
+        $top = str_replace(" ", " (.)", $top);
+        $top = str_replace(" ", " (.)", $top);
+        $top = str_replace("", "(.*)", $top);
+        $top = str_replace("", "(.)", $top);
+        $top = str_replace("(\S(.))", "(.)", $top);
+        $top = str_replace("(.(.))", "(.)", $top);
+        $topic_wildcards = str_replace("_", "(.)?", str_replace("", "(.)?", $aiml_topic));
+
+        if ($topic_wildcards != $aiml_topic)
+        {
+            runDebug(__FILE__, __FUNCTION__, __LINE__, "We have topic stars to process!", 2);
+            $topic = $convoArr['topic'][1];
+            $checkagainst = implode_recursive(' ', $topic, __FILE__, __FUNCTION__, __LINE__);
+            runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking '$top' against '$checkagainst'.", 2);
+
+            if (preg_match_all("~$top~si", $checkagainst, $matches)) #if (preg_match("~$top~si", $checkagainst, $matches))
+            {
+                runDebug(__FILE__, __FUNCTION__, __LINE__, "Current TOPIC matches:\n" . print_r($matches, true), 2);
+
+                for ($i = 1; $i < count($matches); $i++)
+                {
+                    $curStar = trim($matches[$i][0]);
+                    $curStar = preg_replace('/[[:punct:]]/uis', ' ', $curStar);
+                    $curIndex = $i;
+                    runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding $curStar to the topic stack.", 2);
+                    $convoArr['topic_star'][$i] = $curStar;
+                }
+            }
+            else {
+                runDebug(__FILE__, __FUNCTION__, __LINE__, "Something is not right here.", 2);
+            }
         }
     }
 
