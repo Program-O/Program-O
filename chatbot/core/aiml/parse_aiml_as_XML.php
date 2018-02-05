@@ -343,7 +343,7 @@ function parse_thatstar_tag($convoArr, $element, $parentName, $level)
     }
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "thatstar index = $index.", 4);
-    $star = $convoArr['that_star'][(int)$index];
+    $star = $convoArr['aiml']['that_stars'][(int)$index];
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$star' to the response array.", 4);
     $response[] = $star;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Index value = $index, thatstar value = $star", 4);
@@ -376,7 +376,7 @@ function parse_topicstar_tag($convoArr, $element, $parentName, $level)
     }
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "topicstar index = $index.", 4);
-    $star = $convoArr['topic_star'][(int)$index];
+    $star = $convoArr['aiml']['topic_stars'][(int)$index];
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$star' to the response array.", 4);
     $response[] = $star;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Index value = $index, topicstar value = $star", 4);
