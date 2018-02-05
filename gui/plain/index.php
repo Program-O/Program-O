@@ -33,7 +33,7 @@ $format = (!empty($form_vars['format'])) ? _strtolower($form_vars['format']) : '
 
 if (ERROR_DEBUGGING)
 {
-    $convo_id = 'DEBUG'; // Hard-code the convo_id during debugging
+    $convo_id = 'DEBUG';
     $debug_content = (!empty($form_vars)) ? file_get_contents(_DEBUG_PATH_ . "{$convo_id}.txt") : '';
     $debug_div = <<<endDebugDiv
 

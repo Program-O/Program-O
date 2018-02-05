@@ -128,10 +128,10 @@ if (!empty($say)) {
     // Chect to see if the user is clearing properties
     $lc_say = _strtolower($say);
 
+    $convoArr = read_from_session();
     if ($lc_say == 'clear properties' || $lc_say == ':reset bot') {
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Clearing client properties and starting over.", 4);
 
-        $convoArr = read_from_session();
         $_SESSION = array();
         $user_id = (isset($convoArr['conversation']['user_id'])) ? $convoArr['conversation']['user_id'] : -1;
 
@@ -198,7 +198,6 @@ if (!empty($say)) {
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $bot_id . "\nFormat: " . $form_vars['format'], 2);
     //get the stored vars
-    $convoArr = read_from_session();
 
     if (!empty($form_vars['name'])) {
         $convoArr['conversation']['user_name'] = $user_name = $form_vars['name'];
@@ -252,12 +251,11 @@ if (!empty($say)) {
     $display = $convoArr['send_to_user'];
     $time_start = $convoArr['time_start'];
     unset($convoArr['nounList']);
-    $final_convoArr = $convoArr;
 }
 else
 {
     $convoArr = intialise_convoArray($convoArr);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation intialised waiting user", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation initialized, awaiting user", 2);
     $convoArr['send_to_user'] = 'User input not detected.';
     $cva = print_r($convoArr, true);
     //error_log("Convo Array:\n$cva", 3, _LOG_PATH_ . 'convoArr.txt');

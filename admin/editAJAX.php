@@ -188,7 +188,7 @@ function runSearch()
 function updateAIML()
 {
     global $form_vars;
-    if(ERROR_DEBUGGING) trigger_error('Form vars:' . print_r($form_vars, true));
+    //if(ERROR_DEBUGGING) trigger_error('Form vars:' . print_r($form_vars, true));
     $template = trim($form_vars['template']);
     $filename = trim($form_vars['filename']);
     $pattern = _strtoupper(trim($form_vars['pattern']));
@@ -275,7 +275,7 @@ function insertAIML()
             ':topic' =>$topic,
             ':filename' =>$filename,
         );
-        db_parseSQL($sql, $params);
+        //trigger_error(db_parseSQL($sql, $params));
         $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows > 0)
