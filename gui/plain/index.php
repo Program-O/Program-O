@@ -21,7 +21,8 @@ if (!file_exists('../../config/global_config.php'))
 require_once('../../config/global_config.php');
 /** @noinspection PhpIncludeInspection */
 require_once('../../chatbot/conversation_start.php');
-
+$debug_div = '';
+$hideSP = '';
 $get_vars = (!empty($_GET)) ? filter_input_array(INPUT_GET) : array();
 $post_vars = (!empty($_POST)) ? filter_input_array(INPUT_POST) : array();
 $form_vars = array_merge($post_vars, $get_vars); // POST overrides and overwrites GET
@@ -30,6 +31,16 @@ $say = (!empty($form_vars['say'])) ? $form_vars['say'] : '';
 $convo_id = session_id();
 $format = (!empty($form_vars['format'])) ? _strtolower($form_vars['format']) : 'html';
 
+if (ERROR_DEBUGGING)
+{
+    $convo_id = 'DEBUG'; // Hard-code the convo_id during debugging
+    $debug_content = (!empty($form_vars)) ? file_get_contents(_DEBUG_PATH_ . "{$convo_id}.txt") : '';
+    $debug_div = <<<endDebugDiv
+
+<div id="debugDiv" placeholder="debug content">Current Debug File:\n\n$debug_content</div>
+endDebugDiv;
+    $hideSP = 'display: none;';
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -57,7 +68,22 @@ $format = (!empty($form_vars['format'])) ? _strtolower($form_vars['format']) : '
             border: 3px inset #666;
             margin-left: auto;
             margin-right: auto;
+            margin-bottom: 1em;
             padding: 5px;
+            box-sizing: border-box;
+        }
+        #debugDiv {
+            width: 90%;
+            min-height: 1.2em;
+            max-height: 55vh;
+            border: 3px inset #666;
+            margin-left: auto;
+            margin-right: auto;
+            white-space: pre;
+            font-family: "Lucida Console", Monaco, monospace;
+            font-size: large;
+            padding: 1em;
+            overflow: auto;
         }
 
         #input {
@@ -78,7 +104,9 @@ $format = (!empty($form_vars['format'])) ? _strtolower($form_vars['format']) : '
             box-shadow: 2px 2px 2px 0 #808080;
             padding: 5px;
             border-radius: 5px;
+            <?php echo $hideSP ?>
         }
+
 
         #convo_id {
             position: absolute;
@@ -91,6 +119,7 @@ $format = (!empty($form_vars['format'])) ? _strtolower($form_vars['format']) : '
             padding: 5px;
             border-radius: 5px;
         }
+
     </style>
 </head>
 <body onload="document.getElementById('say').focus()">
@@ -111,6 +140,7 @@ $format = (!empty($form_vars['format'])) ? _strtolower($form_vars['format']) : '
 <div id="responses">
     <?php echo $display . '<div id="end">&nbsp;</div>' . PHP_EOL ?>
 </div>
+<?php echo $debug_div ?>
 <div id="shameless_plug">
     To get your very own chatbot, visit <a href="http://www.program-o.com">program-o.com</a>!
 </div>
