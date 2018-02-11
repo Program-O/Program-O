@@ -793,7 +793,7 @@ function get_client_property($convoArr, $name)
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for $name. SQL:\n$sql", 3);
 
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
-    $rowCount = count($row);
+    $rowCount = $row ? count($row) : 0;
 
     if ($rowCount != 0)
     {

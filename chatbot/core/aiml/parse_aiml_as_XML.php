@@ -846,7 +846,7 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
                 runDebug(__FILE__, __FUNCTION__, __LINE__, 'Something went wrong with parsing the CONDITION tag. Returning the error response.', 1);
                 return $error_response;
         }
-        $pick = (normalize_text($condition_value) == normalize_text($test_value)) ? $element : '';
+        $pick = (normalize_text($condition_value) == normalize_text($test_value) || $condition_value == '*' && $test_value != 'undefined') ? $element : '';
     }
     elseif (array_key_exists('name', $attributesArray)) // this ~SHOULD~ just trigger if the NAME value is present, and ~NOT~ NAME and (VALUE|CONTAINS|EXISTS)
     {
