@@ -291,6 +291,7 @@ function set_wildcards($convoArr, $type)
         $convoArr['aiml']['stars'] = array();
         $convoArr['aiml']['that_stars'] = array();
         $convoArr['aiml']['topic_stars'] = array();
+        $convoArr['aiml']['srai_input'] = $convoArr['aiml']['pattern'];
     }
 
     // Set pattern wildcards
@@ -306,7 +307,7 @@ function set_wildcards($convoArr, $type)
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, "We have pattern stars to process!", 2);
         if (!isset ($convoArr['aiml']['user_raw'])) $convoArr['aiml']['user_raw'] = normalize_text($convoArr['aiml']['lookingfor'], false);
-        $checkAgainst = ($type == 'normal') ? $convoArr['aiml']['user_raw'] : $convoArr['aiml']['srai_input'];
+        $checkAgainst = ($type == 'normal') ? $convoArr['aiml']['user_raw'] : normalize_text($convoArr['aiml']['lookingfor'], false);
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking pattern '$ap' against '$checkAgainst'.", 2);
         if (preg_match_all("~{$ap}$~siuU", $checkAgainst, $matches))
         {

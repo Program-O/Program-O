@@ -731,7 +731,6 @@ function parse_srai_tag(&$convoArr, $element, $parentName, $level)
 
     //$srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $convoArr['aiml']['srai_input'] = $srai;
     $srai_new = (strstr($elementXML, '<star') !== false) ?
         preg_replace($starArray, '*', $elementXML) :
         $srai;
@@ -741,7 +740,10 @@ function parse_srai_tag(&$convoArr, $element, $parentName, $level)
 
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai_new.txt", print_r($srai_new, true) . "\n", FILE_APPEND);
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai.txt", print_r($srai, true) . "\n", FILE_APPEND);
-    $convoArr = set_wildcards($convoArr, $srai_new, 'srai');
+    $convoArr['aiml']['lookingfor'] = $srai;
+    $convoArr['aiml']['srai_input'] = $srai_new;
+    $convoArr['aiml']['pattern'] = $srai_new;
+    $convoArr = set_wildcards($convoArr, 'srai');
     $response = run_srai($convoArr, $convoArr['aiml']['srai_input']);
 
     //$response = run_srai($convoArr, $srai);
