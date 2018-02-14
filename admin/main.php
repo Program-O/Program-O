@@ -10,6 +10,11 @@
  * DETAILS: Displays the "Home"  section of the admin page
  ***************************************/
 
+require_once(_LIB_PATH_ . 'class.Parsedown.php');
+$pd = new Parsedown();
+$readmeRaw = file_get_contents(_BASE_PATH_ . 'README.md');
+$readme = $pd->text($readmeRaw);
+
 $noRightNav     = $template->getSection('NoRightNav');
 $logo           = $template->getSection('Logo');
 $topNav         = $template->getSection('TopNav');
@@ -42,4 +47,7 @@ $mainContent    = <<<endMain
           use the links above or to the left to perform administrative tasks,
           as needed.
         </p>
+        <div id="readMe">[readMe]</div>
 endMain;
+
+$mainContent = str_replace('[readMe]', $readme, $mainContent);

@@ -38,7 +38,7 @@ $dbConn = db_open();
 // Collect system specs for the first debug message
 
 $versionCheckSQL = 'select version();';
-$result = db_fetch($versionCheckSQL);
+$result = db_fetch($versionCheckSQL, null, __FILE__, __FUNCTION__, __LINE__);
 $mySQL_version = $result['version()'];
 $pgoVersion = VERSION;
 $phpVersion = phpversion();
@@ -55,6 +55,7 @@ $firstDebugMessage = "Conversation starting. Current system specs:
 
 //leave this first debug call in as it wipes any existing file for this session
 runDebug(__FILE__, __FUNCTION__, __LINE__, $firstDebugMessage, 0);
+runDebug(__FILE__, __FUNCTION__, __LINE__, 'Fomenting Chaos!', 0);
 //load all the chatbot functions
 /** @noinspection PhpIncludeInspection */
 include_once(_BOTCORE_PATH_ . "aiml" . $path_separator . "load_aimlfunctions.php");
@@ -124,6 +125,8 @@ $convo_id = session_id();
 runDebug(__FILE__, __FUNCTION__, __LINE__, "Debug level: $debug_level" . PHP_EOL . "session ID = $convo_id", 0);
 
 //if the user has said something
+save_file(_DEBUG_PATH_ . 'conversation_start.say.txt', print_r($say, true));
+runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation continuing. User said '{$say}'.", 4);
 if (!empty($say)) {
     // Chect to see if the user is clearing properties
     $lc_say = _strtolower($say);

@@ -10,11 +10,11 @@
  ***************************************/
 
 //load the word censor functions
-include("custom_tags/custom_tags.php");
-include("word_censor/word_censor.php");
-include('spell_checker/spell_checker.php');
-include("parseBBCode/parseBBCode.php"); // A new addon to allow parsing of output that's consistent with BBCode tags
-//include("checkForBan/checkForBan.php"); // A new addon for verifying that a user has not been banned by IP address
+require_once("custom_tags/custom_tags.php");
+require_once("word_censor/word_censor.php");
+require_once('spell_checker/spell_checker.php');
+require_once("parseBBCode/parseBBCode.php"); // A new addon to allow parsing of output that's consistent with BBCode tags
+//require_once("checkForBan/checkForBan.php"); // A new addon for verifying that a user has not been banned by IP address
 
 runDebug(__FILE__, __FUNCTION__, __LINE__, "Loading addons", 4);
 

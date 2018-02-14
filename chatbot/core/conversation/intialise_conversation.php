@@ -439,24 +439,46 @@ function log_conversation($convoArr)
 
     $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
-    $cpSQL = <<<endSQL
+/* TODO fix duplication issue */
+    # check to see if there is already a setting in the table
+
+    $insertSQL = <<<endSQL
 insert into `client_properties`
     (`id`, `user_id`, `bot_id`, `name`, `value`)
-    values(null, :user_id, :bot_id, :name, :value)
-    on duplicate key update value=:value;
+    values(null, :user_id, :bot_id, :name, :value);
 endSQL;
+    $updateSQL = 'update `client_properties` set value = :value where `bot_id` = :bot_id and `user_id` = :user_id and `name` = :name;';
     $client_properties = $convoArr['client_properties'];
-    $params = [];
-    foreach ($client_properties as $key => $value)
+    //save_file(_LOG_PATH_ . 'client_properties.txt', print_r($client_properties, true));
+    $insertParams = [];
+    $updateParams = [];
+    foreach ($client_properties as $name => $value)
     {
-        $params[] = array(
+        $params = array(
             ':bot_id' => $bot_id,
             ':user_id' => $user_id,
-            ':name' => $key,
+            ':name' => $name,
             ':value' => $value,
         );
+        $lookSQL = 'select id from client_properties where `bot_id` = :bot_id and `user_id` = :user_id and `name` = :name;';
+        $lookParams = $params;
+        unset($lookParams[':value']);
+        //ksort($lookParams);
+        $result = "foo!";
+        $result = db_fetch($lookSQL, $lookParams, __FILE__, __FUNCTION__, __LINE__);
+        save_file(_LOG_PATH_ . __FUNCTION__ . '.result.txt', print_r($result . PHP_EOL, true), true);
+        $debug_SQL = db_parseSQL($lookSQL, $lookParams);
+        save_file(_LOG_PATH_ . 'debug_SQL.txt', print_r($debug_SQL . PHP_EOL, true), true);
+        if (!empty($result))
+        {
+            $updateParams[] = $params;
+        }
+        else $insertParams[] = $params;
     }
-    $success = db_write($cpSQL, $params, true, __FILE__, __FUNCTION__, __LINE__);
+    //save_file(_LOG_PATH_ . 'insertParams.txt', print_r($insertParams, true));
+    //save_file(_LOG_PATH_ . 'updateParams.txt', print_r($updateParams, true));
+    $insertSuccess = (!empty($insertParams)) ? db_write($insertSQL, $insertParams, true, __FILE__, __FUNCTION__, __LINE__) : true;
+    $updateSuccess = (!empty($updateParams)) ? db_write($updateSQL, $updateParams, true, __FILE__, __FUNCTION__, __LINE__) : true;
     return $convoArr;
 }
 

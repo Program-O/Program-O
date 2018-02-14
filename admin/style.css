@@ -1392,3 +1392,9 @@ input.search-input-text, textarea.newCat {
     border-right: 1px solid black;
     padding-right: 0.55em
 }
+#readMe {
+    /*max-height: 78.2vh;
+    background-color: pink;*/
+    overflow: auto;
+    margin: 0;
+}
