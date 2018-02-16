@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.*
  * FILE: misc_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-22-2013
@@ -250,6 +250,16 @@ function pretty_print_r($var)
             $out = $var;
     }
     return trim($out, ",\n");
+}
+
+function pretty_print_XML($element)
+{
+        $dom = dom_import_simplexml($element);
+        $dom = new DOMDocument("1.0");
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput = true;
+        $dom->loadXML($element->asXML());
+        return $dom->saveXML();
 }
 
 function clean_inputs($allowed_vars = null)

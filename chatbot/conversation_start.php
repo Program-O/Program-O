@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.*
  * FILE: chatbot/conversation_start.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -38,7 +38,7 @@ $dbConn = db_open();
 // Collect system specs for the first debug message
 
 $versionCheckSQL = 'select version();';
-$result = db_fetch($versionCheckSQL);
+$result = db_fetch($versionCheckSQL, null, __FILE__, __FUNCTION__, __LINE__);
 $mySQL_version = $result['version()'];
 $pgoVersion = VERSION;
 $phpVersion = phpversion();
@@ -71,7 +71,6 @@ runDebug(__FILE__, __FUNCTION__, __LINE__, "Loaded all Includes", 4);
 
 //initialise globals
 $convoArr = array();
-//$convoArr = intialise_convoArray($convoArr);
 $new_convo_id = false;
 $old_convo_id = false;
 $say = '';
@@ -98,7 +97,6 @@ $form_vars = array_merge((array)$form_vars_get, (array)$form_vars_post);
 
 if (!isset($form_vars['say']))
 {
-    //error_log('Empty input! form vars = ' . print_r($form_vars, true) . PHP_EOL, 3, _LOG_PATH_ . 'debug_formvars.txt');
     $form_vars['say'] = '';
 }
 
@@ -124,6 +122,7 @@ $convo_id = session_id();
 runDebug(__FILE__, __FUNCTION__, __LINE__, "Debug level: $debug_level" . PHP_EOL . "session ID = $convo_id", 0);
 
 //if the user has said something
+runDebug(__FILE__, __FUNCTION__, __LINE__, "Conversation continuing. User said '{$say}'.", 4);
 if (!empty($say)) {
     // Chect to see if the user is clearing properties
     $lc_say = _strtolower($say);

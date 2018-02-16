@@ -709,6 +709,11 @@ between the start and end section tags are the only parts of the template that a
             }
 
             (logoStatus === 'Show') ? ShowLogo() : HideLogo();
+            var mc_height = $('#main_content').height();
+            var readMe = $('#readMe');
+            var rm_top = readMe.position().top;
+            var rm_height = mc_height - rm_top;
+            readMe.height(rm_height);
 
             function ShowLogo() {
                 var body = document.body;

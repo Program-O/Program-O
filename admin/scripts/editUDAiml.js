@@ -1,7 +1,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.*
  * FILE: editUDAiml.js
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-11-2013

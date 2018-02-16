@@ -3,7 +3,7 @@
 /***************************************
  * www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.*
  * FILE: chatbot/core/aiml/parse_aiml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -291,11 +291,11 @@ function set_wildcards($convoArr, $type)
         $convoArr['aiml']['stars'] = array();
         $convoArr['aiml']['that_stars'] = array();
         $convoArr['aiml']['topic_stars'] = array();
-        $convoArr['aiml']['srai_input'] = $convoArr['aiml']['pattern'];
     }
-
+    save_file(_LOG_PATH_ . __FUNCTION__ . '.type.txt', $type . PHP_EOL, true);
     // Set pattern wildcards
-    $aiml_pattern = ($type == 'normal') ? trim($convoArr['aiml']['pattern']) : trim($convoArr['aiml']['srai_input']);
+    //$aiml_pattern = ($type == 'normal') ? trim($convoArr['aiml']['pattern']) : trim($convoArr['aiml']['srai_input']);
+    $aiml_pattern = trim($convoArr['aiml']['pattern']);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Setting Wildcards. Pattern = '$aiml_pattern'", 2);
     $aimlArr = $convoArr['aiml'];
     ksort($aimlArr,SORT_NATURAL | SORT_FLAG_CASE);
@@ -307,9 +307,9 @@ function set_wildcards($convoArr, $type)
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, "We have pattern stars to process!", 2);
         if (!isset ($convoArr['aiml']['user_raw'])) $convoArr['aiml']['user_raw'] = normalize_text($convoArr['aiml']['lookingfor'], false);
-        $checkAgainst = ($type == 'normal') ? $convoArr['aiml']['user_raw'] : normalize_text($convoArr['aiml']['lookingfor'], false);
+        $checkAgainst = ($type == 'normal') ? $convoArr['aiml']['user_raw'] : $convoArr['aiml']['srai_input'];
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking pattern '$ap' against '$checkAgainst'.", 2);
-        if (preg_match_all("~{$ap}$~siuU", $checkAgainst, $matches))
+        if (preg_match_all("~{$ap}~siuU", $checkAgainst, $matches))
         {
             runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($matches, true), 2);
             //save_file(_LOG_PATH_ . 'pattern_star.matches.txt', print_r($matches, true));
@@ -338,7 +338,7 @@ function set_wildcards($convoArr, $type)
             $that = $convoArr['that'][1];
             $checkAgainst = implode_recursive(' ', $that, __FILE__, __FUNCTION__, __LINE__);
             runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking thatpattern '$tp' against '$checkAgainst'.", 2);
-            if (preg_match_all("~{$tp}$~siuU", $checkAgainst, $matches))
+            if (preg_match_all("~{$tp}~siuU", $checkAgainst, $matches))
             {
                 //save_file(_LOG_PATH_ . 'that_star.matches.txt', print_r($matches, true));
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Current THAT matches:\n" . print_r($matches, true), 2);
@@ -371,7 +371,7 @@ function set_wildcards($convoArr, $type)
             $checkAgainst = implode_recursive(' ', $topic, __FILE__, __FUNCTION__, __LINE__);
             runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking topic '$topp' against '$checkAgainst'.", 2);
 
-            if (preg_match_all("~{$topp}$~siuU", $checkAgainst, $matches))
+            if (preg_match_all("~{$topp}~siuU", $checkAgainst, $matches))
             {
                 //save_file(_LOG_PATH_ . 'topic_star.matches.txt', print_r($matches, true));
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Current TOPIC matches:\n" . print_r($matches, true), 2);

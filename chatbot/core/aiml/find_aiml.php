@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.*
  * FILE: find_aiml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -767,19 +767,18 @@ function get_convo_var($convoArr, $index_1, $index_2 = '~NULL~', $index_3 = 1, $
  **/
 function get_client_property($convoArr, $name)
 {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Rummaging through the DB and stuff for a client property.', 2);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Looking for client property '$name'", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Rummaging through various locations for client property '{$name}'", 2);
     global $dbConn, $dbn;
 
     if (isset ($convoArr['client_properties'][$name]))
     {
         $value = $convoArr['client_properties'][$name];
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Found client property '$name' in the conversation array. Returning '$value'", 2);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Found client property '{$name}' in the conversation array. Returning '{$value}'", 2);
 
         return $convoArr['client_properties'][$name];
     }
 
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client property '$name' not found in the conversation array. Searching the DB.", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client property '{$name}' not found in the conversation array. Searching the DB.", 2);
 
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
@@ -789,11 +788,12 @@ function get_client_property($convoArr, $name)
         ':bot_id' => $bot_id,
         ':user_id' => $user_id,
     );
+    $rdSQL = db_parseSQL($sql, $params);
 
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for $name. SQL:\n$sql", 3);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for {$name}. SQL:\n{$rdSQL}", 3);
 
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
-    $rowCount = $row ? count($row) : 0;
+    $rowCount = (false !== $row) ? count($row) : 0;
 
     if ($rowCount != 0)
     {
@@ -1117,7 +1117,7 @@ function get_topic($convoArr)
         ':user_id' => $user_id,
     );
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
-    $num_rows = $row ? count($row) : 0;
+    $num_rows = count($row);
     $retval = ($num_rows == 0) ? '' : $row['value'];
 
     return $retval;

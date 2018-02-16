@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.*
  * FILE: library/PDO_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -76,6 +76,7 @@ function db_close($inPGO = true)
  */
 function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
 {
+    $fn = basename($file);
     global $dbConn;
     //error_log(print_r($dbConn, true), 3, _LOG_PATH_ . 'dbConn.txt');
     try
@@ -83,8 +84,6 @@ function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown'
         $sth = $dbConn->prepare($sql);
         ($params === null) ? $sth->execute() : $sth->execute($params);
         $out = $sth->fetch();
-
-        return $out;
     }
     catch (Exception $e)
     {
@@ -93,9 +92,30 @@ function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown'
 
         /** @noinspection PhpUndefinedVariableInspection */
         $psError = print_r($sth->errorInfo(), true);
-        if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, "An error was generated while extracting a row of data from the database in file $file at line $line, in the function $function - SQL:\n$sql\nPDO error: $pdoError\nPDOStatement error: $psError", 0);
-        return false;
+        if ($inPGO) {
+            $errSQL = db_parseSQL($sql, $params);
+            $errParams = print_r($params, true);
+            $eMessage = $e->getMessage();
+            $rdMsg = <<<endMsg
+An error was generated while extracting a row of data from the database. Relevant info:
+File: $file
+Function: $function
+Line #: $line
+Error Message: $eMessage
+SQL: $errSQL
+Parameters: $errParams
+PDO error: $pdoError
+PDOStatement error: $psError
+
+endMsg;
+            runDebug(__FILE__, __FUNCTION__, __LINE__, $rdMsg, 4);
+            $fn = basename($file);
+            $errLogPath = "{$fn}.{$function}.error.log";
+            error_log($rdMsg, 3, _LOG_PATH_ . $errLogPath);
+        }
+        $out = false;
     }
+    return $out;
 }
 
 /**
@@ -202,11 +222,9 @@ $eMessage;
 Parameters:
 $paramsText
 endMessage;
-$file = str_replace(DIRECTORY_SEPARATOR, '/', $file);
-$fpArray = explode('/', $file);
-$fn = array_pop($fpArray);
-$errLogPath = "{$fn}.{$function}.error.log";
 
+        $fn = basename($file);
+        $errLogPath = "{$fn}.{$function}.error.log";
         error_log($errorMessage, 3, _LOG_PATH_ . $errLogPath);
 
         $rdMessage = <<<endMessage

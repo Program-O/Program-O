@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.*
  * FILE: parse_aiml_as_xml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -731,18 +731,17 @@ function parse_srai_tag(&$convoArr, $element, $parentName, $level)
 
     //$srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+    $convoArr['aiml']['srai_input'] = $srai;
     $srai_new = (strstr($elementXML, '<star') !== false) ?
         preg_replace($starArray, '*', $elementXML) :
         $srai;
 
     $srai_new   = preg_replace('~<[\/]?text>~i', '', $srai_new);
     $srai_new   = preg_replace('~<[\/]?srai>~i', '', $srai_new);
+    $convoArr['aiml']['srai_input'] = $srai_new;
 
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai_new.txt", print_r($srai_new, true) . "\n", FILE_APPEND);
     //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai.txt", print_r($srai, true) . "\n", FILE_APPEND);
-    $convoArr['aiml']['lookingfor'] = $srai;
-    $convoArr['aiml']['srai_input'] = $srai_new;
-    $convoArr['aiml']['pattern'] = $srai_new;
     $convoArr = set_wildcards($convoArr, 'srai');
     $response = run_srai($convoArr, $convoArr['aiml']['srai_input']);
 
@@ -784,52 +783,88 @@ function parse_sr_tag($convoArr, $element, $parentName, $level)
 function parse_condition_tag($convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag.', 2);
-    global $error_response;
+    global $error_response, $remember_up_to;
 
+    $client_properties = $convoArr['client_properties'];
     $response = array();
     $attributes = (array)$element->attributes();
     $attributesArray = (isset($attributes['@attributes'])) ? $attributes['@attributes'] : array();
+    $stars = $convoArr['aiml']['stars'];
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Element attributes:' . print_r($attributesArray, true), 4);
     $attribute_count = count($attributesArray);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Element attribute count = $attribute_count", 4);
 
-    if ($attribute_count == 0) // Bare condition tag
+    // Bare condition tag
+    if ($attribute_count == 0)
     {
-        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with no attributes. XML = ' . $element->asXML(), 4);
+        $rdElement = pretty_print_XML($element);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with no attributes. XML = ' . $rdElement, 4);
 
-        $liNamePath = 'li[@name]';
-        $condition_xPath = '';
+        $choice_value = 'undefined';
+        $liNamePath = 'li[@name][@value]';
+        $mtLiPath = 'li[not(@*)]';
+        $picks = array();
+        $condition_xPath = '*/';
         $exclude = array();
         $choices = $element->xpath($liNamePath);
+        $default = $element->xpath($mtLiPath);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'choices = ' . print_r($choices, true), 2);
 
         foreach ($choices as $choice)
         {
-            $choice_name = (string)$choice['name'];
-
-            if (in_array($choice_name, $exclude)) {
-                continue;
+            $attr = $choice->attributes();
+            $name = (string)$attr->name;
+            $rdChoice = $choice->asXML();
+            runDebug(__FILE__, __FUNCTION__, __LINE__, "Current choice XML = {$rdChoice}", 2);
+            $client_property = (isset($client_properties[$name])) ? $client_properties[$name] : 'unset';
+            runDebug(__FILE__, __FUNCTION__, __LINE__, "Client Property to check: {$client_property}", 2);
+            $value = (string)$attr->value;
+            $elementValue =(isset($choice->text)) ? (string)$choice->text : (string)$choice;
+            if (strstr($value, '*'))
+            {
+                runDebug(__FILE__, __FUNCTION__, __LINE__, "This element has a star value = {$value}", 2);
+                $testValue = $value;
+                for($n = 1; $n <= count($stars); $n++)
+                {
+                    $test = ($n == 1) ? '*' : "*{$n}";
+                    runDebug(__FILE__, __FUNCTION__, __LINE__, "name = '{$name}', n = {$n}, testValue = '{$testValue}', value = '{$value}', test = '{$test}', string = '{$elementValue}', star = '{$stars[$n]}', cp val = '{$client_property}'\n", 2);
+                    if($testValue == $test)
+                    {
+                        if (isset($stars[$n]) && $stars[$n] == $client_property)
+                        {
+                            $picks[] = $choice;
+                            break 2;
+                        }
+                    }
+                }
             }
-
-            $exclude[] = $choice_name;
-            runDebug(__FILE__, __FUNCTION__, __LINE__, 'Client properties = ' . print_r($convoArr['client_properties'], true), 4);
-            $choice_value = trim(get_client_property($convoArr, $choice_name));
-            $condition_xPath .= "li[@name=\"$choice_name\"][@value=\"$choice_value\"]|";
+            if (!empty($value) && $client_property == $value) $picks[] = $choice;
         }
-
-        $condition_xPath .= 'li[not(@*)]';
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "xpath search = $condition_xPath", 4);
-        $pick_search = $element->xpath($condition_xPath);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Pick array = ' . print_r($pick_search, true), 4);
-        $pick_count = count($pick_search);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Pick count = $pick_count.", 4);
-        $pick = $pick_search[0];
+        switch (true)
+        {
+            case (!empty($picks)):
+                $pick = $picks[0];
+                break;
+            case (!empty($default)):
+                $pick = $default[0];
+                break;
+            default: $pick = '';
+        }
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Bare condition tag: pick = {$pick}", 2);
     }
-    elseif (array_key_exists('value', $attributesArray) or array_key_exists('contains', $attributesArray) or array_key_exists('exists', $attributesArray)) // condition tag with either VALUE, CONTAINS or EXISTS attributes
+
+    // Condition tag with name & value
+    elseif (array_key_exists('value', $attributesArray) or
+            array_key_exists('contains', $attributesArray) or
+            array_key_exists('exists', $attributesArray)) // condition tag with either VALUE, CONTAINS or EXISTS attributes
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with 2 attributes.', 4);
         $condition_name = (string)$element['name'];
-        $test_value = trim(get_client_property($convoArr, $condition_name));
+        //$test_value = trim(get_client_property($convoArr, $condition_name));
+        $test_value = (isset($convoArr['client_properties'][$condition_name])) ?
+            $convoArr['client_properties'][$condition_name] :
+            'undefined';
 
         switch (true)
         {
@@ -846,13 +881,26 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
                 runDebug(__FILE__, __FUNCTION__, __LINE__, 'Something went wrong with parsing the CONDITION tag. Returning the error response.', 1);
                 return $error_response;
         }
+        if (strstr($condition_value, '*'))
+        {
+            $condition_value = $stars[1];
+            //runDebug(__FILE__, __FUNCTION__, __LINE__, 'Putzo found a star!', 2);
+            for ($n = 1; $n <= $remember_up_to; $n++) # index multiple star values
+            {
+                $condition_value = ($condition_value == "*{$n}") ? $stars[$n] : $condition_value;
+            }
+            //runDebug(__FILE__, __FUNCTION__, __LINE__, "Putzo's star = {$condition_value}", 2);
+        }
         $pick = (normalize_text($condition_value) == normalize_text($test_value) || $condition_value == '*' && $test_value != 'undefined') ? $element : '';
     }
+
+    // Condition tag with name attribute
     elseif (array_key_exists('name', $attributesArray)) // this ~SHOULD~ just trigger if the NAME value is present, and ~NOT~ NAME and (VALUE|CONTAINS|EXISTS)
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with only the NAME attribute', 4);
         $condition_name = (string)$element['name'];
-        $test_value = trim(get_client_property($convoArr, $condition_name));
+        //$test_value = trim(get_client_property($convoArr, $condition_name));
+        $test_value = $convoArr['client_properties'][$condition_name];
 
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Looking for test value '$test_value'", 4);
         $path = "li[@value]|li[not(@*)]";

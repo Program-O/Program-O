@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.*
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -157,7 +157,7 @@ if ($curPage == 'login' && !empty($_SESSION['poadmin']['logged_in']))
 }
 
 $_SESSION['poadmin']['curPage'] = $curPage;
-($curPage != 'logout' || $curPage == 'login') ? include("{$curPage}.php") : false;
+($curPage != 'logout' || $curPage == 'login') ? require_once("{$curPage}.php") : false;
 
 $bot_format_link = (!empty($bot_format)) ? "&amp;format=$bot_format" : '';
 $curPage = (isset($curPage)) ? $curPage : 'main';
