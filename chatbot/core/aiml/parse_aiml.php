@@ -293,25 +293,22 @@ function set_wildcards($convoArr, $type)
         $convoArr['aiml']['topic_stars'] = array();
     }
     // Set pattern wildcards
-    //$aiml_pattern = ($type == 'normal') ? trim($convoArr['aiml']['pattern']) : trim($convoArr['aiml']['srai_input']);
     $aiml_pattern = trim($convoArr['aiml']['pattern']);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Setting Wildcards. Pattern = '$aiml_pattern'", 2);
+/* debugging code
     $aimlArr = $convoArr['aiml'];
     ksort($aimlArr,SORT_NATURAL | SORT_FLAG_CASE);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Current AIML array =" . print_r($aimlArr, true), 2);
-    //save_file(_LOG_PATH_ . 'convoArr.txt', print_r($convoArr, true));
+*/
     $ap = str_replace(array("*", "_"), "(.+)", $aiml_pattern);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "comparing patterns $ap and $aiml_pattern", 2);
     if ($ap != $aiml_pattern)
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, "We have pattern stars to process!", 2);
         if (!isset ($convoArr['aiml']['user_raw'])) $convoArr['aiml']['user_raw'] = normalize_text($convoArr['aiml']['lookingfor'], false);
-        $checkAgainst = ($type == 'normal') ? $convoArr['aiml']['user_raw'] : $convoArr['aiml']['srai_input'];
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking pattern '$ap' against '$checkAgainst'.", 2);
+        $checkAgainst = ($type == 'normal') ? $convoArr['aiml']['user_raw'] : $convoArr['aiml']['lookingfor'];
         if (preg_match_all("~{$ap}$~siuU", $checkAgainst, $matches))
         {
             runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($matches, true), 2);
-            //save_file(_LOG_PATH_ . 'pattern_star.matches.txt', print_r($matches, true));
             for ($i = 1; $i < count($matches); $i++)
             {
                 $curStar = trim($matches[$i][0]);
