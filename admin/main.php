@@ -16,7 +16,7 @@ $readMeRaw = file_get_contents(_BASE_PATH_ . 'README.md');
 $blobMaster = 'https://github.com/Program-O/Program-O/blob/master/';
 // fix or remove links
 $nul = preg_match_all('~(\[.*?\]\([^\n]*?\))~', $readMeRaw,$rmMatches);
-save_file(_LOG_PATH_ . 'matches.txt', print_r($rmMatches, true));
+//save_file(_LOG_PATH_ . 'matches.txt', print_r($rmMatches, true));
 foreach ($rmMatches[0] as $match){
     if (strstr($match, 'http://')) continue;
     $replace = str_replace('](', "]({$blobMaster}", $match);

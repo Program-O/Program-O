@@ -286,8 +286,6 @@ function updateBotSelection()
     {
         $repl = rtrim($repl, ',');
         $sql = str_replace('[repl]', $repl, $sql);
-        save_file(_LOG_PATH_ . 'select_bots.update.params.txt', print_r($params, true));
-        save_file(_LOG_PATH_ . 'select_bots.update.sql.txt', print_r($sql, true));
         $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows == 0)
