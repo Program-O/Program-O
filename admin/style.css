@@ -279,11 +279,6 @@ span.eightyPercent textarea.wide {
     text-align: center;
 }
 
-.clrFrmTDBottom {
-    vertical-align: bottom !important;
-    margin: 14px auto 0 auto !important;
-}
-
 .bold {
     font-weight: bold;
 }
@@ -315,9 +310,9 @@ span.eightyPercent textarea.wide {
     background-position: 1px 1px;
 }
 
-.errMsg {
+.errMsg, .wrnMsg {
     min-width: 250px;
-    max-width: 500px !important;
+    max-width: 33vw !important;
     min-height: 32px;
     max-height: 95%;
     width: auto;
@@ -337,10 +332,9 @@ span.eightyPercent textarea.wide {
     border-radius: 12px;
 }
 
-.dlLink {
-    margin-right: 1.5em;
-    float: left;
-    display: inline-block;
+.wrnMsg {
+    border: 3px outset #A0522D;
+    background-color: #F4A460;
 }
 
 .errMsgContent {
@@ -424,7 +418,7 @@ span.eightyPercent textarea.wide {
 }
 
 .userlist {
-    height: 80%;
+    height: 92%;
     overflow: auto;
     padding-left: 5px;
 }
@@ -623,7 +617,7 @@ span.eightyPercent textarea.wide {
     top: 160px;
     right: 25px;
     bottom: 70px;
-    width: 205px;
+    width: 250px;
     min-height: 25%;
     overflow: hidden;
     margin: 0;
@@ -687,7 +681,7 @@ span.eightyPercent textarea.wide {
     top: 160px;
     bottom: 70px;
     left: 250px;
-    right: 240px;
+    right: 285px;
     background-color: #FFFFCC;
     overflow: hidden;
     min-height: 25%;
@@ -978,11 +972,21 @@ div#AIML_List {
     background-color: #EDD;
 }
 
-.floatRight {width: 48%;}
+.floatRight {
+    /*  float: right;
+      clear: none;*/
+    width: 48%;
+}
 
-.floatLeft {width: 48%;}
+.floatLeft {
+    /*  float: left;
+      clear: none;*/
+    width: 48%;
+}
 
-table#AIML tbody td, table#SRAI_LOOKUP tbody td {position: relative;}
+table#AIML tbody td, table#SRAI_LOOKUP tbody td {
+    position: relative;
+}
 
 table.botForm {
     width: 99.5%;
@@ -1033,18 +1037,12 @@ table td#notes {
     clear: none;
 }
 
-.floatLeft {
-    float: left;
-    clear: none;
-}
-.tal {text-align: left;}
-
 #helpLink1 {
     float: left;
     margin-bottom: 10px;
 }
 
-td input, td select, td textarea {
+td input, td select {
     width: 95%;
     margin: 0 auto;
 }
@@ -1056,25 +1054,12 @@ td input[type="checkbox"], input[type="radio"], td select {
 
 .formTable {
     border: none;
-    width: 48%;/**/
+    width: 98%;
     margin: 10px auto;
     padding: 5px;
 }
 
 .formTable td {
-    border: none;
-    margin: 2px;
-    padding: 3px;
-}
-
-._formTable {
-    border: none;
-    width: 90%;/**/
-    margin: 20px auto;
-    padding: 5px;
-}
-
-._formTable td {
     border: none;
     margin: 2px;
     padding: 3px;
@@ -1118,21 +1103,7 @@ select#bot_id {
     position: absolute;
     top: 5px;
     left: 5px;
-    padding-top: 0.55em;
-}
-#script_version.horiz {
-    width: 38%;
-    overflow: hidden;
-    height: 1.2em;
-    font-size: 0.9em;
-    border-right: none;
-}
-
-
-#script_version div.horiz:last-of-type {
-    border-right: none;
-    padding-right: 0;
-    margin-right: 0;
+    display: none;
 }
 
 dl.codebox {
@@ -1225,6 +1196,9 @@ iframe {
 .delete-row:hover {
     background-color: red;
 }
+td.id {
+    position: relative;
+}
 
 .delete-row span.id_holder {
     display: block;
@@ -1274,9 +1248,10 @@ label {
 .cbCell {
     border: none;
     padding: 3px 12px;
-    width: 205px;
+    width: 20%;
     float: left;
     text-align: left;
+    margin: 0 0.5%;
 }
 
 .note {
@@ -1305,6 +1280,9 @@ input.search-input-text, textarea.newCat {
     height: 32px;
     background: url(images/del.png) no-repeat 50% 50%;
     cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 1em;
 }
 
 .w80 {
@@ -1338,61 +1316,58 @@ input.search-input-text, textarea.newCat {
     margin: 0 auto;
 }
 
-.w5 {width: 5%;}
-.w10 {width: 10%;}
-.w15 {width: 15%;}
-.w20 {width: 20%;}
-.w25 {width: 25%;}
-.w30 {width: 30%;}
-.w40 {width: 40%;}
-.w48 {width: 48%;}
-.w50 {width: 50%;}
-.w80 {width: 80%;}
-.w100 {width: 100%;}
+.w5 {
+    width: 5%;
+}
+
+.w10 {
+    width: 10%;
+}
+
+.w15 {
+    width: 15%;
+}
+
+.w20 {
+    width: 20%;
+}
+
+.w25 {
+    width: 25%;
+}
+
+.w30 {
+    width: 30%;
+}
+
+.w40 {
+    width: 40%;
+}
+
+.w50 {
+    width: 50%;
+}
+.btnClear {margin: auto 20px;}
 
 .editable {
     text-indent: 0;
-    padding: 3px 5px !important;
+    /*padding: 3px 5px !important;*/
 }
-.ext_true {
-    font-weight: bold;
-    color: #0C0;
+.tac {text-align: center;}
+
+#ChatLogForm {
+    margin-top: -25px;
 }
-.ext_false {
-    font-weight: bold;
-    color: #C00;
+#showing {margin: 5px 12px;}
+
+#Options input[type="checkbox"] {
+    float: none;
 }
-.odd {background-color: #FFE;}
-.even {background-color: #EEF;}
-.checklist {max-width: 50%;}
-#test {
-    position: absolute;
-    top: 147px;
-    right: 240px;
-    z-index: 200;
-    background-color: pink;
-    width: auto;
-    padding: 12px;
-    max-width: 50%;
-    overflow: auto;
+
+#Options td {
+    border-left: 1px solid black;
 }
-.taj {text-align: justify;}
-#AIML_UD td {
-    border-bottom: 0.5px solid gray;
-    border-right: 0.5px solid gray;
-}
-.vert {
-    display: block;
-    margin: 0.1em;
-}
-.horiz {
-    display: inline-block;
-    margin: 0.1em;
-    margin-right: 0.55em;
+
+#Options td:last-of-type {
     border-right: 1px solid black;
-    padding-right: 0.55em
-}
-#readMe {
-    overflow: auto;
-    margin: 0;
 }

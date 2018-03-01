@@ -38,7 +38,7 @@ $mainTitle      = 'Chat Demo';
  */
 function showChatFrame()
 {
-    global $template, $bot_name, $bot_id, $dbConn;
+    global $template, $bot_name, $bot_id;
 
     $qs = '?bot_id=' . $bot_id;
     /** @noinspection SqlDialectInspection */

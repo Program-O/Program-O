@@ -25,15 +25,16 @@ runDebug(__FILE__, __FUNCTION__, __LINE__, "Loading addons", 4);
  * @param $say
  * @return string
  */
-function run_pre_input_addons(&$convoArr, $say)
+function run_pre_input_addons($convoArr, $say)
 {
     global $format;
 
     $say = (USE_SPELL_CHECKER) ? run_spell_checker_say($say) : $say;
     //$convoArr = checkIP($convoArr);
     #if ($format == 'html') $say =  parseInput($say);
+    $convoArr['say'] = $say;
 
-    return $say;
+    return $convoArr;
 }
 
 /**
@@ -63,7 +64,7 @@ function run_post_response_useraddons($convoArr)
     if ($convoArr['send_to_user'] != $response) {
         $convoArr['send_to_user'] = $response;
     }
-    //$convoArr =  run_censor($convoArr);
+    $convoArr =  run_censor($convoArr);
     if ($format == 'html') {
         $convoArr = checkForParsing($convoArr);
     }

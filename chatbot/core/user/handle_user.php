@@ -37,7 +37,7 @@ function load_new_client_defaults($convoArr)
 function get_user_id($convoArr)
 {
     //db globals
-    global $dbConn, $dbn, $unknown_user;
+    global $dbn, $unknown_user;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Getting user ID.', 2);
 
     //get undefined defaults from the db
@@ -81,7 +81,7 @@ function intisaliseUser($convoArr)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Initializing user.', 2);
     //db globals
-    global $dbConn, $dbn, $bot_id, $unknown_user;
+    global $bot_id, $unknown_user;
     $convo_id = $convoArr['conversation']['convo_id'];
     $username = !empty($convoArr['conversation']['user_name']) ? $convoArr['conversation']['user_name'] : $unknown_user;
     $sr = "";
@@ -120,8 +120,6 @@ endSQL;
 
     $debugSQL = db_parseSQL($sql, $params);
 
-    //$sth = $dbConn->prepare($sql);
-    //$sth->execute();
     $numRows = db_write($sql, $params);
 
     $user_id = db_lastInsertId();
@@ -140,8 +138,6 @@ endSQL;
         ':bot_id'   => $bot_id,
         ':username' => $username,
     );
-    //$sth = $dbConn->prepare($sql);
-    //$sth->execute();
     $numRows = db_write($sql, $params);
 
 

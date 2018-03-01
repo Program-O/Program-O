@@ -88,7 +88,7 @@ function parse_math_tag($convoArr, simpleXMLElement $element, $parentName, $leve
     // do something here
     runDebug(__FILE__, __FUNCTION__, __LINE__, "String to process: $response_string", 4);
 
-    list($operator, $operand1, $operand2) = explode(' ', $response_string, 3);
+    list($operand1, $operator, $operand2) = explode(' ', $response_string, 3);
     $operatorArray = array('ADD', 'SUBTRACT', 'MULTIPLY', 'DIVIDE');
 
     switch (true)

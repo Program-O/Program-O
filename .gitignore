@@ -5,6 +5,7 @@
 !admin/downloads
 admin/downloads/*
 !admin/downloads/index.html
+admin/scripts/dataTables.js
 admin/scripts/old
 !admin/uploads
 admin/uploads/*

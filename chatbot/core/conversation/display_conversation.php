@@ -19,7 +19,7 @@
  **/
 function get_conversation_to_display($convoArr)
 {
-    global $dbConn, $dbn, $bot_name, $unknown_user;
+    global $dbn, $bot_name, $unknown_user;
     $orderedRows = array();
 
     $user_id = $convoArr['conversation']['user_id'];
@@ -116,6 +116,7 @@ function get_conversation($convoArr)
  **/
 function get_html($convoArr, $conversation)
 {
+    //$conversation = $convoArr['conversation'];
     if (!is_array($conversation))
     {
         $tmp = $conversation;

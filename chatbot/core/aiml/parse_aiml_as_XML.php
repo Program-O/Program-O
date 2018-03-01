@@ -309,7 +309,7 @@ function parse_star_tag($convoArr, $element, $parentName, $level)
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Current AIML Array:\n" . print_r($convoArr['aiml'], true), 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "star index = $index.", 4);
 
-    $star = $convoArr['aiml']['stars'][(int)$index];
+    $star = isset($convoArr['aiml']['stars'][(int)$index]) ? $convoArr['aiml']['stars'][(int)$index] : '';
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$star' to the response array.", 4);
     $response[] = $star;
@@ -517,7 +517,7 @@ function parse_random_tag($convoArr, $element, $parentName, $level)
 function parse_get_tag($convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a GET tag. Oh, and getting a sandwich while I\'m at it.', 2);
-    global $dbConn, $dbn, $remember_up_to;
+    global $remember_up_to;
     $stars = $convoArr['aiml']['stars'];
     $client_properties = $convoArr['client_properties'];
     $cpKeys = array_keys($client_properties);
@@ -544,7 +544,7 @@ function parse_get_tag($convoArr, $element, $parentName, $level)
 function parse_set_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing the SET tag.', 2);
-    global $dbConn, $dbn, $user_name, $remember_up_to;
+    global $dbn, $user_name, $remember_up_to;
     $var_value = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $var_name = (string)$element->attributes()->name;
     $var_name = ($var_name == '*') ? $convoArr['aiml']['stars'][1] : $var_name;
@@ -728,6 +728,7 @@ function parse_srai_tag(&$convoArr, $element, $parentName, $level)
     $starArray = array('~<star[ ]?/>~i', '~<star index="\d+"[ ]?\/>~');
     $elementXML = $element->asXML();
     $srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "SRAI parsed to {$srai}.", 2);
     $convoArr['aiml']['lookingfor'] = $srai;
     $convoArr = set_wildcards($convoArr, 'srai');
     $response = run_srai($convoArr, $convoArr['aiml']['lookingfor']);
@@ -785,7 +786,6 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
         $rdElement = pretty_print_XML($element);
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with no attributes. XML = ' . $rdElement, 4);
 
-        $choice_value = 'undefined';
         $liNamePath = 'li[@name][@value]';
         $mtLiPath = 'li[not(@*)]';
         $picks = array();
@@ -799,11 +799,11 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
         {
             $attr = $choice->attributes();
             $name = (string)$attr->name;
+            $value = (string)$attr->value;
             $rdChoice = $choice->asXML();
             runDebug(__FILE__, __FUNCTION__, __LINE__, "Current choice XML = {$rdChoice}", 2);
-            $client_property = (isset($client_properties[$name])) ? $client_properties[$name] : 'unset';
+            $client_property = (isset($client_properties[$name])) ? $client_properties[$name] : 'undefined';
             runDebug(__FILE__, __FUNCTION__, __LINE__, "Client Property to check: {$client_property}", 2);
-            $value = (string)$attr->value;
             $elementValue =(isset($choice->text)) ? (string)$choice->text : (string)$choice;
             if (strstr($value, '*'))
             {
@@ -823,6 +823,7 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
                     }
                 }
             }
+            runDebug(__FILE__, __FUNCTION__, __LINE__, "value = '{$value}', client property = '{$client_property}'.", 2);
             if (!empty($value) && $client_property == $value) $picks[] = $choice;
         }
         switch (true)
@@ -884,7 +885,7 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with only the NAME attribute', 4);
         $condition_name = (string)$element['name'];
         //$test_value = trim(get_client_property($convoArr, $condition_name));
-        $test_value = $convoArr['client_properties'][$condition_name];
+        $test_value = isset($convoArr['client_properties'][$condition_name]) ? $convoArr['client_properties'][$condition_name] : 'undefined';
 
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Looking for test value '$test_value'", 4);
         $path = "li[@value]|li[not(@*)]";
@@ -1214,8 +1215,6 @@ function parse_system_tag($convoArr, $element, $parentName, $level)
 function parse_learn_tag($convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a LEARN tag.', 2);
-    global $dbn, $dbConn;
-
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $convo_id = $convoArr['conversation']['convo_id'];
@@ -1223,35 +1222,41 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $sql = '';
     $failure = false;
     $category = $element->category;
-    $catXpath = $element->xpath('//eval');
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Category XML = ' . $category->asXML(), 2);
 
     // pull out the necessary info to save to the DB
 
     // pattern
     $pattern = $category->pattern;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'pattern XML = ' . $pattern->asXML(), 2);
     $patternEvalXpath = $pattern->xpath('//eval');
     $patternText = $pattern->asXML();
     $pattern2store = (!empty($patternEvalXpath)) ?
         quickParseEval($convoArr, $patternText, 'pattern', 0) :
         remove_text_tag($patternText, 'pattern');
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Evaluated pattern = {$pattern2store}.", 2);
     $params[':pattern'] = $pattern2store;
 
     // thatpattern
     $thatpattern = $category->that;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'thatpattern XML = ' . $thatpattern->asXML(), 2);
     $thatpatternEvalXpath = $thatpattern->xpath('//eval');
     $thatpatternText = $thatpattern->asXML();
     $thatpattern2store = (!empty($thatpatternEvalXpath)) ?
         quickParseEval($convoArr, $thatpatternText, 'that', 0) :
         remove_text_tag($thatpatternText, 'that');
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Evaluated thatpattern = {$thatpattern2store}.", 2);
     $params[':thatpattern'] = $thatpattern2store;
 
     // template
     $curTemplate = $category->template;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'template XML = ' . $curTemplate->asXML(), 2);
     $templateEvalXpath = $curTemplate->xpath('//eval');
     $templateText = $curTemplate->asXML();
     $template2store = (!empty($templateEvalXpath)) ?
         quickParseEval($convoArr, $templateText, 'template', 0) :
         remove_text_tag($templateText, 'template');
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Evaluated template = {$template2store}.", 2);
     $params[':template'] = $template2store;
 
     /** @noinspection SqlDialectInspection */
@@ -1266,10 +1271,11 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
       );';
 
     $params[':bot_id'] = $bot_id;
-    $params[':user_id'] = $convo_id;
-    $testSQL = str_replace(array_keys($params), array_values($params), $sql);
-    $sth = $dbConn->prepare($sql);
-    $sth->execute($params);
+    $params[':user_id'] = $user_id;
+    $debugSQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "user defined insert SQL = {$debugSQL}.", 2);
+    $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Inserted {$numRows} row(s) into the user defined AIML table.", 2);
 
     return '';
 }
@@ -1341,7 +1347,7 @@ function tag_to_string(&$convoArr, $element, $parentName, $level, $type = 'eleme
                 $response[] = (string)$element;
                 break;
             default:
-                $response[] = $convoArr['aiml']['stars'][1];
+                $response[] = isset($convoArr['aiml']['stars'][1]) ? $convoArr['aiml']['stars'][1] : '';
         }
     }
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);

@@ -20,7 +20,6 @@ require_once(_LIB_PATH_ . 'error_functions.php');
 /** @noinspection PhpIncludeInspection */
 require_once(_LIB_PATH_ . 'misc_functions.php');
 require_once(_ADMIN_PATH_ . 'allowedPages.php');
-$dbConn = db_open();
 
 ini_set('log_errors', true);
 ini_set('error_log', _LOG_PATH_ . 'editAJAX.error.log');
@@ -95,12 +94,12 @@ function delAIML($id)
  */
 function runSearch()
 {
-    global $bot_id, $form_vars, $dbConn, $group;
+    global $bot_id, $form_vars, $group;
     extract($form_vars);
-
+    $now = time();
     $search_fields = array('topic', 'filename', 'pattern', 'template', 'thatpattern');
     $searchTerms = array();
-    $searchParams = array($bot_id);
+    $searchParams = array(':bot_id' => $bot_id);
     $where = array();
 
     // parse column searches
@@ -113,12 +112,20 @@ function runSearch()
 
         if (!empty($column['search']['value']))
         {
-            $tmpSearch = $column['search']['value'];
+            $srchValue = $column['search']['value'];
+            $tmpSearch = htmlspecialchars_decode($srchValue, ENT_QUOTES);
+            $sr = array(
+                "'" => "\'",
+                "<" => "\<",
+                ">" => "\>",
+            );
+            if (strstr($tmpSearch, "'")) $tmpSearch = str_replace(array_keys($sr),array_values($sr), $tmpSearch);
+            $tmpName = $column['data'];
             $tmpSearch = str_replace('_', '\\_', $tmpSearch);
             $tmpSearch = str_replace('%', '\\$', $tmpSearch);
 
-            $tmpName = $column['data'];
-            $addWhere = "`$tmpName` like '%$tmpSearch%'";
+            $addWhere = "`{$tmpName}` like :{$tmpName}";
+            $searchParams[":{$tmpName}"] = "%{$tmpSearch}%";
             $where[] = $addWhere;
         }
     }
@@ -145,13 +152,14 @@ function runSearch()
     }
 
     /** @noinspection SqlDialectInspection */
-    $countSQL = "SELECT count(id) FROM `aiml` WHERE `bot_id` = ? AND ($searchTerms);";
+    $countSQL = "SELECT count(id) FROM `aiml` WHERE `bot_id` = :bot_id AND ($searchTerms);";
     $count = db_fetch($countSQL, $searchParams, __FILE__, __FUNCTION__, __LINE__);
     $total = $count['count(id)'];
 
     /** @noinspection SqlDialectInspection */
     /** @noinspection PhpUndefinedVariableInspection */
-    $sql = "SELECT id, pattern, thatpattern, template, topic, filename FROM `aiml` " . "WHERE `bot_id` = $bot_id AND ($searchTerms) order by $orderBy limit $start, $length;";
+    $sql = "SELECT id, pattern, thatpattern, template, topic, filename FROM `aiml` WHERE `bot_id` = :bot_id AND ($searchTerms) order by $orderBy limit $start, $length;";
+    $debugSQL = db_parseSQL($sql, $searchParams);
     $result = db_fetchAll($sql, $searchParams, __FILE__, __FUNCTION__, __LINE__);
 
     /** @noinspection PhpUndefinedVariableInspection */
@@ -172,7 +180,7 @@ function runSearch()
         $row['pattern'] = htmlentities($row['pattern']);
         $row['topic'] = htmlentities($row['topic']);
         $row['thatpattern'] = htmlentities($row['thatpattern']);
-        $row['template'] = htmlentities($row['template']);
+        $row['template'] = htmlentities($row['template'],ENT_NOQUOTES,'UTF-8');
         $row['DT_RowId'] = $row['id'];
         $out['data'][] = $row;
     }

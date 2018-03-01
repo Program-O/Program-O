@@ -85,7 +85,7 @@ $rightNav    = str_replace('[headerTitle]', scPaginate(), $rightNav);
  */
 function scPaginate()
 {
-    global $dbConn, $group;
+    global $group;
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT COUNT(*) FROM `spellcheck` WHERE 1";
@@ -137,7 +137,7 @@ function scPaginate()
  */
 function getMisspelledWords()
 {
-    global $dbConn, $template, $group;
+    global $template, $group;
 
     # pagination variables
     $_SESSION['poadmin']['group'] = $group;
@@ -202,7 +202,7 @@ function spellCheckForm()
  */
 function insertSpell()
 {
-    global $dbConn, $template, $msg, $form_vars;
+    global $template, $msg, $form_vars;
     $correction = trim($form_vars['correction']);
     $missspell = trim($form_vars['missspell']);
 
@@ -239,7 +239,7 @@ function insertSpell()
  */
 function delSpell($id)
 {
-    global $dbConn, $template, $msg;
+    global $template, $msg;
 
     if ($id == "")
     {
@@ -270,7 +270,7 @@ function delSpell($id)
  */
 function runSpellSearch()
 {
-    global $dbConn, $template, $form_vars;
+    global $template, $form_vars;
 
     $i = 0;
     $search = trim($form_vars['search']);
@@ -333,7 +333,7 @@ function runSpellSearch()
  */
 function editSpellForm($id)
 {
-    global $dbConn, $template, $group;
+    global $template, $group;
     $form   = $template->getSection('EditSpellForm');
 
     /** @noinspection SqlDialectInspection */
@@ -353,7 +353,7 @@ function editSpellForm($id)
 
 function updateSpell()
 {
-    global $dbConn, $template, $msg, $form_vars;
+    global $template, $msg, $form_vars;
 
     $missspelling = trim($form_vars['missspelling']);
     $correction = trim($form_vars['correction']);

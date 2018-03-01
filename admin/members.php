@@ -79,7 +79,7 @@ $mainTitle          = str_replace('[helpLink]', $template->getSection('HelpLink'
  */
 function save($action)
 {
-    global $dbConn, $dbn, $action, $post_vars;
+    global $dbn, $action, $post_vars;
 
     if (isset($post_vars['memberSelect']))
     {
@@ -159,7 +159,6 @@ function save($action)
  */
 function getAdminsOpts()
 {
-    global $dbn, $dbConn;
     $out = "                  <!-- Start List of Current Admin Accounts -->\n";
     $optionTemplate = "                  <option value=\"[val]\">[key]</option>\n";
 
@@ -191,8 +190,6 @@ function getMemberData($id)
     if ($id <= 0) {
         return '';
     }
-
-    global $user_name, $dbConn;
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT id, user_name FROM myprogramo WHERE id = :id limit 1;";
     $params = array(':id' => $id);
@@ -209,7 +206,6 @@ function getMemberData($id)
  */
 function getNextID()
 {
-    global $dbConn;
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT id FROM myprogramo ORDER BY id DESC limit 1;";
     $row = db_fetch($sql,null, __FILE__, __FUNCTION__, __LINE__);

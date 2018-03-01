@@ -61,12 +61,10 @@ if (isset($post_vars['name']))
 {
     $name = $post_vars['name'];
     $pass = md5($post_vars['pass']);
-    $dbConn = db_open();
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `password` FROM `myprogramo` WHERE `user_name` = '$name' limit 1;";
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-    $row = $sth->fetch();
+    $sql = "SELECT `password` FROM `myprogramo` WHERE `user_name` = :name limit 1;";
+    $params = array(':name' => $name);
+    $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
 
     if ($row !== false)
     {

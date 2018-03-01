@@ -60,6 +60,7 @@ $(function () {
     $('.search-input-text').on('keyup click', function () {
         var i = $(this).data('column');
         var v = $(this).val();
+        console.info('searching for', v);
         table.columns(i).search(v).draw(false);
     });
     $('#addNewCat').on('submit', function (e) {

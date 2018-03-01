@@ -26,8 +26,6 @@ include_once(_LIB_PATH_ . 'misc_functions.php');
 
 ini_set('error_log', _LOG_PATH_ . 'getbots.error.log');
 
-$dbConn = db_open();
-
 /** @noinspection SqlDialectInspection */
 /** @noinspection SqlNoDataSourceInspection */
 $sql = "SELECT `bot_id`, `bot_name` FROM `$dbn`.`bots`;";

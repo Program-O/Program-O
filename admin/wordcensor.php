@@ -88,7 +88,7 @@ $rightNav = str_replace('[headerTitle]', wcPaginate(), $rightNav);
  */
 function wcPaginate()
 {
-    global $dbConn, $group;
+    global $group;
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT COUNT(*) FROM `wordcensor` WHERE 1";
@@ -135,7 +135,7 @@ function wcPaginate()
  */
 function getWordCensorWords()
 {
-    global $dbConn, $template, $group, $form_vars;
+    global $template, $group, $form_vars;
 
     $_SESSION['poadmin']['group'] = $group;
     $startEntry = ($group - 1) * 50;
@@ -199,7 +199,7 @@ function wordCensorForm()
  */
 function insertWordCensor()
 {
-    global $dbConn, $template, $msg, $form_vars;
+    global $template, $msg, $form_vars;
 
     $replace_with = trim($form_vars['replace_with']);
     $word_to_censor = trim($form_vars['word_to_censor']);
@@ -237,7 +237,7 @@ function insertWordCensor()
  */
 function delWordCensor($id)
 {
-    global $dbConn, $template, $msg;
+    global $template, $msg;
 
     if ($id == "")
     {
@@ -269,7 +269,7 @@ function delWordCensor($id)
  */
 function runWordCensorSearch()
 {
-    global $dbConn, $template, $form_vars;
+    global $template, $form_vars;
 
     $search = trim($form_vars['search']);
     /** @noinspection SqlDialectInspection */
@@ -337,7 +337,7 @@ function runWordCensorSearch()
  */
 function editWordCensorForm($id)
 {
-    global $dbConn, $template, $group, $dbConn;
+    global $template, $group;
 
     $form = $template->getSection('EditWordCensorForm');
 
@@ -358,7 +358,7 @@ function editWordCensorForm($id)
 
 function updateWordCensor()
 {
-    global $dbConn, $template, $msg, $form_vars;
+    global $template, $msg, $form_vars;
 
     $word_to_censor = trim($form_vars['word_to_censor']);
     $replace_with = trim($form_vars['replace_with']);

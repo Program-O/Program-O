@@ -34,7 +34,6 @@ ini_set('default_charset', $charset);
 // set to the user defined error handler
 set_error_handler("myErrorHandler");
 //open db connection
-$dbConn = db_open();
 // Collect system specs for the first debug message
 
 $versionCheckSQL = 'select version();';
@@ -135,12 +134,9 @@ if (!empty($say)) {
         $user_id = (isset($convoArr['conversation']['user_id'])) ? $convoArr['conversation']['user_id'] : -1;
 
         /** @noinspection SqlDialectInspection */
-        $sql = "DELETE FROM `$dbn`.`client_properties` WHERE `user_id` = $user_id;";
-
-        $sth = $dbConn->prepare($sql);
-        $sth->execute();
-
-        $numRows = $sth->rowCount();
+        $sql = "DELETE FROM `$dbn`.`client_properties` WHERE `user_id` = :user_id;";
+        $params = array(':user_id' => $user_id);
+        $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
         $convoArr['client_properties'] = null;
         $convoArr['conversation'] = array();
         $convoArr['conversation']['user_id'] = $user_id;
@@ -164,10 +160,7 @@ if (!empty($say)) {
         $sql = "UPDATE `$dbn`.`users` SET `session_id` = '$new_convo_id' WHERE `session_id` = '$old_convo_id';";
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Update user - SQL:\n$sql", 3);
 
-        $sth = $dbConn->prepare($sql);
-        $sth->execute();
-
-        $confirm = $sth->rowCount();
+        $confirm = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
         // Get user id, so that we can clear the client properties
         /** @noinspection SqlDialectInspection */
         $sql = "SELECT `id` FROM `$dbn`.`users` WHERE `session_id` = :new_convo_id limit 1;";
@@ -187,28 +180,28 @@ if (!empty($say)) {
 
         $say = "Hello";
     }
-    //add any pre-processing addons
-
-    $say = run_pre_input_addons($convoArr, $say);
     $rawSay = $say;
-    $say = normalize_text($say);
-    /** @noinspection PhpUndefinedVariableInspection */
-    $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $bot_id;
 
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $bot_id . "\nFormat: " . $form_vars['format'], 2);
-    //get the stored vars
-
-    if (!empty($form_vars['name'])) {
-        $convoArr['conversation']['user_name'] = $user_name = $form_vars['name'];
-    }
-
+    // Load bot and user stored values
     $convoArr = load_default_bot_values($convoArr);
-    //now overwrite with the recieved data
     $convoArr = check_set_convo_id($convoArr);
     $convoArr = check_set_bot($convoArr);
     $convoArr = check_set_user($convoArr);
 
-    if (!isset($convoArr['conversation']['user_id']) && isset($user_id)) {
+    // run any pre-processing addons
+    $convoArr = run_pre_input_addons($convoArr, $say);
+    $say = $convoArr['say'];
+    $say = normalize_text($say);
+    $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $bot_id;
+
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $bot_id . "\nFormat: " . $form_vars['format'], 2);
+
+    if (!empty($form_vars['name']))
+    {
+        $convoArr['conversation']['user_name'] = $user_name = $form_vars['name'];
+    }
+    if (!isset($convoArr['conversation']['user_id']) && isset($user_id))
+    {
         $convoArr['conversation']['user_id'] = $user_id;
     }
 
@@ -262,7 +255,6 @@ else
 
 runDebug(__FILE__, __FUNCTION__, __LINE__, "Closing Database", 2);
 
-$dbConn = db_close();
 $time_end = microtime(true);
 $time = number_format(round(($time_end - $script_start) * 1000, 7), 3);
 display_conversation($convoArr);

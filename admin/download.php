@@ -123,7 +123,7 @@ function getAIMLByFileName($filename)
         return "You need to select a file to download.";
     }
 
-    global $dbn, $botmaster_name, $charset, $dbConn, $bot_id;
+    global $botmaster_name, $charset, $bot_id;
 
     $bmnLen = strlen($botmaster_name) - 2;
     $bmnSearch = str_pad('[bm_name]', $bmnLen);
@@ -225,7 +225,7 @@ function getAIMLByFileName($filename)
  */
 function getSQLByFileName($filename)
 {
-    global $dbn, $botmaster_name, $dbh, $dbConn, $bot_id;
+    global $dbn, $botmaster_name, $dbh, $bot_id;
 
     $curPath = dirname(__FILE__);
     chdir($curPath);

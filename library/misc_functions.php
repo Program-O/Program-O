@@ -210,7 +210,7 @@ endFooter;
 
 function addUnknownInput($convoArr, $input, $bot_id, $user_id)
 {
-    global $dbConn, $dbn;
+    global $dbn;
 
     $default_aiml_pattern = _strtolower(get_convo_var($convoArr, 'conversation', 'default_aiml_pattern'));
     $lcInput = _strtolower($input);

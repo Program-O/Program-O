@@ -37,7 +37,7 @@ function run_censor($convoArr)
  */
 function initialise_censor($bot_id)
 {
-    global $dbConn, $dbn; //set in global config file
+    global $dbn; //set in global config file
     $_SESSION['pgo_word_censor'] = array();
 
     /** @noinspection SqlDialectInspection */

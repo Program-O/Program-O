@@ -84,7 +84,7 @@ $mainTitle = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainT
 function insertAIML()
 {
     //db globals
-    global $template, $msg, $post_vars, $dbConn;
+    global $template, $msg, $post_vars;
 
     $aimltemplate = trim($post_vars['template']);
 

@@ -92,7 +92,6 @@ $newVersionAvailable = "Program O $githubVersion is now available for the "
     . $branches[$branch] . ' branch)';
 
 $version = (version_compare(VERSION, $githubVersion, '>=')) ? $upToDate : $newVersionAvailable;
-$dbConn = db_open();
 
 if ($page == 'logout')
 {
@@ -569,7 +568,7 @@ function getCurrentVersion($branch)
 
 function login()
 {
-    global $form_vars, $dbConn, $msg;
+    global $form_vars, $msg;
 
     if ((!isset($form_vars['user_name'])) || (!isset($form_vars['pw'])))
     {

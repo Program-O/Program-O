@@ -19,7 +19,6 @@
     ini_set('error_log', _LOG_PATH_ . 'logs_php.error.log');
     ini_set('html_errors', false);
     ini_set('display_errors', false);
-    if (!isset($dbConn)) $dbConn = db_open();
     if (session_id() == '')
     {
         $session_name = 'PGO_Admin';

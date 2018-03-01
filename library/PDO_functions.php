@@ -78,11 +78,32 @@ function db_fetch($sql, $params = null, $file = 'unknown', $function = 'unknown'
 {
     $fn = basename($file);
     global $dbConn;
-    //error_log(print_r($dbConn, true), 3, _LOG_PATH_ . 'dbConn.txt');
+    if (!isset($dbConn)) $dbConn = db_open();
     try
     {
         $sth = $dbConn->prepare($sql);
-        ($params === null) ? $sth->execute() : $sth->execute($params);
+        if ($params === null) $sth->execute();
+        else
+        {
+            foreach ($params as $label => $value)
+            {
+                switch (gettype($value))
+                {
+                    case 'boolean':
+                        $paramType = PDO::PARAM_BOOL;
+                        break;
+                    case 'integer':
+                        $paramType = PDO::PARAM_INT;
+                        break;
+                    case 'NULL':
+                        $paramType = PDO::PARAM_NULL;
+                        break;
+                    default: $paramType = PDO::PARAM_STR;
+                }
+                $sth->bindValue($label, $value, $paramType);
+            }
+            $sth->execute();
+        }
         $out = $sth->fetch();
     }
     catch (Exception $e)
@@ -133,11 +154,33 @@ endMsg;
 function db_fetchAll($sql, $params = null, $file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
 {
     global $dbConn;
+    if (!isset($dbConn)) $dbConn = db_open();
 
     try {
         $sth = $dbConn->prepare($sql);
-        ($params === null) ? $sth->execute() : $sth->execute($params);
-        return $sth->fetchAll();
+        if ($params === null) $sth->execute();
+        else
+        {
+            foreach ($params as $label => $value)
+            {
+                switch (gettype($value))
+                {
+                    case 'boolean':
+                        $paramType = PDO::PARAM_BOOL;
+                        break;
+                    case 'integer':
+                        $paramType = PDO::PARAM_INT;
+                        break;
+                    case 'NULL':
+                        $paramType = PDO::PARAM_NULL;
+                        break;
+                    default: $paramType = PDO::PARAM_STR;
+                }
+                $sth->bindValue($label, $value, $paramType);
+            }
+            $sth->execute();
+        }
+        $out = $sth->fetchAll();
     }
     catch (Exception $e)
     {
@@ -157,8 +200,9 @@ PDO_statement error: $psError
 
 endMsg;
         if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, $errMsg, 0);
-        return false;
+        $out = false;
     }
+    return $out;
 }
 
 /**
@@ -177,6 +221,7 @@ endMsg;
 function db_write($sql, $params = null, $multi = false, $file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
 {
     global $dbConn;
+    if (!isset($dbConn)) $dbConn = db_open();
     $newLine = PHP_EOL;
     try
     {
@@ -198,7 +243,7 @@ function db_write($sql, $params = null, $multi = false, $file = 'unknown', $func
                 $sth->execute($params);
         }
 
-        return $sth->rowCount();
+        return (!$multi) ?  $sth->rowCount() : count($params);
     }
     catch (Exception $e)
     {
@@ -275,10 +320,87 @@ endMessage;
     return $out;
 }
 
+function db_quote($in)
+{
+    global $dbConn;
+    if (!isset($dbConn)) $dbConn = db_open();
+    return $dbConn->quote($in);
+}
+
 function db_lastInsertId($name = null)
 {
     global $dbConn;
+    if (!isset($dbConn)) $dbConn = db_open();
     return $dbConn->lastInsertId($name);
 }
 
+/* A custom function that automatically constructs a multi insert statement.
+ *
+ * @param string $tableName Name of the table we are inserting into.
+ * @param array $data An "array of arrays" containing our row data.
+ * @param PDO $pdoObject Our PDO object.
+ * @return boolean TRUE on success. FALSE on failure.
+ */
+function db_multi_insert($tableName, $data,  $file = 'unknown', $function = 'unknown', $line = 'unknown')
+{
+    global $dbConn;
+    if (!isset($dbConn)) $dbConn = db_open();
+    //Will contain SQL snippets.
+    $rowsSQL = array();
 
+    //Will contain the values that we need to bind.
+    $toBind = array();
+
+    //Get a list of column names to use in the SQL statement.
+    $columnNames = array_keys($data[0]);
+
+    //Loop through our $data array.
+    foreach($data as $arrayIndex => $row){
+        $params = array();
+        foreach($row as $columnName => $columnValue){
+            $param = ":" . $columnName . $arrayIndex;
+            $params[] = $param;
+            $toBind[$param] = $columnValue;
+        }
+        $rowsSQL[] = "(" . implode(", ", $params) . ")";
+    }
+    //save_file(_LOG_PATH_ . 'pdo_functions.db_multi_insert.params.txt', print_r($params, true));
+    //return false;
+
+    //Construct our SQL statement
+    $sql = "INSERT INTO `$tableName` (" . implode(", ", $columnNames) . ") VALUES " . implode(", ", $rowsSQL);
+
+    try
+    {
+    //Prepare our PDO statement.
+    $sth = $dbConn->prepare($sql);
+
+    //Bind our values.
+    foreach($toBind as $param => $val){
+        $sth->bindValue($param, $val);
+    }
+        //Execute our statement (i.e. insert the data).
+        $out = ($sth->execute()) ? $sth->rowCount() : false;
+    }
+    catch (Exception $e)
+    {
+        //error_log("bad SQL encountered in file $file, line #$line. SQL:\n$sql\n", 3, _LOG_PATH_ . 'badSQL.txt');
+        $pdoError = print_r($dbConn->errorInfo(), true);
+
+        /** @noinspection PhpUndefinedVariableInspection */
+        $psError = print_r($sth->errorInfo(), true);
+        $errSql = db_parseSQL($sql, $params);
+        $dParams = (!is_null($params)) ? print_r($params, true) : 'null';
+        $errMsg = <<<endMsg
+An error was generated while extracting multiple rows of data from the database in file $file at line $line, in the function $function.
+SQL: $errSql
+Params: $dParams
+PDO error: $pdoError
+PDO_statement error: $psError
+
+endMsg;
+        //if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, $errMsg, 0);
+        $out = false;
+    }
+    return $out;
+}

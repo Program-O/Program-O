@@ -19,6 +19,7 @@ if (!file_exists('../../config/global_config.php'))
 
 /** @noinspection PhpIncludeInspection */
 require_once('../../config/global_config.php');
+session_name('ProgramO');
 $debug_div = '';
 $hideSP = '';
 $resizeResponseDiv = '';
@@ -29,12 +30,12 @@ $form_vars = array_merge($post_vars, $get_vars); // POST overrides and overwrite
 if (!empty($form_vars)) require_once('../../chatbot/conversation_start.php');
   $bot_id = (!empty($form_vars['bot_id'])) ? $form_vars['bot_id'] : 1;
 $say = (!empty($form_vars['say'])) ? $form_vars['say'] : '';
-$convo_id = session_id();
+$convo_id = (isset($form_vars['convo_id'])) ? $form_vars['convo_id'] : md5(time());
 $format = (!empty($form_vars['format'])) ? _strtolower($form_vars['format']) : 'html';
 
 if (ERROR_DEBUGGING)
 {
-    $convo_id = 'DEBUG'; // Hard-code the convo_id during debugging
+    $convo_id = (isset($form_vars['convo_id'])) ? $form_vars['convo_id'] : 'DEBUG'; // Hard-code the convo_id during debugging
     $debug_src = (!empty($form_vars) && file_exists(_DEBUG_PATH_ . "{$convo_id}.txt")) ? _DEBUG_URL_ . "reader.php?file={$convo_id}.txt" : '';
     $debug_div = <<<endDebugDiv
 

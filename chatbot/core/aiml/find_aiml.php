@@ -768,7 +768,7 @@ function get_convo_var($convoArr, $index_1, $index_2 = '~NULL~', $index_3 = 1, $
 function get_client_property($convoArr, $name)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Rummaging through various locations for client property '{$name}'", 2);
-    global $dbConn, $dbn;
+    global $dbn;
 
     if (isset ($convoArr['client_properties'][$name]))
     {
@@ -819,7 +819,7 @@ function get_client_property($convoArr, $name)
 function find_userdefined_aiml($convoArr)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Looking for user defined responses', 4);
-    global $dbn, $dbConn;
+    global $dbn;
 
     $i = 0;
     $allrows = array();
@@ -834,13 +834,6 @@ function find_userdefined_aiml($convoArr)
 
     //build sql
     /** @noinspection SqlDialectInspection */
-/*
-SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
-    [sql_bot_like] AND ([pattern_like][thatpattern_like][topic_like]
-        OR `pattern` LIKE '$default_aiml_pattern'
-    )
-    # ORDER BY `id` ASC, `topic` DESC, `pattern` ASC, `thatpattern` ASC;
-*/
     $sql = <<<endSQL
 SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `template` FROM `$dbn`.`aiml_userdefined` WHERE
     `bot_id` = :bot_id AND
@@ -973,7 +966,7 @@ function get_aiml_to_parse($convoArr)
  **/
 function find_aiml_matches($convoArr)
 {
-    global $dbConn, $dbn, $error_response;
+    global $dbn, $error_response;
     $user_id = $convoArr['conversation']['user_id'];
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Finding the aiml matches from the DB", 4);
 
@@ -1105,7 +1098,7 @@ endSQL;
  */
 function get_topic($convoArr)
 {
-    global $dbConn, $dbn, $bot_id;
+    global $bot_id;
 
     $bot_id = (!empty($convoArr['conversation']['bot_id'])) ? $convoArr['conversation']['bot_id'] : $bot_id;
     $user_id = $convoArr['conversation']['user_id'];

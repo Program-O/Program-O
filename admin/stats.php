@@ -63,7 +63,7 @@ $mainContent = str_replace('[avg]', $avg, $mainContent);
  */
 function getStats($interval)
 {
-    global $bot_id, $dbConn;
+    global $bot_id;
     $params = array(':bot_id' => $bot_id);
 
     if ($interval != "all")
@@ -94,7 +94,7 @@ function getStats($interval)
  */
 function getChatLines($i, $j)
 {
-    global $bot_id, $dbConn;
+    global $bot_id;
 
     $sql = <<<endSQL
 SELECT AVG(`chatlines`) AS TOT

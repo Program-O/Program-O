@@ -711,9 +711,11 @@ between the start and end section tags are the only parts of the template that a
             (logoStatus === 'Show') ? ShowLogo() : HideLogo();
             var mc_height = $('#main_content').height();
             var readMe = $('#readMe');
-            var rm_top = readMe.position().top;
-            var rm_height = mc_height - rm_top;
-            readMe.height(rm_height);
+            if (readMe.length) {
+                var rm_top = readMe.position().top;
+                var rm_height = mc_height - rm_top;
+                readMe.height(rm_height);
+            }
 
             function ShowLogo() {
                 var body = document.body;
@@ -1008,7 +1010,7 @@ between the start and end section tags are the only parts of the template that a
             The SRAI lookup table currently contains [row_count] entries for the chatbot named "[bot_name]".
         </div>
         <p>
-            <a href="?page=srai_lookup&amp;action=fillLookup">Fill Lookup Table</a>&nbsp;(See the HELP link for details)
+            <a id="lnkFLT" href="?page=srai_lookup&amp;action=fillLookup">Fill Lookup Table</a>&nbsp;(See the HELP link for details)
         </p>
         <hr class="w80 m0a mb5">
         <div class="holder">

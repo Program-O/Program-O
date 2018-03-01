@@ -40,7 +40,6 @@ if (empty ($_SESSION) || !isset ($_SESSION['poadmin']['uid']) || $_SESSION['poad
     exit (json_encode(array('error' => "No session found")));
 }
 // Open the DB
-$dbConn = db_open();
 $action = (isset($form_vars['action'])) ? $form_vars['action'] : 'runSearch';
 
 switch ($action)
@@ -95,14 +94,14 @@ function delSRAI($id)
  */
 function runSearch()
 {
-    global $bot_id, $form_vars, $dbConn, $group;
+    global $bot_id, $form_vars, $group;
 
     //file_put_contents(_LOG_PATH_ . "editSRAI.runSearch.form_vars.txt", print_r($form_vars, true));
     extract($form_vars);
 
     $search_fields = array('id', 'bot_id', 'pattern', 'template_id');
     $searchTerms = array();
-    $searchParams = array($bot_id);
+    $searchParams = array(':bot_id' => $bot_id);
     $where = array();
 
     // parse column searches
@@ -150,7 +149,7 @@ function runSearch()
     }
 
     /** @noinspection SqlDialectInspection */
-    $countSQL = "SELECT count(id) FROM `srai_lookup` WHERE `bot_id` = ? AND ($searchTerms);";
+    $countSQL = "SELECT count(id) FROM `srai_lookup` WHERE `bot_id` = :bot_id AND ($searchTerms);";
 
     $count = db_fetch($countSQL, $searchParams, __FILE__, __FUNCTION__, __LINE__);
     $total = $count['count(id)'];
@@ -190,7 +189,7 @@ function runSearch()
  */
 function updateSRAI()
 {
-    global $form_vars, $dbConn;
+    global $form_vars;
 
     $id = trim($form_vars['id']);
     $bot_id = trim($form_vars['bot_id']);
@@ -228,18 +227,7 @@ function updateSRAI()
 
         /** @noinspection SqlDialectInspection */
         $sql = "UPDATE `srai_lookup` SET `bot_id` = :bot_id, `pattern` = :pattern, `template_id` = :template_id WHERE `id` = :id;";
-        $sth = $dbConn->prepare($sql);
-
-        try {
-            $sth->execute($params);
-        }
-        catch (Exception $e)
-        {
-            return 'Something went wrong! Error: ' . $e->getMessage();
-        }
-
-        $affectedRows = $sth->rowCount();
-
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
         if ($affectedRows > 0)
         {
             $msg = 'SRAI Updated.';
@@ -248,7 +236,6 @@ function updateSRAI()
             $msg = 'There was an error updating the SRAI - no changes made.';
         }
     }
-
     return $msg;
 }
 
@@ -260,7 +247,7 @@ function updateSRAI()
 function insertSRAI()
 {
     //db globals
-    global $msg, $form_vars, $dbConn;
+    global $msg, $form_vars;
 
     $bot_id = trim($form_vars['bot_id']);
     $pattern = trim($form_vars['pattern']);
@@ -281,17 +268,7 @@ function insertSRAI()
     }
     else
     {
-        //$sth = $dbConn->prepare('INSERT INTO `srai_lookup` (`id`,`bot_id` `pattern`,`template_id`) VALUES (NULL, :bot_id, :pattern, :template_id);');
-        $sth = $dbConn->prepare($sql);
-
-        try {
-            $sth->execute($params);
-        }
-        catch (Exception $e) {
-            return 'Something went wrong! Error: ' . $e->getMessage();
-        }
-
-        $affectedRows = $sth->rowCount();
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows > 0)
         {
