@@ -127,7 +127,8 @@ if (!empty($say)) {
     $lc_say = _strtolower($say);
 
     $convoArr = read_from_session();
-    if ($lc_say == 'clear properties' || $lc_say == ':reset bot') {
+    if ($lc_say == 'clear properties' || $lc_say == ':reset bot')
+    {
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Clearing client properties and starting over.", 4);
 
         $_SESSION = array();
@@ -180,7 +181,6 @@ if (!empty($say)) {
 
         $say = "Hello";
     }
-    $rawSay = $say;
 
     // Load bot and user stored values
     $convoArr = load_default_bot_values($convoArr);
@@ -191,6 +191,8 @@ if (!empty($say)) {
     // run any pre-processing addons
     $convoArr = run_pre_input_addons($convoArr, $say);
     $say = $convoArr['say'];
+    $rawSay = $say;
+    $convoArr['conversation']['rawSay'] = $rawSay;
     $say = normalize_text($say);
     $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $bot_id;
 
@@ -215,7 +217,6 @@ if (!empty($say)) {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Default debug level = $debug_level", 0);
     $debug_level = isset($convoArr['conversation']['debug_level']) ? $convoArr['conversation']['debug_level'] : $debug_level;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Current debug level = $debug_level", 0);
-    $convoArr['conversation']['rawSay'] = $rawSay;
 
     if (!isset ($convoArr['conversation']['totallines'])) {
         //load the chatbot configuration for a new user

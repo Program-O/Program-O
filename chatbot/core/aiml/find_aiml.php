@@ -248,7 +248,7 @@ function aiml_pattern_match($pattern, $input)
  * @internal param string $current_topic
  * @return array $allrows
  **/
-function score_matches($convoArr, $allrows, $pattern)
+function score_matches(&$convoArr, $allrows, $pattern)
 {
     global $common_words_array;
 
@@ -722,7 +722,7 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
  * $convoArr['conversation']['bot_id'] = $convoArr['conversation']['bot_id']
  * $convoArr['that'][1][1] = get_convo_var($convoArr,'that','',1,1)
  */
-function get_convo_var($convoArr, $index_1, $index_2 = '~NULL~', $index_3 = 1, $index_4 = 1)
+function get_convo_var(&$convoArr, $index_1, $index_2 = '~NULL~', $index_3 = 1, $index_4 = 1)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4]", 4);
 
@@ -765,7 +765,7 @@ function get_convo_var($convoArr, $index_1, $index_2 = '~NULL~', $index_3 = 1, $
  * @param string $name - the key of the value to extract from client properties
  * @return string $response - the value of the client property
  **/
-function get_client_property($convoArr, $name)
+function get_client_property(&$convoArr, $name)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Rummaging through various locations for client property '{$name}'", 2);
     global $dbn;
@@ -816,7 +816,7 @@ function get_client_property($convoArr, $name)
  * @param array $convoArr - conversation array
  * @return array allrows
  **/
-function find_userdefined_aiml($convoArr)
+function find_userdefined_aiml(&$convoArr)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Looking for user defined responses', 4);
     global $dbn;
@@ -904,7 +904,7 @@ endSQL;
  * @param array $convoArr - conversation array
  * @return array $convoArr
  **/
-function get_aiml_to_parse($convoArr)
+function get_aiml_to_parse(&$convoArr)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running all functions to get the correct aiml from the DB", 4);
     $allrows = array();
@@ -964,7 +964,7 @@ function get_aiml_to_parse($convoArr)
  * @param array $convoArr - conversation array
  * @return array $convoArr
  **/
-function find_aiml_matches($convoArr)
+function find_aiml_matches(&$convoArr)
 {
     global $dbn, $error_response;
     $user_id = $convoArr['conversation']['user_id'];
@@ -1096,7 +1096,7 @@ endSQL;
  * @param array $convoArr - the conversation array
  * @return string $retVal - the topic
  */
-function get_topic($convoArr)
+function get_topic(&$convoArr)
 {
     global $bot_id;
 

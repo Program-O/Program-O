@@ -396,18 +396,41 @@ function mem_tracer($file, $function, $line)
     }
 
     $append = true;
-    $content = "$file.$function.$line: Memory used = $mem_state bytes\r\n";
+    $content = "{$file}.{$function}.{$line}: Memory used = {$mem_state} bytes\r\n";
 
     save_file($trace_file, $content, $append);
 }
 
 function wildcard_handler($errNum, $errMsg, $errFile, $errLine, $errContext)
 {
-    $saveContent = "An error (Number $errNum, $errMsg) was caught in file $errFile, line $errLine. The following variable is what you are looking for:\n";
-    $saveContent .= print_r($errContext['aiml_pattern_wildcards'], true) . "\n---------------------------------------------------------------\n";
+    $saveContent = "An error (Number {$errNum}, {$errMsg}) was caught in file {$errFile}, line {$errLine}. The following variable is what you are looking for:\n";
+    $saveContent .= print_r($errContext['aiml_pattern_wildcards'], true) . '[NEWLINE]-----------------------[NEWLINE]';
 
+    $log = '';
+    global $debugArr;
+    foreach ($debugArr as $time => $subArray)
+    {
+        $log .= "{$time}[NEWLINE]";
+
+        foreach ($subArray as $index => $value)
+        {
+            if (($index == 'fileName') || ($index == 'functionName') || ($index == 'line')) {
+                $log .= "[$value]";
+            }
+            elseif ($index == 'info') {
+                $log .= "[NEWLINE]{$value}[NEWLINE]-----------------------[NEWLINE]";
+            }
+        }
+    }
+
+    $log = rtrim($log);
+    $log = str_replace('[NEWLINE]', PHP_EOL, $log);
+    $saveContent = str_replace('[NEWLINE]', PHP_EOL, $saveContent);
+    save_file(_LOG_PATH_ . 'emergency_debug_file.txt', $log);
     save_file(_LOG_PATH_ . 'wildcard_errors.txt', $saveContent, true);
-    die(json_encode(array('error' => 'Check the logs!', 'botsay' => 'Houston, we have a problem!')));
+    save_file(_LOG_PATH_ . 'wildcard_error_context.txt', $errContext, true);
+    return json_encode(array('error' => 'Check the logs!', 'botsay' => 'Houston, we have a problem!'));
+
 }
 
 /**

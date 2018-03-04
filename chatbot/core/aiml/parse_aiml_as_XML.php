@@ -16,7 +16,7 @@
  * @param  array $convoArr - the existing conversation array
  * @return array $convoArr
  **/
-function parse_aiml_as_XML($convoArr)
+function parse_aiml_as_XML(&$convoArr)
 {
     global $botsay, $error_response;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the AIML template as XML", 2);
@@ -276,7 +276,7 @@ function parseTemplateRecursive(&$convoArr, SimpleXMLElement $element, $level = 
  * @param int $level
  * @return string
  */
-function parse_text_tag($convoArr, $element, $parentName, $level)
+function parse_text_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a TEXT tag.', 2);
 
@@ -292,7 +292,7 @@ function parse_text_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return array
  */
-function parse_star_tag($convoArr, $element, $parentName, $level)
+function parse_star_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a STAR tag.', 2);
     $response = array();
@@ -327,7 +327,7 @@ function parse_star_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return array
  */
-function parse_thatstar_tag($convoArr, $element, $parentName, $level)
+function parse_thatstar_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THATSTAR tag.', 2);
     $response = array();
@@ -360,7 +360,7 @@ function parse_thatstar_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return array
  */
-function parse_topicstar_tag($convoArr, $element, $parentName, $level)
+function parse_topicstar_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a TOPICSTAR tag.', 2);
     $response = array();
@@ -393,7 +393,7 @@ function parse_topicstar_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_date_tag($convoArr, $element, $parentName, $level)
+function parse_date_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a DATE tag.', 2);
     global $time_zone_locale;
@@ -491,7 +491,7 @@ function parse_date_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_random_tag($convoArr, $element, $parentName, $level)
+function parse_random_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a RANDOM tag, or doing some stargazing, or fomenting chaos, or...', 2);
     $liArray = $element->xpath('li');
@@ -514,8 +514,9 @@ function parse_random_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_get_tag($convoArr, $element, $parentName, $level)
+function parse_get_tag(&$convoArr, $element, $parentName, $level)
 {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Client properties(get): ' . print_r($convoArr['client_properties'], true), 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a GET tag. Oh, and getting a sandwich while I\'m at it.', 2);
     global $remember_up_to;
     $stars = $convoArr['aiml']['stars'];
@@ -528,7 +529,17 @@ function parse_get_tag($convoArr, $element, $parentName, $level)
         $var_name = ($var_name == "*$n") ? $stars[$n] : $var_name;
     }
     $out = 'undefined';
+    //if ()
     if (in_array($var_name, $cpKeys)) $out = $client_properties[$var_name];
+    switch (true)
+    {
+        case (in_array($var_name, $cpKeys)):
+            $out = $client_properties[$var_name];
+            break;
+        default: $out = get_client_property($convoArr, $var_name);
+
+    }
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Client properties(get2): ' . print_r($convoArr['client_properties'], true), 2);
     return $out;
 }
 
@@ -544,7 +555,7 @@ function parse_get_tag($convoArr, $element, $parentName, $level)
 function parse_set_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing the SET tag.', 2);
-    global $dbn, $user_name, $remember_up_to;
+    global $user_name, $remember_up_to, $bot_id;
     $var_value = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $var_name = (string)$element->attributes()->name;
     $var_name = ($var_name == '*') ? $convoArr['aiml']['stars'][1] : $var_name;
@@ -552,7 +563,30 @@ function parse_set_tag(&$convoArr, $element, $parentName, $level)
     {
         $var_name = ($var_name == "*$n") ? $convoArr['aiml']['stars'][$n] : $var_name;
     }
+    $user_id = $convoArr['conversation']['user_id'];
     $convoArr['client_properties'][$var_name] = $var_value;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '{$var_name}' to the client properties array. Value is '{$var_value}'", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Client properties: ' . print_r($convoArr['client_properties'], true), 2);
+    $lookSQL = 'select id from client_properties where bot_id=:bot_id and user_id=:user_id and name=:name limit 1;';
+    $lookParams = array(
+        ':bot_id'  => $bot_id,
+        ':user_id' => $user_id,
+        ':name'    => $var_name,
+    );
+    $lookResult = db_fetch($lookSQL, $lookParams, __FILE__, __FUNCTION__, __LINE__);
+    $lookParams[':value'] = $var_value;
+    switch($lookResult)
+    {
+        case false:
+        case 0:
+            runDebug(__FILE__, __FUNCTION__, __LINE__, 'Inserting data into the DB', 2);
+            $saveSQL = 'insert into client_properties (id, user_id, bot_id, name, value) values(null, :user_id, :bot_id, :name, :value);';
+        break;
+        default:
+            runDebug(__FILE__, __FUNCTION__, __LINE__, 'updating data in the DB', 2);
+            $saveSQL = 'update client_properties set value=:value where user_id=:user_id and bot_id=:bot_id and name=:name;';
+    }
+    $numRows = db_write($saveSQL, $lookParams, false, __FILE__, __FUNCTION__, __LINE__);
     return $var_value;
 }
 
@@ -609,7 +643,7 @@ function parse_bot_tag($convoArr, $element)
  * @param int $level
  * @return string
  */
-function parse_id_tag($convoArr, $element, $parentName, $level)
+function parse_id_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an ID tag.', 2);
 
@@ -625,7 +659,7 @@ function parse_id_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_version_tag($convoArr, $element, $parentName, $level)
+function parse_version_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a VERSION tag.', 2);
 
@@ -641,7 +675,7 @@ function parse_version_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_uppercase_tag($convoArr, $element, $parentName, $level)
+function parse_uppercase_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'PARSING AN UPPERCASE TAG.', 2);
 
@@ -660,7 +694,7 @@ function parse_uppercase_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_lowercase_tag($convoArr, $element, $parentName, $level)
+function parse_lowercase_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'parsing a lowercase tag.', 2);
 
@@ -679,7 +713,7 @@ function parse_lowercase_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_sentence_tag($convoArr, $element, $parentName, $level)
+function parse_sentence_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SENTENCE tag.', 2);
 
@@ -700,7 +734,7 @@ function parse_sentence_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_formal_tag($convoArr, $element, $parentName, $level)
+function parse_formal_tag(&$convoArr, $element, $parentName, $level)
 {
     global $charset;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing A Formal Tag.', 2);
@@ -746,7 +780,7 @@ function parse_srai_tag(&$convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_sr_tag($convoArr, $element, $parentName, $level)
+function parse_sr_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SR tag.', 4);
     $response = run_srai($convoArr, $convoArr['aiml']['stars'][1]);
@@ -765,7 +799,7 @@ function parse_sr_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return array|string
  */
-function parse_condition_tag($convoArr, $element, $parentName, $level)
+function parse_condition_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag.', 2);
     global $error_response, $remember_up_to;
@@ -970,7 +1004,7 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_person_tag($convoArr, $element, $parentName, $level)
+function parse_person_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a PERSON tag.', 2);
 
@@ -989,7 +1023,7 @@ function parse_person_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_person2_tag($convoArr, $element, $parentName, $level)
+function parse_person2_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a PERSON2 tag.', 2);
 
@@ -1008,7 +1042,7 @@ function parse_person2_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_html_tag($convoArr, $element, $parentName, $level)
+function parse_html_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a generic HTML tag.', 2);
 
@@ -1056,7 +1090,7 @@ function parse_html_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_gender_tag($convoArr, $element, $parentName, $level)
+function parse_gender_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Giving part of the response a sex change!', 2);
     $response_string = ' ' . tag_to_string($convoArr, $element, $parentName, $level, 'star');
@@ -1101,7 +1135,7 @@ function parse_gender_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_that_tag($convoArr, $element, $parentName, $level)
+function parse_that_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THAT tag. How awesome is that?', 2);
 
@@ -1160,7 +1194,7 @@ function parse_that_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_input_tag($convoArr, $element, $parentName, $level)
+function parse_input_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an INPUT tag.', 2);
 
@@ -1183,7 +1217,7 @@ function parse_input_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_system_tag($convoArr, $element, $parentName, $level)
+function parse_system_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SYSTEM tag (May God have mercy on us all).', 2);
 
@@ -1212,7 +1246,7 @@ function parse_system_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_learn_tag($convoArr, $element, $parentName, $level)
+function parse_learn_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a LEARN tag.', 2);
     $bot_id = $convoArr['conversation']['bot_id'];
@@ -1305,7 +1339,7 @@ function remove_text_tag($element, $parentName)
  * @param int $level
  * @return string
  */
-function parse_eval_tag($convoArr, $element, $parentName, $level)
+function parse_eval_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an EVAL tag.', 2);
 

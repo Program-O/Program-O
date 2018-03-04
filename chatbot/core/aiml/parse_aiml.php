@@ -306,7 +306,9 @@ function set_wildcards($convoArr, $type)
         runDebug(__FILE__, __FUNCTION__, __LINE__, "We have pattern stars to process!", 2);
         if (!isset ($convoArr['aiml']['user_raw'])) $convoArr['aiml']['user_raw'] = normalize_text($convoArr['aiml']['lookingfor'], false);
         $checkAgainst = ($type == 'normal') ? $convoArr['aiml']['user_raw'] : $convoArr['aiml']['lookingfor'];
-        if (preg_match_all("~{$ap}$~siuU", $checkAgainst, $matches))
+        $regEx = "~{$ap}$~siuU";
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "RegEx string = {$regEx}: Searching {$checkAgainst} for a match.", 2);
+        if (preg_match_all($regEx, $checkAgainst, $matches))
         {
             runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($matches, true), 2);
             for ($i = 1; $i < count($matches); $i++)

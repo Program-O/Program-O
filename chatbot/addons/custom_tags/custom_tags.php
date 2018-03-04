@@ -65,7 +65,7 @@ function parse_php_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string $out
  */
-function parse_math_tag($convoArr, simpleXMLElement $element, $parentName, $level)
+function parse_math_tag(&$convoArr, simpleXMLElement $element, $parentName, $level)
 {
     $elementAsXML = $element->asXML();
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing a MATH tag - input is $elementAsXML.", 4);
@@ -90,7 +90,7 @@ function parse_math_tag($convoArr, simpleXMLElement $element, $parentName, $leve
 
     list($operand1, $operator, $operand2) = explode(' ', $response_string, 3);
     $operatorArray = array('ADD', 'SUBTRACT', 'MULTIPLY', 'DIVIDE');
-
+    $operator = _strtoupper($operator);
     switch (true)
     {
         case (!in_array(_strtoupper($operator), $operatorArray)):
@@ -118,8 +118,10 @@ function parse_math_tag($convoArr, simpleXMLElement $element, $parentName, $leve
         case 'DIVIDE':
             $out = $operand1 / $operand2;
             break;
+        default: $out = false;
     }
 
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Math function complete. Operator: {$operator}, output: {$out}.", 2);
     return $out;
 }
 

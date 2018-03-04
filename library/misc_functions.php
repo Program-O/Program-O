@@ -239,17 +239,27 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
  * @return string $out
  */
 
-function pretty_print_r($var)
+function pretty_print_r($var, $returnString = false)
 {
     switch (true)
     {
         case (is_array($var)):
-            $out = implode_recursive(",\n", $var, __FILE__, __FUNCTION__, __LINE__);
+            //$out = implode_recursive(",\n", $var, __FILE__, __FUNCTION__, __LINE__);
+            $out = '';
+            foreach ($var as $key => $value)
+            {
+                $message = (is_array($value)) ? print_r($value, true) : $value;
+                $out .= "[{$key}]\n{$message}\n--------------------------------------\n";
+            }
             break;
         default:
             $out = $var;
     }
-    return trim($out, ",\n");
+    switch ($returnString)
+    {
+        case true: return trim($out);
+    }
+    echo trim($out);
 }
 
 function pretty_print_XML($element)
