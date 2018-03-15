@@ -1103,7 +1103,12 @@ select#bot_id {
     position: absolute;
     top: 5px;
     left: 5px;
-    display: none;
+}
+#script_version.horiz, #script_version .horiz {
+    display: inline-block;
+}
+#script_version.vert, #script_version .vert {
+    display: block;
 }
 
 dl.codebox {

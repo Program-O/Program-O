@@ -660,11 +660,11 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
     if ($resultCount > 0)
     {
         $first_match = $tmpArr[0];
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "First match:\n" . print_r($first_match, true), 2);
+        //runDebug(__FILE__, __FUNCTION__, __LINE__, "First match:\n" . print_r($first_match, true), 2);
         $random_match = $tmpArr[array_rand($tmpArr)];
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Random match:\n" . print_r($random_match, true), 2);
+        //runDebug(__FILE__, __FUNCTION__, __LINE__, "Random match:\n" . print_r($random_match, true), 2);
         $last_match = array_pop($tmpArr);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Last match:\n" . print_r($last_match, true), 2);
+        //runDebug(__FILE__, __FUNCTION__, __LINE__, "Last match:\n" . print_r($last_match, true), 2);
         switch ($which_response)
         {
             case BOT_USE_FIRST_RESPONSE:
@@ -945,6 +945,7 @@ function get_aiml_to_parse(&$convoArr)
     }
 
     //Now we have the results put into the conversation array
+    $convoArr['aiml']['category_id'] = $WinningCategory['id'];
     $convoArr['aiml']['pattern'] = $WinningCategory['pattern'];
     $convoArr['aiml']['thatpattern'] = $WinningCategory['thatpattern'];
     $convoArr['aiml']['template'] = $WinningCategory['template'];
