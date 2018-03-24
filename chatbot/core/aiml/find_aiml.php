@@ -316,12 +316,12 @@ function score_matches(&$convoArr, $allrows, $pattern)
         if ($category_bot_id == $bot_id)
         {
             $current_score += $this_bot_match;
-            $track_matches .= 'current bot, ';
+            $track_matches .= "current bot ({$this_bot_match} points), ";
         }
         elseif ($category_bot_id == $bot_parent_id)
         {
             $current_score += 0;
-            $track_matches .= 'parent bot, ';
+            $track_matches .= "parent bot (0 points), ";
         }
         else # if it's not the current bot and not the parent bot, then reject it and log a debug message (this should never happen)
         {
@@ -336,17 +336,17 @@ function score_matches(&$convoArr, $allrows, $pattern)
         if (isset($subrow['aiml_userdefined']))
         {
             $current_score += $user_defined_match;
-            $track_matches .= 'User Defined AIML, ';
+            $track_matches .= "User Defined AIML ({$user_defined_match} points), ";
         }
 
-        # 3.) test for a non-empty  current topic
+        # 3.) test for a non-empty, current topic
         if (!empty($topic))
         {
             # 3a.) test for a non-empty topic in the current category
             if (empty($category_topic) || $category_topic == '*')
             {
                 // take no action, as we're not looking for a topic here
-                $track_matches .= 'no topic to match, ';
+                $track_matches .= "no topic to match (0 points), ";
             }
             else
             {
@@ -357,13 +357,13 @@ function score_matches(&$convoArr, $allrows, $pattern)
                     if ($regEx != $category_topic && preg_match("/$regEx/i", $topic) === 1)
                     {
                         $current_score += $topic_underscore_match;
-                        $track_matches .= 'topic match with underscore, ';
+                        $track_matches .= "topic match with underscore ({$topic_underscore_match} points), ";
                     }
                 } # 3c.) Check for a direct topic match
                 elseif ($topic == $category_topic)
                 {
                     $current_score += $topic_direct_match;
-                    $track_matches .= 'direct topic match, ';
+                    $track_matches .= "direct topic match ({$topic_direct_match} points), ";
                 } # 3d.) Check topic for a star wildcard match
                 else
                 {
@@ -372,7 +372,7 @@ function score_matches(&$convoArr, $allrows, $pattern)
                     if (preg_match("/$regEx/i", $topic))
                     {
                         $current_score += $topic_star_match;
-                        $track_matches .= 'topic match with wildcards, ';
+                        $track_matches .= "topic match with wildcards ({$topic_star_match} points), ";
                     }
                 }
             }
@@ -382,7 +382,7 @@ function score_matches(&$convoArr, $allrows, $pattern)
         if (empty($category_thatpattern) || $category_thatpattern == '*')
         {
             $current_score += 1;
-            $track_matches .= 'no thatpattern to match, ';
+            $track_matches .= "no thatpattern to match (1 point), ";
         }
         else
         {
@@ -394,14 +394,14 @@ function score_matches(&$convoArr, $allrows, $pattern)
                 if ($regEx !== $category_thatpattern && preg_match("/$regEx/i", $that) === 1)
                 {
                     $current_score += $thatpattern_underscore_match;
-                    $track_matches .= 'thatpattern match with underscore, ';
+                    $track_matches .= "thatpattern match with underscore ({$thatpattern_underscore_match} points), ";
                 }
             }
             # 4b.) direct thatpattern match
             elseif ($that_lc == $category_thatpattern_lc)
             {
                 $current_score += $thatpattern_direct_match;
-                $track_matches .= 'direct thatpattern match, ';
+                $track_matches .= "direct thatpattern match ({$thatpattern_direct_match} points), ";
             }
             # 4c.) thatpattern star matches
             elseif (strstr($category_thatpattern_lc, '*') !== false)
@@ -411,7 +411,7 @@ function score_matches(&$convoArr, $allrows, $pattern)
                 if (preg_match("/$regEx/i", $that))
                 {
                     $current_score += $thatpattern_star_match;
-                    $track_matches .= 'thatpattern match with star, ';
+                    $track_matches .= "thatpattern match with star ({$thatpattern_star_match} points), ";
                 }
             }
             # 4d.)match thatpattern words
@@ -427,24 +427,24 @@ function score_matches(&$convoArr, $allrows, $pattern)
                     {
                         case ($word === '_'):
                             $current_score += $thatpattern_underscore_word_match;
-                            $track_matches .= 'thatpattern underscore word match, ';
+                            $track_matches .= "thatpattern underscore word match ({$thatpattern_underscore_word_match} points), ";
                             break;
                         case ($word === '*'):
                             $current_score += $thatpattern_star_word_match;
-                            $track_matches .= 'thatpattern star word match, ';
+                            $track_matches .= "thatpattern star word match ({$thatpattern_star_word_match} points), ";
                             break;
                         case (in_array($word, $category_thatpattern_words)):
                         //case (false):
                             $current_score += $thatpattern_direct_word_match;
-                            $track_matches .= "thatpattern direct word match: $word, ";
+                            $track_matches .= "thatpattern direct word match: {$word} ({$thatpattern_direct_word_match} points), ";
                             break;
                         case (in_array($word, $common_words_array)):
                             $current_score += $common_word_match;
-                            $track_matches .= "thatpattern common word match: $word, ";
+                            $track_matches .= "thatpattern common word match: {$word} ({$common_word_match} points), ";
                             break;
                         default:
                             $current_score += $uncommon_word_match;
-                            $track_matches .= "thatpattern uncommon word match: $word, ";
+                            $track_matches .= "thatpattern uncommon word match: {$word} ({$uncommon_word_match} points), ";
                     }
                 }
             }
@@ -452,7 +452,7 @@ function score_matches(&$convoArr, $allrows, $pattern)
             else
             {
                 $current_score = $rejected;
-                $track_matches .= 'no thatpattern match at all, ';
+                $track_matches .= "no thatpattern match at all ({$rejected} points), ";
                 //runDebug(__FILE__, __FUNCTION__, __LINE__, "Matching '$that_lc' with '$category_thatpattern_lc' failed. Drat!'", 4);
             }
         } # end thatpattern testing
@@ -467,14 +467,14 @@ function score_matches(&$convoArr, $allrows, $pattern)
             if ($regEx != $category_pattern && preg_match("/$regEx/i", $pattern) === 1)
             {
                 $current_score += $underscore_match;
-                $track_matches .= 'pattern match with underscore, ';
+                $track_matches .= "pattern match with underscore ({$underscore_match} points), ";
             }
         }
         # 5b.) direct pattern match
         elseif ($pattern == $category_pattern)
         {
             $current_score += $pattern_direct_match;
-            $track_matches .= 'direct pattern match, ';
+            $track_matches .= "direct pattern match ({$pattern_direct_match} points), ";
             //$check_pattern_words  = false;
         }
         # 5c.) pattern star matches
@@ -484,7 +484,7 @@ function score_matches(&$convoArr, $allrows, $pattern)
             if ($category_pattern == '*')
             {
                 $current_score += $pattern_star_match;
-                $track_matches .= 'pattern star match, ';
+                $track_matches .= "pattern star match ({$pattern_star_match} points), ";
                 $check_pattern_words = false;
             }
             elseif ($regEx != $category_pattern && (($category_pattern != '*') || ($category_pattern != '_')) && preg_match("/$regEx/i", $pattern) != 0)
@@ -497,7 +497,7 @@ function score_matches(&$convoArr, $allrows, $pattern)
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'This category is the default pattern!', 4);
 
             $current_score += $default_pattern_match;
-            $track_matches .= 'default pattern match, ';
+            $track_matches .= "default pattern match ({$default_pattern_match} points), ";
             $check_pattern_words = false;
         }
 
@@ -519,23 +519,23 @@ function score_matches(&$convoArr, $allrows, $pattern)
                 {
                     case ($word === '_'):
                         $current_score += $underscore_word_match;
-                        $track_matches .= 'underscore word match, ';
+                        $track_matches .= "underscore word match ({$underscore_word_match} points), ";
                         break;
                     case ($word === '*'):
                         $current_score += $star_word_match;
-                        $track_matches .= 'star word match, ';
+                        $track_matches .= "star word match ({$star_word_match} points), ";
                         break;
                     case (in_array($word, $pattern_words)):
                         $current_score += $direct_word_match;
-                        $track_matches .= "direct word match: $word, ";
+                        $track_matches .= "direct word match: {$word} ({$direct_word_match} points), ";
                         break;
                     case (in_array($word, $common_words_array)):
                         $current_score += $common_word_match;
-                        $track_matches .= "common word match: $word, ";
+                        $track_matches .= "common word match: {$word} ({$common_word_match} points), ";
                         break;
                     default:
                         $current_score += $uncommon_word_match;
-                        $track_matches .= "uncommon word match: $word, ";
+                        $track_matches .= "uncommon word match: {$word} ({$uncommon_word_match} points), ";
                 }
             }
         }
