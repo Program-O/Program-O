@@ -177,9 +177,9 @@ function runSearch()
 
     foreach ($result as $index => $row)
     {
-        $row['pattern'] = htmlentities($row['pattern']);
-        $row['topic'] = htmlentities($row['topic']);
-        $row['thatpattern'] = htmlentities($row['thatpattern']);
+        $row['pattern'] = htmlentities($row['pattern'],ENT_NOQUOTES,'UTF-8');
+        $row['topic'] = htmlentities($row['topic'],ENT_NOQUOTES,'UTF-8');
+        $row['thatpattern'] = htmlentities($row['thatpattern'],ENT_NOQUOTES,'UTF-8');
         $row['template'] = htmlentities($row['template'],ENT_NOQUOTES,'UTF-8');
         $row['DT_RowId'] = $row['id'];
         $out['data'][] = $row;
