@@ -23,6 +23,8 @@
     6.  Fixed a bug in the JSON GUI that periodically created an empty convo_id
     7.  Partially addressed issue #370 where the custom `<math>` tag always returned
         "Invalid math operation"
+    8.  Changed the minimum PHP version from 5.3.x to 5.4.x in order to be able to utilize
+        certain improved functionality that isn't supported in the older PHP version
 
     There are other fixes as well, but let's not get carried away. :smile:
 

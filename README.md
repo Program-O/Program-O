@@ -14,7 +14,7 @@ chatbot information, including the AIML files used to formulate the chatbot's re
 
 ## System Requirements
 
-Program O requires PHP version 5.3.0 or higher to function. It also requires the following
+Program O requires PHP version 5.4.0 or higher to function. It also requires the following
 PHP extensions:
 
 - PDO (as well as at least one PDO driver - the MySQL driver is recommended for most users)
