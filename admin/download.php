@@ -125,15 +125,12 @@ function getAIMLByFileName($filename)
 
     global $botmaster_name, $charset, $bot_id;
 
-    $bmnLen = strlen($botmaster_name) - 2;
-    $bmnSearch = str_pad('[bm_name]', $bmnLen);
+    $bmnLen = 51 - strlen($botmaster_name);
+    $bmnPadding = str_pad('', $bmnLen);
     $categoryTemplate = '<category><pattern>[pattern]</pattern>[that]<template>[template]</template></category>';
 
     $cleanedFilename = $filename;
-    $fileNameSearch = '[fileName]';
-    $cfnLen = strlen($cleanedFilename);
 
-    $fileNameSearch = str_pad($fileNameSearch, $cfnLen);
     $topicArray = array();
     $curPath = dirname(__FILE__);
     chdir($curPath);
@@ -141,14 +138,20 @@ function getAIMLByFileName($filename)
     $fileContent = file_get_contents(_ADMIN_PATH_ . 'AIML_Header.dat');
     $fileContent = str_replace('[year]', date('Y'), $fileContent);
     $fileContent = str_replace('[charset]', $charset, $fileContent);
-    $fileContent = str_replace($bmnSearch, $botmaster_name, $fileContent);
+    $fileContent = str_replace('[bm_name]', $botmaster_name . $bmnPadding, $fileContent);
+
+    $pad_len = 60 - strlen($cleanedFilename);
+//  NOTE: the value 60 in the previous line is the number of characters from the `[` to the first '-'
+//  in the comment that contains the filename. This makes the comment the same width as the others
+//  in the AIML file.
+    $space_padding = str_pad('', $pad_len, ' ');
+    $fileContent = str_replace('[fileName]', $cleanedFilename . $space_padding, $fileContent);
 
     $curDate = date('m-d-Y', time());
     $cdLen = strlen($curDate);
     $curDateSearch = str_pad('[curDate]', $cdLen);
 
     $fileContent = str_replace($curDateSearch, $curDate, $fileContent);
-    $fileContent = str_replace($fileNameSearch, $cleanedFilename, $fileContent);
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT DISTINCT topic FROM aiml WHERE filename LIKE :cleanedFilename and bot_id = :bot_id;";
