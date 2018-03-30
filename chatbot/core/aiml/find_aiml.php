@@ -945,7 +945,10 @@ function get_aiml_to_parse(&$convoArr)
     }
 
     //Now we have the results put into the conversation array
-    $convoArr['aiml']['category_id'] = $WinningCategory['id'];
+    if (isset($WinningCategory['id'])) {
+        $convoArr['aiml']['category_id'] = $WinningCategory['id'];
+    }
+
     $convoArr['aiml']['pattern'] = $WinningCategory['pattern'];
     $convoArr['aiml']['thatpattern'] = $WinningCategory['thatpattern'];
     $convoArr['aiml']['template'] = $WinningCategory['template'];
