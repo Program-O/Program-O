@@ -862,6 +862,10 @@ function parse_condition_tag(&$convoArr, $element, $parentName, $level)
                     }
                 }
             }
+            else if ($name === '*' && !empty($value)) {
+                $picks[] = $choice;
+                break;
+            }
             runDebug(__FILE__, __FUNCTION__, __LINE__, "value = '{$value}', client property = '{$client_property}'.", 2);
             if (!empty($value) && $client_property == $value) $picks[] = $choice;
         }
@@ -914,8 +918,14 @@ function parse_condition_tag(&$convoArr, $element, $parentName, $level)
                 $condition_value = ($condition_value == "*{$n}") ? $stars[$n] : $condition_value;
             }
             //runDebug(__FILE__, __FUNCTION__, __LINE__, "Putzo's star = {$condition_value}", 2);
+            $pick = (normalize_text($condition_value) == normalize_text($test_value) || $condition_value == '*' && $test_value != 'undefined') ? $element : '';
         }
-        $pick = (normalize_text($condition_value) == normalize_text($test_value) || $condition_value == '*' && $test_value != 'undefined') ? $element : '';
+        else if ($condition_name === '*' && !empty($condition_value)) {
+            $pick = $element;
+        }
+        else {
+            $pick = '';
+        }
     }
 
     // Condition tag with name attribute
@@ -951,7 +961,7 @@ function parse_condition_tag(&$convoArr, $element, $parentName, $level)
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Pick Value = '$testVarValue'", 4);
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking to see if $test_value (Client Property) matches $testVarValue (condition value).", 4);
 
-                if (aiml_pattern_match($testVarValue, $test_value))
+                if (aiml_pattern_match($testVarValue, $test_value) || $condition_name === '*' && !empty($testVarValue))
                 {
                     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Pick XML = ' . $pick->asXML(), 4);
                     break;
