@@ -758,6 +758,8 @@ function parse_formal_tag(&$convoArr, $element, $parentName, $level)
  */
 function parse_srai_tag(&$convoArr, $element, $parentName, $level)
 {
+    global $convoArrStack;
+    $convoArrStack[] = $convoArr['aiml'];
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SRAI tag.', 2);
     $starArray = array('~<star[ ]?/>~i', '~<star index="\d+"[ ]?\/>~');
     $elementXML = $element->asXML();
@@ -768,6 +770,7 @@ function parse_srai_tag(&$convoArr, $element, $parentName, $level)
     $response = run_srai($convoArr, $convoArr['aiml']['lookingfor']);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 4);
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
+    $convoArr['aiml'] = array_pop($convoArrStack);
     return $response_string;
 }
 
@@ -782,11 +785,13 @@ function parse_srai_tag(&$convoArr, $element, $parentName, $level)
  */
 function parse_sr_tag(&$convoArr, $element, $parentName, $level)
 {
+    global $convoArrStack;
+    $convoArrStack[] = $convoArr['aiml'];
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SR tag.', 4);
     $response = run_srai($convoArr, $convoArr['aiml']['stars'][1]);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SR tag', 4);
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
-
+    $convoArr['aiml'] = array_pop($convoArrStack);
     return $response_string;
 }
 

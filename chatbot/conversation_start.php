@@ -70,6 +70,7 @@ runDebug(__FILE__, __FUNCTION__, __LINE__, "Loaded all Includes", 4);
 
 //initialise globals
 $convoArr = array();
+$convoArrStack = array();
 $new_convo_id = false;
 $old_convo_id = false;
 $say = '';
