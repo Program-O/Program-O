@@ -924,7 +924,7 @@ function parse_condition_tag(&$convoArr, $element, $parentName, $level)
             $pick = $element;
         }
         else {
-            $pick = '';
+            $pick = (normalize_text($condition_value) == normalize_text($test_value) || $condition_value == '*' && $test_value != 'undefined') ? $element : '';
         }
     }
 
