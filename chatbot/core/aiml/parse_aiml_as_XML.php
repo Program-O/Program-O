@@ -838,9 +838,17 @@ function parse_condition_tag(&$convoArr, $element, $parentName, $level)
         {
             $attr = $choice->attributes();
             $name = (string)$attr->name;
+
+            if (strpos($name, '*') === 0)
+            {
+                $index = substr($name, 1);
+                $index = empty($index) ? 1 : $index;
+                $name = isset($stars[$index]) ? $stars[$index] : 'undefined';
+            }
+
             $value = (string)$attr->value;
             $rdChoice = $choice->asXML();
-            runDebug(__FILE__, __FUNCTION__, __LINE__, "Current choice XML = {$rdChoice}", 2);
+            runDebug(__FILE__, __FUNCTION__, __LINE__, "name: $name Current choice XML = {$rdChoice}", 2);
             $client_property = (isset($client_properties[$name])) ? $client_properties[$name] : 'undefined';
             runDebug(__FILE__, __FUNCTION__, __LINE__, "Client Property to check: {$client_property}", 2);
             $elementValue =(isset($choice->text)) ? (string)$choice->text : (string)$choice;
@@ -862,7 +870,7 @@ function parse_condition_tag(&$convoArr, $element, $parentName, $level)
                     }
                 }
             }
-            else if ($name === '*' && !empty($value)) {
+            else if ($name === $value) {
                 $picks[] = $choice;
                 break;
             }
@@ -889,6 +897,15 @@ function parse_condition_tag(&$convoArr, $element, $parentName, $level)
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with 2 attributes.', 4);
         $condition_name = (string)$element['name'];
+
+
+        if (strpos($condition_name, '*') === 0)
+        {
+            $index = substr($condition_name, 1);
+            $index = empty($index) ? 1 : $index;
+            $condition_name = isset($stars[$index]) ? $stars[$index] : 'undefined';
+        }
+
         //$test_value = trim(get_client_property($convoArr, $condition_name));
         $test_value = (isset($convoArr['client_properties'][$condition_name])) ?
             $convoArr['client_properties'][$condition_name] :
@@ -920,7 +937,7 @@ function parse_condition_tag(&$convoArr, $element, $parentName, $level)
             //runDebug(__FILE__, __FUNCTION__, __LINE__, "Putzo's star = {$condition_value}", 2);
             $pick = (normalize_text($condition_value) == normalize_text($test_value) || $condition_value == '*' && $test_value != 'undefined') ? $element : '';
         }
-        else if ($condition_name === '*' && !empty($condition_value)) {
+        else if ($condition_name === $condition_value) {
             $pick = $element;
         }
         else {
@@ -933,6 +950,14 @@ function parse_condition_tag(&$convoArr, $element, $parentName, $level)
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with only the NAME attribute', 4);
         $condition_name = (string)$element['name'];
+
+        if (strpos($condition_name, '*') === 0)
+        {
+            $index = substr($condition_name, 1);
+            $index = empty($index) ? 1 : $index;
+            $condition_name = isset($stars[$index]) ? $stars[$index] : 'undefined';
+        }
+
         //$test_value = trim(get_client_property($convoArr, $condition_name));
         $test_value = isset($convoArr['client_properties'][$condition_name]) ? $convoArr['client_properties'][$condition_name] : 'undefined';
 
@@ -961,14 +986,10 @@ function parse_condition_tag(&$convoArr, $element, $parentName, $level)
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Pick Value = '$testVarValue'", 4);
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking to see if $test_value (Client Property) matches $testVarValue (condition value).", 4);
 
-                if (aiml_pattern_match($testVarValue, $test_value) || $condition_name === '*' && !empty($testVarValue))
+                if (aiml_pattern_match($testVarValue, $test_value) || $condition_name === $testVarValue)
                 {
                     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Pick XML = ' . $pick->asXML(), 4);
                     break;
-                }
-                else
-                {
-                    //$pick = $pick->asXML();
                 }
             }
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($pick, true), 4);
