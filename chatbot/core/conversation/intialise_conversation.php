@@ -153,7 +153,11 @@ function write_to_session($convoArr)
 function read_from_session()
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Reading from session", 4);
-    $convoArr = array();
+    $convoArr = array(
+        'say'          => '',
+        'conversation' => array(),
+        'aiml'         => array(),
+    );
 
     //initialise
     if (isset ($_SESSION['programo']))

@@ -705,12 +705,9 @@ span.eightyPercent textarea.wide {
     right: 0;
     text-indent: 1em;
     overflow: auto;
-    padding: 0 5px;
+    padding: 5px 0 0 5px;
     background-color: #FFFFCC;
     z-index: 3;
-    /*
-      width: 99%;
-    */
 }
 
 #rssContainer {
@@ -984,7 +981,9 @@ div#AIML_List {
     width: 48%;
 }
 
-table#AIML tbody td, table#SRAI_LOOKUP tbody td {
+table#AIML tbody td,
+table#AIML_UD tbody td,
+table#SRAI_LOOKUP tbody td {
     position: relative;
 }
 

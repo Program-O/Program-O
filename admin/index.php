@@ -532,6 +532,7 @@ function makeLeftLinks()
  */
 function getCurrentVersion($branch)
 {
+    if(isset($_SESSION['GitHubVersion'])) return $_SESSION['GitHubVersion'];
     $versionURLtemplate = 'https://raw.githubusercontent.com/Program-O/Program-O/[branch]/version.txt';
     $url = str_replace('[branch]', $branch, $versionURLtemplate);
     //file_put_contents("../logs/index.getCurrentVersion.branch_url.txt", print_r($url, true));

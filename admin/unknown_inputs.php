@@ -220,7 +220,7 @@ endForm;
  * @param $id
  * @return mixed|string
  */
-function get_unknown_inputs($id)
+function get_unknown_inputs($id, $show)
 {
     $bot_name = (isset ($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'Bot';
     $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;

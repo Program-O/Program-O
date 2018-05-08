@@ -201,7 +201,9 @@ if (!empty($say)) {
 
     if (!empty($form_vars['name']))
     {
-        $convoArr['conversation']['user_name'] = $user_name = $form_vars['name'];
+        $user_name = $form_vars['name'];
+        $convoArr['conversation']['user_name'] = $user_name;
+        $convoArr['client_properties']['name'] = $user_name;
     }
     if (!isset($convoArr['conversation']['user_id']) && isset($user_id))
     {

@@ -194,7 +194,7 @@ function implode_recursive($glue, $input, $file = 'unknown', $function = 'unknow
  * @param array $convoArr
  * @param SimpleXMLElement $element
  * @param int $level
- * @return string
+ * @return mixed
  */
 function parseTemplateRecursive(&$convoArr, SimpleXMLElement $element, $level = 0)
 {
