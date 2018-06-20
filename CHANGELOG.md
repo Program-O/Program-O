@@ -1,13 +1,13 @@
 # [Program O](http://www.program-o.com)
 
-##CHANGELOG info:
+## CHANGELOG info:
 
 - Version: 2.6.*
 - Authors: Elizabeth Perreau and Dave Morton
 - Date: June 19th 2017
 
 
-##Version History:
+## Version History:
 
 2.6.10  Code Cleanup, another round of bug fixes
 
