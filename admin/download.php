@@ -234,13 +234,13 @@ function getSQLByFileName($filename)
     chdir($curPath);
     $dbFilename = $filename;
     $filename = str_ireplace('.aiml', '.sql', $filename);
-    $categoryTemplate = "    ([id],[bot_id],'[aiml]','[pattern]','[thatpattern]','[template]','[topic]','[filename]'),";
+    $newLine = "    ([bot_id],'[pattern]','[thatpattern]','[template]','[topic]','[filename]'),";
     $phpVer = phpversion();
     $cleanedFilename = $dbFilename;
     $topicArray = array();
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM aiml WHERE filename LIKE ':cleanedFilename' and bot_id = :bot_id ORDER BY id ASC;";
+    $sql = "SELECT * FROM aiml WHERE filename LIKE :cleanedFilename and bot_id = :bot_id ORDER BY id ASC;";
     $params = array(':cleanedFilename' => $cleanedFilename, ':bot_id' => $bot_id);
     $fileContent = file_get_contents('SQL_Header.dat');
 
@@ -259,16 +259,11 @@ function getSQLByFileName($filename)
 
     foreach ($result as $row)
     {
-        $aiml = str_replace("\r\n", '', $row['aiml']);
-        $aiml = str_replace("\n", '', $aiml);
-
         $template = str_replace("\r\n", '', $row['template']);
         $template = str_replace("\n", '', $template);
 
         //$newLine = str_replace('[id]', $row['id'], $categoryTemplate);
-        $newLine = str_replace('[id]', 'null', $categoryTemplate);
         $newLine = str_replace('[bot_id]', $row['bot_id'], $newLine);
-        $newLine = str_replace('[aiml]', $aiml, $newLine);
         $newLine = str_replace('[pattern]', $row['pattern'], $newLine);
         $newLine = str_replace('[thatpattern]', $row['thatpattern'], $newLine);
         $newLine = str_replace('[template]', $template, $newLine);
