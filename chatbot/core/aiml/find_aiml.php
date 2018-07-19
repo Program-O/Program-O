@@ -1027,7 +1027,7 @@ function find_aiml_matches(&$convoArr)
     if (!empty($storedtopic))
     {
         $topic_like = "\n        OR " . str_replace('[search]', $storedtopic, $rplTemplate);
-        $topic_like = str_replace('[field]', 'thatpattern', $topic_like);
+        $topic_like = str_replace('[field]', 'topic', $topic_like);
     }
 
 
