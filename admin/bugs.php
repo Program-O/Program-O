@@ -21,6 +21,9 @@ if (count($post_vars) > 0)
 }
 
 $func = (isset($post_vars['func'])) ? $post_vars['func'] : 'showBugForm';
+if(!in_array($func,$allowed_functions_array)){
+    die('This method is not allowed');
+}
 
 # Build page sections
 # ordered here in the order that the page is constructed

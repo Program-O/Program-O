@@ -15,6 +15,10 @@
 $post_vars = filter_input_array(INPUT_POST);
 $bot_name = (isset ($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'unknown';
 $func = (isset ($post_vars['func'])) ? $post_vars['func'] : 'getBot';
+if(!in_array($func,$allowed_functions_array)){
+    die('This method is not allowed');
+}
+
 $topNav = $template->getSection('TopNav');
 $leftNav = $template->getSection('LeftNav');
 $main = $template->getSection('Main');

@@ -62,6 +62,7 @@ if (!array_key_exists($page, $allowed_pages))
     $msg = 'Invalid argument!';
 }
 
+$allowed_functions_array = array('updateBot','addBotPersonality','getBot','showBugForm','sendMail');
 $allowed_input_vars = (isset($allowed_pages[$page])) ? $allowed_pages[$page] : array();
 $form_vars = clean_inputs($allowed_input_vars);
 
