@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.*
+ * Version: 2.6.11
  * FILE: config/install_config.php
  * AUTHOR: Elizabeth Perreau and Dave Morton AND DAVE MORTON
  * DATE: FEB 01 2016

@@ -2,9 +2,8 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.*
+ * Version: 2.6.11
  * FILE: bugs.php
- * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-12-2014
  * DETAILS: Allows admins to file bug reports directly to the Program O dev team
  ***************************************/

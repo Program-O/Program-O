@@ -1,7 +1,7 @@
 # [Program O](http://www.program-o.com)
 
 Readme info:
-- Version: 2.6.*
+- Version: 2.6.11
 - Authors: Elizabeth Perreau and Dave Morton
 - Date: June 19th 2014
 
