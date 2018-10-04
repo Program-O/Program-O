@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: chatbot/core/conversation/display_conversation.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -19,7 +19,7 @@
  **/
 function get_conversation_to_display($convoArr)
 {
-    global $dbConn, $dbn, $bot_name, $unknown_user;
+    global $dbn, $bot_name, $unknown_user;
     $orderedRows = array();
 
     $user_id = $convoArr['conversation']['user_id'];
@@ -116,6 +116,7 @@ function get_conversation($convoArr)
  **/
 function get_html($convoArr, $conversation)
 {
+    //$conversation = $convoArr['conversation'];
     if (!is_array($conversation))
     {
         $tmp = $conversation;

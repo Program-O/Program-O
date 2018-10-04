@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: spellcheck.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-09-2014
@@ -85,10 +85,10 @@ $rightNav    = str_replace('[headerTitle]', scPaginate(), $rightNav);
  */
 function scPaginate()
 {
-    global $dbConn, $group;
+    global $group;
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT COUNT(*) FROM `spellcheck` WHERE 1";
+    $sql = "SELECT COUNT(*) FROM `spellcheck`";
     $row = db_fetch($sql,null, __FILE__, __FUNCTION__, __LINE__);
 
     $rowCount = $row['COUNT(*)'];
@@ -137,18 +137,18 @@ function scPaginate()
  */
 function getMisspelledWords()
 {
-    global $dbConn, $template, $group;
+    global $template, $group, $form_vars;
 
     # pagination variables
     $_SESSION['poadmin']['group'] = $group;
-    $startEntry = ($group - 1) * 50;
+    $startEntry = abs(($group - 1) * 50);
     $end = $group + 50;
     $_SESSION['poadmin']['page_start'] = $group;
 
     $curID = (isset($form_vars['id'])) ? $form_vars['id'] : -1;
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `id`,`missspelling` FROM `spellcheck` WHERE 1 ORDER BY abs(`id`) ASC limit $startEntry, 50;";
+    $sql = "SELECT `id`,`missspelling` FROM `spellcheck` limit $startEntry, 50;";
 
     $baseLink = $template->getSection('NavLink');
     $links = '      <div class="userlist">' . "\n";
@@ -202,7 +202,7 @@ function spellCheckForm()
  */
 function insertSpell()
 {
-    global $dbConn, $template, $msg, $form_vars;
+    global $template, $msg, $form_vars;
     $correction = trim($form_vars['correction']);
     $missspell = trim($form_vars['missspell']);
 
@@ -212,7 +212,7 @@ function insertSpell()
     }
     else {
         /** @noinspection SqlDialectInspection */
-        $sql = "INSERT INTO `spellcheck` VALUES (NULL,'$missspell','$correction')";
+        $sql = "INSERT INTO `spellcheck` VALUES (:missspell, :correction)";
         $params = array(
             ':missspell' => $missspell,
             ':correction' => $correction
@@ -239,7 +239,7 @@ function insertSpell()
  */
 function delSpell($id)
 {
-    global $dbConn, $template, $msg;
+    global $template, $msg;
 
     if ($id == "")
     {
@@ -248,7 +248,7 @@ function delSpell($id)
     else
     {
         /** @noinspection SqlDialectInspection */
-        $sql = "DELETE FROM `spellcheck` WHERE `id` = :id LIMIT 1";
+        $sql = "DELETE FROM spellcheck WHERE id = :id";
         $params = array(':id' => $id);
         $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
@@ -270,7 +270,7 @@ function delSpell($id)
  */
 function runSpellSearch()
 {
-    global $dbConn, $template, $form_vars;
+    global $template, $form_vars;
 
     $i = 0;
     $search = trim($form_vars['search']);
@@ -300,7 +300,7 @@ function runSpellSearch()
         $id = $row['id'];
         $group = round(($id / 50));
         $action = "<a href=\"index.php?page=spellcheck&amp;action=edit&amp;id=$id&amp;group=$group#$id\"><img src=\"images/edit.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>
-                    <a href=\"index.php?page=spellcheck&amp;action=del&amp;id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this missspelling? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\" alt=\"Edit this entry\" title=\"Edit this entry\" /></a>";
+               <a href=\"index.php?page=spellcheck&amp;action=delete&amp;id=$id&amp;group=$group#$id\" onclick=\"return confirm('Do you really want to delete this missspelling? You will not be able to undo this!')\";><img src=\"images/del.png\" border=0 width=\"15\" height=\"15\" alt=\"Delete this entry\" title=\"Delete this entry\" /></a>";
         $htmltbl .= "<tr valign=top>
                             <td>$misspell</td>
                             <td>$correction</td>
@@ -333,11 +333,11 @@ function runSpellSearch()
  */
 function editSpellForm($id)
 {
-    global $dbConn, $template, $group;
+    global $template, $group;
     $form   = $template->getSection('EditSpellForm');
 
     /** @noinspection SqlDialectInspection */
-    $sql    = "SELECT * FROM `spellcheck` WHERE `id` = :id LIMIT 1";
+    $sql    = "SELECT * FROM `spellcheck` WHERE `id` = :id";
     $params = array(':id' => $id);
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $uc_missspelling = _strtoupper($row['missspelling']);
@@ -353,7 +353,7 @@ function editSpellForm($id)
 
 function updateSpell()
 {
-    global $dbConn, $template, $msg, $form_vars;
+    global $template, $msg, $form_vars;
 
     $missspelling = trim($form_vars['missspelling']);
     $correction = trim($form_vars['correction']);
@@ -366,7 +366,7 @@ function updateSpell()
     else
     {
         /** @noinspection SqlDialectInspection */
-        $sql = "UPDATE `spellcheck` SET `missspelling` = :missspelling,`correction` = :correction WHERE `id` = :id LIMIT 1";
+        $sql = "UPDATE `spellcheck` SET `missspelling` = :missspelling,`correction` = :correction WHERE `id` = :id";
         $params = array(
             ':missspelling' => $missspelling,
             ':correction' => $correction,

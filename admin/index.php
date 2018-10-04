@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: index.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -62,6 +62,7 @@ if (!array_key_exists($page, $allowed_pages))
     $msg = 'Invalid argument!';
 }
 
+$allowed_functions_array = array('updateBot','addBotPersonality','getBot','showBugForm','sendMail');
 $allowed_input_vars = (isset($allowed_pages[$page])) ? $allowed_pages[$page] : array();
 $form_vars = clean_inputs($allowed_input_vars);
 
@@ -92,7 +93,6 @@ $newVersionAvailable = "Program O $githubVersion is now available for the "
     . $branches[$branch] . ' branch)';
 
 $version = (version_compare(VERSION, $githubVersion, '>=')) ? $upToDate : $newVersionAvailable;
-$dbConn = db_open();
 
 if ($page == 'logout')
 {
@@ -157,7 +157,7 @@ if ($curPage == 'login' && !empty($_SESSION['poadmin']['logged_in']))
 }
 
 $_SESSION['poadmin']['curPage'] = $curPage;
-($curPage != 'logout' || $curPage == 'login') ? include("{$curPage}.php") : false;
+($curPage != 'logout' || $curPage == 'login') ? require_once("{$curPage}.php") : false;
 
 $bot_format_link = (!empty($bot_format)) ? "&amp;format=$bot_format" : '';
 $curPage = (isset($curPage)) ? $curPage : 'main';
@@ -533,6 +533,7 @@ function makeLeftLinks()
  */
 function getCurrentVersion($branch)
 {
+    if(isset($_SESSION['GitHubVersion'])) return $_SESSION['GitHubVersion'];
     $versionURLtemplate = 'https://raw.githubusercontent.com/Program-O/Program-O/[branch]/version.txt';
     $url = str_replace('[branch]', $branch, $versionURLtemplate);
     //file_put_contents("../logs/index.getCurrentVersion.branch_url.txt", print_r($url, true));
@@ -569,7 +570,7 @@ function getCurrentVersion($branch)
 
 function login()
 {
-    global $form_vars, $dbConn, $msg;
+    global $form_vars, $msg;
 
     if ((!isset($form_vars['user_name'])) || (!isset($form_vars['pw'])))
     {

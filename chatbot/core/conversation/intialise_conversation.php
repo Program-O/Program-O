@@ -3,7 +3,7 @@
 /***************************************
  * www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: chatbot/core/conversation/intialise_conversation.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -153,7 +153,11 @@ function write_to_session($convoArr)
 function read_from_session()
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Reading from session", 4);
-    $convoArr = array();
+    $convoArr = array(
+        'say'          => '',
+        'conversation' => array(),
+        'aiml'         => array(),
+    );
 
     //initialise
     if (isset ($_SESSION['programo']))
@@ -439,24 +443,39 @@ function log_conversation($convoArr)
 
     $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
-    $cpSQL = <<<endSQL
+    // check to see if there is already a setting in the table
+
+    $insertSQL = <<<endSQL
 insert into `client_properties`
     (`id`, `user_id`, `bot_id`, `name`, `value`)
-    values(null, :user_id, :bot_id, :name, :value)
-    on duplicate key update value=:value;
+    values(null, :user_id, :bot_id, :name, :value);
 endSQL;
+    $updateSQL = 'update `client_properties` set value = :value where `bot_id` = :bot_id and `user_id` = :user_id and `name` = :name;';
     $client_properties = $convoArr['client_properties'];
-    $params = [];
-    foreach ($client_properties as $key => $value)
+    $insertParams = [];
+    $updateParams = [];
+    foreach ($client_properties as $name => $value)
     {
-        $params[] = array(
+        $params = array(
             ':bot_id' => $bot_id,
             ':user_id' => $user_id,
-            ':name' => $key,
+            ':name' => $name,
             ':value' => $value,
         );
+        $lookSQL = 'select id from client_properties where `bot_id` = :bot_id and `user_id` = :user_id and `name` = :name;';
+        $lookParams = $params;
+        unset($lookParams[':value']);
+        $result = "foo!";
+        $result = db_fetch($lookSQL, $lookParams, __FILE__, __FUNCTION__, __LINE__);
+        $debug_SQL = db_parseSQL($lookSQL, $lookParams);
+        if (!empty($result))
+        {
+            $updateParams[] = $params;
+        }
+        else $insertParams[] = $params;
     }
-    $success = db_write($cpSQL, $params, true, __FILE__, __FUNCTION__, __LINE__);
+    $insertSuccess = (!empty($insertParams)) ? db_write($insertSQL, $insertParams, true, __FILE__, __FUNCTION__, __LINE__) : true;
+    $updateSuccess = (!empty($updateParams)) ? db_write($updateSQL, $updateParams, true, __FILE__, __FUNCTION__, __LINE__) : true;
     return $convoArr;
 }
 

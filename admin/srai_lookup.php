@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: srai_lookup.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-26-2014
@@ -49,15 +49,10 @@ $mainTitle      = 'SRAI Lookup ' . $template->getSection('HelpLink');
 $showHelp = $template->getSection('editSRAIShowHelp');
 $mainContent = str_replace('[showHelp]', $showHelp, $mainContent);
 
-/** @noinspection SqlDialectInspection */
 $countSQL = 'SELECT COUNT(id) FROM srai_lookup WHERE bot_id = :bot_id;';
-$countSTH = $dbConn->prepare($countSQL);
-/** @noinspection PhpUndefinedVariableInspection */
-$countSTH->bindValue(':bot_id', $bot_id, PDO::PARAM_INT);
-$countSTH->execute();
-$countRow = $countSTH->fetch();
-$countSTH->closeCursor();
-$row_count = number_format($countRow['COUNT(id)']);
+$params = array(':bot_id' => $bot_id);
+$countResult = db_fetch($countSQL, $params, __FILE__, __FUNCTION__, __LINE__);
+$row_count = number_format($countResult['COUNT(id)']);
 
 $mainContent = str_replace('[row_count]', $row_count, $mainContent);
 $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
@@ -70,7 +65,7 @@ $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
 function fillLookup()
 {
     set_time_limit(0);
-    global $dbConn;
+    global $bot_id;
     // <srai>XEDUCATELANG <star index="1"/> XSPLIT <star index="2"/> XSPLIT <star index="3"/>XSPLIT</srai>
     $starArray = array('~<star[ ]?/>~i', '~<star index="\d+"[ ]?\/>~');
     $msg = '';
@@ -79,36 +74,69 @@ function fillLookup()
 
     try
     {
-        /** @noinspection SqlDialectInspection */
-        $dropSQL = '
-    ALTER TABLE srai_lookup DROP INDEX pattern;
-    TRUNCATE TABLE `srai_lookup`;
-    ALTER TABLE `aiml` ADD INDEX `srai_search` (`bot_id`, `pattern`(64));';
-        $dropSTH = $dbConn->prepare($dropSQL);
-        $dropSTH->execute();
-        $dropSTH->closeCursor();
+        // first, check to see if the index exists
+        $testSQL = "SHOW INDEX FROM `srai_lookup` WHERE `Key_name` = 'pattern';";
+        $testResult = db_fetch($testSQL, null, __FILE__, __FUNCTION__, __LINE__);
+
+        // if the index exists then drop it. we'll recreate it later
+        if (!empty($testResult))
+        {
+            $dropSQL = 'ALTER TABLE srai_lookup DROP INDEX pattern;';
+            $dropResult = db_write($dropSQL, null, false, __FILE__, __FUNCTION__, __LINE__);
+        }
+
+        // now delete the rows for the current chatbot, but leave the others alone
+        $deleteSQL = 'delete from `srai_lookup` where bot_id=:bot_id;';
+        $deleteParams = array(':bot_id' => $bot_id);
+        $deleteResult = db_write($deleteSQL, $deleteParams, false, __FILE__, __FUNCTION__, __LINE__);
+        $deleteResult = number_format($deleteResult);
+
+        // lastly, check if the aiml table has an index for srai search and if not, add it
+        //
+        $testSQL = "SHOW INDEX FROM `aiml` WHERE `Key_name` = 'srai_search';";
+        $testResult = db_fetch($testSQL, null, __FILE__, __FUNCTION__, __LINE__);
+
+        // if the index exists then drop it, then recreate it
+        if (!empty($testResult))
+        {
+            $dropSQL = 'ALTER TABLE aiml DROP INDEX srai_search; ALTER TABLE `aiml` ADD INDEX `srai_search` (`bot_id`, `pattern`(64));';
+            $dropResult = db_write($dropSQL, null, false, __FILE__, __FUNCTION__, __LINE__);
+        }
+        else
+        {
+            $dropSQL = 'ALTER TABLE `aiml` ADD INDEX `srai_search` (`bot_id`, `pattern`(64));';
+            $dropResult = db_write($dropSQL, null, false, __FILE__, __FUNCTION__, __LINE__);
+        }
+        $let = $timeStart;
+        $now = microtime(true);
+        $cet = round($now - $let, 3);
+        $let = $now;
+        $msg .= "Removed {$deleteResult} existing rows from the srai lookup table, and altered the indexes.";
+        $msg .= "Elapsed: {$cet} seconds.<br/>";
     }
     catch (Exception $e) { }
 
-    $searchSQL = "select id, bot_id, template from aiml where template like '%<srai>%' order by id asc;";
-    $es = microtime(true);
-    $searchSTH = $dbConn->prepare($searchSQL);
-    $searchSTH->execute();
-    $searchResult = $searchSTH->fetchAll();
-    $searchSTH->closeCursor();
+    $searchSQL = "select id, template from aiml where template like '%<srai>%' and bot_id = :bot_id order by id asc;";
+    $searchParams = array(
+        ':bot_id' => $bot_id
+    );
+    $searchResult = db_fetchAll($searchSQL, $searchParams, __FILE__, __FUNCTION__, __LINE__);
     $rowCount = count($searchResult);
     $totalRows = number_format($rowCount);
-    $msg .= ("Found $totalRows AIML categories that contain SRAI calls.<br>\n");
+    $now = microtime(true);
+    $cet = round($now - $let, 3);
+    $let = $now;
+    $msg .= ("Found $totalRows AIML categories that contain SRAI calls. Elapsed: $cet seconds.<br>\n");
     //exit();
     $patterns = array(); // array to contain valid patterns, to prevent duplicates
 
     foreach ($searchResult as $row)
     {
-        $bot_id = $row['bot_id'];
+        $id = $row['id'];
 
-        if (!isset($patterns[$bot_id]))
+        if (!isset($patterns[$id]))
         {
-            $patterns[$bot_id] = array();
+            $patterns[$id] = array();
         }
 
         $AIMLtemplate = trim($row['template']);
@@ -126,9 +154,9 @@ function fillLookup()
 
             if (strstr($srai, '<') == false)
             {
-                if (!in_array($srai, $patterns[$bot_id]))
+                if (!in_array($srai, $patterns[$id]))
                 {
-                    $patterns[$bot_id][] = $srai;
+                    $patterns[$id][] = $srai;
                 }
             }
             $AIMLtemplate = substr($AIMLtemplate, $end);
@@ -136,59 +164,89 @@ function fillLookup()
     }
 
     //save_file(_LOG_PATH_ . 'srai_lookup.patterns.txt', print_r($patterns, true));
+    foreach ($patterns as $key => $value)
+    {
+        if (empty($value)) unset($patterns[$key]);
+    }
 
     /** @noinspection SqlDialectInspection */
-    $patternSQL = 'SELECT id FROM aiml WHERE pattern = :pattern AND bot_id = :bot_id ORDER BY id limit 1;';
-    $patternSTH = $dbConn->prepare($patternSQL);
+    $patternSQL = "SELECT id FROM aiml WHERE bot_id = :bot_id AND pattern like :pattern ORDER BY id limit 1;";
     $lookups = array();
+    foreach ($patterns as $id => $row)
+    {
+        if (empty($row)) continue;
+        foreach ($row as $index => $pattern)
+        {
+            $params = array(
+                ':bot_id' => $bot_id,
+                ':pattern' => $pattern
+            );
+            $patternResult = db_fetch($patternSQL, $params, __FILE__, __FUNCTION__, __LINE__);
+            $template_id = $patternResult['id'];
+            $lookups[] = array(
+                'bot_id' => $bot_id,
+                'pattern' => $pattern,
+                'template_id' => $template_id
+            );
+/*
+*/
+        }
+    }
+    foreach ($lookups as $key => $value)
+    {
+        if (empty($value['template_id'])) {
+            unset($lookups[$key]);
+        }
+    }
+    $now = microtime(true);
+    $cet = round($now - $let, 3);
+    $let = $now;
+    $lookupsCount = count($lookups);
+    $lookupsCount = number_format($lookupsCount);
+    $msg .= ("Loaded {$lookupsCount} AIML categories that need to be added to the lookup table. Elapsed: {$cet} seconds.<br>\n");
+    //save_file(_LOG_PATH_ . 'lookups.txt', print_r($lookups, true));
+    /** @noinspection SqlDialectInspection */
+    // db_multi_insert($tableName, $data,  $file = 'unknown', $function = 'unknown', $line = 'unknown')
+    $insertResult = db_multi_insert('srai_lookup', $lookups, __FILE__, __FUNCTION__, __LINE__);
+    $insertCount = number_format($insertResult);
 
+    // Now put the index back, and remove the temporary one
+    /** @noinspection SqlDialectInspection */
+    $indexSQL = 'ALTER TABLE `srai_lookup` ADD INDEX `pattern` (`bot_id`, `pattern`(64));ALTER TABLE aiml DROP INDEX srai_search;';
+    $indexResult = db_write($indexSQL, null, false, __FILE__, __FUNCTION__, __LINE__);
+    $now = microtime(true);
+    $cet = round($now - $let, 3);
+    $let = $now;
+    $msg .= "Inserted $insertCount new entries into the SRAI lookup table. Elapsed: {$cet}<br>\n";
+    $timeEnd = microtime(true);
+    $elapsed = round($timeEnd - $timeStart, 3);
+    $msg .= "Total elapsed time: $elapsed seconds.<br>\n";
+
+    return $msg;
+}
+
+function foo($patterns, $lookups)
+{
     foreach ($patterns as $id => $row)
     {
         foreach ($row as $pattern)
         {
-            $patternSTH->bindValue(':pattern', $pattern);
-            $patternSTH->bindValue(':bot_id', $id);
-            $patternSTH->execute();
-
-            $patternResult = $patternSTH->fetch();
-            $patternSTH->closeCursor();
+            if (is_array($pattern))
+            {
+                $lookups = foo($pattern, $lookups);
+            }
+            $params = array(
+                ':bot_id' => $bot_id,
+                ':pattern' => $pattern
+            );
+            $patternResult = db_fetch($patternSQL, $params, __FILE__, __FUNCTION__, __LINE__);
             $template_id = $patternResult['id'];
             $lookups[] = array(
-                ':bot_id' => $id,
+                ':bot_id' => $bot_id,
                 ':pattern' => $pattern,
                 ':template_id' => $template_id
             );
         }
     }
-    /** @noinspection SqlDialectInspection */
-    $insertSQL = "INSERT INTO srai_lookup (id, bot_id, pattern, template_id) VALUES (null, :bot_id, :pattern, :template_id);";
-    $insertSTH = $dbConn->prepare($insertSQL);
-    $insertCount = 0;
-
-    foreach ($lookups as $params)
-    {
-        if (empty($params[':template_id'])) {
-            continue;
-        }
-
-        $insertSTH->execute($params);
-        $insertSTH->closeCursor();
-        $insertCount++;
-    }
-
-    // Now put the index back
-    /** @noinspection SqlDialectInspection */
-    $indexSQL = 'ALTER TABLE `srai_lookup` ADD INDEX `pattern` (`bot_id`, `pattern`(64)); ALTER TABLE aiml DROP INDEX srai_search;';
-    $indexSTH = $dbConn->prepare($indexSQL);
-    $indexSTH->execute();
-    $indexSTH->closeCursor();
-
-    $insertCount = number_format($insertCount);
-    $msg .= "Inserted $insertCount new entries into the SRAI lookup table!<br>\n";
-    $timeEnd = microtime(true);
-    $elapsed = $timeEnd - $timeStart;
-    $elapsed = round($elapsed, 3);
-    $msg .= "Elapsed time: $elapsed seconds.<br>\n";
-
-    return $msg;
+    return $lookups;
 }

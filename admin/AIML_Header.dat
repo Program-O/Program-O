@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="[charset]"?>
 
-<!-- Copyright ©[year] [bm_name]                                        -->
-
+<!-- Copyright ©[year] [bm_name]-->
 <!--  Permission is hereby granted, free of charge, to any person       -->
 <!--  obtaining a copy of this software and associated documentation    -->
 <!--  files (the "Software"), to deal in the Software without           -->
@@ -26,6 +25,6 @@
 <!--  Complies with the AIML 1.0 Standard                               -->
 <!--  as adopted by the ALICE A.I. Foundation.                          -->
 <!--  Last modified [curDate]                                           -->
-<!--  file: [fileName]                                                  -->
+<!--  file: [fileName]-->
 
 <aiml version="1.0">

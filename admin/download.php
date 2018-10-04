@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: download.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-08-2014
@@ -123,17 +123,14 @@ function getAIMLByFileName($filename)
         return "You need to select a file to download.";
     }
 
-    global $dbn, $botmaster_name, $charset, $dbConn, $bot_id;
+    global $botmaster_name, $charset, $bot_id;
 
-    $bmnLen = strlen($botmaster_name) - 2;
-    $bmnSearch = str_pad('[bm_name]', $bmnLen);
+    $bmnLen = 51 - strlen($botmaster_name);
+    $bmnPadding = str_pad('', $bmnLen);
     $categoryTemplate = '<category><pattern>[pattern]</pattern>[that]<template>[template]</template></category>';
 
     $cleanedFilename = $filename;
-    $fileNameSearch = '[fileName]';
-    $cfnLen = strlen($cleanedFilename);
 
-    $fileNameSearch = str_pad($fileNameSearch, $cfnLen);
     $topicArray = array();
     $curPath = dirname(__FILE__);
     chdir($curPath);
@@ -141,14 +138,20 @@ function getAIMLByFileName($filename)
     $fileContent = file_get_contents(_ADMIN_PATH_ . 'AIML_Header.dat');
     $fileContent = str_replace('[year]', date('Y'), $fileContent);
     $fileContent = str_replace('[charset]', $charset, $fileContent);
-    $fileContent = str_replace($bmnSearch, $botmaster_name, $fileContent);
+    $fileContent = str_replace('[bm_name]', $botmaster_name . $bmnPadding, $fileContent);
+
+    $pad_len = 60 - strlen($cleanedFilename);
+//  NOTE: the value 60 in the previous line is the number of characters from the `[` to the first '-'
+//  in the comment that contains the filename. This makes the comment the same width as the others
+//  in the AIML file.
+    $space_padding = str_pad('', $pad_len, ' ');
+    $fileContent = str_replace('[fileName]', $cleanedFilename . $space_padding, $fileContent);
 
     $curDate = date('m-d-Y', time());
     $cdLen = strlen($curDate);
     $curDateSearch = str_pad('[curDate]', $cdLen);
 
     $fileContent = str_replace($curDateSearch, $curDate, $fileContent);
-    $fileContent = str_replace($fileNameSearch, $cleanedFilename, $fileContent);
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT DISTINCT topic FROM aiml WHERE filename LIKE :cleanedFilename and bot_id = :bot_id;";
@@ -225,19 +228,19 @@ function getAIMLByFileName($filename)
  */
 function getSQLByFileName($filename)
 {
-    global $dbn, $botmaster_name, $dbh, $dbConn, $bot_id;
+    global $dbn, $botmaster_name, $dbh, $bot_id;
 
     $curPath = dirname(__FILE__);
     chdir($curPath);
     $dbFilename = $filename;
     $filename = str_ireplace('.aiml', '.sql', $filename);
-    $categoryTemplate = "    ([id],[bot_id],'[aiml]','[pattern]','[thatpattern]','[template]','[topic]','[filename]'),";
+    $newLine = "    ([bot_id],'[pattern]','[thatpattern]','[template]','[topic]','[filename]'),";
     $phpVer = phpversion();
     $cleanedFilename = $dbFilename;
     $topicArray = array();
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT * FROM aiml WHERE filename LIKE ':cleanedFilename' and bot_id = :bot_id ORDER BY id ASC;";
+    $sql = "SELECT * FROM aiml WHERE filename LIKE :cleanedFilename and bot_id = :bot_id ORDER BY id ASC;";
     $params = array(':cleanedFilename' => $cleanedFilename, ':bot_id' => $bot_id);
     $fileContent = file_get_contents('SQL_Header.dat');
 
@@ -256,16 +259,11 @@ function getSQLByFileName($filename)
 
     foreach ($result as $row)
     {
-        $aiml = str_replace("\r\n", '', $row['aiml']);
-        $aiml = str_replace("\n", '', $aiml);
-
         $template = str_replace("\r\n", '', $row['template']);
         $template = str_replace("\n", '', $template);
 
         //$newLine = str_replace('[id]', $row['id'], $categoryTemplate);
-        $newLine = str_replace('[id]', 'null', $categoryTemplate);
         $newLine = str_replace('[bot_id]', $row['bot_id'], $newLine);
-        $newLine = str_replace('[aiml]', $aiml, $newLine);
         $newLine = str_replace('[pattern]', $row['pattern'], $newLine);
         $newLine = str_replace('[thatpattern]', $row['thatpattern'], $newLine);
         $newLine = str_replace('[template]', $template, $newLine);

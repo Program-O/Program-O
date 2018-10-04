@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: demochat.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-12-2014
@@ -38,7 +38,7 @@ $mainTitle      = 'Chat Demo';
  */
 function showChatFrame()
 {
-    global $template, $bot_name, $bot_id, $dbConn;
+    global $template, $bot_name, $bot_id;
 
     $qs = '?bot_id=' . $bot_id;
     /** @noinspection SqlDialectInspection */

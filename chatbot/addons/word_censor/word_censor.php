@@ -3,7 +3,7 @@
 /***************************************
  * www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: word_censor/word_censor.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -37,7 +37,7 @@ function run_censor($convoArr)
  */
 function initialise_censor($bot_id)
 {
-    global $dbConn, $dbn; //set in global config file
+    global $dbn; //set in global config file
     $_SESSION['pgo_word_censor'] = array();
 
     /** @noinspection SqlDialectInspection */

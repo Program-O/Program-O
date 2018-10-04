@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: botpersonality.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-26-2014
@@ -15,6 +15,10 @@
 $post_vars = filter_input_array(INPUT_POST);
 $bot_name = (isset ($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'unknown';
 $func = (isset ($post_vars['func'])) ? $post_vars['func'] : 'getBot';
+if(!in_array($func,$allowed_functions_array)){
+    die('This method is not allowed');
+}
+
 $topNav = $template->getSection('TopNav');
 $leftNav = $template->getSection('LeftNav');
 $main = $template->getSection('Main');

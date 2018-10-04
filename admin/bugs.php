@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: bugs.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-12-2014
@@ -21,6 +21,9 @@ if (count($post_vars) > 0)
 }
 
 $func = (isset($post_vars['func'])) ? $post_vars['func'] : 'showBugForm';
+if(!in_array($func,$allowed_functions_array)){
+    die('This method is not allowed');
+}
 
 # Build page sections
 # ordered here in the order that the page is constructed

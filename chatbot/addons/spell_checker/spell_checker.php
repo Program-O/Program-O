@@ -3,7 +3,7 @@
 /***************************************
  * www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: spell_checker/spell_checker.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -58,7 +58,7 @@ function run_spell_checker_say($say)
 function spell_check($word, $bot_id)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Preforming a spel chek on $word.", 2);
-    global $dbConn, $dbn, $spellcheck_common_words;
+    global $spellcheck_common_words;
 
     if (strstr($word, "'"))
     {
@@ -115,10 +115,9 @@ function spell_check($word, $bot_id)
 function load_spelling_list()
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading the spellcheck list from the DB.', 2);
-    global $dbConn, $dbn;
 
     $_SESSION['spellcheck'] = array();
-    $sql = "SELECT `missspelling`, `correction` FROM `$dbn`.`spellcheck`;";
+    $sql = "SELECT `missspelling`, `correction` FROM `spellcheck`;";
     $result = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
     $num_rows = count($result);
 

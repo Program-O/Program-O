@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: misc_functions.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-22-2013
@@ -210,7 +210,7 @@ endFooter;
 
 function addUnknownInput($convoArr, $input, $bot_id, $user_id)
 {
-    global $dbConn, $dbn;
+    global $dbn;
 
     $default_aiml_pattern = _strtolower(get_convo_var($convoArr, 'conversation', 'default_aiml_pattern'));
     $lcInput = _strtolower($input);
@@ -239,17 +239,37 @@ function addUnknownInput($convoArr, $input, $bot_id, $user_id)
  * @return string $out
  */
 
-function pretty_print_r($var)
+function pretty_print_r($var, $returnString = false)
 {
     switch (true)
     {
         case (is_array($var)):
-            $out = implode_recursive(",\n", $var, __FILE__, __FUNCTION__, __LINE__);
+            //$out = implode_recursive(",\n", $var, __FILE__, __FUNCTION__, __LINE__);
+            $out = '';
+            foreach ($var as $key => $value)
+            {
+                $message = (is_array($value)) ? print_r($value, true) : $value;
+                $out .= "[{$key}]\n{$message}\n--------------------------------------\n";
+            }
             break;
         default:
             $out = $var;
     }
-    return trim($out, ",\n");
+    switch ($returnString)
+    {
+        case true: return trim($out);
+    }
+    echo trim($out);
+}
+
+function pretty_print_XML($element)
+{
+        $dom = dom_import_simplexml($element);
+        $dom = new DOMDocument("1.0");
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput = true;
+        $dom->loadXML($element->asXML());
+        return $dom->saveXML();
 }
 
 function clean_inputs($allowed_vars = null)

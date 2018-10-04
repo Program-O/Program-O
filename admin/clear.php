@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: clear.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-12-2014
@@ -52,7 +52,7 @@ $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
  */
 function clearAIML()
 {
-    global $dbn, $bot_id, $bot_name, $dbConn;
+    global $bot_id, $bot_name;
     /** @noinspection SqlDialectInspection */
     $sql = "DELETE FROM `aiml` WHERE `bot_id` = :bot_id;";
     $params = array(':bot_id' => $bot_id);
@@ -70,7 +70,7 @@ function clearAIML()
  */
 function clearAIMLByFileName($filename)
 {
-    global $dbn, $bot_id, $dbConn;
+    global $bot_id;
     /** @noinspection SqlDialectInspection */
     $sql = "DELETE FROM `aiml` WHERE `filename` LIKE :filename AND `bot_id` = :bot_id;";
     $params = array(

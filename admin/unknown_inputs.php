@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: unknown_inputs.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-12-2014
@@ -60,7 +60,6 @@ $mainContent = str_replace('[bot_name]', $bot_name, $mainContent);
  */
 function getUserNames()
 {
-    global $dbConn;
     $nameList = array();
 
     /** @noinspection SqlDialectInspection */
@@ -82,7 +81,7 @@ function getUserNames()
 function getUserList($bot_id, $showing)
 {
     //db globals
-    global $template, $get_vars, $dbConn;
+    global $template, $get_vars;
 
     $nameList = getUserNames();
     $curUserid = (isset ($get_vars['id'])) ? $get_vars['id'] : -1;
@@ -221,10 +220,8 @@ endForm;
  * @param $id
  * @return mixed|string
  */
-function get_unknown_inputs($id)
+function get_unknown_inputs($id, $show)
 {
-    global $dbConn;
-
     $bot_name = (isset ($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'Bot';
     $bot_id = (isset ($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
     $nameList = getUserNames();

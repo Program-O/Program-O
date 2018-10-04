@@ -3,7 +3,7 @@
 /* * *************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.6.8
+* Version: 2.6.11
 * FILE: editUDAiml.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: 05-26-2014
@@ -38,8 +38,6 @@ if (empty ($_SESSION) || !isset ($_SESSION['poadmin']['uid']) || $_SESSION['poad
     exit (json_encode(array('error' => "No session found")));
 }
 
-// Open the DB
-$dbConn = db_open();
 $action = (isset($form_vars['action'])) ? $form_vars['action'] : 'runSearch';
 
 switch ($action)
@@ -94,12 +92,13 @@ function delAIML($id)
  */
 function runSearch()
 {
-    global $bot_id, $form_vars, $dbConn, $group;
+    global $bot_id, $form_vars, $group;
+    save_file(_LOG_PATH_ . 'editUDajax.runSearch.form_vars.txt', print_r($form_vars, true));
     extract($form_vars);
 
     $search_fields = array('user_id', 'pattern', 'template', 'thatpattern');
     $searchTerms = array();
-    $searchParams = array($bot_id);
+    $searchParams = array(':bot_id' => $bot_id);
     $where = array();
 
     // parse column searches
@@ -145,16 +144,17 @@ function runSearch()
     }
 
     /** @noinspection SqlDialectInspection */
-    $countSQL = "SELECT count(id) FROM `aiml_userdefined` WHERE `bot_id` = ? AND ($searchTerms);";
+    $countSQL = "SELECT count(id) FROM `aiml_userdefined` WHERE `bot_id` = :bot_id AND ($searchTerms);";
     $count = db_fetch($countSQL, $searchParams, __FILE__, __FUNCTION__, __LINE__);
     $total = $count['count(id)'];
 
     /** @noinspection SqlDialectInspection */
     /** @noinspection PhpUndefinedVariableInspection */
-    $sql = "SELECT id, user_id, pattern, thatpattern, template FROM `aiml_userdefined` " . "WHERE `bot_id` = ? AND ($searchTerms) order by $orderBy limit $start, $length;"; //
+    $sql = "SELECT id, user_id, pattern, thatpattern, template FROM `aiml_userdefined` " . "WHERE `bot_id` = :bot_id AND ($searchTerms) order by $orderBy limit $start, $length;"; //
     $debugSQL = db_parseSQL($sql, $searchParams);
-    //file_put_contents(_LOG_PATH_ . 'editUDAJAX.sql.txt', $debugSQL);
+    file_put_contents(_LOG_PATH_ . 'editUDAJAX.sql.txt', $debugSQL);
     $result = db_fetchAll($sql, $searchParams, __FILE__, __FUNCTION__, __LINE__);
+    save_file(_LOG_PATH_ . 'editUDajax.' . __FUNCTION__ . '.result.txt', print_r($result, true));
 
     /** @noinspection PhpUndefinedVariableInspection */
     $out = array(
@@ -171,10 +171,10 @@ function runSearch()
 
     foreach ($result as $index => $row)
     {
-        $row['pattern'] = htmlentities($row['pattern']);
-        $row['user_id'] = htmlentities($row['user_id']);
-        $row['thatpattern'] = htmlentities($row['thatpattern']);
-        $row['template'] = htmlentities($row['template']);
+        $row['pattern'] = htmlentities($row['pattern'],ENT_NOQUOTES,'UTF-8');
+        $row['user_id'] = htmlentities($row['user_id'],ENT_NOQUOTES,'UTF-8');
+        $row['thatpattern'] = htmlentities($row['thatpattern'],ENT_NOQUOTES,'UTF-8');
+        $row['template'] = htmlentities($row['template'],ENT_NOQUOTES,'UTF-8');
         $row['DT_RowId'] = $row['id'];
         $out['data'][] = $row;
     }
@@ -189,7 +189,7 @@ function runSearch()
  */
 function updateAIML()
 {
-    global $form_vars, $dbConn;
+    global $form_vars;
 
     $template = trim($form_vars['template']);
     $pattern = _strtoupper(trim($form_vars['pattern']));
@@ -205,20 +205,7 @@ function updateAIML()
     {
         /** @noinspection SqlDialectInspection */
         $sql = "UPDATE `aiml_userdefined` SET `pattern`=?,`thatpattern`=?,`template`=?,`user_id`=? WHERE `id`=? LIMIT 1";
-        $sth = $dbConn->prepare($sql);
-
-        try
-        {
-            $sth->execute(array($pattern, $thatpattern, $template, $user_id, $id));
-        }
-        catch (Exception $e)
-        {
-            header("HTTP/1.0 500 Internal Server Error");
-            throw ($e);
-        }
-
-        $affectedRows = $sth->rowCount();
-
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
         if ($affectedRows > 0)
         {
             $msg = 'AIML Updated.';
@@ -239,7 +226,7 @@ function updateAIML()
 function insertAIML()
 {
     //db globals
-    global $msg, $form_vars, $dbConn, $bot_id;
+    global $msg, $form_vars, $bot_id;
 
     $aiml = "<category><pattern>[pattern]</pattern>[thatpattern]<template>[template]</template></category>";
     $aimltemplate = trim($form_vars['template']);
@@ -264,18 +251,16 @@ function insertAIML()
     else
     {
         /** @noinspection SqlDialectInspection */
-        $sth = $dbConn->prepare("INSERT INTO `aiml_userdefined` (`id`,`bot_id`,`user_id`, `pattern`,`thatpattern`,`template`) " . "VALUES (NULL, ?, ?, ?, ?, ?)");
+        $sql = 'INSERT INTO `aiml_userdefined` (`id`,`bot_id`,`user_id`, `pattern`,`thatpattern`,`template`) VALUES (NULL, :bot_id, :user_id, :pattern, :thatpattern, :aimltemplate);';
+        $params = array(
+            ':bot_id' => $bot_id,
+            ':user_id' => $user_id,
+            ':pattern' => $pattern,
+            ':thatpattern' => $thatpattern,
+            ':template' => $template,
+        );
 
-        try {
-            $sth->execute(array($bot_id, $user_id, $pattern, $thatpattern, $aimltemplate));
-        }
-        catch (Exception $e)
-        {
-            header("HTTP/1.0 500 Internal Server Error");
-            throw ($e);
-        }
-
-        $affectedRows = $sth->rowCount();
+        $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows > 0)
         {

@@ -586,7 +586,7 @@ between the start and end section tags are the only parts of the template that a
             <br/>
             You can find alot of information on the net about writing well formed aiml.<br/>
             If you want to learn more about writing AIML
-            <a href="http://www.alicebot.org/documentation/aiml-primer.html" target="_new" class="hbox">
+            <a href="https://pandorabots.com/docs/aiml/aiml-basics.html" target="_blank" class="hbox">
                 start here
             </a>.
         </div>
@@ -630,7 +630,7 @@ between the start and end section tags are the only parts of the template that a
             </dd>
             <dd></dd>
             <br/>--You can find alot of information on the net about writing well formed aiml.<br/>--If you want to learn more about
-            writing AIML <a href="http://www.alicebot.org/documentation/aiml-primer.html" target="-BLANK" class="hbox">start here</a>
+            writing AIML <a href="https://pandorabots.com/docs/aiml/aiml-basics.html" target="_blank" class="hbox">start here</a>.
         </div>
 <!-- Section editAIMLShowHelp End -->
 <!-- Section ClearShowHelp Start -->
@@ -667,7 +667,7 @@ between the start and end section tags are the only parts of the template that a
             <dd>--Replace everything above the first &lt;cattegory&gt; with a simple &lt;aiml&gt; tag</dd>
             <br/>--You can find alot of information on the net about writing well formed aiml.
             <br/>--If you want to learn more about writing AIML
-            <a href="http://www.alicebot.org/documentation/aiml-primer.html" target="-BLANK" class="hbox">start here</a>
+            <a href="https://pandorabots.com/docs/aiml/aiml-basics.html" target="_blank" class="hbox">start here</a>.
         </div>
 <!-- Section UploadShowHelp End -->
 <!-- Section DownloadShowHelp Start -->
@@ -709,6 +709,13 @@ between the start and end section tags are the only parts of the template that a
             }
 
             (logoStatus === 'Show') ? ShowLogo() : HideLogo();
+            var mc_height = $('#main_content').height();
+            var readMe = $('#readMe');
+            if (readMe.length) {
+                var rm_top = readMe.position().top;
+                var rm_height = mc_height - rm_top;
+                readMe.height(rm_height);
+            }
 
             function ShowLogo() {
                 var body = document.body;
@@ -1003,7 +1010,7 @@ between the start and end section tags are the only parts of the template that a
             The SRAI lookup table currently contains [row_count] entries for the chatbot named "[bot_name]".
         </div>
         <p>
-            <a href="?page=srai_lookup&amp;action=fillLookup">Fill Lookup Table</a>&nbsp;(See the HELP link for details)
+            <a id="lnkFLT" href="?page=srai_lookup&amp;action=fillLookup">Fill Lookup Table</a>&nbsp;(See the HELP link for details)
         </p>
         <hr class="w80 m0a mb5">
         <div class="holder">
@@ -1210,7 +1217,7 @@ between the start and end section tags are the only parts of the template that a
         <style type="text/css">
             .dataTables_wrapper .dataTables_paginate .paginate_button {padding: 0;}
             table.dataTable tbody th, table.dataTable tbody td, table.dataTable thead th, table.dataTable thead td {padding: 1px 2px 1px 0;}
-            input.search-input-text {margin-left: -14px;}
+            input.search-input-text {/*margin-left: -14px;*/}
             #showHelp {top: -15px;}
         </style>
         <div class="holder">
@@ -1227,10 +1234,10 @@ between the start and end section tags are the only parts of the template that a
                 <thead>
                     <tr class="filters">
                         <th id="f_id"><input type="text" data-column="0" class="search-input-text" placeholder="ID Search"></th>
-                        <th id="f_user_id"><input type="text" data-column="4" class="search-input-text" placeholder="user ID Search"></th>
-                        <th id="f_pattern"><input type="text" data-column="1" class="search-input-text" placeholder="pattern Search"></th>
-                        <th id="f_thatpattern"><input type="text" data-column="2" class="search-input-text" placeholder="thatpattern Search"></th>
-                        <th id="f_template"><input type="text" data-column="3" class="search-input-text" placeholder="template Search"></th>
+                        <th id="f_user_id"><input type="text" data-column="1" class="search-input-text" placeholder="user ID Search"></th>
+                        <th id="f_pattern"><input type="text" data-column="2" class="search-input-text" placeholder="pattern Search"></th>
+                        <th id="f_thatpattern"><input type="text" data-column="3" class="search-input-text" placeholder="thatpattern Search"></th>
+                        <th id="f_template"><input type="text" data-column="4" class="search-input-text" placeholder="template Search"></th>
                     </tr>
                 </thead>
             </table>

@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.6.8
+* Version: 2.6.11
 * FILE: getbots.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: MAY 17TH 2014
@@ -25,8 +25,6 @@ include_once (_LIB_PATH_ . "error_functions.php");
 include_once(_LIB_PATH_ . 'misc_functions.php');
 
 ini_set('error_log', _LOG_PATH_ . 'getbots.error.log');
-
-$dbConn = db_open();
 
 /** @noinspection SqlDialectInspection */
 /** @noinspection SqlNoDataSourceInspection */

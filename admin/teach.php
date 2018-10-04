@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: teach.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-11-2014
@@ -84,7 +84,7 @@ $mainTitle = str_replace('[helpLink]', $template->getSection('HelpLink'), $mainT
 function insertAIML()
 {
     //db globals
-    global $template, $msg, $post_vars, $dbConn;
+    global $template, $msg, $post_vars;
 
     $aimltemplate = trim($post_vars['template']);
 

@@ -2,7 +2,7 @@
 /***************************************
 * http://www.program-o.com
 * PROGRAM O
-* Version: 2.6.8
+* Version: 2.6.11
 * FILE: install_programo.php
 * AUTHOR: Elizabeth Perreau and Dave Morton
 * DATE: FEB 01 2016
@@ -33,9 +33,8 @@ $dbPort = 3306;
 
 # Test for required version and extensions
 $myPHP_Version = phpversion();
-//$myPHP_Version = '5.2.9'; # debugging/testing - must be commented out for functionality.
 $pdoSupport = (class_exists('PDO'));
-$php_min_version = '5.3.0';
+$php_min_version = '5.4.0';
 $version_compare = version_compare($myPHP_Version, $php_min_version);
 
 $errorMessage = (!empty ($_SESSION['errorMessage'])) ? $_SESSION['errorMessage'] : '';

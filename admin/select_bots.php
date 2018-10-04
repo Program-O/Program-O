@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: select_bots.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 12-09-2014
@@ -103,7 +103,7 @@ function getBotParentList($current_parent)
  */
 function getSelectedBot()
 {
-    global $template, $pattern, $remember_up_to, $conversation_lines, $error_response, $curBot, $unknown_user;
+    global $template, $pattern, $remember_up_to, $conversation_lines, $error_response, $curBot, $unknown_user, $dbn;
     $bot_conversation_lines = $conversation_lines;
     $bot_default_aiml_pattern = $pattern;
     $bot_error_response = $error_response;
@@ -144,8 +144,12 @@ function getSelectedBot()
         $aiml_count = ($row['count(*)'] == 0) ? 'no' : number_format($row['count(*)']);
 
         /** @noinspection SqlDialectInspection */
-        $sql = "SELECT * FROM `bots` WHERE bot_id = :bot_id;";
-        $row = db_fetch($sql, array(':bot_id' => $bot_id), __FILE__, __FUNCTION__, __LINE__);
+        $sql = "SELECT * FROM `{$dbn}`.`bots` WHERE bot_id = :bot_id;";
+        $params = array(':bot_id' => $bot_id);
+        $displaySQL = db_parseSQL($sql, $params);
+        save_file(_LOG_PATH_ . 'select_bots.bot.sql.txt', print_r($displaySQL, true));
+        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
+        save_file(_LOG_PATH_ . 'selectbots.row.txt', print_r($row, true));
         $curBot = $row;
 
         foreach ($row as $key => $value)
@@ -286,8 +290,6 @@ function updateBotSelection()
     {
         $repl = rtrim($repl, ',');
         $sql = str_replace('[repl]', $repl, $sql);
-        save_file(_LOG_PATH_ . 'select_bots.update.params.txt', print_r($params, true));
-        save_file(_LOG_PATH_ . 'select_bots.update.sql.txt', print_r($sql, true));
         $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 
         if ($affectedRows == 0)

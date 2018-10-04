@@ -9,7 +9,7 @@
  * DETAILS: this file contains the addon library to process the custom <code> tag
  ***************************************/
 define('_ADDONS_INCLUDE_PATH_', _ADDONS_PATH_ . "includes$path_separator");
-include('code_tag/code_tag.php');
+require_once('code_tag/code_tag.php');
 
 
 /**
@@ -65,7 +65,7 @@ function parse_php_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string $out
  */
-function parse_math_tag($convoArr, simpleXMLElement $element, $parentName, $level)
+function parse_math_tag(&$convoArr, simpleXMLElement $element, $parentName, $level)
 {
     $elementAsXML = $element->asXML();
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing a MATH tag - input is $elementAsXML.", 4);
@@ -88,9 +88,9 @@ function parse_math_tag($convoArr, simpleXMLElement $element, $parentName, $leve
     // do something here
     runDebug(__FILE__, __FUNCTION__, __LINE__, "String to process: $response_string", 4);
 
-    list($operator, $operand1, $operand2) = explode(' ', $response_string, 3);
+    list($operand1, $operator, $operand2) = explode(' ', $response_string, 3);
     $operatorArray = array('ADD', 'SUBTRACT', 'MULTIPLY', 'DIVIDE');
-
+    $operator = _strtoupper($operator);
     switch (true)
     {
         case (!in_array(_strtoupper($operator), $operatorArray)):
@@ -118,8 +118,10 @@ function parse_math_tag($convoArr, simpleXMLElement $element, $parentName, $leve
         case 'DIVIDE':
             $out = $operand1 / $operand2;
             break;
+        default: $out = false;
     }
 
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Math function complete. Operator: {$operator}, output: {$out}.", 2);
     return $out;
 }
 

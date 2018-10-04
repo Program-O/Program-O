@@ -2,7 +2,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: find_aiml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -248,7 +248,7 @@ function aiml_pattern_match($pattern, $input)
  * @internal param string $current_topic
  * @return array $allrows
  **/
-function score_matches($convoArr, $allrows, $pattern)
+function score_matches(&$convoArr, $allrows, $pattern)
 {
     global $common_words_array;
 
@@ -316,12 +316,12 @@ function score_matches($convoArr, $allrows, $pattern)
         if ($category_bot_id == $bot_id)
         {
             $current_score += $this_bot_match;
-            $track_matches .= 'current bot, ';
+            $track_matches .= "current bot ({$this_bot_match} points), ";
         }
         elseif ($category_bot_id == $bot_parent_id)
         {
             $current_score += 0;
-            $track_matches .= 'parent bot, ';
+            $track_matches .= "parent bot (0 points), ";
         }
         else # if it's not the current bot and not the parent bot, then reject it and log a debug message (this should never happen)
         {
@@ -336,17 +336,17 @@ function score_matches($convoArr, $allrows, $pattern)
         if (isset($subrow['aiml_userdefined']))
         {
             $current_score += $user_defined_match;
-            $track_matches .= 'User Defined AIML, ';
+            $track_matches .= "User Defined AIML ({$user_defined_match} points), ";
         }
 
-        # 3.) test for a non-empty  current topic
+        # 3.) test for a non-empty, current topic
         if (!empty($topic))
         {
             # 3a.) test for a non-empty topic in the current category
             if (empty($category_topic) || $category_topic == '*')
             {
                 // take no action, as we're not looking for a topic here
-                $track_matches .= 'no topic to match, ';
+                $track_matches .= "no topic to match (0 points), ";
             }
             else
             {
@@ -357,13 +357,13 @@ function score_matches($convoArr, $allrows, $pattern)
                     if ($regEx != $category_topic && preg_match("/$regEx/i", $topic) === 1)
                     {
                         $current_score += $topic_underscore_match;
-                        $track_matches .= 'topic match with underscore, ';
+                        $track_matches .= "topic match with underscore ({$topic_underscore_match} points), ";
                     }
                 } # 3c.) Check for a direct topic match
                 elseif ($topic == $category_topic)
                 {
                     $current_score += $topic_direct_match;
-                    $track_matches .= 'direct topic match, ';
+                    $track_matches .= "direct topic match ({$topic_direct_match} points), ";
                 } # 3d.) Check topic for a star wildcard match
                 else
                 {
@@ -372,7 +372,7 @@ function score_matches($convoArr, $allrows, $pattern)
                     if (preg_match("/$regEx/i", $topic))
                     {
                         $current_score += $topic_star_match;
-                        $track_matches .= 'topic match with wildcards, ';
+                        $track_matches .= "topic match with wildcards ({$topic_star_match} points), ";
                     }
                 }
             }
@@ -382,7 +382,7 @@ function score_matches($convoArr, $allrows, $pattern)
         if (empty($category_thatpattern) || $category_thatpattern == '*')
         {
             $current_score += 1;
-            $track_matches .= 'no thatpattern to match, ';
+            $track_matches .= "no thatpattern to match (1 point), ";
         }
         else
         {
@@ -394,14 +394,14 @@ function score_matches($convoArr, $allrows, $pattern)
                 if ($regEx !== $category_thatpattern && preg_match("/$regEx/i", $that) === 1)
                 {
                     $current_score += $thatpattern_underscore_match;
-                    $track_matches .= 'thatpattern match with underscore, ';
+                    $track_matches .= "thatpattern match with underscore ({$thatpattern_underscore_match} points), ";
                 }
             }
             # 4b.) direct thatpattern match
             elseif ($that_lc == $category_thatpattern_lc)
             {
                 $current_score += $thatpattern_direct_match;
-                $track_matches .= 'direct thatpattern match, ';
+                $track_matches .= "direct thatpattern match ({$thatpattern_direct_match} points), ";
             }
             # 4c.) thatpattern star matches
             elseif (strstr($category_thatpattern_lc, '*') !== false)
@@ -411,7 +411,7 @@ function score_matches($convoArr, $allrows, $pattern)
                 if (preg_match("/$regEx/i", $that))
                 {
                     $current_score += $thatpattern_star_match;
-                    $track_matches .= 'thatpattern match with star, ';
+                    $track_matches .= "thatpattern match with star ({$thatpattern_star_match} points), ";
                 }
             }
             # 4d.)match thatpattern words
@@ -427,24 +427,24 @@ function score_matches($convoArr, $allrows, $pattern)
                     {
                         case ($word === '_'):
                             $current_score += $thatpattern_underscore_word_match;
-                            $track_matches .= 'thatpattern underscore word match, ';
+                            $track_matches .= "thatpattern underscore word match ({$thatpattern_underscore_word_match} points), ";
                             break;
                         case ($word === '*'):
                             $current_score += $thatpattern_star_word_match;
-                            $track_matches .= 'thatpattern star word match, ';
+                            $track_matches .= "thatpattern star word match ({$thatpattern_star_word_match} points), ";
                             break;
                         case (in_array($word, $category_thatpattern_words)):
                         //case (false):
                             $current_score += $thatpattern_direct_word_match;
-                            $track_matches .= "thatpattern direct word match: $word, ";
+                            $track_matches .= "thatpattern direct word match: {$word} ({$thatpattern_direct_word_match} points), ";
                             break;
                         case (in_array($word, $common_words_array)):
                             $current_score += $common_word_match;
-                            $track_matches .= "thatpattern common word match: $word, ";
+                            $track_matches .= "thatpattern common word match: {$word} ({$common_word_match} points), ";
                             break;
                         default:
                             $current_score += $uncommon_word_match;
-                            $track_matches .= "thatpattern uncommon word match: $word, ";
+                            $track_matches .= "thatpattern uncommon word match: {$word} ({$uncommon_word_match} points), ";
                     }
                 }
             }
@@ -452,7 +452,7 @@ function score_matches($convoArr, $allrows, $pattern)
             else
             {
                 $current_score = $rejected;
-                $track_matches .= 'no thatpattern match at all, ';
+                $track_matches .= "no thatpattern match at all ({$rejected} points), ";
                 //runDebug(__FILE__, __FUNCTION__, __LINE__, "Matching '$that_lc' with '$category_thatpattern_lc' failed. Drat!'", 4);
             }
         } # end thatpattern testing
@@ -467,14 +467,14 @@ function score_matches($convoArr, $allrows, $pattern)
             if ($regEx != $category_pattern && preg_match("/$regEx/i", $pattern) === 1)
             {
                 $current_score += $underscore_match;
-                $track_matches .= 'pattern match with underscore, ';
+                $track_matches .= "pattern match with underscore ({$underscore_match} points), ";
             }
         }
         # 5b.) direct pattern match
         elseif ($pattern == $category_pattern)
         {
             $current_score += $pattern_direct_match;
-            $track_matches .= 'direct pattern match, ';
+            $track_matches .= "direct pattern match ({$pattern_direct_match} points), ";
             //$check_pattern_words  = false;
         }
         # 5c.) pattern star matches
@@ -484,7 +484,7 @@ function score_matches($convoArr, $allrows, $pattern)
             if ($category_pattern == '*')
             {
                 $current_score += $pattern_star_match;
-                $track_matches .= 'pattern star match, ';
+                $track_matches .= "pattern star match ({$pattern_star_match} points), ";
                 $check_pattern_words = false;
             }
             elseif ($regEx != $category_pattern && (($category_pattern != '*') || ($category_pattern != '_')) && preg_match("/$regEx/i", $pattern) != 0)
@@ -497,7 +497,7 @@ function score_matches($convoArr, $allrows, $pattern)
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'This category is the default pattern!', 4);
 
             $current_score += $default_pattern_match;
-            $track_matches .= 'default pattern match, ';
+            $track_matches .= "default pattern match ({$default_pattern_match} points), ";
             $check_pattern_words = false;
         }
 
@@ -519,23 +519,23 @@ function score_matches($convoArr, $allrows, $pattern)
                 {
                     case ($word === '_'):
                         $current_score += $underscore_word_match;
-                        $track_matches .= 'underscore word match, ';
+                        $track_matches .= "underscore word match ({$underscore_word_match} points), ";
                         break;
                     case ($word === '*'):
                         $current_score += $star_word_match;
-                        $track_matches .= 'star word match, ';
+                        $track_matches .= "star word match ({$star_word_match} points), ";
                         break;
                     case (in_array($word, $pattern_words)):
                         $current_score += $direct_word_match;
-                        $track_matches .= "direct word match: $word, ";
+                        $track_matches .= "direct word match: {$word} ({$direct_word_match} points), ";
                         break;
                     case (in_array($word, $common_words_array)):
                         $current_score += $common_word_match;
-                        $track_matches .= "common word match: $word, ";
+                        $track_matches .= "common word match: {$word} ({$common_word_match} points), ";
                         break;
                     default:
                         $current_score += $uncommon_word_match;
-                        $track_matches .= "uncommon word match: $word, ";
+                        $track_matches .= "uncommon word match: {$word} ({$uncommon_word_match} points), ";
                 }
             }
         }
@@ -660,11 +660,11 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
     if ($resultCount > 0)
     {
         $first_match = $tmpArr[0];
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "First match:\n" . print_r($first_match, true), 2);
+        //runDebug(__FILE__, __FUNCTION__, __LINE__, "First match:\n" . print_r($first_match, true), 2);
         $random_match = $tmpArr[array_rand($tmpArr)];
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Random match:\n" . print_r($random_match, true), 2);
+        //runDebug(__FILE__, __FUNCTION__, __LINE__, "Random match:\n" . print_r($random_match, true), 2);
         $last_match = array_pop($tmpArr);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Last match:\n" . print_r($last_match, true), 2);
+        //runDebug(__FILE__, __FUNCTION__, __LINE__, "Last match:\n" . print_r($last_match, true), 2);
         switch ($which_response)
         {
             case BOT_USE_FIRST_RESPONSE:
@@ -722,7 +722,7 @@ function get_highest_scoring_row(& $convoArr, $allrows, $lookingfor)
  * $convoArr['conversation']['bot_id'] = $convoArr['conversation']['bot_id']
  * $convoArr['that'][1][1] = get_convo_var($convoArr,'that','',1,1)
  */
-function get_convo_var($convoArr, $index_1, $index_2 = '~NULL~', $index_3 = 1, $index_4 = 1)
+function get_convo_var(&$convoArr, $index_1, $index_2 = '~NULL~', $index_3 = 1, $index_4 = 1)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Get from ConvoArr [$index_1][$index_2][$index_3][$index_4]", 4);
 
@@ -765,21 +765,20 @@ function get_convo_var($convoArr, $index_1, $index_2 = '~NULL~', $index_3 = 1, $
  * @param string $name - the key of the value to extract from client properties
  * @return string $response - the value of the client property
  **/
-function get_client_property($convoArr, $name)
+function get_client_property(&$convoArr, $name)
 {
-    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Rummaging through the DB and stuff for a client property.', 2);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Looking for client property '$name'", 2);
-    global $dbConn, $dbn;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Rummaging through various locations for client property '{$name}'", 2);
+    global $dbn;
 
     if (isset ($convoArr['client_properties'][$name]))
     {
         $value = $convoArr['client_properties'][$name];
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Found client property '$name' in the conversation array. Returning '$value'", 2);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Found client property '{$name}' in the conversation array. Returning '{$value}'", 2);
 
         return $convoArr['client_properties'][$name];
     }
 
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client property '$name' not found in the conversation array. Searching the DB.", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Client property '{$name}' not found in the conversation array. Searching the DB.", 2);
 
     $user_id = $convoArr['conversation']['user_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
@@ -789,11 +788,12 @@ function get_client_property($convoArr, $name)
         ':bot_id' => $bot_id,
         ':user_id' => $user_id,
     );
+    $rdSQL = db_parseSQL($sql, $params);
 
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for $name. SQL:\n$sql", 3);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Querying the client_properties table for {$name}. SQL:\n{$rdSQL}", 3);
 
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
-    $rowCount = count($row);
+    $rowCount = (false !== $row) ? count($row) : 0;
 
     if ($rowCount != 0)
     {
@@ -816,10 +816,10 @@ function get_client_property($convoArr, $name)
  * @param array $convoArr - conversation array
  * @return array allrows
  **/
-function find_userdefined_aiml($convoArr)
+function find_userdefined_aiml(&$convoArr)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Looking for user defined responses', 4);
-    global $dbn, $dbConn;
+    global $dbn;
 
     $i = 0;
     $allrows = array();
@@ -834,13 +834,6 @@ function find_userdefined_aiml($convoArr)
 
     //build sql
     /** @noinspection SqlDialectInspection */
-/*
-SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` WHERE
-    [sql_bot_like] AND ([pattern_like][thatpattern_like][topic_like]
-        OR `pattern` LIKE '$default_aiml_pattern'
-    )
-    # ORDER BY `id` ASC, `topic` DESC, `pattern` ASC, `thatpattern` ASC;
-*/
     $sql = <<<endSQL
 SELECT `id`, `bot_id`, `pattern`, `thatpattern`, `template` FROM `$dbn`.`aiml_userdefined` WHERE
     `bot_id` = :bot_id AND
@@ -911,7 +904,7 @@ endSQL;
  * @param array $convoArr - conversation array
  * @return array $convoArr
  **/
-function get_aiml_to_parse($convoArr)
+function get_aiml_to_parse(&$convoArr)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running all functions to get the correct aiml from the DB", 4);
     $allrows = array();
@@ -952,6 +945,10 @@ function get_aiml_to_parse($convoArr)
     }
 
     //Now we have the results put into the conversation array
+    if (isset($WinningCategory['id'])) {
+        $convoArr['aiml']['category_id'] = $WinningCategory['id'];
+    }
+
     $convoArr['aiml']['pattern'] = $WinningCategory['pattern'];
     $convoArr['aiml']['thatpattern'] = $WinningCategory['thatpattern'];
     $convoArr['aiml']['template'] = $WinningCategory['template'];
@@ -971,9 +968,9 @@ function get_aiml_to_parse($convoArr)
  * @param array $convoArr - conversation array
  * @return array $convoArr
  **/
-function find_aiml_matches($convoArr)
+function find_aiml_matches(&$convoArr)
 {
-    global $dbConn, $dbn, $error_response;
+    global $dbn, $error_response;
     $user_id = $convoArr['conversation']['user_id'];
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Finding the aiml matches from the DB", 4);
 
@@ -1030,7 +1027,7 @@ function find_aiml_matches($convoArr)
     if (!empty($storedtopic))
     {
         $topic_like = "\n        OR " . str_replace('[search]', $storedtopic, $rplTemplate);
-        $topic_like = str_replace('[field]', 'thatpattern', $topic_like);
+        $topic_like = str_replace('[field]', 'topic', $topic_like);
     }
 
 
@@ -1103,9 +1100,9 @@ endSQL;
  * @param array $convoArr - the conversation array
  * @return string $retVal - the topic
  */
-function get_topic($convoArr)
+function get_topic(&$convoArr)
 {
-    global $dbConn, $dbn, $bot_id;
+    global $bot_id;
 
     $bot_id = (!empty($convoArr['conversation']['bot_id'])) ? $convoArr['conversation']['bot_id'] : $bot_id;
     $user_id = $convoArr['conversation']['user_id'];
@@ -1117,7 +1114,7 @@ function get_topic($convoArr)
         ':user_id' => $user_id,
     );
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
-    $num_rows = count($row);
+    $num_rows = empty($row) ? 0 : count($row);
     $retval = ($num_rows == 0) ? '' : $row['value'];
 
     return $retval;

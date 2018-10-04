@@ -1,13 +1,53 @@
 # [Program O](http://www.program-o.com)
 
-##CHANGELOG info:
+## CHANGELOG info:
 
-- Version: 2.6.8
-- Authors: Elizabeth Perreau and Dave Morton
-- Date: June 19th 2017
+- Version: 2.6.11
+- Date: October 04th 2018
 
 
-##Version History:
+## Version History:
+2.6.11
+    #433 Hot fix patch to temporarily plug the hole caused by the CSRF vunerability
+
+2.6.10  Code Cleanup, another round of bug fixes
+
+    From a performance boost with filling the SRAI lookup table, to addressing multiple
+    issues on GitHub, a number of improvements have been made:
+
+    1.  Refactored the code that filled the lookup table with SRAI data
+    2.  Additionally, fixed the bug in the function that actually uses the lookup table,
+        finally making it possible to use the feature
+    3.  Fixed bug reported in issue #354 - thatstar mis-counts
+    4.  Fixed the bug reported in issue #366 regarding user defined AIML
+    5.  Fixed the bug reported in issue #369 where "Search/Edit AIML" can't search punctuation
+    6.  Fixed a bug in the JSON GUI that periodically created an empty convo_id
+    7.  Partially addressed issue #370 where the custom `<math>` tag always returned
+        "Invalid math operation"
+    8.  Changed the minimum PHP version from 5.3.x to 5.4.x in order to be able to utilize
+        certain improved functionality that isn't supported in the older PHP version
+
+    There are other fixes as well, but let's not get carried away. :smile:
+
+2.6.9   Last New Feature, More Bug fixes
+
+    A README viewer was added to the admin's "Home" panel, mainly to get rid of all of the
+    empty, wasted space on that panel, but also to provide relevant information about the
+    current version of Program O in a convenient place to view it.
+
+    Several bug fixes have also been applied. The following is a short list of the more
+    'important' fixes:
+
+    1.  Replace all instances of `include({fileName})` with `require_once`
+    2.  Fix a bug in the code debugger built into the HTML GUI's page
+    3.  Fix a bug in the functios `db_fetch()` and `db_fetchAll()` where certain read
+        failures were not being reported or logged
+    4.  Fixed a bug in the function `set_wildcards()` where typos in some of the
+        RegEx code were causing search failures
+    5.  Fixed a bug in the function `parse_condition_tag()` that was causing certain
+        variations of the tag to fail
+    6.  Fixed a bug in the function `log_conversation()` that was causing duplicate
+        entries in the `client_properties` table of the database
 
 2.6.8   Code Refactor, new <date> tag attributes
 

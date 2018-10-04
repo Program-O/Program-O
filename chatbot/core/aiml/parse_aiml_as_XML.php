@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: parse_aiml_as_xml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -16,7 +16,7 @@
  * @param  array $convoArr - the existing conversation array
  * @return array $convoArr
  **/
-function parse_aiml_as_XML($convoArr)
+function parse_aiml_as_XML(&$convoArr)
 {
     global $botsay, $error_response;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Parsing the AIML template as XML", 2);
@@ -194,7 +194,7 @@ function implode_recursive($glue, $input, $file = 'unknown', $function = 'unknow
  * @param array $convoArr
  * @param SimpleXMLElement $element
  * @param int $level
- * @return string
+ * @return mixed
  */
 function parseTemplateRecursive(&$convoArr, SimpleXMLElement $element, $level = 0)
 {
@@ -276,7 +276,7 @@ function parseTemplateRecursive(&$convoArr, SimpleXMLElement $element, $level = 
  * @param int $level
  * @return string
  */
-function parse_text_tag($convoArr, $element, $parentName, $level)
+function parse_text_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a TEXT tag.', 2);
 
@@ -292,7 +292,7 @@ function parse_text_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return array
  */
-function parse_star_tag($convoArr, $element, $parentName, $level)
+function parse_star_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a STAR tag.', 2);
     $response = array();
@@ -309,7 +309,7 @@ function parse_star_tag($convoArr, $element, $parentName, $level)
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Current AIML Array:\n" . print_r($convoArr['aiml'], true), 4);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "star index = $index.", 4);
 
-    $star = $convoArr['aiml']['stars'][(int)$index];
+    $star = isset($convoArr['aiml']['stars'][(int)$index]) ? $convoArr['aiml']['stars'][(int)$index] : '';
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$star' to the response array.", 4);
     $response[] = $star;
@@ -327,7 +327,7 @@ function parse_star_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return array
  */
-function parse_thatstar_tag($convoArr, $element, $parentName, $level)
+function parse_thatstar_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THATSTAR tag.', 2);
     $response = array();
@@ -360,7 +360,7 @@ function parse_thatstar_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return array
  */
-function parse_topicstar_tag($convoArr, $element, $parentName, $level)
+function parse_topicstar_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a TOPICSTAR tag.', 2);
     $response = array();
@@ -393,7 +393,7 @@ function parse_topicstar_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_date_tag($convoArr, $element, $parentName, $level)
+function parse_date_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a DATE tag.', 2);
     global $time_zone_locale;
@@ -491,7 +491,7 @@ function parse_date_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_random_tag($convoArr, $element, $parentName, $level)
+function parse_random_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a RANDOM tag, or doing some stargazing, or fomenting chaos, or...', 2);
     $liArray = $element->xpath('li');
@@ -514,10 +514,11 @@ function parse_random_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_get_tag($convoArr, $element, $parentName, $level)
+function parse_get_tag(&$convoArr, $element, $parentName, $level)
 {
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Client properties(get): ' . print_r($convoArr['client_properties'], true), 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a GET tag. Oh, and getting a sandwich while I\'m at it.', 2);
-    global $dbConn, $dbn, $remember_up_to;
+    global $remember_up_to;
     $stars = $convoArr['aiml']['stars'];
     $client_properties = $convoArr['client_properties'];
     $cpKeys = array_keys($client_properties);
@@ -528,7 +529,17 @@ function parse_get_tag($convoArr, $element, $parentName, $level)
         $var_name = ($var_name == "*$n") ? $stars[$n] : $var_name;
     }
     $out = 'undefined';
+    //if ()
     if (in_array($var_name, $cpKeys)) $out = $client_properties[$var_name];
+    switch (true)
+    {
+        case (in_array($var_name, $cpKeys)):
+            $out = $client_properties[$var_name];
+            break;
+        default: $out = get_client_property($convoArr, $var_name);
+
+    }
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Client properties(get2): ' . print_r($convoArr['client_properties'], true), 2);
     return $out;
 }
 
@@ -544,7 +555,7 @@ function parse_get_tag($convoArr, $element, $parentName, $level)
 function parse_set_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing the SET tag.', 2);
-    global $dbConn, $dbn, $user_name, $remember_up_to;
+    global $user_name, $remember_up_to, $bot_id;
     $var_value = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $var_name = (string)$element->attributes()->name;
     $var_name = ($var_name == '*') ? $convoArr['aiml']['stars'][1] : $var_name;
@@ -552,7 +563,30 @@ function parse_set_tag(&$convoArr, $element, $parentName, $level)
     {
         $var_name = ($var_name == "*$n") ? $convoArr['aiml']['stars'][$n] : $var_name;
     }
+    $user_id = $convoArr['conversation']['user_id'];
     $convoArr['client_properties'][$var_name] = $var_value;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '{$var_name}' to the client properties array. Value is '{$var_value}'", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Client properties: ' . print_r($convoArr['client_properties'], true), 2);
+    $lookSQL = 'select id from client_properties where bot_id=:bot_id and user_id=:user_id and name=:name limit 1;';
+    $lookParams = array(
+        ':bot_id'  => $bot_id,
+        ':user_id' => $user_id,
+        ':name'    => $var_name,
+    );
+    $lookResult = db_fetch($lookSQL, $lookParams, __FILE__, __FUNCTION__, __LINE__);
+    $lookParams[':value'] = $var_value;
+    switch($lookResult)
+    {
+        case false:
+        case 0:
+            runDebug(__FILE__, __FUNCTION__, __LINE__, 'Inserting data into the DB', 2);
+            $saveSQL = 'insert into client_properties (id, user_id, bot_id, name, value) values(null, :user_id, :bot_id, :name, :value);';
+        break;
+        default:
+            runDebug(__FILE__, __FUNCTION__, __LINE__, 'updating data in the DB', 2);
+            $saveSQL = 'update client_properties set value=:value where user_id=:user_id and bot_id=:bot_id and name=:name;';
+    }
+    $numRows = db_write($saveSQL, $lookParams, false, __FILE__, __FUNCTION__, __LINE__);
     return $var_value;
 }
 
@@ -609,7 +643,7 @@ function parse_bot_tag($convoArr, $element)
  * @param int $level
  * @return string
  */
-function parse_id_tag($convoArr, $element, $parentName, $level)
+function parse_id_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an ID tag.', 2);
 
@@ -625,7 +659,7 @@ function parse_id_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_version_tag($convoArr, $element, $parentName, $level)
+function parse_version_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a VERSION tag.', 2);
 
@@ -641,7 +675,7 @@ function parse_version_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_uppercase_tag($convoArr, $element, $parentName, $level)
+function parse_uppercase_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'PARSING AN UPPERCASE TAG.', 2);
 
@@ -660,7 +694,7 @@ function parse_uppercase_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_lowercase_tag($convoArr, $element, $parentName, $level)
+function parse_lowercase_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'parsing a lowercase tag.', 2);
 
@@ -679,7 +713,7 @@ function parse_lowercase_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_sentence_tag($convoArr, $element, $parentName, $level)
+function parse_sentence_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SENTENCE tag.', 2);
 
@@ -700,7 +734,7 @@ function parse_sentence_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_formal_tag($convoArr, $element, $parentName, $level)
+function parse_formal_tag(&$convoArr, $element, $parentName, $level)
 {
     global $charset;
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing A Formal Tag.', 2);
@@ -724,30 +758,19 @@ function parse_formal_tag($convoArr, $element, $parentName, $level)
  */
 function parse_srai_tag(&$convoArr, $element, $parentName, $level)
 {
+    global $convoArrStack;
+    $convoArrStack[] = $convoArr['aiml'];
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SRAI tag.', 2);
-
     $starArray = array('~<star[ ]?/>~i', '~<star index="\d+"[ ]?\/>~');
     $elementXML = $element->asXML();
-
-    //$srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
     $srai = tag_to_string($convoArr, $element, $parentName, $level, 'element');
-    $convoArr['aiml']['srai_input'] = $srai;
-    $srai_new = (strstr($elementXML, '<star') !== false) ?
-        preg_replace($starArray, '*', $elementXML) :
-        $srai;
-
-    $srai_new   = preg_replace('~<[\/]?text>~i', '', $srai_new);
-    $srai_new   = preg_replace('~<[\/]?srai>~i', '', $srai_new);
-
-    //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai_new.txt", print_r($srai_new, true) . "\n", FILE_APPEND);
-    //file_put_contents(_LOG_PATH_ . "paax.parse_srai.srai.txt", print_r($srai, true) . "\n", FILE_APPEND);
-    $convoArr = set_wildcards($convoArr, $srai_new, 'srai');
-    $response = run_srai($convoArr, $convoArr['aiml']['srai_input']);
-
-    //$response = run_srai($convoArr, $srai);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "SRAI parsed to {$srai}.", 2);
+    $convoArr['aiml']['lookingfor'] = $srai;
+    $convoArr = set_wildcards($convoArr, 'srai');
+    $response = run_srai($convoArr, $convoArr['aiml']['lookingfor']);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SRAI tag', 4);
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
-
+    $convoArr['aiml'] = array_pop($convoArrStack);
     return $response_string;
 }
 
@@ -760,13 +783,15 @@ function parse_srai_tag(&$convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_sr_tag($convoArr, $element, $parentName, $level)
+function parse_sr_tag(&$convoArr, $element, $parentName, $level)
 {
+    global $convoArrStack;
+    $convoArrStack[] = $convoArr['aiml'];
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an SR tag.', 4);
     $response = run_srai($convoArr, $convoArr['aiml']['stars'][1]);
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Finished parsing SR tag', 4);
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);
-
+    $convoArr['aiml'] = array_pop($convoArrStack);
     return $response_string;
 }
 
@@ -779,55 +804,112 @@ function parse_sr_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return array|string
  */
-function parse_condition_tag($convoArr, $element, $parentName, $level)
+function parse_condition_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag.', 2);
-    global $error_response;
+    global $error_response, $remember_up_to;
 
+    $client_properties = $convoArr['client_properties'];
     $response = array();
     $attributes = (array)$element->attributes();
     $attributesArray = (isset($attributes['@attributes'])) ? $attributes['@attributes'] : array();
+    $stars = $convoArr['aiml']['stars'];
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Element attributes:' . print_r($attributesArray, true), 4);
     $attribute_count = count($attributesArray);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Element attribute count = $attribute_count", 4);
 
-    if ($attribute_count == 0) // Bare condition tag
+    // Bare condition tag
+    if ($attribute_count == 0)
     {
-        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with no attributes. XML = ' . $element->asXML(), 4);
+        $rdElement = pretty_print_XML($element);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with no attributes. XML = ' . $rdElement, 4);
 
-        $liNamePath = 'li[@name]';
-        $condition_xPath = '';
+        $liNamePath = 'li[@name][@value]';
+        $mtLiPath = 'li[not(@*)]';
+        $picks = array();
+        $condition_xPath = '*/';
         $exclude = array();
         $choices = $element->xpath($liNamePath);
+        $default = $element->xpath($mtLiPath);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'choices = ' . print_r($choices, true), 2);
 
         foreach ($choices as $choice)
         {
-            $choice_name = (string)$choice['name'];
+            $attr = $choice->attributes();
+            $name = (string)$attr->name;
 
-            if (in_array($choice_name, $exclude)) {
-                continue;
+            if (strpos($name, '*') === 0)
+            {
+                $index = substr($name, 1);
+                $index = empty($index) ? 1 : $index;
+                $name = isset($stars[$index]) ? $stars[$index] : 'undefined';
             }
 
-            $exclude[] = $choice_name;
-            runDebug(__FILE__, __FUNCTION__, __LINE__, 'Client properties = ' . print_r($convoArr['client_properties'], true), 4);
-            $choice_value = trim(get_client_property($convoArr, $choice_name));
-            $condition_xPath .= "li[@name=\"$choice_name\"][@value=\"$choice_value\"]|";
+            $value = (string)$attr->value;
+            $rdChoice = $choice->asXML();
+            runDebug(__FILE__, __FUNCTION__, __LINE__, "name: $name Current choice XML = {$rdChoice}", 2);
+            $client_property = (isset($client_properties[$name])) ? $client_properties[$name] : 'undefined';
+            runDebug(__FILE__, __FUNCTION__, __LINE__, "Client Property to check: {$client_property}", 2);
+            $elementValue =(isset($choice->text)) ? (string)$choice->text : (string)$choice;
+            if (strstr($value, '*'))
+            {
+                runDebug(__FILE__, __FUNCTION__, __LINE__, "This element has a star value = {$value}", 2);
+                $testValue = $value;
+                for($n = 1; $n <= count($stars); $n++)
+                {
+                    $test = ($n == 1) ? '*' : "*{$n}";
+                    runDebug(__FILE__, __FUNCTION__, __LINE__, "name = '{$name}', n = {$n}, testValue = '{$testValue}', value = '{$value}', test = '{$test}', string = '{$elementValue}', star = '{$stars[$n]}', cp val = '{$client_property}'\n", 2);
+                    if($testValue == $test)
+                    {
+                        if (isset($stars[$n]) && $stars[$n] == $client_property)
+                        {
+                            $picks[] = $choice;
+                            break 2;
+                        }
+                    }
+                }
+            }
+            else if ($name === $value) {
+                $picks[] = $choice;
+                break;
+            }
+            runDebug(__FILE__, __FUNCTION__, __LINE__, "value = '{$value}', client property = '{$client_property}'.", 2);
+            if (!empty($value) && $client_property == $value) $picks[] = $choice;
         }
-
-        $condition_xPath .= 'li[not(@*)]';
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "xpath search = $condition_xPath", 4);
-        $pick_search = $element->xpath($condition_xPath);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Pick array = ' . print_r($pick_search, true), 4);
-        $pick_count = count($pick_search);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Pick count = $pick_count.", 4);
-        $pick = $pick_search[0];
+        switch (true)
+        {
+            case (!empty($picks)):
+                $pick = $picks[0];
+                break;
+            case (!empty($default)):
+                $pick = $default[0];
+                break;
+            default: $pick = '';
+        }
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "Bare condition tag: pick = {$pick}", 2);
     }
-    elseif (array_key_exists('value', $attributesArray) or array_key_exists('contains', $attributesArray) or array_key_exists('exists', $attributesArray)) // condition tag with either VALUE, CONTAINS or EXISTS attributes
+
+    // Condition tag with name & value
+    elseif (array_key_exists('value', $attributesArray) or
+            array_key_exists('contains', $attributesArray) or
+            array_key_exists('exists', $attributesArray)) // condition tag with either VALUE, CONTAINS or EXISTS attributes
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with 2 attributes.', 4);
         $condition_name = (string)$element['name'];
-        $test_value = trim(get_client_property($convoArr, $condition_name));
+
+
+        if (strpos($condition_name, '*') === 0)
+        {
+            $index = substr($condition_name, 1);
+            $index = empty($index) ? 1 : $index;
+            $condition_name = isset($stars[$index]) ? $stars[$index] : 'undefined';
+        }
+
+        //$test_value = trim(get_client_property($convoArr, $condition_name));
+        $test_value = (isset($convoArr['client_properties'][$condition_name])) ?
+            $convoArr['client_properties'][$condition_name] :
+            'undefined';
 
         switch (true)
         {
@@ -844,13 +926,40 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
                 runDebug(__FILE__, __FUNCTION__, __LINE__, 'Something went wrong with parsing the CONDITION tag. Returning the error response.', 1);
                 return $error_response;
         }
-        $pick = (normalize_text($condition_value) == normalize_text($test_value)) ? $element : '';
+        if (strstr($condition_value, '*'))
+        {
+            $condition_value = $stars[1];
+            //runDebug(__FILE__, __FUNCTION__, __LINE__, 'Putzo found a star!', 2);
+            for ($n = 1; $n <= $remember_up_to; $n++) # index multiple star values
+            {
+                $condition_value = ($condition_value == "*{$n}") ? $stars[$n] : $condition_value;
+            }
+            //runDebug(__FILE__, __FUNCTION__, __LINE__, "Putzo's star = {$condition_value}", 2);
+            $pick = (normalize_text($condition_value) == normalize_text($test_value) || $condition_value == '*' && $test_value != 'undefined') ? $element : '';
+        }
+        else if ($condition_name === $condition_value) {
+            $pick = $element;
+        }
+        else {
+            $pick = (normalize_text($condition_value) == normalize_text($test_value) || $condition_value == '*' && $test_value != 'undefined') ? $element : '';
+        }
     }
+
+    // Condition tag with name attribute
     elseif (array_key_exists('name', $attributesArray)) // this ~SHOULD~ just trigger if the NAME value is present, and ~NOT~ NAME and (VALUE|CONTAINS|EXISTS)
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a CONDITION tag with only the NAME attribute', 4);
         $condition_name = (string)$element['name'];
-        $test_value = trim(get_client_property($convoArr, $condition_name));
+
+        if (strpos($condition_name, '*') === 0)
+        {
+            $index = substr($condition_name, 1);
+            $index = empty($index) ? 1 : $index;
+            $condition_name = isset($stars[$index]) ? $stars[$index] : 'undefined';
+        }
+
+        //$test_value = trim(get_client_property($convoArr, $condition_name));
+        $test_value = isset($convoArr['client_properties'][$condition_name]) ? $convoArr['client_properties'][$condition_name] : 'undefined';
 
         runDebug(__FILE__, __FUNCTION__, __LINE__, "Looking for test value '$test_value'", 4);
         $path = "li[@value]|li[not(@*)]";
@@ -877,14 +986,10 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Pick Value = '$testVarValue'", 4);
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking to see if $test_value (Client Property) matches $testVarValue (condition value).", 4);
 
-                if (aiml_pattern_match($testVarValue, $test_value))
+                if (aiml_pattern_match($testVarValue, $test_value) || $condition_name === $testVarValue)
                 {
                     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Pick XML = ' . $pick->asXML(), 4);
                     break;
-                }
-                else
-                {
-                    //$pick = $pick->asXML();
                 }
             }
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'Found a match. Pick = ' . print_r($pick, true), 4);
@@ -935,7 +1040,7 @@ function parse_condition_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_person_tag($convoArr, $element, $parentName, $level)
+function parse_person_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a PERSON tag.', 2);
 
@@ -954,7 +1059,7 @@ function parse_person_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_person2_tag($convoArr, $element, $parentName, $level)
+function parse_person2_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a PERSON2 tag.', 2);
 
@@ -973,7 +1078,7 @@ function parse_person2_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_html_tag($convoArr, $element, $parentName, $level)
+function parse_html_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a generic HTML tag.', 2);
 
@@ -1021,7 +1126,7 @@ function parse_html_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_gender_tag($convoArr, $element, $parentName, $level)
+function parse_gender_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Giving part of the response a sex change!', 2);
     $response_string = ' ' . tag_to_string($convoArr, $element, $parentName, $level, 'star');
@@ -1066,7 +1171,7 @@ function parse_gender_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_that_tag($convoArr, $element, $parentName, $level)
+function parse_that_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a THAT tag. How awesome is that?', 2);
 
@@ -1125,7 +1230,7 @@ function parse_that_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_input_tag($convoArr, $element, $parentName, $level)
+function parse_input_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an INPUT tag.', 2);
 
@@ -1148,7 +1253,7 @@ function parse_input_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_system_tag($convoArr, $element, $parentName, $level)
+function parse_system_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a SYSTEM tag (May God have mercy on us all).', 2);
 
@@ -1177,11 +1282,9 @@ function parse_system_tag($convoArr, $element, $parentName, $level)
  * @param int $level
  * @return string
  */
-function parse_learn_tag($convoArr, $element, $parentName, $level)
+function parse_learn_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing a LEARN tag.', 2);
-    global $dbn, $dbConn;
-
     $bot_id = $convoArr['conversation']['bot_id'];
     $user_id = $convoArr['conversation']['user_id'];
     $convo_id = $convoArr['conversation']['convo_id'];
@@ -1189,35 +1292,41 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
     $sql = '';
     $failure = false;
     $category = $element->category;
-    $catXpath = $element->xpath('//eval');
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Category XML = ' . $category->asXML(), 2);
 
     // pull out the necessary info to save to the DB
 
     // pattern
     $pattern = $category->pattern;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'pattern XML = ' . $pattern->asXML(), 2);
     $patternEvalXpath = $pattern->xpath('//eval');
     $patternText = $pattern->asXML();
     $pattern2store = (!empty($patternEvalXpath)) ?
         quickParseEval($convoArr, $patternText, 'pattern', 0) :
         remove_text_tag($patternText, 'pattern');
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Evaluated pattern = {$pattern2store}.", 2);
     $params[':pattern'] = $pattern2store;
 
     // thatpattern
     $thatpattern = $category->that;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'thatpattern XML = ' . $thatpattern->asXML(), 2);
     $thatpatternEvalXpath = $thatpattern->xpath('//eval');
     $thatpatternText = $thatpattern->asXML();
     $thatpattern2store = (!empty($thatpatternEvalXpath)) ?
         quickParseEval($convoArr, $thatpatternText, 'that', 0) :
         remove_text_tag($thatpatternText, 'that');
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Evaluated thatpattern = {$thatpattern2store}.", 2);
     $params[':thatpattern'] = $thatpattern2store;
 
     // template
     $curTemplate = $category->template;
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'template XML = ' . $curTemplate->asXML(), 2);
     $templateEvalXpath = $curTemplate->xpath('//eval');
     $templateText = $curTemplate->asXML();
     $template2store = (!empty($templateEvalXpath)) ?
         quickParseEval($convoArr, $templateText, 'template', 0) :
         remove_text_tag($templateText, 'template');
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Evaluated template = {$template2store}.", 2);
     $params[':template'] = $template2store;
 
     /** @noinspection SqlDialectInspection */
@@ -1232,10 +1341,11 @@ function parse_learn_tag($convoArr, $element, $parentName, $level)
       );';
 
     $params[':bot_id'] = $bot_id;
-    $params[':user_id'] = $convo_id;
-    $testSQL = str_replace(array_keys($params), array_values($params), $sql);
-    $sth = $dbConn->prepare($sql);
-    $sth->execute($params);
+    $params[':user_id'] = $user_id;
+    $debugSQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "user defined insert SQL = {$debugSQL}.", 2);
+    $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "Inserted {$numRows} row(s) into the user defined AIML table.", 2);
 
     return '';
 }
@@ -1265,7 +1375,7 @@ function remove_text_tag($element, $parentName)
  * @param int $level
  * @return string
  */
-function parse_eval_tag($convoArr, $element, $parentName, $level)
+function parse_eval_tag(&$convoArr, $element, $parentName, $level)
 {
     runDebug(__FILE__, __FUNCTION__, __LINE__, 'Parsing an EVAL tag.', 2);
 
@@ -1307,7 +1417,7 @@ function tag_to_string(&$convoArr, $element, $parentName, $level, $type = 'eleme
                 $response[] = (string)$element;
                 break;
             default:
-                $response[] = $convoArr['aiml']['stars'][1];
+                $response[] = isset($convoArr['aiml']['stars'][1]) ? $convoArr['aiml']['stars'][1] : '';
         }
     }
     $response_string = implode_recursive(' ', $response, __FILE__, __FUNCTION__, __LINE__);

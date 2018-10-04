@@ -3,7 +3,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: upload.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: FEB 01 2016
@@ -183,7 +183,7 @@ $mainTitle = str_replace('[errMsg]', $msg, $mainTitle);
  */
 function parseAIML($fn, $aimlContent, $from_zip = false)
 {
-    global $dbConn, $msg, $debugmode, $bot_id, $charset, $bot_name;
+    global $msg, $debugmode, $bot_id, $charset, $bot_name;
     $duplicates = array();
 
     $post_vars = filter_input_array(INPUT_POST);
@@ -441,7 +441,7 @@ function processUpload()
  */
 function getAIML_List()
 {
-    global $dbConn, $dbn, $bot_id;
+    global $bot_id;
     $out = "                  <!-- Start List of Currently Stored AIML files -->\n";
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT DISTINCT filename FROM `aiml` WHERE `bot_id` = :bot_id ORDER BY `filename`;";
@@ -470,7 +470,7 @@ function getAIML_List()
  */
 function getBotList()
 {
-    global $dbConn, $dbn, $bot_id;
+    global $bot_id;
     $botOptions = '';
 
     /** @noinspection SqlDialectInspection */

@@ -3,7 +3,7 @@
 /***************************************
  * www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: chatbot/core/aiml/parse_aiml.php
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: MAY 17TH 2014
@@ -292,32 +292,32 @@ function set_wildcards($convoArr, $type)
         $convoArr['aiml']['that_stars'] = array();
         $convoArr['aiml']['topic_stars'] = array();
     }
-
     // Set pattern wildcards
-    $aiml_pattern = ($type == 'normal') ? trim($convoArr['aiml']['pattern']) : trim($convoArr['aiml']['srai_input']);
+    $aiml_pattern = trim($convoArr['aiml']['pattern']);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Setting Wildcards. Pattern = '$aiml_pattern'", 2);
+/* debugging code
     $aimlArr = $convoArr['aiml'];
     ksort($aimlArr,SORT_NATURAL | SORT_FLAG_CASE);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Current AIML array =" . print_r($aimlArr, true), 2);
-    //save_file(_LOG_PATH_ . 'convoArr.txt', print_r($convoArr, true));
-    $ap = str_replace(array("*", "_"), "(.*?)", $aiml_pattern);
-    runDebug(__FILE__, __FUNCTION__, __LINE__, "comparing patterns $ap and $aiml_pattern", 2);
+*/
+    $ap = str_replace(array("*", "_"), "(.+)", $aiml_pattern);
     if ($ap != $aiml_pattern)
     {
         runDebug(__FILE__, __FUNCTION__, __LINE__, "We have pattern stars to process!", 2);
         if (!isset ($convoArr['aiml']['user_raw'])) $convoArr['aiml']['user_raw'] = normalize_text($convoArr['aiml']['lookingfor'], false);
-        $checkAgainst = ($type == 'normal') ? $convoArr['aiml']['user_raw'] : $convoArr['aiml']['srai_input'];
-        runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking pattern '$ap' against '$checkAgainst'.", 2);
-        if (preg_match_all("~{$ap}~siuU", $checkAgainst, $matches))
+        $checkAgainst = ($type == 'normal') ? $convoArr['aiml']['user_raw'] : $convoArr['aiml']['lookingfor'];
+        $regEx = "~{$ap}$~siuU";
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "RegEx string = {$regEx}: Searching {$checkAgainst} for a match.", 2);
+        if (preg_match_all($regEx, $checkAgainst, $matches))
         {
             runDebug(__FILE__, __FUNCTION__, __LINE__, print_r($matches, true), 2);
-            //save_file(_LOG_PATH_ . 'pattern_star.matches.txt', print_r($matches, true));
             for ($i = 1; $i < count($matches); $i++)
             {
                 $curStar = trim($matches[$i][0]);
                 $curStar = preg_replace('/[[:punct:]]/uis', ' ', $curStar);
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Adding '$curStar' to the stars stack.", 2);
                 $convoArr['aiml']['stars'][$i] = $curStar;
+                runDebug(__FILE__, __FUNCTION__, __LINE__, 'Star array = ' . print_r($convoArr['aiml']['stars'], true), 2);
             }
         }
         else {
@@ -330,14 +330,14 @@ function set_wildcards($convoArr, $type)
     $aiml_thatpattern = trim($convoArr['aiml']['thatpattern']);
     if (!empty($aiml_thatpattern))
     {
-        $tp = str_replace(array("*", "_"), "(.*?)", $aiml_thatpattern);
+        $tp = str_replace(array("*", "_"), "(.+)", $aiml_thatpattern);
         if ($tp != $aiml_thatpattern)
         {
             runDebug(__FILE__, __FUNCTION__, __LINE__, "We have thatpattern stars to process!", 2);
             $that = $convoArr['that'][1];
             $checkAgainst = implode_recursive(' ', $that, __FILE__, __FUNCTION__, __LINE__);
             runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking thatpattern '$tp' against '$checkAgainst'.", 2);
-            if (preg_match_all("~{$tp}~siuU", $checkAgainst, $matches))
+            if (preg_match_all("~{$tp}$~siuU", $checkAgainst, $matches))
             {
                 //save_file(_LOG_PATH_ . 'that_star.matches.txt', print_r($matches, true));
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Current THAT matches:\n" . print_r($matches, true), 2);
@@ -362,7 +362,7 @@ function set_wildcards($convoArr, $type)
     $aiml_topic = trim($convoArr['aiml']['topic']);
     if (!empty($aiml_topic))
     {
-        $topp = str_replace(array("*", "_"), "(.*?)", $aiml_topic);
+        $topp = str_replace(array("*", "_"), "(.+)", $aiml_topic);
         if ($topp != $aiml_topic)
         {
             runDebug(__FILE__, __FUNCTION__, __LINE__, "We have topic stars to process!", 2);
@@ -370,7 +370,7 @@ function set_wildcards($convoArr, $type)
             $checkAgainst = implode_recursive(' ', $topic, __FILE__, __FUNCTION__, __LINE__);
             runDebug(__FILE__, __FUNCTION__, __LINE__, "Checking topic '$topp' against '$checkAgainst'.", 2);
 
-            if (preg_match_all("~{$topp}~siuU", $checkAgainst, $matches))
+            if (preg_match_all("~{$topp}$~siuU", $checkAgainst, $matches))
             {
                 //save_file(_LOG_PATH_ . 'topic_star.matches.txt', print_r($matches, true));
                 runDebug(__FILE__, __FUNCTION__, __LINE__, "Current TOPIC matches:\n" . print_r($matches, true), 2);
@@ -404,37 +404,39 @@ function set_wildcards($convoArr, $type)
  **/
 function run_srai(&$convoArr, $now_look_for_this)
 {
-    global $srai_iterations, $error_response, $dbConn, $dbn;
+    global $srai_iterations, $error_response, $dbn;
 
     $currentStars = $convoArr['aiml']['stars'];
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running SRAI. Pattern = '$now_look_for_this'.", 2);
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
     $bot_id = $convoArr['conversation']['bot_id'];
+    $params = array(
+        ':bot_id' => $bot_id,
+        ':now_look_for_this' => "%{$now_look_for_this}%",
+    );
 
+    $sql_bot_select = " bot_id = :bot_id ";
     if ($bot_parent_id != 0 && $bot_parent_id != $bot_id)
     {
-        $sql_bot_select = " (bot_id = '$bot_id' OR bot_id = '$bot_parent_id') ";
-    }
-    else {
-        $sql_bot_select = " bot_id = '$bot_id' ";
+        $sql_bot_select .= "OR bot_id = :bot_parent_id ";
+        $params[':bot_parent_id'] = $bot_parent_id;
     }
 
-    $bot_id = $convoArr['conversation']['bot_id'];
-    /* disabling srai_lookup
         runDebug(__FILE__, __FUNCTION__, __LINE__,'Checking for entries in the srai_lookup table.', 2);
-        runDebug(__FILE__, __FUNCTION__, __LINE__,"google bot_id = $bot_id", 2);
+        runDebug(__FILE__, __FUNCTION__, __LINE__,"azimov bot_id = $bot_id", 2);
         $lookingfor = $convoArr['aiml']['lookingfor'];
         //$now_look_for_this = _strtoupper($now_look_for_this);
-        $sql = "select `template_id` from `$dbn`.`srai_lookup` where `pattern` = '$now_look_for_this' and $sql_bot_select;";
-        runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = $sql", 2);
-        $row = db_fetchAll($sql,null, __FILE__, __FUNCTION__, __LINE__);
-        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Result = ' . print_r($row, true), 2);
-        //$num_rows = count($row);
-        $num_rows = 0;
+        $sql = "select `template_id` from `$dbn`.`srai_lookup` where `pattern` like :now_look_for_this and ({$sql_bot_select});";
+        $debugSQL = db_parseSQL($sql, $params);
+        runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = {$debugSQL}", 2);
+        $rows = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, 'Result = ' . print_r($rows, true), 2);
+        $num_rows = count($rows);
+        //$num_rows = 0;
         if ($num_rows > 0)
         {
-          runDebug(__FILE__, __FUNCTION__, __LINE__,"Found $num_rows rows in lookup table: " . print_r($row, true), 2);
-          $template_id = $row[0]['template_id'];
+          runDebug(__FILE__, __FUNCTION__, __LINE__,"Found $num_rows rows in lookup table: " . print_r($rows, true), 2);
+          $template_id = $rows[0]['template_id'];
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Found a matching entry in the lookup table. Using ID# $template_id.", 2);
           $sql = "select `template` from `$dbn`.`aiml` where `id` = '$template_id';";
           $row = db_fetch($sql,null, __FILE__, __FUNCTION__, __LINE__);
@@ -462,18 +464,21 @@ function run_srai(&$convoArr, $now_look_for_this)
           runDebug(__FILE__, __FUNCTION__, __LINE__,'No match found in lookup table.', 2);
         }
           runDebug(__FILE__, __FUNCTION__, __LINE__,"Nothing found in the SRAI lookup table. Looking for a direct pattern match for '$now_look_for_this'.", 2);
-    */
+/* disabling srai_lookup
+*/
 
     /** @noinspection SqlDialectInspection */
-    $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` where `pattern` = :pattern and $sql_bot_select order by `id` asc;";
-    $result = db_fetchAll($sql, array(':pattern' => $now_look_for_this), __FILE__, __FUNCTION__, __LINE__);
+    $sql = "SELECT `id`, `pattern`, `thatpattern`, `topic` FROM `$dbn`.`aiml` where `pattern` like :now_look_for_this and $sql_bot_select order by `id` asc;";
+    $debugSQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__,"lookup SQL = {$debugSQL}", 2);
+    $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
     $num_rows = count($result);
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Found $num_rows potential responses.", 2);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'Responses: ' . print_r($result, true), 2);
 
     $allrows = array();
     $i = 0;
-
     if ($num_rows > 0)
     {
         $tmp_rows = number_format($num_rows);
@@ -553,12 +558,12 @@ function run_srai(&$convoArr, $now_look_for_this)
             // code to try here
             /** @noinspection SqlDialectInspection */
             $sql = "INSERT INTO `$dbn`.`srai_lookup` (`id`, `bot_id`, `pattern`, `template_id`) VALUES(null, :bot_id, :pattern, :template_id);";
-            $sth = $dbConn->prepare($sql);
-            $sth->bindValue(':bot_id', $bot_id);
-            $sth->bindValue(':pattern', $pattern);
-            $sth->bindValue(':template_id', $aiml_id);
-            $sth->execute();
-            $affectedRows = $sth->rowCount();
+            $params = array(
+                ':bot_id' => $bot_id,
+                ':pattern' => $pattern,
+                ':template_id' => $aiml_id,
+            );
+            $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
             if ($affectedRows > 0) runDebug(__FILE__, __FUNCTION__, __LINE__, "Successfully inserted entry for '$pattern'.", 1);
         }
         catch (Exception $e)
@@ -683,7 +688,7 @@ function pop_stack(& $convoArr)
  **/
 function make_learn($convoArr, $pattern, $template)
 {
-    global $dbConn, $dbn;
+    global $dbn;
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Making learn", 2);
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Pattern:  $pattern", 2);
@@ -705,10 +710,7 @@ function make_learn($convoArr, $pattern, $template)
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Make learn SQL: $sql", 3);
 
-    $sth = $dbConn->prepare($sql);
-    $sth->execute();
-
-    $numRows = $sth->rowCount();
+    $numRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
 }
 
 /**
@@ -724,6 +726,8 @@ function make_learn($convoArr, $pattern, $template)
  */
 function math_functions($operator, $num_1, $num_2 = "")
 {
+    $num_1 = (is_numeric($num_1)) ? $num_1 : 0;
+    $num_2 = (is_numeric($num_2)) ? $num_2 : 0;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Running system tag math $num_1 $operator $num_2", 4);
 
     $operator = _strtolower($operator);

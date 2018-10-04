@@ -15,5 +15,5 @@
 -- SQL Query: [sql]
 
 -- --------------------------------------------------------
-insert into aiml (id,bot_id,aiml,pattern,thatpattern,template,topic,filename) values
+insert into aiml (bot_id,pattern,thatpattern,template,topic,filename) values
 

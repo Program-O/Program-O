@@ -1,7 +1,7 @@
 /***************************************
  * http://www.program-o.com
  * PROGRAM O
- * Version: 2.6.8
+ * Version: 2.6.11
  * FILE: editAiml.js
  * AUTHOR: Elizabeth Perreau and Dave Morton
  * DATE: 05-11-2013
@@ -18,6 +18,22 @@ function getVhByScript(){
 }
 
 $(function () {
+    $('#lnkFLT').on('click', function(e){
+        //e.preventDefault();
+        if(confirm('This can take up to everal minutes to complete. Are you sure?')){
+            var cb = $('#closeButton');
+            $('#errMsg')
+                .empty()
+                .removeClass()
+                .addClass('wrnMsg')
+                .append(cb)
+                .append('<img src="images/progressbar_orange.gif" alt="">')
+                .append('Filling the lookup table. Please be patient, and don\'t leave the page until it completes.')
+                .show();
+                return true;
+        }
+        else return false;
+    });
     $('#showHelp').hide();
     $('#SRAI_LOOKUP').on('click', '.editable textarea', function (e) {
         e.stopPropagation();
