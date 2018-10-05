@@ -123,14 +123,7 @@ function getBot()
 
         $inputs .= "<!-- colCount = $colCount -->\n";
 
-        if (($colCount > 0) && ($colCount < 3))
-        {
-            for ($n = 0; $n < (3 - $colCount); $n++)
-            {
-                $addCell = str_replace('[cid]', "[$n]", $blankCell);
-                $inputs .= $addCell;
-            }
-        }
+
         $action = 'Update Data';
         $func = 'updateBot';
     }
@@ -151,7 +144,26 @@ function getBot()
               <tr>
 $inputs
               </tr>
+              
+             <td>
+                   <label for="newEntryName[0]">
+                     <span class="label">
+                       New Entry Name: <input name="newEntryName" id="newEntryName" style="width: 98%">
+                     </span>
+                   </label>&nbsp;
+                   </td>
+                   <td>
+                   <label for="newEntryValue[0]" style="width: 98%">
+                     <span class="formw">New Entry Value: </span>
+                     <input name="newEntryValue" id="newEntryValue">
+                   </label>
+                 </td>
+                  <td>
+               </td>
               <tr>
+              
+              
+              
                 <td colspan="3">
                   <input type="hidden" id="bot_id" name="bot_id" value="$bot_id">
                   <input type="hidden" id="func" name="func" value="$func">
@@ -195,36 +207,30 @@ function updateBot()
 {
     global $bot_id, $bot_name, $post_vars;
 
+    $hasCustomField = false;
+
     $msg = "";
 
     if (!empty ($post_vars['newEntryName']))
     {
-        $newEntryNames = $post_vars['newEntryName'];
-        $newEntryValues = $post_vars['newEntryValue'];
+        $newEntryName = $post_vars['newEntryName'];
+        $newEntryValue = $post_vars['newEntryValue'];
 
-        /** @noinspection SqlDialectInspection */
-        $sql = "INSERT INTO `botpersonality` (`id`, `bot_id`, `name`, `value`) VALUES (null, $bot_id, :name, :value);";
-        $params = array();
+        if(!empty($newEntryName) && !empty($newEntryValue)) {
 
-        foreach ($newEntryNames as $index => $key)
-        {
-            $value = $newEntryValues[$index];
+            /** @noinspection SqlDialectInspection */
+            $sql = "INSERT INTO `botpersonality` (`id`, `bot_id`, `name`, `value`) VALUES (null, $bot_id, :name, :value);";
+            $params = array();
 
-            if (empty ($value)) {
-                continue;
+            $params[] = array(':name' => $newEntryName, ':value' => $newEntryValue);
+            $rowsAffected = db_write($sql, $params, true, __FILE__, __FUNCTION__, __LINE__);
+
+            if ($rowsAffected > 0) {
+                $msg = (empty ($msg)) ? "Created trait $newEntryName. \n" : $msg;
+                $hasCustomField = true;
+            } else {
+                $msg = "Error updating bot personality.\n";
             }
-
-            $params[] = array(':name' => $key, ':value' => $value);
-        }
-
-        $rowsAffected = db_write($sql, $params, true, __FILE__, __FUNCTION__, __LINE__);
-
-        if ($rowsAffected > 0)
-        {
-            $msg = (empty ($msg)) ? "Bot personality added. \n" : $msg;
-        }
-        else {
-            $msg = 'Error updating bot personality.';
         }
     }
 
@@ -273,7 +279,7 @@ function updateBot()
         }
     }
 
-    if (empty($insertParams) && empty($updateParams)) {
+    if (empty($insertParams) && empty($updateParams) && !$hasCustomField) {
         return 'No changes found.';
     }
 
@@ -281,10 +287,14 @@ function updateBot()
     $affectedRows += (!empty($updateParams)) ? db_write($insertSQL, $insertParams, true, __FILE__, __FUNCTION__, __LINE__) : 0;
 
     if ($affectedRows > 0) {
-        $msg = 'Bot Personality Updated.';
+        $msg .= 'Bot Personality Updated.';
     }
     else {
-        $msg = "Something went wrong! Affected rows = $affectedRows.";
+        if(!empty($insertParams)&&!empty($updateParams)) {
+
+
+            $msg .= "Something went wrong! Affected rows = $affectedRows.";
+        }
     }
 
     return $msg;
