@@ -7,6 +7,9 @@
 
 
 ## Version History:
+2.7.0
+    #452 Bug Fix - Input boxes in Bot Personality Settings disappear after filling the 3rd column
+
 2.6.11
     #433 Hot fix patch to temporarily plug the hole caused by the CSRF vunerability
 
