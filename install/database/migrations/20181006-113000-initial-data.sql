@@ -1,0 +1,2 @@
+INSERT INTO `wordcensor` (`censor_id`, `word_to_censor`, `replace_with`, `bot_exclude`) VALUES (NULL, 'shit', 's***', ''), (NULL, 'fuck', 'f***', '');
+INSERT INTO `spellcheck` (`id`, `missspelling`, `correction`) VALUES (NULL, 'program o', 'programo'), (NULL, 'program-o', 'programo'), (NULL, 'loool', 'lol'),(NULL, 'lool', 'lol'),(NULL, 'how r u', 'how are you'),(NULL, 'r u ok', 'are you ok');

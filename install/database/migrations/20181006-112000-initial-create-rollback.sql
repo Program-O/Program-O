@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS `aiml`;
+DROP TABLE IF EXISTS `aiml_userdefined`;
+DROP TABLE IF EXISTS `botpersonality`;
+DROP TABLE IF EXISTS `bots`;
+DROP TABLE IF EXISTS `client_properties`;
+DROP TABLE IF EXISTS `conversation_log`;
+DROP TABLE IF EXISTS `myprogramo`;
+DROP TABLE IF EXISTS `spellcheck`;
+DROP TABLE IF EXISTS `srai_lookup`;
+DROP TABLE IF EXISTS `undefined_defaults`;
+DROP TABLE IF EXISTS `unknown_inputs`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `wordcensor`;

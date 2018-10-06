@@ -1,0 +1,1 @@
+CREATE TABLE `migrations` ( `id` int(11) NOT NULL AUTO_INCREMENT, `filename` varchar(255) NOT NULL, `migration_group_number` int(11) NOT NULL, `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE KEY `unique_filename` (`filename`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -1,0 +1,11 @@
+ALTER TABLE `botpersonality` DROP INDEX `unique_botid_name`;
+ALTER TABLE `bots` DROP INDEX `unique_botname`;
+ALTER TABLE `client_properties` DROP INDEX `unique_userid_botid_name`;
+ALTER TABLE `spellcheck` DROP INDEX `unique_missspelling`;
+ALTER TABLE `srai_lookup` DROP INDEX `unique_botid_pattern_templateid`;
+ALTER TABLE `undefined_defaults` DROP INDEX `unqiue_botid_userid_pattern`;
+ALTER TABLE `unknown_inputs` DROP INDEX `unique_botid_input_userid`;
+ALTER TABLE `users` DROP INDEX `unique_sessionid_botid`;
+ALTER TABLE `wordcensor` DROP INDEX `unique_wordtocensor`;
+ALTER TABLE `client_properties` CHANGE `name` `name` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+ALTER TABLE `aiml_userdefined` CHANGE `user_id` `user_id` VARCHAR(256) NOT NULL;
