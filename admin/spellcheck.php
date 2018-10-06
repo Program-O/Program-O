@@ -212,7 +212,7 @@ function insertSpell()
     }
     else {
         /** @noinspection SqlDialectInspection */
-        $sql = "INSERT INTO `spellcheck` VALUES (:missspell, :correction)";
+        $sql = "INSERT INTO `spellcheck` VALUES (:missspell, :correction) ON DUPLICATE KEY UPDATE correction=:correction";
         $params = array(
             ':missspell' => $missspell,
             ':correction' => $correction

@@ -250,8 +250,6 @@ function insertAIML()
     }
     else
     {
-        /** @noinspection SqlDialectInspection */
-        $sql = 'INSERT INTO `aiml_userdefined` (`id`,`bot_id`,`user_id`, `pattern`,`thatpattern`,`template`) VALUES (NULL, :bot_id, :user_id, :pattern, :thatpattern, :aimltemplate);';
         $params = array(
             ':bot_id' => $bot_id,
             ':user_id' => $user_id,
@@ -259,6 +257,17 @@ function insertAIML()
             ':thatpattern' => $thatpattern,
             ':template' => $template,
         );
+
+        $sql = "SELECT *  FROM `aiml_userdefined` WHERE `pattern` = :pattern AND `thatpattern` =:thatpattern AND `template` =:template AND `user_id` = :user_id AND `bot_id` = :bot_id LIMIT 1;";
+        $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
+        if($row || count($row)>0){
+            $msg = "AIML already exists - no changes made.";
+            return $msg;
+        }
+
+        /** @noinspection SqlDialectInspection */
+        $sql = 'INSERT INTO `aiml_userdefined` (`id`,`bot_id`,`user_id`, `pattern`,`thatpattern`,`template`) VALUES (NULL, :bot_id, :user_id, :pattern, :thatpattern, :aimltemplate)';
+
 
         $affectedRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
 

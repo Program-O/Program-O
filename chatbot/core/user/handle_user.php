@@ -131,7 +131,8 @@ endSQL;
     //add the username to the client properties....
     /** @noinspection SqlDialectInspection */
     $sql = 'INSERT INTO `client_properties` (`id`,`user_id`,`bot_id`,`name`,`value`)
-  VALUES (NULL, :user_id, :bot_id, \'name\', :username);';
+  VALUES (NULL, :user_id, :bot_id, \'name\', :username)
+  ON DUPLICATE KEY UPDATE `value`=:username;';
 
     $params = array(
         ':user_id' => $user_id,

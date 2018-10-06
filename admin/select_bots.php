@@ -403,6 +403,7 @@ function make_bot_predicates($bot_id,$bot_name)
 
     $sql = <<<endSQL
 INSERT INTO `botpersonality` VALUES
+    (NULL,  :bot_id, 'name', :bot_name),
     (NULL,  :bot_id, 'age', ''),
     (NULL,  :bot_id, 'baseballteam', ''),
     (NULL,  :bot_id, 'birthday', ''),
@@ -445,7 +446,6 @@ INSERT INTO `botpersonality` VALUES
     (NULL,  :bot_id, 'looklike', ''),
     (NULL,  :bot_id, 'master', ''),
     (NULL,  :bot_id, 'msagent', ''),
-    (NULL,  :bot_id, 'name', :bot_name),
     (NULL,  :bot_id, 'nationality', ''),
     (NULL,  :bot_id, 'order', ''),
     (NULL,  :bot_id, 'orientation', ''),

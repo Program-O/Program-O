@@ -448,7 +448,8 @@ function log_conversation($convoArr)
     $insertSQL = <<<endSQL
 insert into `client_properties`
     (`id`, `user_id`, `bot_id`, `name`, `value`)
-    values(null, :user_id, :bot_id, :name, :value);
+    values(null, :user_id, :bot_id, :name, :value)
+    ON DUPLICATE KEY UPDATE `value`=:value;
 endSQL;
     $updateSQL = 'update `client_properties` set value = :value where `bot_id` = :bot_id and `user_id` = :user_id and `name` = :name;';
     $client_properties = $convoArr['client_properties'];
@@ -509,7 +510,7 @@ function log_conversation_state($convoArr)
                 WHERE `id` = '$user_id' LIMIT 1";
     runDebug(__FILE__, __FUNCTION__, __LINE__, "updating conversation state SQL: $sql", 3);
 
-    $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
+    $numRows = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__);
 
     // Save client_properties to DB
     $bot_id = $convoArr['conversation']['bot_id'];
@@ -517,7 +518,7 @@ function log_conversation_state($convoArr)
 insert into `client_properties`
     (`id`, `user_id`, `bot_id`, `name`, `value`)
     values(null, :user_id, :bot_id, :name, :value)
-    on duplicate key update value=:value;
+    ON DUPLICATE KEY UPDATE `value`=:value;
 endSQL;
     $client_properties = $convoArr['client_properties'];
     $params = [];

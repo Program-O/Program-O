@@ -580,7 +580,7 @@ function parse_set_tag(&$convoArr, $element, $parentName, $level)
         case false:
         case 0:
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'Inserting data into the DB', 2);
-            $saveSQL = 'insert into client_properties (id, user_id, bot_id, name, value) values(null, :user_id, :bot_id, :name, :value);';
+            $saveSQL = 'insert into client_properties (id, user_id, bot_id, name, value) values(null, :user_id, :bot_id, :name, :value) ON DUPLICATE KEY UPDATE `value`=:value;';
         break;
         default:
             runDebug(__FILE__, __FUNCTION__, __LINE__, 'updating data in the DB', 2);

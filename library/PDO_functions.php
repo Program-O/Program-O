@@ -26,7 +26,10 @@ function db_open()
 
     try
     {
-        $dbConn = new PDO("mysql:host=$dbh;port=$dbPort;dbname=$dbn;charset=utf8", $dbu, $dbp);
+
+
+
+        $dbConn = new PDO("mysql:host=$dbh;port=$dbPort;dbname=$dbn;charset=utf8", $dbu, $dbp, array(PDO::ATTR_PERSISTENT => true));
         $dbConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $dbConn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         $dbConn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
@@ -400,6 +403,114 @@ PDO_statement error: $psError
 
 endMsg;
         //if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, $errMsg, 0);
+        $out = false;
+    }
+    return $out;
+}
+
+/**
+ * function db_beginTransaction
+ * Fetches turns off the transaction
+ *
+ * @param string $file - the path/filename of the file that the function call originated in
+ * @param string $function - the name of the function that the function call originated in
+ * @param string $line - the line number of the originating function call
+ *
+ */
+function db_beginTransaction($file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
+{
+    global $dbConn;
+    if (!isset($dbConn)) $dbConn = db_open();
+
+    try {
+        $dbConn->beginTransaction();
+    }
+    catch (Exception $e)
+    {
+        //error_log("bad SQL encountered in file $file, line #$line. SQL:\n$sql\n", 3, _LOG_PATH_ . 'badSQL.txt');
+        $pdoError = print_r($dbConn->errorInfo(), true);
+
+        /** @noinspection PhpUndefinedVariableInspection */
+        $psError = print_r($sth->errorInfo(), true);
+        $errMsg = <<<endMsg
+An error was generated while trying to execute a beginTransaction in file $file at line $line, in the function $function.
+PDO error: $pdoError
+PDO_statement error: $psError
+
+endMsg;
+        if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, $errMsg, 0);
+        $out = false;
+    }
+    return $out;
+}
+
+/**
+ * function db_beginTransaction
+ * Fetches turns off the transaction
+ *
+ * @param string $file - the path/filename of the file that the function call originated in
+ * @param string $function - the name of the function that the function call originated in
+ * @param string $line - the line number of the originating function call
+ *
+ */
+function db_rollBack($file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
+{
+    global $dbConn;
+    if (!isset($dbConn)) $dbConn = db_open();
+
+    try {
+        $dbConn->rollBack();
+    }
+    catch (Exception $e)
+    {
+        //error_log("bad SQL encountered in file $file, line #$line. SQL:\n$sql\n", 3, _LOG_PATH_ . 'badSQL.txt');
+        $pdoError = print_r($dbConn->errorInfo(), true);
+
+        /** @noinspection PhpUndefinedVariableInspection */
+        $psError = print_r($sth->errorInfo(), true);
+        $errMsg = <<<endMsg
+An error was generated while trying to execute a rollBack in file $file at line $line, in the function $function.
+PDO error: $pdoError
+PDO_statement error: $psError
+
+endMsg;
+        if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, $errMsg, 0);
+        $out = false;
+    }
+    return $out;
+}
+
+/**
+ * function db_beginTransaction
+ * Fetches turns off the transaction
+ *
+ * @param string $file - the path/filename of the file that the function call originated in
+ * @param string $function - the name of the function that the function call originated in
+ * @param string $line - the line number of the originating function call
+ *
+ */
+function db_commit($file = 'unknown', $function = 'unknown', $line = 'unknown', $inPGO = true)
+{
+    global $dbConn;
+    if (!isset($dbConn)) $dbConn = db_open();
+
+    try {
+        $dbConn->commit();
+    }
+    catch (Exception $e)
+    {
+        //error_log("bad SQL encountered in file $file, line #$line. SQL:\n$sql\n", 3, _LOG_PATH_ . 'badSQL.txt');
+        $pdoError = print_r($dbConn->errorInfo(), true);
+
+        /** @noinspection PhpUndefinedVariableInspection */
+        $psError = print_r($sth->errorInfo(), true);
+        $errMsg = <<<endMsg
+An error was generated while trying to execute a commit in file $file at line $line, in the function $function.
+PDO error: $pdoError
+PDO_statement error: $psError
+
+endMsg;
+        if ($inPGO) runDebug(__FILE__, __FUNCTION__, __LINE__, $errMsg, 0);
         $out = false;
     }
     return $out;

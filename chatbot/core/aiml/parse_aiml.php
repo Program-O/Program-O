@@ -557,7 +557,7 @@ function run_srai(&$convoArr, $now_look_for_this)
         {
             // code to try here
             /** @noinspection SqlDialectInspection */
-            $sql = "INSERT INTO `$dbn`.`srai_lookup` (`id`, `bot_id`, `pattern`, `template_id`) VALUES(null, :bot_id, :pattern, :template_id);";
+            $sql = "INSERT IGNORE INTO `$dbn`.`srai_lookup` (`id`, `bot_id`, `pattern`, `template_id`) VALUES(null, :bot_id, :pattern, :template_id);";
             $params = array(
                 ':bot_id' => $bot_id,
                 ':pattern' => $pattern,

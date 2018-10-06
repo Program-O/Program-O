@@ -302,37 +302,65 @@ function Save()
     $row = db_fetch('show tables');
     if (empty ($row) || true === $clearDB)
     {
-        $sqlArray = file('new.sql', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        foreach ($sqlArray as $sql)
-        {
-            try {
-                $insertSuccess = db_write($sql,null, false, __FILE__, __FUNCTION__, __LINE__, false);
-                if (false === $insertSuccess){
-                    throw new Exception('SQL operation failed!');
-                }
-            }
-            catch(Exception $e)
-            {
-                $words = explode(' ', $sql);
-                switch (strtoupper($words[0]))
-                {
-                    case 'DROP':
-                        $table = trim($words[4], '`;');
-                        break;
-                    case 'CREATE':
-                        $table = trim($words[5], '`');
-                        break;
-                    case 'ALTER':
-                        $table = trim($words[2], '`');
-                        break;
-                    default:
-                        $words[0] .= ' data into';
-                        $table = trim($words[2], '`');
-                }
-                $errMsg = "Error while attempting to {$words[0]} the {$table} table. SQL:\n$sql\nError Code: {$e->getCode()}\nError message: {$e->getMessage()}\n-----------------------------------------------\n";
-                error_log($errMsg, 3, _LOG_PATH_ . 'install.sql.error.log');
-            }
 
+        $files = get_rollforward_files();
+
+        foreach($files as $file) {
+
+            $directory = 'database/migrations/';
+            $path_file = $directory.$file;
+
+            $sqlArray = file($path_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($sqlArray as $sql) {
+
+                if (trim($sql) == '') {
+                    continue;
+                } elseif ($sql[0] == '#') {
+                    continue;
+                }
+
+                try {
+                    $insertSuccess = db_write($sql, null, false, __FILE__, __FUNCTION__, __LINE__, false);
+                    if (false === $insertSuccess) {
+                        throw new Exception('SQL operation failed!');
+                    }
+
+                    //if it is the < migration table file then do no migration
+                    //if it is the migration table file then add the initial install just for fun
+                    //else then just add the scripts
+                    if(($file=='20181006-112000-initial-create.sql')||($file=='20181006-113000-initial-data.sql')){
+                        //ignore
+                    }elseif($file=='20181006-114000-add-migrations-table.sql'){
+                        record_migration('20181006-112000-initial-create.sql');
+                        record_migration('20181006-113000-initial-data.sql');
+                        record_migration($file);
+                    }else{
+                        record_migration($file);
+                    }
+
+
+
+                } catch (Exception $e) {
+                    $words = explode(' ', $sql);
+                    switch (strtoupper($words[0])) {
+                        case 'DROP':
+                            $table = trim($words[4], '`;');
+                            break;
+                        case 'CREATE':
+                            $table = trim($words[5], '`');
+                            break;
+                        case 'ALTER':
+                            $table = trim($words[2], '`');
+                            break;
+                        default:
+                            $words[0] .= ' data into';
+                            $table = trim($words[2], '`');
+                    }
+                    $errMsg = "Error while attempting to {$words[0]} the {$table} table. SQL:\n$sql\nError Code: {$e->getCode()}\nError message: {$e->getMessage()}\n-----------------------------------------------\n";
+                    error_log($errMsg, 3, _LOG_PATH_ . 'install.sql.error.log');
+                }
+
+            }
         }
     }
     else
@@ -468,6 +496,29 @@ where `bot_id` = :bot_id;
     }
 
     return $out . $errorMessage;
+}
+
+/*
+ * record the initial insert into the migrations table
+ */
+function record_migration($file){
+
+    global $dbn;
+
+    try {
+        $sql = "INSERT INTO `$dbn`.`migrations` (`id`, `filename`, `migration_group_number`) VALUES (NULL, :filename, :migration_group_number) ON DUPLICATE KEY UPDATE filename=:filename, migration_group_number=:migration_group_number,created_on=CURRENT_TIMESTAMP ";
+        $params = array(
+            ':filename' => $file,
+            ':migration_group_number' => 1
+        );
+        $insertSuccess = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__, false);
+        if (false === $insertSuccess) {
+            throw new Exception('SQL operation failed!');
+        }
+    }  catch(Exception $e) {
+        die('Could not add SRAI lookup table! Error is: ' . $e->getMessage());
+    }
+
 }
 
 /*
@@ -790,6 +841,29 @@ function db_lastInsertId($name = null)
 {
     global $dbConn;
     return $dbConn->lastInsertId($name);
+}
+
+
+/*
+ * get an array of files from the migrations directory
+ */
+function get_rollforward_files(){
+
+    $rollback_array = array();
+    $directory = 'database/migrations';
+    $temp_array = array_diff(scandir($directory), array('..','.'));
+
+
+    if(!empty($temp_array)){
+        foreach($temp_array as $file){
+            if(strpos($file,'rollback.sql')===false){
+                $rollback_array[]=$file;
+            }
+        }
+    }
+    return $rollback_array;
+
+
 }
 
 

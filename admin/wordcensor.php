@@ -211,7 +211,7 @@ function insertWordCensor()
     else
     {
         /** @noinspection SqlDialectInspection */
-        $sql = 'INSERT INTO `wordcensor` (`censor_id`, `word_to_censor`, `replace_with`, `bot_exclude`) VALUES (NULL, :word_to_censor, :replace_with, "")';
+        $sql = 'INSERT INTO `wordcensor` (`censor_id`, `word_to_censor`, `replace_with`, `bot_exclude`) VALUES (NULL, :word_to_censor, :replace_with, "") ON DUPLICATE KEY UPDATE replace_with=:replace_with';
         $params = array(
             ':word_to_censor' => $word_to_censor,
             ':replace_with' => $replace_with,

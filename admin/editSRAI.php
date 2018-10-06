@@ -255,7 +255,7 @@ function insertSRAI()
     $template_id = trim($form_vars['template_id']);
 
     /** @noinspection SqlDialectInspection */
-    $sql = 'INSERT INTO `srai_lookup` (`id`, `bot_id`, `pattern`, `template_id`) VALUES (NULL, :bot_id, :pattern, :template_id);';
+    $sql = 'INSERT IGNORE INTO `srai_lookup` (`id`, `bot_id`, `pattern`, `template_id`) VALUES (NULL, :bot_id, :pattern, :template_id)';
     $params = array(
         ':bot_id' => $bot_id,
         ':pattern' => $pattern,

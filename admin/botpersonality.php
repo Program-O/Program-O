@@ -219,7 +219,7 @@ function updateBot()
         if(!empty($newEntryName) && !empty($newEntryValue)) {
 
             /** @noinspection SqlDialectInspection */
-            $sql = "INSERT INTO `botpersonality` (`id`, `bot_id`, `name`, `value`) VALUES (null, $bot_id, :name, :value);";
+            $sql = "INSERT INTO `botpersonality` (`id`, `bot_id`, `name`, `value`) VALUES (null, $bot_id, :name, :value) ON DUPLICATE KEY UPDATE `value`=:value ";
             $params = array();
 
             $params[] = array(':name' => $newEntryName, ':value' => $newEntryValue);
@@ -250,7 +250,7 @@ function updateBot()
     }
 
     /** @noinspection SqlDialectInspection */
-    $insertSQL = "INSERT INTO `botpersonality` (`id`, `bot_id`, `name`, `value`) VALUES (null, $bot_id, :name, :value);";
+    $insertSQL = "INSERT INTO `botpersonality` (`id`, `bot_id`, `name`, `value`) VALUES (null, $bot_id, :name, :value) ON DUPLICATE KEY UPDATE `value`=:value;";
     /** @noinspection SqlDialectInspection */
     $updateSQL = "UPDATE `botpersonality` SET `value` = :value WHERE `id` = :id;";
 
@@ -311,7 +311,7 @@ function addBotPersonality()
     $bot_id = $post_vars['bot_id'];
 
     /** @noinspection SqlDialectInspection */
-    $sql = "INSERT INTO `botpersonality` (`id`, `bot_id`, `name`, `value`) VALUES (null, $bot_id, :name, :value);";
+    $sql = "INSERT INTO `botpersonality` (`id`, `bot_id`, `name`, `value`) VALUES (null, $bot_id, :name, :value) ON DUPLICATE KEY UPDATE `value`=:value;";
     $msg = "";
     $params = array();
 
