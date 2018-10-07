@@ -183,6 +183,9 @@ if (!empty($say)) {
         $say = "Hello";
     }
 
+
+    $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $bot_id;
+
     // Load bot and user stored values
     $convoArr = load_default_bot_values($convoArr);
     $convoArr = check_set_convo_id($convoArr);
@@ -195,7 +198,6 @@ if (!empty($say)) {
     $rawSay = $say;
     $convoArr['conversation']['rawSay'] = $rawSay;
     $say = normalize_text($say);
-    $bot_id = (isset($form_vars['bot_id'])) ? $form_vars['bot_id'] : $bot_id;
 
     runDebug(__FILE__, __FUNCTION__, __LINE__, "Details:\nUser say: " . $say . "\nConvo id: " . $convo_id . "\nBot id: " . $bot_id . "\nFormat: " . $form_vars['format'], 2);
 

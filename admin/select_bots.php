@@ -545,9 +545,8 @@ function getChangeList()
             $sel = '';
         }
 
-        $bot_id = $row['bot_id'];
         $bot_name = $row['bot_name'];
-        $options .= "                <option value=\"$bot_id\"$sel>$bot_name</option>\n";
+        $options .= "                <option value=\"".$row['bot_id']."\"$sel>$bot_name</option>\n";
     }
 
     $options = rtrim($options);
