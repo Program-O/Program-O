@@ -242,6 +242,7 @@ if (!empty($say)) {
     $convoArr = run_mid_level_addons($convoArr);
     $convoArr = log_conversation($convoArr);
     #$convoArr = log_conversation_state($convoArr);
+    $convoArr = update_users($convoArr);
     $convoArr = write_to_session($convoArr);
     $convoArr = get_conversation($convoArr);
     $convoArr = run_post_response_useraddons($convoArr);

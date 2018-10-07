@@ -859,3 +859,40 @@ function load_that($convoArr)
     return $convoArr;
 }
 
+/**
+ * function update_users()
+ * A function to update the table users
+ *
+ * @param  array $convoArr - the current state of the conversation array
+ * @return array $convoArr (updated)
+ */
+function update_users($convoArr)
+{
+    runDebug(__FILE__, __FUNCTION__, __LINE__, 'M: Update the users table.', 2);
+    global $dbn, $user_name;
+    //get undefined defaults from the db
+
+    $user_id = $convoArr['conversation']['user_id'];
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "M: convoArr[conversation][user_id]: = $user_id", 4);
+    $user_name = $convoArr['client_properties']['name'];
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "M: convoArr[client_properties][name]: = $user_name", 4);
+
+    /** @noinspection SqlDialectInspection */
+    $sql = "UPDATE `$dbn`.`users`
+                SET
+                last_update = NOW(), 
+                user_name = :user_name,
+                chatlines = chatlines+1
+                WHERE `id` = :user_id LIMIT 1;";
+
+    $params = array(
+        ':user_name' => $user_name,
+        ':user_id'   => $user_id
+    );
+
+    $debugSQL = db_parseSQL($sql, $params);
+    runDebug(__FILE__, __FUNCTION__, __LINE__, "M: updating conversation state SQL: $sql", 3);
+    $numRows = db_write($sql, $params, false, __FILE__, __FUNCTION__, __LINE__);
+
+    return $convoArr;
+}
