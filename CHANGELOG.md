@@ -2,11 +2,13 @@
 
 ## CHANGELOG info:
 
-- Version: 2.6.11
+- Version: 2.8.0
 - Date: October 04th 2018
 
 
 ## Version History:
+2.8.0
+    #447 The "Bot Personality" data will not be changed when the bot is changed (multi bot environment)
 2.7.0
     #452 Bug Fix - Input boxes in Bot Personality Settings disappear after filling the 3rd column
 
