@@ -332,6 +332,8 @@ function score_matches(&$convoArr, $allrows, $pattern)
             continue;
         }
 
+
+
         # 2.) Is this user defined AIML?
         if (isset($subrow['aiml_userdefined']))
         {
@@ -825,13 +827,12 @@ function find_userdefined_aiml(&$convoArr)
     $allrows = array();
     $bot_id = $convoArr['conversation']['bot_id'];
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
-    $c_id = $convoArr['conversation']['convo_id']; //$convoArr['conversation'][''];user_id
+    $user_id = $convoArr['conversation']['user_id'];
     $lookingfor = _strtoupper($convoArr['aiml']['lookingfor']);
     $params = array(
-        ':user_id' => $c_id,
+        ':user_id' => $user_id,
         ':bot_id'  => $bot_id
     );
-
     //build sql
     /** @noinspection SqlDialectInspection */
     $sql = <<<endSQL
@@ -870,11 +871,13 @@ endSQL;
     runDebug(__FILE__, __FUNCTION__, __LINE__, "User defined SQL:\n$debugSQL", 3);
 
     $result = db_fetchAll($sql, $params, __FILE__, __FUNCTION__, __LINE__);
-    $num_rows = count($result);
+    $num_rows = (int)count($result);
+
 
     //if there is a result get it
     if (($result) && ($num_rows > 0))
     {
+
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Results returned: ' . print_r($result, true), 3);
 
         //loop through results
@@ -882,6 +885,7 @@ endSQL;
         {
             $allrows[$i] = array();
             $allrows[$i]['id']               = $row['id'];
+            $allrows[$i]['bot_id']          = $row['bot_id'];
             $allrows[$i]['aiml_id']          = $row['id'];
             $allrows[$i]['aiml_userdefined'] = true;
             $allrows[$i]['score']            = 0; // This will be handled in score_matches()
@@ -916,19 +920,22 @@ function get_aiml_to_parse(&$convoArr)
     $bot_parent_id = $convoArr['conversation']['bot_parent_id'];
     $raw_that = (isset ($convoArr['that'])) ? print_r($convoArr['that'], true) : '';
 
+
     //check if match in user defined aiml
     $allrows = find_userdefined_aiml($convoArr);
-
     //if there is no match in the user defined aiml table
     if ((empty($allrows)))
     {
         //look for a match in the normal aiml tbl
         $allrows = find_aiml_matches($convoArr);
     }
+
     //unset all irrelvant matches
     $allrows = unset_all_bad_pattern_matches($convoArr, $allrows, $lookingfor);
     //score the relevant matches
     $allrows = score_matches($convoArr, $allrows, $lookingfor);
+
+
     //get the highest scoring row
     $WinningCategory = get_highest_scoring_row($convoArr, $allrows, $lookingfor);
     $curPattern = _strtolower($WinningCategory['pattern']);
