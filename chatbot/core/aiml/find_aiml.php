@@ -155,6 +155,11 @@ function unset_all_bad_pattern_matches(&$convoArr, $allrows, $lookingfor)
             $tmp_rows[$i]['score'] = 1;
             $tmp_rows[$i]['track_score'] = " direct pattern match";
         }
+        elseif ((!$aiml_thatpatternmatch) && ($aiml_patternmatch)) //pattern match and thatpattern dismatch
+        {
+            $tmp_rows[$i]['score'] = -1;
+            $tmp_rows[$i]['track_score'] = " thatpattern dismatch and a pattern match";
+        }
         else {
             $tmp_rows[$i]['score'] = -1;
             $tmp_rows[$i]['track_score'] = "dismissing nothing is matched";
