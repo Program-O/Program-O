@@ -212,8 +212,11 @@ function showThis($showing = "last 20")
         $options .= "          <option value=\"$value\"$sel>$value</option>\n";
     }
 
+    $csrf_input = generate_csrf_form_token('showthis');
+
     $form = <<<endForm
         <form name="showthis" method="post" action="index.php?page=logs">
+$csrf_input
           <select name="showing" id="showing">
 $options
           </select>

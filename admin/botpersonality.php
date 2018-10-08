@@ -13,6 +13,12 @@
 # Build page sections
 # ordered here in the order that the page is constructed
 $post_vars = filter_input_array(INPUT_POST);
+//protect against cross-site request forgery
+if(!empty($post_vars)){
+    if($error = has_csrf_token_error($post_vars)){
+        die($error);
+    };
+}
 $bot_name = (isset ($_SESSION['poadmin']['bot_name'])) ? $_SESSION['poadmin']['bot_name'] : 'unknown';
 $func = (isset ($post_vars['func'])) ? $post_vars['func'] : 'getBot';
 if(!in_array($func,$allowed_functions_array)){
@@ -138,8 +144,11 @@ function getBot()
         $func = 'getBot';
     }
 
+    $csrf_input = generate_csrf_form_token('botpersonality');
+
     $form = <<<endForm2
           <form name="botpersonality" action="index.php?page=botpersonality" method="post">
+$csrf_input
             <table class="botForm">
               <tr>
 $inputs

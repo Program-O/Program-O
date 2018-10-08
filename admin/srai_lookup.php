@@ -11,6 +11,7 @@
 
 $post_vars = filter_input_array(INPUT_POST);
 $get_vars = filter_input_array(INPUT_GET);
+//protect against cross-site request forgery
 
 $editScriptTemplate = '<script type="text/javascript" src="scripts/[editScript].js"></script>';
 $editScript = 'srai_lookup';

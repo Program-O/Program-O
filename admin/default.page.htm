@@ -173,6 +173,7 @@ between the start and end section tags are the only parts of the template that a
             <fieldset>
                 <legend>Login</legend>
                 <form id="fm-form" method="post" action="index.php?page=login">
+                    [fmformToken]
                     <div class="row center">
                         <label for="user_name">Username:</label>
                         <input name="user_name" id="user_name" type="text" maxlength="255" size="15"/>
@@ -192,6 +193,7 @@ between the start and end section tags are the only parts of the template that a
 <!--fieldset-->
 [blank]
         <form id="changebot" action="index.php?page=select_bots" method="post">
+            [changebotToken]
             <div>
                 <label>Change Active Bot</label>
                 <select name="bot_id" id="bot_id" onchange="submit()">
@@ -208,6 +210,7 @@ between the start and end section tags are the only parts of the template that a
 [blank]
 <!--fieldset-->
         <form id="botAttributes" action="index.php?page=select_bots" method="post">
+            [botAttributesToken]
             <div class="leftHalf noBorder">
                 <table class="_formTable">
                     <tr>
@@ -404,6 +407,7 @@ between the start and end section tags are the only parts of the template that a
 [blank]
         <fieldset style="margin-bottom: 3px;">
             <form id="spellCheck" action="index.php?page=spellcheck&amp;group=[group]" method="post">
+                [spellCheckToken]
                 <div class="row bold">Add a Misspelled word and it's correction:</div>
                 <div class="row fm-opt">
                     <label for="missspell">Misspell: </label>
@@ -429,6 +433,7 @@ between the start and end section tags are the only parts of the template that a
                 Please see the README file in the chatbot/addons/spell_checker folder for more details.
             </span><br/>
             <form id="search" action="index.php?page=spellcheck&amp;group=[group]" method="post">
+                [searchSspellCheckToken]
                 <div class="row bold">Search for a Misspelled word:</div>
                 <div class="row fm-req">
                     <input type="text" id="search" name="search"/>
@@ -441,6 +446,7 @@ between the start and end section tags are the only parts of the template that a
 [blank]
         <fieldset style="margin-bottom: 3px;">
             <form id="spell" action="index.php?page=spellcheck&amp;group=[group]" method="post">
+                [spellToken]
                 <div class="row bold">Edit the entry for the Misspelled word [missspelling]:</div>
                 <div class="row fm-opt">
                     <label for="topic">Misspelling: </label>
@@ -462,6 +468,7 @@ between the start and end section tags are the only parts of the template that a
 [blank]
         <fieldset style="margin-bottom: 3px;">
             <form id="wordCensor" action="index.php?page=wordcensor&amp;group=[group]" method="post">
+                [addWordCensorToken]
                 <div class="row bold">Add an improper word and it's replacement:</div>
                 <div class="row fm-opt">
                     <label for="word_to_censor">Bad word: </label>
@@ -482,6 +489,7 @@ between the start and end section tags are the only parts of the template that a
 [blank]
         <fieldset style="margin-bottom: 3px;">
             <form id="search" action="index.php?page=wordcensor&amp;group=[group]" method="post">
+                [searchWordCensorToken]
                 <div class="row bold">Search for an improper word:</div>
                 <div class="row fm-req">
                     <input type="text" id="search" name="search"/>
@@ -494,6 +502,7 @@ between the start and end section tags are the only parts of the template that a
 [blank]
         <fieldset style="margin-bottom: 3px;">
             <form id="wordCensor" action="index.php?page=wordcensor&amp;group=[group]" method="post">
+                [editWordCensorToken]
                 <div class="row bold">Edit the entry for the improper word [word_to_censor]:</div>
                 <div class="row fm-opt">
                     <label for="topic">Bad Word: </label>
@@ -523,6 +532,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section TeachBotForm Start -->
 [blank]
         <form id="teach" action="index.php?page=teach" method="post">
+            [teachToken]
             <fieldset>
                 <div class="row">
                     <label for="filename"><span class="twentyPercent">Filename: </span></label>
@@ -885,6 +895,7 @@ between the start and end section tags are the only parts of the template that a
 [blank]
         <p><strong>[action] Admin Account:</strong></p>
         <form id="members" action="index.php?page=members" method="post">
+            [membersToken]
             <fieldset class="noBorder">
                 <div class="row">
                     <input name="id" id="id" value="[id]" autocomplete="off" disabled="disabled"/>
@@ -914,6 +925,7 @@ between the start and end section tags are the only parts of the template that a
 [blank]
         <div class="row">
             <form id="memberList" action="index.php?page=members" method="post">
+                [memberListToken]
                 <fieldset class="noBorder">
                     <label for="memberSelect">Current Admins: </label>
                     <select name="memberSelect" id="memberSelect" size="1">
@@ -955,6 +967,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section UploadAIMLForm Start -->
 [blank]
         <form id="upload" enctype="multipart/form-data" action="" method="post">
+            [uploadToken]
             <table class="formTable">
                 <tr>
                     <td>
@@ -1037,6 +1050,7 @@ between the start and end section tags are the only parts of the template that a
                 </thead>
             </table>
             <form id="addNewCat">
+                [addNewSRAIToken]
                 <table id="newCatTable">
                     <tr>
                         <td colspan="4" class="center bold">Add New SRAI Entry:</td>
@@ -1181,6 +1195,7 @@ between the start and end section tags are the only parts of the template that a
                 </thead>
             </table>
             <form id="addNewCat">
+                [addNewCatToken]
                 <table id="newCatTable">
                     <tr><td colspan="6" class="center bold">Add new AIML Category:</td></tr>
                     <tr>
@@ -1268,6 +1283,7 @@ between the start and end section tags are the only parts of the template that a
             <div class="row center">Please select the AIML files you wish to download from the selections below.</div>
             <hr class="eightyPercent">
             <form action="index.php?page=download" method="POST" id="downloadForm">
+                [downloadFormToken]
                 <table class="centered">
                     <tr>
                         <td class="center">
@@ -1354,6 +1370,7 @@ between the start and end section tags are the only parts of the template that a
         </div>
         <div id="clearForm">
             <form name="clearForm" action="index.php?page=clear" method="POST" onsubmit="return verify()">
+                [clearFormToken]
                 <table class="formTable">
                     <tr>
                         <td>
@@ -1396,6 +1413,7 @@ between the start and end section tags are the only parts of the template that a
 <!-- Section BugForm Start -->
 [blank]
         <form method="POST" action="index.php?page=bugs" name="contactForm">
+            [contactFormToken]
             <input name="func" value="sendMail" type="hidden">
             <input name="contactMe" value="true" type="hidden">
             <table border="1" width="100%">

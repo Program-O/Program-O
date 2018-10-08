@@ -11,7 +11,12 @@
 
 $upperScripts = $template->getSection('UpperScripts');
 $post_vars = filter_input_array(INPUT_POST);
-
+//protect against cross-site request forgery
+if(!empty($post_vars)){
+    if($error = has_csrf_token_error($post_vars)){
+        die($error);
+    };
+}
 if (count($post_vars) > 0)
 {
     foreach ($post_vars as $key => $value)

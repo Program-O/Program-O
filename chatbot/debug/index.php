@@ -50,6 +50,12 @@ $options = array(
     'logout'    => FILTER_SANITIZE_STRING,
 );
 $post_vars = filter_input_array(INPUT_POST, $options);
+//protect against cross-site request forgery
+if(!empty($post_vars)){
+    if($error = has_csrf_token_error($post_vars)){
+        die($error);
+    };
+}
 
 if (isset($post_vars['logout']))
 {
@@ -160,6 +166,7 @@ else
 </head>
 <body>
 <form name="fileChoice" action="<?php echo _DEBUG_URL_ ?>" method="POST">
+    <?php echo generate_csrf_form_token('fileChoice');?>
     <input id="fn" type="hidden"/>
     Select a Debug File to view:
     <select name="file" id="file" size="1" onchange="changeFile(this.value)">

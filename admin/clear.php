@@ -12,7 +12,12 @@
 $content = "";
 $upperScripts = $template->getSection('UpperScripts');
 $post_vars = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-
+//protect against cross-site request forgery
+if(!empty($post_vars)){
+    if($error = has_csrf_token_error($post_vars)){
+        die($error);
+    };
+}
 if ((isset ($post_vars['action'])) && ($post_vars['action'] == "clear"))
 {
     $msg = clearAIML();

@@ -12,7 +12,12 @@
 $selectBot = '';
 $curBot = array();
 $post_vars = filter_input_array(INPUT_POST);
-
+//protect against cross-site request forgery
+if(!empty($post_vars)){
+    if($error = has_csrf_token_error($post_vars)){
+        die($error);
+    };
+}
 if ((isset($post_vars['action'])) && ($post_vars['action'] == "update"))
 {
     $selectBot .= getChangeList();
@@ -526,7 +531,7 @@ function changeBot()
 function getChangeList()
 {
     global $template;
-    $bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
+    $current_bot_id = (isset($_SESSION['poadmin']['bot_id'])) ? $_SESSION['poadmin']['bot_id'] : 0;
 
     /** @noinspection SqlDialectInspection */
     $sql = "SELECT * FROM `bots` ORDER BY bot_name";
@@ -535,9 +540,9 @@ function getChangeList()
 
     foreach ($result as $row)
     {
-        $options .= "<!-- bot ID = {$row['bot_id']}, {$bot_id} -->\n";
+        $options .= "<!-- bot ID = {$row['bot_id']}, {$current_bot_id} -->\n";
 
-        if ($bot_id == $row['bot_id'])
+        if ($current_bot_id == $row['bot_id'])
         {
             $sel = ' selected="selected"';
         }
@@ -547,7 +552,7 @@ function getChangeList()
 
         $bot_id = $row['bot_id'];
         $bot_name = $row['bot_name'];
-        $options .= "                <option value=\"$bot_id\"$sel>$bot_name</option>\n";
+        $options .= "<option value=\"$bot_id\"$sel>$bot_name</option>\n";
     }
 
     $options = rtrim($options);

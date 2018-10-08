@@ -184,6 +184,7 @@ function libxml_display_errors()
 </p>
 <div class="center">
     <form enctype="multipart/form-data" action="validateAIML.php" method="post">
+        <?php echo generate_csrf_form_token('validateAIML');?>
         Please choose a file: <input name="uploaded" type="file" tabindex="1"/>&nbsp;&nbsp;
         <input type="submit" value="Validate"/><br>
     </form>

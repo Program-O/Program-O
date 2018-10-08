@@ -43,6 +43,14 @@ $upperScripts = <<<endScript
 endScript;
 
 $post_vars = filter_input_array(INPUT_POST);
+
+//protect against cross-site request forgery
+if(!empty($post_vars)){
+    if($error = has_csrf_token_error($post_vars)){
+        die($error);
+    };
+}
+
 $msg = '';
 
 if ((isset ($post_vars['action'])) && ($post_vars['action'] == "teach"))

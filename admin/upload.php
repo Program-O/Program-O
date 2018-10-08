@@ -127,6 +127,14 @@ $upperScripts = <<<endScript
 endScript;
 
 $post_vars = filter_input_array(INPUT_POST);
+
+//protect against cross-site request forgery
+if(!empty($post_vars)){
+    if($error = has_csrf_token_error($post_vars)){
+        die($error);
+    };
+}
+
 $XmlEntities = array('&amp;' => '&', '&lt;' => '<', '&gt;' => '>', '&apos;' => '\'', '&quot;' => '"',);
 $g_tagName = null;
 
@@ -187,6 +195,13 @@ function parseAIML($fn, $aimlContent, $from_zip = false)
     $duplicates = array();
 
     $post_vars = filter_input_array(INPUT_POST);
+
+    //protect against cross-site request forgery
+    if(!empty($post_vars)){
+        if($error = has_csrf_token_error($post_vars)){
+            die($error);
+        };
+    }
 
     if (empty ($aimlContent))
     {

@@ -288,3 +288,47 @@ function clean_inputs($allowed_vars = null)
     else $out = filter_var_array($_REQUEST);
     return $out;
 }
+
+/*
+ * generates a csrf token to be used in the form
+ * and the form input html
+ * and set the csrf token in the session
+ */
+function generate_csrf_form_token($input_ref){
+
+    $token = md5(rand(0,100000).date("ymdHis").session_id());
+    $_SESSION['csrf_form_token'][$input_ref] = $token;
+    $input = "<input type='hidden' name='csrf_token'  id='csrf_token' value='$token' />";
+    $input .= "<input type='hidden' name='csrf_name'  id='csrf_name' value='$input_ref' />";
+    return $input;
+
+}
+
+/*
+ * check that the token matches the one stored in our session
+ * then delete the session
+ */
+function has_csrf_token_error(&$post_vars){
+
+    if(empty($post_vars['csrf_name'])){
+        $post_vars = null;
+        return "CSRF forgery detected - no changes will be made.";
+    }elseif(empty($post_vars['csrf_token'])){
+        $post_vars = null;
+        return "CSRF forgery detected - no changes will be made.";
+    }elseif(empty($_SESSION['csrf_form_token'][$post_vars['csrf_name']])){
+        $post_vars = null;
+        return "CSRF forgery detected - no stored token - no changes will be made.";
+    }elseif($post_vars['csrf_token']!=$_SESSION['csrf_form_token'][$post_vars['csrf_name']]){
+        $post_vars = null;
+        return "CSRF forgery detected - incorrect token - no changes will be made.";
+    }else{
+        unset($post_vars['csrf_token']);
+        unset($post_vars['csrf_name']);
+        unset($_SESSION['csrf_form_token']);
+    }
+
+    return false;
+
+}
+

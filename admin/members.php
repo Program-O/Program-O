@@ -11,7 +11,12 @@
 ini_set('memory_limit', '128M');
 ini_set('max_execution_time', '0');
 $post_vars = filter_input_array(INPUT_POST);
-
+//protect against cross-site request forgery
+if(!empty($post_vars)){
+    if($error = has_csrf_token_error($post_vars)){
+        die($error);
+    };
+}
 $user_name = '';
 $action = (isset($post_vars['action'])) ? ucfirst(strtolower($post_vars['action'])) : 'Add';
 

@@ -62,6 +62,7 @@ function make_input($matches)
     make those changes in a text editor.
 </p>
 <form name="config" action="config_edit.php">
+    <?php echo generate_csrf_form_token('config');?>
     <hr/>
     <div id="config_div">
         <pre>

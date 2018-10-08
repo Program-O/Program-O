@@ -224,6 +224,24 @@ $searches = array(
     '[bSelOptM]'        => $bSelOptM,
     '[bot_format_link]' => $bot_format_link,
     '[editScriptTag]'   => $editScriptTag,
+    '[fmformToken]'   => generate_csrf_form_token('fmform'),
+    '[changebotToken]'   => generate_csrf_form_token('changebot'),
+    '[botAttributesToken]'   => generate_csrf_form_token('botAttributes'),
+    '[spellCheckToken]'   => generate_csrf_form_token('spellCheck'),
+    '[searchSspellCheckToken]'   => generate_csrf_form_token('search_spellcheck'),
+    '[spellToken]'   => generate_csrf_form_token('spell'),
+    '[addWordCensorToken]'   => generate_csrf_form_token('add_wordCensor'),
+    '[searchWordCensorToken]'   => generate_csrf_form_token('search_wordcensor'),
+    '[editWordCensorToken]'   => generate_csrf_form_token('edit_wordCensor'),
+    '[teachToken]'   => generate_csrf_form_token('teach'),
+    '[membersToken]'   => generate_csrf_form_token('members'),
+    '[memberListToken]'   => generate_csrf_form_token('memberList'),
+    '[uploadToken]'   => generate_csrf_form_token('upload'),
+    '[addNewSRAIToken]'   => generate_csrf_form_token('addNewSRAI'),
+    '[addNewCatToken]'   => generate_csrf_form_token('addNewCat'),
+    '[downloadFormToken]'   => generate_csrf_form_token('downloadForm'),
+    '[clearFormToken]'   => generate_csrf_form_token('clearForm'),
+    '[contactFormToken]'   => generate_csrf_form_token('contactForm')
 );
 
 foreach ($searches as $search => $replace)

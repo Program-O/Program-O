@@ -104,6 +104,7 @@
 <!-- Section InstallForm Start -->
   [errorMessage]
   <form name="installForm" id="installForm" action="[PHP_SELF]" method="post">
+    <?php echo generate_csrf_form_token('installForm');?>
     <a href="#" id="helpLink1" title="Get help for this page" name="helpLink1">Help!</a><br />
     <table width="100%" cellpadding="2" cellspacing="0">
       <tr>
@@ -351,6 +352,7 @@
 <!-- Section ContinueLink End -->
 <!-- Section Page0ContinueForm Start -->
 [blank]        <form action="install_programo.php" method="post" class="center">
+        <?php echo generate_csrf_form_token('install_programo');?>
             <input type="hidden" name="page" value="1">
             <input name="" type="submit" value="Continue">
         </form>
