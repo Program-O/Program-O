@@ -423,7 +423,7 @@ function db_beginTransaction($file = 'unknown', $function = 'unknown', $line = '
     if (!isset($dbConn)) $dbConn = db_open();
 
     try {
-        $dbConn->beginTransaction();
+        $out = $dbConn->beginTransaction();
     }
     catch (Exception $e)
     {
@@ -459,7 +459,7 @@ function db_rollBack($file = 'unknown', $function = 'unknown', $line = 'unknown'
     if (!isset($dbConn)) $dbConn = db_open();
 
     try {
-        $dbConn->rollBack();
+        $out = $dbConn->rollBack();
     }
     catch (Exception $e)
     {
@@ -495,7 +495,7 @@ function db_commit($file = 'unknown', $function = 'unknown', $line = 'unknown', 
     if (!isset($dbConn)) $dbConn = db_open();
 
     try {
-        $dbConn->commit();
+        $out = $dbConn->commit();
     }
     catch (Exception $e)
     {
