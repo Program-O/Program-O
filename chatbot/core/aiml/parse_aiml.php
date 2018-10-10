@@ -306,6 +306,15 @@ function set_wildcards($convoArr, $type)
         runDebug(__FILE__, __FUNCTION__, __LINE__, "We have pattern stars to process!", 2);
         if (!isset ($convoArr['aiml']['user_raw'])) $convoArr['aiml']['user_raw'] = normalize_text($convoArr['aiml']['lookingfor'], false);
         $checkAgainst = ($type == 'normal') ? $convoArr['aiml']['user_raw'] : $convoArr['aiml']['lookingfor'];
+
+        //// Meier "A problem if phrases with "pattern stars" and punctuation marks at the end"
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "M: \$convoArr:\n" . print_r($convoArr['aiml'], true), 2);
+        $checkAgainst = ($type == 'normal') ? $convoArr['aiml']['user_raw'] : $convoArr['aiml']['lookingfor'];
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "M: checkAgainst string = {$checkAgainst}", 2);
+        $checkAgainst = normalize_text($checkAgainst, false);
+        runDebug(__FILE__, __FUNCTION__, __LINE__, "M: checkAgainst string normalized = {$checkAgainst}", 2);
+        //// end
+
         $regEx = "~{$ap}$~siuU";
         runDebug(__FILE__, __FUNCTION__, __LINE__, "RegEx string = {$regEx}: Searching {$checkAgainst} for a match.", 2);
         if (preg_match_all($regEx, $checkAgainst, $matches))
