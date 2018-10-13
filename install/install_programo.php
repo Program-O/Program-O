@@ -57,6 +57,7 @@ $recommendedExtensionsArray = array(
     'curl',
     'zip',
     'mbstring',
+    'xml'
 );
 
 
@@ -151,7 +152,7 @@ endInfo;
         }
 
         $pvpf = ($version_compare >= 0) ? 'true' : 'false';
-        $liTemplate = '                            <li class="[oe]">PDO [ext] extension enabled?: <span class="ext_[tf] floatRight">[pf]</span></li>' . PHP_EOL;
+        $liTemplate = '<li class="[oe]">[ext] extension enabled?: <span class="ext_[tf] floatRight">[pf]</span></li>' . PHP_EOL;
         $pdo_reqs = '';
         $oddEven = 0;
         foreach ($pdoExtensionsArray as $ext)
@@ -185,6 +186,7 @@ endInfo;
         $main = str_replace('[pdo_reqs]', rtrim($pdo_reqs), $main);
         $rec_exts = '';
         $oddEven = 0;
+        $liTemplate = '<li class="[oe]">php-[ext] extension enabled?: <span class="ext_[tf] floatRight">[pf]</span></li>' . PHP_EOL;
         foreach ($recommendedExtensionsArray as $ext)
         {
             $oeClass = ($oddEven % 2 === 0) ? 'odd' : 'even';
