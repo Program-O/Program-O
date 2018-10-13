@@ -1114,7 +1114,7 @@ function get_topic(&$convoArr)
         ':user_id' => $user_id,
     );
     $row = db_fetch($sql, $params, __FILE__, __FUNCTION__, __LINE__);
-    $num_rows = empty($row) ? 0 : count($row);
+    $num_rows = is_array($row) ? count($row) : 0;
     $retval = ($num_rows == 0) ? '' : $row['value'];
 
     return $retval;
