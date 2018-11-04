@@ -792,7 +792,7 @@ function load_that($convoArr)
         $tmpThat = array();
         $tmpRawThat = array();
         $tmpInput = array();
-        $puncuation = array(',', '?', ';', '!');
+        $puncuation = array('?', ';', '!');
 
         foreach ($result as $row)
         {
@@ -809,28 +809,21 @@ function load_that($convoArr)
         foreach ($tmpThatRows as $row)
         {
             $row = str_replace($puncuation, '.', $row);
-            $tmpThat[] = explode('.', $row);
+            $tmpThat[] = array_filter(explode('.', $row));
         }
-
-        array_unshift($tmpThat, NULL);
-        unset ($tmpThat[0]);
 
         foreach ($tmpRawThatRows as $row)
         {
             $tmpRawThat[] = explode('.', $row);
         }
 
-        array_unshift($tmpRawThat, NULL);
-        unset ($tmpRawThat[0]);
         $convoArr['raw_that'] = $tmpRawThat;
 
         foreach ($tmpThat as $index => $value)
         {
-            $value = implode_recursive(' ', $value, __FILE__, __FUNCTION__, __LINE__);
-            $value = clean_that($value, __FILE__, __FUNCTION__, __LINE__);
+            $value = clean_that($value[count($value) - 1], __FILE__, __FUNCTION__, __LINE__);
             $convoArr = push_on_front_convoArr('that', $value, $convoArr);
         }
-
 
         runDebug(__FILE__, __FUNCTION__, __LINE__, 'Loading previous user inputs into the ~INPUT~ array.', 4);
         $tmpInputRows = array_reverse($tmpInputRows);
@@ -840,10 +833,6 @@ function load_that($convoArr)
             $row = str_replace($puncuation, '.', $row);
             $tmpInput[] = explode('.', $row);
         }
-
-        array_unshift($tmpThat, NULL);
-        unset ($tmpThat[0]);
-
 
         foreach ($tmpInput as $index => $value)
         {

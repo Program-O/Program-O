@@ -151,7 +151,7 @@ function unset_all_bad_pattern_matches(&$convoArr, $allrows, $lookingfor)
             $tmp_rows[$i]['score'] = 1;
             $tmp_rows[$i]['track_score'] = " thatpattern match and a pattern match";
         }
-        elseif ($aiml_pattern == $lookingfor_lc) {
+        elseif ($aiml_pattern == $lookingfor_lc && $aiml_thatpatternmatch) {
             $tmp_rows[$i]['score'] = 1;
             $tmp_rows[$i]['track_score'] = " direct pattern match";
         }
