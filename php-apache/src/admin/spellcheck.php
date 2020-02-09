@@ -101,7 +101,7 @@ function scPaginate()
     }
 
     $out = "Missspelled Words<br />\n50 words per page:<br />\n";
-    $link = " - <a class=\"paginate\" href=\"index.php?page=spellcheck&amp;group=[group]\">[label]</a>";
+    $link = ">[label]</a>";
     $curStart = $group;
     $firstPage = 1;
 

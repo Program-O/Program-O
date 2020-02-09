@@ -65,7 +65,7 @@ designed to only run once.
 
 Please note that the installer script will NOT create your database for you, nor will
 it install your bot's AIML files. The database, along with the username/password used to
-access it, needs to be created in advance. See the file [fresh_install_README.txt](src/fresh_install_README.txt) for more
+access it, needs to be created in advance. See the file [fresh_install_README.txt](fresh_install_README.txt) for more
 information.
 
 After you create the database, and once you complete the installation process, simply go to

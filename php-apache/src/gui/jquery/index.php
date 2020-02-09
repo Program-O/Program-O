@@ -73,8 +73,8 @@ function jq_get_convo_id()
     <meta name="keywords" content="Open Source, AIML, PHP, MySQL, Chatbot, Program-O, Version2"/>
     <title>Program O jQuery GUI Examples</title>
     <link rel="stylesheet" type="text/css" href="main.css" media="all"/>
-    <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"/>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
     <script type="text/javascript">
     var URL = '<?php echo $url ?>';
     </script>

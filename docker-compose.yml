@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  php-apache:
+    image: program-o:3.0
+    build:
+      context: ./php-apache
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/php-apache/src:/var/www/html
+    ports:
+    - 8080:80
+
+  mysql:
+    image: mysql:8.0.19
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=program-o
+      - MYSQL_USER=ridesoft
+      - MYSQL_PASSWORD=ridesoft
+    volumes:
+      - ${PWD}/mysql:/var/lib/mysql
