@@ -21,9 +21,9 @@
           The following are simple, "bare-bones" examples of how to interface with Program O on your
           website. Please choose from the following options:
         </p>
-        <div class="row"><a href="jquery/">JSON example</a></div>
-        <div class="row"><a href="plain/">HTML example</a></div>
-        <div class="row"><a href="xml/">XML example</a></div>
+        <div class="row"><a href="jquery">JSON example</a></div>
+        <div class="row"><a href="plain">HTML example</a></div>
+        <div class="row"><a href="xml">XML example</a></div>
       </div>
   </body>
 </html>

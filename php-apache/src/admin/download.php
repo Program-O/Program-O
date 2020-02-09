@@ -65,7 +65,7 @@ if (!empty($form_vars['type']) && !empty($form_vars['filenames']))
 
                 header("Refresh: 5; url=file.php");
 
-                $msg .= "The file $zipFilename is being processed. If the download doesn't start within a few seconds, please click <a href=\"file.php\">here</a>.\n";
+                $msg .= ">here</a>.\n";
             }
         }else{
             //lets download all selected files individually

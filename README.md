@@ -5,7 +5,7 @@ Readme info:
 - Authors: Elizabeth Perreau and Dave Morton
 - Date: June 19th 2014
 
-**NEWS:** Version 2.6.9 is out. Please see the [CHANGELOG](CHANGELOG.md) for details.
+**NEWS:** Version 2.6.9 is out. Please see the [CHANGELOG](src/CHANGELOG.md) for details.
 
 ## Introduction
 

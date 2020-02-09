@@ -106,7 +106,7 @@ function sendMail()
       With your help, we can make Program O even better than ever!<br />
       </p>
       <p style="text-align:center">
-        <a href="./">Home</a>
+        <a href="">Home</a>
       </p>
 endThanx;
     }
