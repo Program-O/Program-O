@@ -11,4 +11,4 @@ RUN curl -sS --insecure https://www.dotdeb.org/dotdeb.gpg | apt-key add -
 RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     libzip-dev
-RUN docker-php-ext-install zip
+RUN docker-php-ext-install zip pdo pdo_mysql

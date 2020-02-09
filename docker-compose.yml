@@ -12,11 +12,14 @@ services:
     - 8080:80
 
   mysql:
-    image: mysql:8.0.19
+    image: mysql:5.7
+    container_name: db-programo
     environment:
       - MYSQL_ROOT_PASSWORD=secret
-      - MYSQL_DATABASE=program-o
+      - MYSQL_DATABASE=programo
       - MYSQL_USER=ridesoft
       - MYSQL_PASSWORD=ridesoft
     volumes:
-      - ${PWD}/mysql:/var/lib/mysql
+      - /var/lib/mysql
+    ports:
+      - 3306:3306
