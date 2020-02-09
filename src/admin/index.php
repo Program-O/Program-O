@@ -157,7 +157,7 @@ if ($curPage == 'login' && !empty($_SESSION['poadmin']['logged_in']))
 }
 
 $_SESSION['poadmin']['curPage'] = $curPage;
-($curPage != 'logout' || $curPage == 'login') ? require_once("{$curPage}.php") : false;
+($curPage != 'logout' || $curPage == 'login') ? require_once("index.php") : false;
 
 $bot_format_link = (!empty($bot_format)) ? "&amp;format=$bot_format" : '';
 $curPage = (isset($curPage)) ? $curPage : 'main';

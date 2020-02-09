@@ -5,7 +5,7 @@ Readme info:
 - Authors: Elizabeth Perreau and Dave Morton
 - Date: June 19th 2014
 
-**NEWS:** Version 2.6.9 is out. Please see the [CHANGELOG](CHANGELOG.md) for details.
+**NEWS:** Version 2.6.9 is out. Please see the [CHANGELOG](src/CHANGELOG.md) for details.
 
 ## Introduction
 
@@ -65,7 +65,7 @@ designed to only run once.
 
 Please note that the installer script will NOT create your database for you, nor will
 it install your bot's AIML files. The database, along with the username/password used to
-access it, needs to be created in advance. See the file [fresh_install_README.txt](fresh_install_README.txt) for more
+access it, needs to be created in advance. See the file [fresh_install_README.txt](src/fresh_install_README.txt) for more
 information.
 
 After you create the database, and once you complete the installation process, simply go to

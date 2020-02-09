@@ -71,7 +71,7 @@ local.properties
 
 # User-specific files
 *.idea
-.idea
+../.idea
 .idea/*
 *.iml
 
