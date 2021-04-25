@@ -1,3 +1,8 @@
+# THIS PROJECT IS NO LONGER IN ACTIVE DEVELOPMENT
+We recommend using the Lemur Engine - a Php, Mysql, AIML chatbot engine. 
+
+https://github.com/theramenrobotdiscocode 
+
 # [Program O](http://www.program-o.com)
 
 Readme info:
